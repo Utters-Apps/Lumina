@@ -141,14 +141,14 @@ const contentDB = [
         ageRating: 'A16',
         seasons: {
             1: [
-                { title: "Minha Pseudomorte", url: "https://byseqekaho.com/e/8di6zathkrc0/S.S.1.1_D.mp4" },
-                { title: "Cicatrizes Antigas", url: "https://byseqekaho.com/e/9e0jseon4lsa/S_S_1_2_D" },
-                { title: "Morta e Confusa", url: "https://byseqekaho.com/e/cuz1nj9u9vrf/S_S_1_3_D" },
-                { title: "Intenções Mórbidas", url: "https://byseqekaho.com/e/xhhgql9zco83/S_S_1_4_D" },
-                { title: "O Passado Entra em Campo", url: "https://byseqekaho.com/e/4hpjrddjlbsw/S_S_1_5_D" },
-                { title: "Os Fantasmas se Divertem no Baile", url: "https://byseqekaho.com/e/ryaijcxd09b7/S_S_1_6_D" },
-                { title: "A Última Sessão Mediúnica", url: "https://byseqekaho.com/e/ckx4ss9nglzf/S_S_1_7_D" },
-                { title: "O Corpo de Madison", url: "https://byseqekaho.com/e/eo1rxcgbo5k3/S_S_1_8_D" }
+                { title: "Minha Pseudomorte", url: "https://drive.google.com/file/d/17MV5Yf_JovbVWonce8B9nBn9_KyX8hUB/view?usp=sharing" },
+                { title: "Cicatrizes Antigas", url: "https://drive.google.com/file/d/1EgO1wNOGjxcfhXp04_crySmYCdsGf3r8/view?usp=drive_link" },
+                { title: "Morta e Confusa", url: "https://drive.google.com/file/d/1DLLKr2NrQg1EyNJW_jLmdb7IlODTsfXl/view?usp=drive_link" },
+                { title: "Intenções Mórbidas", url: "https://drive.google.com/file/d/1RmO4XgMwWBsdyJPIHCQaJFZapkNkGImI/view?usp=drive_link" },
+                { title: "O Passado Entra em Campo", url: "https://drive.google.com/file/d/1tM1TKNFzLOkDL3--lazX_gWAlfvSb0GN/view?usp=drive_link" },
+                { title: "Os Fantasmas se Divertem no Baile", url: "https://drive.google.com/file/d/1QMPXO26OfFQbHPljqZhFhOa5KmuqNE8W/view?usp=drive_link" },
+                { title: "A Última Sessão Mediúnica", url: "https://drive.google.com/file/d/1HbZmKg_Sv0XBceEhB8X-SXM3bEmfKUUo/view?usp=drive_link" },
+                { title: "O Corpo de Madison", url: "https://drive.google.com/file/d/14xsPGRaftntC8ewdjZc5i1z7LxW5kl3_/view?usp=drive_link" }
             ],
             2: [
                 { title: "O Que Terá Acontecido a Maddie Nears?", url: "https://byseqekaho.com/e/hg93enf8ahyg/SSPRTS_2_1.mp4" },
@@ -332,17 +332,11 @@ function disableContextMenu() {
     document.addEventListener('touchstart', () => {}, { passive: true });
 }
 
-function init(deepPlayId = null) {
+function init() {
     disableContextMenu();
     renderHome();
     setupSearch();
     setupScrollHeader();
-
-    // If a deep-play id was supplied (from URL), store it to auto-play after name prompt
-    if (deepPlayId) {
-        // store temporarily on window for usage after name prompt
-        window.__lumina_deepplay = deepPlayId;
-    }
 }
 
 function setupScrollHeader() {
@@ -358,66 +352,6 @@ function setupScrollHeader() {
             header.classList.remove('py-3');
         }
     });
-
-    // Clamp vertical scrolling so user cannot scroll past the Top Rated section.
-    // We listen to scroll, wheel and touchmove and programmatically restrict scrollTop.
-    function getMaxScroll() {
-        const topRatedEl = document.getElementById('toprated-list');
-        if (!topRatedEl) return document.body.scrollHeight;
-        // find the surrounding Top Rated section wrapper (fallback to the list itself)
-        const section = topRatedEl.closest('div.animate-slideUp') || topRatedEl;
-        const rect = section.getBoundingClientRect();
-        // rect.bottom is relative to viewport; add current scroll to get document coordinate
-        const bottomInDocument = window.scrollY + rect.bottom;
-        // return the bottom of the Top Rated section (plus a small padding) as the maximum scrollable top
-        return Math.max(0, Math.floor(bottomInDocument + 8));
-    }
-
-    let maxScroll = getMaxScroll();
-    // Recompute when layout changes (resize, content render)
-    window.addEventListener('resize', () => { maxScroll = getMaxScroll(); });
-    // Also refresh after a short delay when content updates (useful when lists render)
-    const refreshMax = () => { setTimeout(() => { maxScroll = getMaxScroll(); }, 120); };
-    // tie to some known events that re-render lists
-    window.addEventListener('load', refreshMax);
-    document.addEventListener('DOMContentLoaded', refreshMax);
-
-    // On scroll, clamp the scroll position
-    window.addEventListener('scroll', () => {
-        const cur = window.scrollY || document.documentElement.scrollTop;
-        maxScroll = getMaxScroll();
-        if (cur > maxScroll) {
-            window.scrollTo({ top: maxScroll, behavior: 'smooth' });
-        }
-    }, { passive: true });
-
-    // Prevent wheel / touchmove from scrolling past the max directly
-    window.addEventListener('wheel', (e) => {
-        const cur = window.scrollY || document.documentElement.scrollTop;
-        maxScroll = getMaxScroll();
-        if (e.deltaY > 0 && cur >= maxScroll - 2) {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
-    let touchStartY = null;
-    window.addEventListener('touchstart', (e) => {
-        touchStartY = e.touches ? e.touches[0].clientY : null;
-        maxScroll = getMaxScroll();
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
-        if (touchStartY === null) return;
-        const touchY = e.touches ? e.touches[0].clientY : null;
-        if (touchY === null) return;
-        const delta = touchStartY - touchY;
-        const cur = window.scrollY || document.documentElement.scrollTop;
-        maxScroll = getMaxScroll();
-        // if moving downwards (trying to scroll further) and we're at or past max, block
-        if (delta > 0 && cur >= maxScroll - 2) {
-            e.preventDefault();
-        }
-    }, { passive: false });
 }
 
 /* --- NAVIGATION --- */
@@ -441,33 +375,9 @@ function navigate(pageId) {
 }
 
 /* --- RENDERING --- */
-/* deterministic daily shuffle helper: returns a new array shuffled deterministically by date */
-function dailyShuffle(arr, salt = '') {
-    // simple seeded shuffle using date as seed so results change each day
-    const dateSeed = new Date().toISOString().slice(0,10) + '|' + salt; // YYYY-MM-DD
-    // build numeric seed by summing char codes
-    let seed = 0;
-    for (let i = 0; i < dateSeed.length; i++) seed = (seed * 31 + dateSeed.charCodeAt(i)) >>> 0;
-    // copy
-    const out = arr.slice();
-    // Fisher-Yates using seeded PRNG
-    function rand() {
-        seed = (seed ^ (seed << 13)) >>> 0;
-        seed = (seed ^ (seed >>> 17)) >>> 0;
-        seed = (seed ^ (seed << 5)) >>> 0;
-        return (seed >>> 0) / 4294967295;
-    }
-    for (let i = out.length - 1; i > 0; i--) {
-        const j = Math.floor(rand() * (i + 1));
-        [out[i], out[j]] = [out[j], out[i]];
-    }
-    return out;
-}
-
 function renderHome() {
-    // HERO (pick hero or rotate top hero by day)
-    const heroCandidates = contentDB.filter(i => i.isHero);
-    const heroData = (heroCandidates.length ? dailyShuffle(heroCandidates, 'hero')[0] : contentDB[0]);
+    // HERO
+    const heroData = contentDB.find(i => i.isHero) || contentDB[0];
     const heroHtml = `
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-102" style="background-image: url('${heroData.cover}');"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#05000a] via-[#05000a]/40 to-transparent"></div>
@@ -497,34 +407,13 @@ function renderHome() {
     document.getElementById('hero-container').innerHTML = heroHtml;
 
     // LISTS
-    // We'll rotate/update lists by day so users see fresh ordering each day.
-    // Prepare base sets
-    const allSeries = contentDB.filter(i => i.type === 'serie');
-    const allMovies = contentDB.filter(i => i.type === 'filme');
-
-    // Deterministically shuffle per day with different salts per section
-    const seriesForToday = dailyShuffle(allSeries, 'series').slice(0, 10);
-    const moviesForToday = dailyShuffle(allMovies, 'movies').slice(0, 10);
-    const recommendedForToday = dailyShuffle(contentDB, 'recommended').slice(0, 10);
-    const newReleasesForToday = dailyShuffle(contentDB.slice().sort((a,b) => (parseInt(b.year || '0') || 0) - (parseInt(a.year || '0') || 0)), 'new').slice(0, 8);
-    const topRatedForToday = (dailyShuffle(contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0)), 'toprated').slice(0,8).length)
-        ? dailyShuffle(contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0)), 'toprated').slice(0,8)
-        : dailyShuffle(contentDB, 'toprated').slice(0,8);
-
-    // Render using same rendering helper for visual consistency
-    renderList('series-list', seriesForToday, 'vertical');
-    renderList('movies-list', moviesForToday, 'horizontal');
-    renderList('recommended-list', recommendedForToday, 'horizontal');
-    renderList('new-list', newReleasesForToday, 'horizontal');
-    renderList('toprated-list', topRatedForToday, 'horizontal');
-
+    // Series: Vertical Posters
+    renderList('series-list', contentDB.filter(i => i.type === 'serie'), 'vertical');
+    
+    // Movies: Horizontal (Wide) Cards for variety
+    renderList('movies-list', contentDB.filter(i => i.type === 'filme'), 'horizontal');
+    
     updateContinueWatching();
-
-    // ensure the scroll clamping max is recalculated after lists render
-    setTimeout(() => {
-        const ev = new Event('resize');
-        window.dispatchEvent(ev);
-    }, 180);
 }
 
 function renderList(containerId, data, style = 'default') {
@@ -895,13 +784,16 @@ function playMedia(id, season, epIndex) {
     // Normalize Google Drive links to reliable preview embed URLs
     try { url = normalizeDriveUrl(url); } catch(e) { /* ignore */ }
 
+    // Allow special-case series to bypass host checks (no blocks for 'espiritos-na-escola')
+    const forceNoBlock = id === 'espiritos-na-escola';
+
     // Basic host-blocking (unsafe or shady hosts)
     try {
         const normalized = (url || '').toString().trim().toLowerCase();
         const blockedHosts = ['rkv1.com', 'click.alibaba.com', 'm1rs.com'];
         const isBlockedHost = blockedHosts.some(h => normalized.includes(h));
 
-        if (isBlockedHost || !url) {
+        if (!forceNoBlock && (isBlockedHost || !url)) {
             const playerOverlay = document.getElementById('page-player');
             const container = document.getElementById('player-container');
             const titleEl = document.getElementById('player-title');
@@ -934,7 +826,8 @@ function playMedia(id, season, epIndex) {
     try {
         const extHosts = ['tokyvideo.com', 'embedplay.icu', 'brplayer.cc', 'watch.brplayer.cc'];
         const low = (url || '').toString().toLowerCase();
-        if (extHosts.some(h => low.includes(h))) {
+        // allow 'espiritos-na-escola' to load inline even if it matches extHosts
+        if (!forceNoBlock && extHosts.some(h => low.includes(h))) {
             // Open externally and avoid creating the in-app iframe player
             window.open(url, '_blank');
             return;
@@ -958,7 +851,8 @@ function playMedia(id, season, epIndex) {
         const lowerUrl = (url || '').toString().toLowerCase();
         const isToky = lowerUrl.includes('tokyvideo.com');
         const isMp4 = lowerUrl.endsWith('.mp4') || lowerUrl.includes('.mp4?') || lowerUrl.includes('/mp4/');
-        const safeSandbox = 'allow-scripts allow-same-origin allow-forms';
+        // For the special series, relax sandbox to improve embed compatibility
+        const safeSandbox = forceNoBlock ? 'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation' : 'allow-scripts allow-same-origin allow-forms';
 
         // Helper: build the player chrome with fullscreen button (moved to bottom-right)
         const buildFrameWrapper = (innerHtml) => {
@@ -1002,10 +896,8 @@ function playMedia(id, season, epIndex) {
                 // small feedback: show replay icon briefly
             });
         } else {
-            // Load as sandboxed iframe for embeds (tokyvideo and others). Keep sandbox strict so embed can't break out.
-            const iframeHtml = isToky
-                ? `<iframe src="${url}" class="w-full h-full border-none" sandbox="${safeSandbox}" referrerpolicy="no-referrer" allow="autoplay; fullscreen" allowfullscreen></iframe>`
-                : `<iframe src="${url}" class="w-full h-full border-none" sandbox="${safeSandbox}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            // Load as sandboxed iframe for embeds (tokyvideo and others). For the special case we relax sandbox for better compatibility.
+            const iframeHtml = `<iframe src="${url}" class="w-full h-full border-none" sandbox="${safeSandbox}" referrerpolicy="no-referrer" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
 
             container.innerHTML = buildFrameWrapper(iframeHtml);
 
@@ -1292,8 +1184,6 @@ function setupSearch() {
 }
 
 function clearFavorites() {
-    // ask for confirmation to avoid accidental clearing
-    if (!confirm('Tem certeza que deseja limpar sua lista? Esta ação removerá todos os itens salvos.')) return;
     state.favorites = [];
     localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
     renderMyList();
@@ -1308,89 +1198,7 @@ function scrollList(containerId, dir = 1) {
     el.scrollBy({ left: amount, behavior: 'smooth' });
 }
 
-/* --- Name prompt + deep-link handling --- */
-function showNamePrompt(onComplete) {
-    const modal = document.getElementById('name-prompt');
-    const input = document.getElementById('visitorNameInput');
-    const saveBtn = document.getElementById('saveNameBtn');
-    const skipBtn = document.getElementById('skipNameBtn');
-
-    modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-    input.focus();
-
-    const finish = (name) => {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-        if (typeof onComplete === 'function') onComplete(name);
-    };
-
-    const submit = () => {
-        const name = (input.value || '').trim();
-        if (name) {
-            localStorage.setItem('lumina_name', name);
-            finish(name);
-        } else {
-            // if empty still allow (skip) to avoid blocking
-            finish('');
-        }
-    };
-
-    saveBtn.onclick = submit;
-    skipBtn.onclick = () => finish('');
-    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') submit(); });
-}
-
-function handleDeepLinkPlay(id) {
-    if (!id) return;
-    const item = contentDB.find(i => i.id === id);
-    if (!item) return;
-    // ensure item is in favorites per requirement
-    if (!state.favorites.includes(id)) {
-        state.favorites.push(id);
-        localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
-    }
-    // If series, play first episode of season 1 index 0; else play movie directly
-    if (item.type === 'serie') {
-        // prefer season '1' if exists, otherwise first season key
-        const seasonKey = item.seasons['1'] ? '1' : Object.keys(item.seasons)[0];
-        playMedia(id, seasonKey, 0);
-    } else {
-        playMedia(id, '', 0);
-    }
-}
-
-/* On load: show name prompt if not set, then initialize and handle ?play= deep link */
-window.onload = () => {
-    // read deep play param from URL
-    const params = new URLSearchParams(location.search);
-    const deepPlay = params.get('play');
-
-    const storedName = localStorage.getItem('lumina_name');
-    if (!storedName) {
-        // show prompt, then init and handle deep link after user submits/skip
-        showNamePrompt((givenName) => {
-            // store empty string as well (explicit)
-            if (givenName !== null && givenName !== undefined) {
-                localStorage.setItem('lumina_name', givenName || '');
-            }
-            // initialize app and then handle deep play if present
-            init(deepPlay);
-            if (deepPlay) {
-                // small timeout to ensure UI ready
-                setTimeout(() => handleDeepLinkPlay(deepPlay), 500);
-            }
-        });
-    } else {
-        // name exists: init immediately and handle deep play
-        init(deepPlay);
-        if (deepPlay) {
-            setTimeout(() => handleDeepLinkPlay(deepPlay), 300);
-        }
-    }
-};
-
-// expose functions/globals
+window.onload = init;
 window.navigate = navigate;
 window.openDetail = openDetail;
 window.viewAll = viewAll;
