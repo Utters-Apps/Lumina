@@ -6,6 +6,8 @@ const contentDB = [
         type: 'filme',
         category: 'Comédia / Família',
         year: '2010',
+        duration: 94,
+        ratings: { imdb: 6.3, rottenTomatoes: 54, audienceScore: 50 },
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/53bd6d9c03d61fecdee73974365e26b3276e3b7e2fb93f9319b28eebc1c0fa26._SX1080_FMjpg_.jpg',
         description: 'Greg Heffley está destinado a grandes coisas, mas primeiro ele precisa sobreviver à coisa mais assustadora e humilhante de todas: o ensino fundamental.',
         url: 'https://drive.google.com/file/d/1qBGYMGHOShcyS0_meDv35wG4K5nzU28E/preview'
@@ -141,14 +143,14 @@ const contentDB = [
         ageRating: 'A16',
         seasons: {
             1: [
-                { title: "Minha Pseudomorte", url: "https://drive.google.com/file/d/17MV5Yf_JovbVWonce8B9nBn9_KyX8hUB/view?usp=sharing" },
-                { title: "Cicatrizes Antigas", url: "https://drive.google.com/file/d/1EgO1wNOGjxcfhXp04_crySmYCdsGf3r8/view?usp=drive_link" },
-                { title: "Morta e Confusa", url: "https://drive.google.com/file/d/1DLLKr2NrQg1EyNJW_jLmdb7IlODTsfXl/view?usp=drive_link" },
-                { title: "Intenções Mórbidas", url: "https://drive.google.com/file/d/1RmO4XgMwWBsdyJPIHCQaJFZapkNkGImI/view?usp=drive_link" },
-                { title: "O Passado Entra em Campo", url: "https://drive.google.com/file/d/1tM1TKNFzLOkDL3--lazX_gWAlfvSb0GN/view?usp=drive_link" },
-                { title: "Os Fantasmas se Divertem no Baile", url: "https://drive.google.com/file/d/1QMPXO26OfFQbHPljqZhFhOa5KmuqNE8W/view?usp=drive_link" },
-                { title: "A Última Sessão Mediúnica", url: "https://drive.google.com/file/d/1HbZmKg_Sv0XBceEhB8X-SXM3bEmfKUUo/view?usp=drive_link" },
-                { title: "O Corpo de Madison", url: "https://drive.google.com/file/d/14xsPGRaftntC8ewdjZc5i1z7LxW5kl3_/view?usp=drive_link" }
+                { title: "Minha Pseudomorte", url: "https://www.dropbox.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm&raw=1" },
+                { title: "Cicatrizes Antigas", url: "https://www.dropbox.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os&raw=1" },
+                { title: "Morta e Confusa", url: "https://byseqekaho.com/e/cuz1nj9u9vrf/S_S_1_3_D" },
+                { title: "Intenções Mórbidas", url: "https://byseqekaho.com/e/xhhgql9zco83/S_S_1_4_D" },
+                { title: "O Passado Entra em Campo", url: "https://byseqekaho.com/e/4hpjrddjlbsw/S_S_1_5_D" },
+                { title: "Os Fantasmas se Divertem no Baile", url: "https://byseqekaho.com/e/ryaijcxd09b7/S_S_1_6_D" },
+                { title: "A Última Sessão Mediúnica", url: "https://byseqekaho.com/e/ckx4ss9nglzf/S_S_1_7_D" },
+                { title: "O Corpo de Madison", url: "https://byseqekaho.com/e/eo1rxcgbo5k3/S_S_1_8_D" }
             ],
             2: [
                 { title: "O Que Terá Acontecido a Maddie Nears?", url: "https://byseqekaho.com/e/hg93enf8ahyg/SSPRTS_2_1.mp4" },
@@ -291,6 +293,46 @@ const contentDB = [
         cover: 'https://images.justwatch.com/backdrop/333384494/s640/demon-slayer-kimetsu-no-yaiba-infinity-castle',
         description: 'Tanjiro e seus aliados enfrentam a ameaça dos Dez Lendários Lua para salvar Nezuko e acabar com o reinado de terror dos demônios.',
         url: 'https://drive.google.com/file/d/1NveQ-a7JXkArdeHdedqy_DPPYgF2S3en/view?usp=sharing'
+    },
+    {
+        id: 'round-6',
+        title: 'Round 6',
+        type: 'serie',
+        category: 'Drama / Suspense',
+        year: '2021 - 2025',
+        cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABSlCq3x0mzdgFd1PeYqPTxTE1awDh5jYeAayIIjvZjLBHy971DLaTHBAzWwuYygqn_xscoiBxMtf1LncymZJzkqhYw3M-GBNupEZ.jpg?r=90b',
+        description: 'Centenas de pessoas endividadas aceitam participar de jogos infantis com uma recompensa milionária. O que elas não sabem é que perder significa morrer. À medida que os jogos avançam, alianças, traições e dilemas morais revelam até onde o ser humano é capaz de ir para sobreviver.',
+        ratings: { imdb: 8.0 },
+        seasons: {
+            1: [
+                { title: "Batatinha Frita 1, 2, 3", url: "https://www.tokyvideo.com/br/embed/635210" },
+                { title: "Inferno", url: "https://www.tokyvideo.com/br/embed/635240" },
+                { title: "O Homem do Guarda-Chuva", url: "https://www.tokyvideo.com/br/embed/635259" },
+                { title: "Fiquem Juntos", url: "https://www.tokyvideo.com/br/embed/635277" },
+                { title: "Um Mundo Justo", url: "https://www.tokyvideo.com/br/embed/762428" },
+                { title: "Gganbu", url: "https://www.tokyvideo.com/br/embed/638751" },
+                { title: "VIPs", url: "https://www.tokyvideo.com/br/embed/762465" },
+                { title: "O Líder", url: "https://www.tokyvideo.com/br/embed/635532" },
+                { title: "Um Dia de Sorte", url: "https://www.tokyvideo.com/br/embed/635533" }
+            ],
+            2: [
+                { title: "Pão e Loteria", url: "https://www.tokyvideo.com/br/embed/635551" },
+                { title: "Festa de Halloween", url: "https://www.tokyvideo.com/br/embed/635549" },
+                { title: "001", url: "https://www.tokyvideo.com/br/embed/635563" },
+                { title: "Seis Pernas", url: "https://www.tokyvideo.com/br/embed/635559" },
+                { title: "Mais um Jogo", url: "https://www.tokyvideo.com/br/embed/635565" },
+                { title: "O X", url: "https://www.tokyvideo.com/br/embed/635569" },
+                { title: "Amigos ou Inimigos?", url: "https://www.tokyvideo.com/br/embed/635572" }
+            ],
+            3: [
+                { title: "Chaves e Facas", url: "https://www.tokyvideo.com/br/embed/756099" },
+                { title: "Noite Estrelada", url: "https://www.tokyvideo.com/br/embed/756102" },
+                { title: "Não é Culpa Sua", url: "https://www.tokyvideo.com/br/embed/756106" },
+                { title: "222", url: "https://www.tokyvideo.com/br/embed/756109" },
+                { title: "○△□", url: "https://www.tokyvideo.com/br/embed/756118" },
+                { title: "Humanos", url: "https://www.tokyvideo.com/br/embed/756126" }
+            ]
+        }
     }
 ];
 
@@ -309,15 +351,32 @@ function normalizeDriveUrl(url){
     if(!url) return url;
     try{
         const s = String(url).trim();
-        // Try extract /d/FILE_ID patterns or id=FILE_ID query params
-        const driveId = (s.match(/\/d\/([a-zA-Z0-9_-]{10,})/) || s.match(/id=([a-zA-Z0-9_-]{10,})/))?.[1];
-        if(driveId){
-            return `https://drive.google.com/file/d/${driveId}/preview`;
-        }
-        // handle open?id=...
-        const openId = (s.match(/open\?id=([a-zA-Z0-9_-]{10,})/)||[])[1];
-        if(openId) return `https://drive.google.com/file/d/${openId}/preview`;
-        // fallback: return original string
+
+        // QUICK REJECT: if it already looks like a drive preview, return as-is
+        if (s.includes('/preview') && s.includes('drive.google.com')) return s;
+
+        // Try common Google Drive patterns into a canonical /file/d/ID/preview
+        // 1) /file/d/FILE_ID/...
+        let m = s.match(/\/file\/d\/([a-zA-Z0-9_-]{10,})/);
+        if (m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
+
+        // 2) /d/FILE_ID (sometimes shorter paths)
+        m = s.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
+        if (m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
+
+        // 3) open?id=FILE_ID or uc?id=FILE_ID
+        m = s.match(/[?&](?:id|export)=([a-zA-Z0-9_-]{10,})/);
+        if (m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
+
+        // 4) share links with drive.googleusercontent or alternate host that include an id param
+        m = s.match(/\/d\/([a-zA-Z0-9_-]{10,})\/view/);
+        if (m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
+
+        // 5) fallback: sometimes a plain file id is passed - detect a lone id pattern
+        m = s.match(/^([a-zA-Z0-9_-]{20,})$/);
+        if (m && m[1]) return `https://drive.google.com/file/d/${m[1]}/preview`;
+
+        // Otherwise return original string unchanged
         return s;
     }catch(e){
         return url;
@@ -332,11 +391,17 @@ function disableContextMenu() {
     document.addEventListener('touchstart', () => {}, { passive: true });
 }
 
-function init() {
+function init(deepPlayId = null) {
     disableContextMenu();
     renderHome();
     setupSearch();
     setupScrollHeader();
+
+    // If a deep-play id was supplied (from URL), store it to auto-play after name prompt
+    if (deepPlayId) {
+        // store temporarily on window for usage after name prompt
+        window.__lumina_deepplay = deepPlayId;
+    }
 }
 
 function setupScrollHeader() {
@@ -352,17 +417,93 @@ function setupScrollHeader() {
             header.classList.remove('py-3');
         }
     });
+
+    // Clamp vertical scrolling so user cannot scroll past the Top Rated section.
+    // We listen to scroll, wheel and touchmove and programmatically restrict scrollTop.
+    function getMaxScroll() {
+        const topRatedEl = document.getElementById('toprated-list');
+        if (!topRatedEl) return document.body.scrollHeight;
+        // find the surrounding Top Rated section wrapper (fallback to the list itself)
+        const section = topRatedEl.closest('div.animate-slideUp') || topRatedEl;
+        const rect = section.getBoundingClientRect();
+        // rect.bottom is relative to viewport; add current scroll to get document coordinate
+        const bottomInDocument = window.scrollY + rect.bottom;
+        // compute the maximum scrollTop so that the bottom of the Top Rated section aligns with the bottom of the viewport
+        // i.e. scrollTop = bottomOfSection - viewportHeight (+ small padding)
+        const max = Math.floor(bottomInDocument - window.innerHeight + 8);
+        return Math.max(0, max);
+    }
+
+    let maxScroll = getMaxScroll();
+    // Recompute when layout changes (resize, content render)
+    window.addEventListener('resize', () => { maxScroll = getMaxScroll(); });
+    // Also refresh after a short delay when content updates (useful when lists render)
+    const refreshMax = () => { setTimeout(() => { maxScroll = getMaxScroll(); }, 120); };
+    // tie to some known events that re-render lists
+    window.addEventListener('load', refreshMax);
+    document.addEventListener('DOMContentLoaded', refreshMax);
+
+    // On scroll, clamp the scroll position
+    window.addEventListener('scroll', () => {
+        const cur = window.scrollY || document.documentElement.scrollTop;
+        maxScroll = getMaxScroll();
+        if (cur > maxScroll) {
+            window.scrollTo({ top: maxScroll, behavior: 'smooth' });
+        }
+    }, { passive: true });
+
+    // Prevent wheel / touchmove from scrolling past the max directly
+    window.addEventListener('wheel', (e) => {
+        // if detail modal is open, don't apply global clamp (allow modal inner scroll)
+        const detailModal = document.getElementById('page-detail');
+        if (detailModal && !detailModal.classList.contains('hidden')) return;
+        const cur = window.scrollY || document.documentElement.scrollTop;
+        maxScroll = getMaxScroll();
+        if (e.deltaY > 0 && cur >= maxScroll - 2) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    let touchStartY = null;
+    window.addEventListener('touchstart', (e) => {
+        // when modal detail is open we still want inner scrolling; just record start but skip clamp checks later
+        const detailModal = document.getElementById('page-detail');
+        touchStartY = e.touches ? e.touches[0].clientY : null;
+        maxScroll = getMaxScroll();
+        // mark whether global clamp should be active for this touch sequence
+        window.__lumina_touchClampActive = !(detailModal && !detailModal.classList.contains('hidden'));
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (touchStartY === null) return;
+        // if clamp isn't active for this touch (e.g. detail modal open), allow native behavior
+        if (!window.__lumina_touchClampActive) return;
+        const touchY = e.touches ? e.touches[0].clientY : null;
+        if (touchY === null) return;
+        const delta = touchStartY - touchY;
+        const cur = window.scrollY || document.documentElement.scrollTop;
+        maxScroll = getMaxScroll();
+        // if moving downwards (trying to scroll further) and we're at or past max, block
+        if (delta > 0 && cur >= maxScroll - 2) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 }
 
 /* --- NAVIGATION --- */
 function navigate(pageId) {
     ['page-home', 'page-search', 'page-mylist'].forEach(id => {
         const el = document.getElementById(id);
+        if (!el) return;
         el.classList.remove('page-active');
         el.classList.add('page-hidden');
     });
 
     const target = document.getElementById(`page-${pageId}`);
+    if (!target) {
+        console.warn('navigate: target page not found:', pageId);
+        return;
+    }
     target.classList.remove('page-hidden');
     setTimeout(() => target.classList.add('page-active'), 50);
 
@@ -375,9 +516,33 @@ function navigate(pageId) {
 }
 
 /* --- RENDERING --- */
+/* deterministic daily shuffle helper: returns a new array shuffled deterministically by date */
+function dailyShuffle(arr, salt = '') {
+    // simple seeded shuffle using date as seed so results change each day
+    const dateSeed = new Date().toISOString().slice(0,10) + '|' + salt; // YYYY-MM-DD
+    // build numeric seed by summing char codes
+    let seed = 0;
+    for (let i = 0; i < dateSeed.length; i++) seed = (seed * 31 + dateSeed.charCodeAt(i)) >>> 0;
+    // copy
+    const out = arr.slice();
+    // Fisher-Yates using seeded PRNG
+    function rand() {
+        seed = (seed ^ (seed << 13)) >>> 0;
+        seed = (seed ^ (seed >>> 17)) >>> 0;
+        seed = (seed ^ (seed << 5)) >>> 0;
+        return (seed >>> 0) / 4294967295;
+    }
+    for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+}
+
 function renderHome() {
-    // HERO
-    const heroData = contentDB.find(i => i.isHero) || contentDB[0];
+    // HERO (pick hero or rotate top hero by day)
+    const heroCandidates = contentDB.filter(i => i.isHero);
+    const heroData = (heroCandidates.length ? dailyShuffle(heroCandidates, 'hero')[0] : contentDB[0]);
     const heroHtml = `
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-102" style="background-image: url('${heroData.cover}');"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#05000a] via-[#05000a]/40 to-transparent"></div>
@@ -407,22 +572,49 @@ function renderHome() {
     document.getElementById('hero-container').innerHTML = heroHtml;
 
     // LISTS
-    // Series: Vertical Posters
-    renderList('series-list', contentDB.filter(i => i.type === 'serie'), 'vertical');
-    
-    // Movies: Horizontal (Wide) Cards for variety
-    renderList('movies-list', contentDB.filter(i => i.type === 'filme'), 'horizontal');
-    
+    // We'll rotate/update lists by day so users see fresh ordering each day.
+    // Prepare base sets
+    const allSeries = contentDB.filter(i => i.type === 'serie');
+    const allMovies = contentDB.filter(i => i.type === 'filme');
+
+    // Deterministically shuffle per day with different salts per section
+    const seriesForToday = dailyShuffle(allSeries, 'series').slice(0, 10);
+    const moviesForToday = dailyShuffle(allMovies, 'movies').slice(0, 10);
+    const recommendedForToday = dailyShuffle(contentDB, 'recommended').slice(0, 10);
+    const newReleasesForToday = dailyShuffle(contentDB.slice().sort((a,b) => (parseInt(b.year || '0') || 0) - (parseInt(a.year || '0') || 0)), 'new').slice(0, 8);
+    const topRatedForToday = (dailyShuffle(contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0)), 'toprated').slice(0,8).length)
+        ? dailyShuffle(contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0)), 'toprated').slice(0,8)
+        : dailyShuffle(contentDB, 'toprated').slice(0,8);
+
+    // Render using same rendering helper for visual consistency
+    renderList('series-list', seriesForToday, 'vertical');
+    renderList('movies-list', moviesForToday, 'horizontal');
+    renderList('recommended-list', recommendedForToday, 'horizontal');
+    renderList('new-list', newReleasesForToday, 'horizontal');
+    renderList('toprated-list', topRatedForToday, 'horizontal');
+
     updateContinueWatching();
+
+    // ensure the scroll clamping max is recalculated after lists render
+    setTimeout(() => {
+        const ev = new Event('resize');
+        window.dispatchEvent(ev);
+    }, 180);
 }
 
 function renderList(containerId, data, style = 'default') {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    // highlight item if it matches last watched pointer
+    let lastWatched = null;
+    try { lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e){ lastWatched = null; }
+
     // Cinematic large cards for movies and series to improve visual consistency
     if (containerId === 'movies-list' || containerId === 'series-list' || style === 'cinematic' || style === 'horizontal') {
         container.innerHTML = data.map(item => {
+            const isLast = lastWatched && lastWatched.id === item.id;
+            const lastBadge = isLast ? `<div class="absolute top-3 right-3 px-2 py-1 rounded text-[12px] font-semibold bg-purple-600 text-white">Último</div>` : '';
             return `
                 <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group">
                     <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
@@ -445,6 +637,7 @@ function renderList(containerId, data, style = 'default') {
                             </div>
                         </div>
 
+                        ${lastBadge}
                         <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
                     </div>
 
@@ -652,23 +845,57 @@ function openDetail(id) {
     const isLiked = state.likes.includes(id);
     const isFav = state.favorites.includes(id);
 
-    // Create Season Select Logic
+    // Create Season Select Logic (improved pill segmented control)
     let seasonsHtml = '';
     if (item.type === 'serie') {
+        const seasonKeys = Object.keys(item.seasons || {});
+        const pills = seasonKeys.map((s, idx) => {
+            return `<button class="season-pill ${idx === 0 ? 'active' : ''}" data-season="${s}" onclick="document.getElementById('seasonSelectHidden').value='${s}'; renderEpisodes('${item.id}','${s}'); toggleSeasonPills(this)">${s}</button>`;
+        }).join('');
         seasonsHtml = `
             <div class="mt-10 cascade-up delay-400">
-                <div class="flex items-center justify-between mb-5 sticky top-0 py-3 z-10 bg-[#05000a]/95 backdrop-blur-md border-b border-white/5">
-                    <h3 class="font-bold text-lg text-white">Episódios</h3>
-                    <div class="relative">
-                        <select id="seasonSelect" onchange="renderEpisodes('${item.id}', this.value)" 
-                            class="appearance-none bg-white/5 border border-white/10 text-white py-2 pl-4 pr-10 rounded-xl text-sm font-bold focus:outline-none focus:border-purple-500 transition-colors cursor-pointer hover:bg-white/10">
-                            ${Object.keys(item.seasons).map(s => `<option value="${s}">Temporada ${s}</option>`).join('')}
-                        </select>
-                        <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/50 pointer-events-none"></i>
+                <div class="flex flex-col gap-3 mb-4 sticky top-6 z-30">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-lg text-white">Episódios</h3>
+                        <div class="text-sm text-white/50">Temporadas</div>
+                    </div>
+
+                    <div class="w-full overflow-x-auto no-scrollbar">
+                        <div class="inline-flex gap-2 py-1 px-1">
+                            ${pills}
+                        </div>
                     </div>
                 </div>
+
+                <input type="hidden" id="seasonSelectHidden" value="${seasonKeys[0] || ''}" />
                 <div id="episodes-list" class="space-y-4 pb-safe"></div>
             </div>
+
+            <style>
+                /* season pill styles */
+                .season-pill {
+                    appearance: none;
+                    border: 1px solid rgba(255,255,255,0.06);
+                    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+                    color: #e6e6f0;
+                    padding: 8px 12px;
+                    border-radius: 999px;
+                    font-weight: 700;
+                    font-size: 13px;
+                    cursor: pointer;
+                    transition: transform 0.14s, background 0.16s, color 0.12s;
+                }
+                .season-pill.active {
+                    background: linear-gradient(90deg,#7c3aed,#d946ef);
+                    color: white;
+                    box-shadow: 0 10px 30px rgba(140,80,220,0.16);
+                    transform: translateY(-2px);
+                }
+                .season-pill:active { transform: scale(0.98); }
+                /* hide native scrollbar for pills container */
+                .no-scrollbar::-webkit-scrollbar { display: none; }
+                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+            </style>
         `;
     }
 
@@ -738,28 +965,58 @@ function openDetail(id) {
 
 function renderEpisodes(itemId, seasonKey) {
     const item = contentDB.find(i => i.id === itemId);
-    const episodes = item.seasons[seasonKey];
+    const episodes = (item.seasons && (item.seasons[String(seasonKey)] || item.seasons[seasonKey])) ? (item.seasons[String(seasonKey)] || item.seasons[seasonKey]) : [];
     const container = document.getElementById('episodes-list');
-    
-    container.innerHTML = episodes.map((ep, index) => `
-        <div onclick="playMedia('${itemId}', '${seasonKey}', ${index})" class="flex items-center gap-4 p-3 rounded-2xl bg-white/5 hover:bg-white/10 active:bg-white/15 transition-all cursor-pointer group border border-transparent hover:border-white/5">
-            <div class="w-32 aspect-video rounded-xl overflow-hidden relative bg-black/40 flex-shrink-0 shadow-lg">
-                <img src="${item.cover}" class="w-full h-full object-cover object-top opacity-60 group-hover:opacity-100 transition-opacity">
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur flex items-center justify-center border border-white/10">
-                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+    if (!container) return;
+
+    // Minimalist episode cards: compact, clean, with focused play affordance
+    // read last watched pointer to highlight episode
+    let lastWatched = null;
+    try { lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e){ lastWatched = null; }
+
+    container.innerHTML = episodes.map((ep, index) => {
+        const duration = ep.duration ? ep.duration : '42 min';
+        const epTitle = `${index + 1}. ${ep.title}`;
+        const isLast = lastWatched && lastWatched.id === itemId && Number(lastWatched.episodeIndex) === Number(index);
+        return `
+            <div class="episode-row cascade-up" style="animation-delay:${index * 36}ms">
+                <div onclick="playMedia('${itemId}','${seasonKey}',${index})" class="flex items-center gap-3 p-3 rounded-2xl bg-black/30 hover:bg-white/6 transition-all cursor-pointer border border-transparent hover:border-white/6">
+                    <div class="w-20 h-12 rounded-md overflow-hidden flex-shrink-0 bg-black/20 relative">
+                        <img src="${item.cover}" alt="${ep.title}" class="w-full h-full object-cover object-center opacity-85 transition-opacity duration-300">
+                        ${isLast ? `<div class="absolute top-1 left-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-600 text-white">Último</div>` : ''}
                     </div>
+
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-semibold text-white truncate">${epTitle}</h4>
+                            <span class="text-[11px] text-white/50 ml-3">${duration}</span>
+                        </div>
+                        <p class="text-[12px] text-white/50 mt-1 truncate">${ep.summary || item.description || ''}</p>
+                    </div>
+
+                    <button onclick="event.stopPropagation(); playMedia('${itemId}','${seasonKey}',${index})" class="ml-3 w-10 h-10 rounded-full btn-liquid flex items-center justify-center border border-white/8">
+                        <i class="fa-solid fa-play text-white text-sm"></i>
+                    </button>
                 </div>
             </div>
-            <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-bold text-white group-hover:text-purple-300 transition-colors truncate mb-1">${index + 1}. ${ep.title}</h4>
-                <p class="text-[11px] text-white/40 font-medium">42 min</p>
-            </div>
-            <div class="w-8 h-8 flex items-center justify-center text-white/20">
-                <i class="fa-solid fa-download"></i>
-            </div>
-        </div>
-    `).join('');
+        `;
+    }).join('');
+
+    // ensure active pill reflects current season (cosmetic)
+    const pills = document.querySelectorAll('.season-pill');
+    pills.forEach(p => p.classList.toggle('active', p.dataset && p.dataset.season === String(seasonKey)));
+}
+
+/* Helper to toggle season pill UI (used by the inline onclick on the pills) */
+function toggleSeasonPills(el) {
+    try {
+        const pills = document.querySelectorAll('.season-pill');
+        pills.forEach(p => p.classList.remove('active'));
+        if (el && el.classList) el.classList.add('active');
+    } catch (e) {
+        // Fail silently — UI toggle is cosmetic only
+        console.warn('toggleSeasonPills error', e);
+    }
 }
 
 function closeDetail() {
@@ -781,19 +1038,17 @@ function playMedia(id, season, epIndex) {
     } else {
         url = item.url;
     }
+
     // Normalize Google Drive links to reliable preview embed URLs
     try { url = normalizeDriveUrl(url); } catch(e) { /* ignore */ }
 
-    // Allow special-case series to bypass host checks (no blocks for 'espiritos-na-escola')
-    const forceNoBlock = id === 'espiritos-na-escola';
-
-    // Basic host-blocking (unsafe or shady hosts)
+    // Basic host-blocking for clearly unsafe hosts
     try {
         const normalized = (url || '').toString().trim().toLowerCase();
-        const blockedHosts = ['rkv1.com', 'click.alibaba.com', 'm1rs.com'];
+        // allow all hosts by default; keep list empty so we don't prematurely block embeds
+        const blockedHosts = [];
         const isBlockedHost = blockedHosts.some(h => normalized.includes(h));
-
-        if (!forceNoBlock && (isBlockedHost || !url)) {
+        if (!url) {
             const playerOverlay = document.getElementById('page-player');
             const container = document.getElementById('player-container');
             const titleEl = document.getElementById('player-title');
@@ -811,28 +1066,16 @@ function playMedia(id, season, epIndex) {
                 </div>
             `;
             playerOverlay.classList.remove('hidden');
-            // animate player overlay in
-            playerOverlay.classList.remove('fade-in');
+            // clear any closing/opening classes, then animate open
+            playerOverlay.classList.remove('player-close');
+            playerOverlay.classList.remove('player-open');
             void playerOverlay.offsetWidth;
-            playerOverlay.classList.add('fade-in');
+            playerOverlay.classList.add('player-open');
             return;
         }
     } catch (err) {
         console.warn('Error validating media URL', err);
     }
-
-    // If embed likely requires the host's own player (tokyvideo, embedplay, brplayer, etc.),
-    // open the link directly in a new tab for immediate playback instead of sandboxed iframe.
-    try {
-        const extHosts = ['tokyvideo.com', 'embedplay.icu', 'brplayer.cc', 'watch.brplayer.cc'];
-        const low = (url || '').toString().toLowerCase();
-        // allow 'espiritos-na-escola' to load inline even if it matches extHosts
-        if (!forceNoBlock && extHosts.some(h => low.includes(h))) {
-            // Open externally and avoid creating the in-app iframe player
-            window.open(url, '_blank');
-            return;
-        }
-    } catch (e) { /* ignore */ }
 
     const playerOverlay = document.getElementById('page-player');
     const container = document.getElementById('player-container');
@@ -840,78 +1083,162 @@ function playMedia(id, season, epIndex) {
 
     titleEl.textContent = title;
     container.innerHTML = `<div class="liquid-loader"></div>`; // Loading indicator
-    // show + animate player overlay
     playerOverlay.classList.remove('hidden');
-    playerOverlay.classList.remove('fade-in');
+    // ensure previous close class removed and start open animation
+    playerOverlay.classList.remove('player-close');
+    playerOverlay.classList.remove('player-open');
     void playerOverlay.offsetWidth;
-    playerOverlay.classList.add('fade-in');
+    playerOverlay.classList.add('player-open');
 
-    // After a short delay, decide how to render the media:
+    // record which item is currently playing so we can save playback position periodically
+    window.__lumina_current_playing = { id, season: (item.type === 'serie' ? season : null), episodeIndex: (item.type === 'serie' ? epIndex : null), startedAt: new Date().toISOString() };
+
     setTimeout(() => {
         const lowerUrl = (url || '').toString().toLowerCase();
-        const isToky = lowerUrl.includes('tokyvideo.com');
         const isMp4 = lowerUrl.endsWith('.mp4') || lowerUrl.includes('.mp4?') || lowerUrl.includes('/mp4/');
-        // For the special series, relax sandbox to improve embed compatibility
-        const safeSandbox = forceNoBlock ? 'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation-by-user-activation' : 'allow-scripts allow-same-origin allow-forms';
+        // use unrestricted iframe for external embeds so they run inside the site when allowed by the host
+        const safeSandbox = '';
 
-        // Helper: build the player chrome with fullscreen button (moved to bottom-right)
+        // Helper: build the player chrome wrapper (fullscreen handled by persistent controls)
         const buildFrameWrapper = (innerHtml) => {
             return `
                 <div id="player-frame-wrapper" class="w-full h-full relative bg-black">
                     <div id="player-inner" class="w-full h-full">${innerHtml}</div>
-                    <div class="absolute bottom-6 right-4 z-30 flex gap-2">
-                        <button id="player-fullscreen-btn" class="w-12 h-12 rounded-full glass flex items-center justify-center border border-white/10">
-                            <i class="fa-solid fa-expand text-white"></i>
-                        </button>
-                    </div>
                 </div>
             `;
         };
 
+        // determine if embed host is Google Drive so we can skip injecting custom controls
+        let isDriveEmbed = false;
+        try {
+            const parsed = new URL(url, location.href);
+            const host = (parsed.hostname || '').toLowerCase();
+            if (host.includes('drive.google.com') || host.includes('googleusercontent.com') || host.includes('docs.google.com')) {
+                isDriveEmbed = true;
+            }
+        } catch (e) {
+            // ignore
+        }
+
         if (isMp4) {
-            // Use native <video> for mp4 links for better controls and performance
+            // Use Video.js for mp4 links (dynamic ESM import from esm.sh)
             const poster = item.cover || '';
-            container.innerHTML = buildFrameWrapper(`
-                <video id="native-video" class="w-full h-full bg-black" src="${url}" poster="${poster}" controls autoplay playsinline webkit-playsinline preload="metadata"></video>
-            `);
+            // create a video element compatible with Video.js
+            const vjsId = 'vjs_player_' + Math.random().toString(36).slice(2,9);
+            const videoTag = `
+                <video id="${vjsId}" class="video-js vjs-big-play-centered w-full h-full" controls preload="metadata" poster="${poster}" playsinline webkit-playsinline>
+                    <source src="${url}" type="video/mp4" />
+                </video>
+            `;
+            container.innerHTML = buildFrameWrapper(videoTag);
 
-            const videoEl = document.getElementById('native-video');
-            // attempt to autoplay (muted fallback)
-            videoEl.muted = false;
-            videoEl.play().catch(() => { videoEl.muted = true; videoEl.play().catch(()=>{}); });
+            // inject Video.js stylesheet if not present
+            if (!document.getElementById('vjs-css')) {
+                const link = document.createElement('link');
+                link.id = 'vjs-css';
+                link.rel = 'stylesheet';
+                link.href = 'https://esm.sh/video.js@7.20.3/dist/video-js.css';
+                document.head.appendChild(link);
+                // inject a small theme to customize Video.js appearance
+                const style = document.createElement('style');
+                style.id = 'vjs-theme';
+                style.textContent = `
+/* Minimal Lumina Video.js theme */
+.video-js .vjs-control-bar { background: linear-gradient(90deg, rgba(124,58,237,0.18), rgba(217,70,239,0.12)); border-radius: 12px; padding: 6px; }
+.video-js .vjs-big-play-button { background: linear-gradient(90deg,#7c3aed,#d946ef); border:none; box-shadow: 0 10px 30px rgba(140,80,220,0.18); }
+.video-js .vjs-volume-panel, .video-js .vjs-progress-control { opacity: 0.98; }
+.video-js.vjs-paused .vjs-big-play-button { transform: scale(1); }
+.video-js.vjs-playing .vjs-big-play-button { transform: scale(0.92); opacity: 0.85; }
+`;
+                document.head.appendChild(style);
+            }
 
-            // Hook fullscreen button
-            document.getElementById('player-fullscreen-btn').onclick = () => {
-                const wrapper = document.getElementById('player-frame-wrapper');
-                if (wrapper.requestFullscreen) wrapper.requestFullscreen();
-            };
+            // dynamic import of Video.js from esm.sh and initialize player
+            (async () => {
+                try {
+                    const module = await import('https://esm.sh/video.js@7.20.3');
+                    const videojs = module?.default || module;
+                    const vEl = document.getElementById(vjsId);
+                    // create player with fluid responsive layout and a slightly customized control bar
+                    // Initialize Video.js without native controls (we'll use our persistent custom controls)
+                    const player = videojs(vEl, {
+                        controls: false,     // hide Video.js built-in controls
+                        autoplay: false,     // autoplay attempts handled after attach
+                        preload: 'auto',
+                        fluid: true,
+                        controlBar: false
+                    });
+                    // store reference for cleanup
+                    playerOverlay._vjsPlayer = player;
 
-            // Double-tap / double-click toggles play/pause
-            videoEl.addEventListener('dblclick', () => {
-                if (videoEl.paused) videoEl.play(); else videoEl.pause();
-            });
+                    // attach our persistent overlay controls (works with Video.js). Pass a getter returning the Video.js player instance.
+                    // skip injecting controls for Drive-hosted content (Drive manages its own chrome)
+                    createPlayerControls(playerOverlay, true, () => player, { skipControls: isDriveEmbed });
 
-            // Exit handling on ended: keep overlay visible but not playing
-            videoEl.addEventListener('ended', () => {
-                // small feedback: show replay icon briefly
-            });
+                    // Try to play (if autoplay is blocked, fallback to muted play later)
+                    player.ready(() => {
+                        player.play().catch(() => {
+                            player.muted(true);
+                            player.play().catch(()=>{});
+                        });
+                    });
+                } catch (err) {
+                    console.warn('Video.js load/init failed, falling back to native video element', err);
+                    // fallback: simple native video (best-effort)
+                    // Use native video element but hide native browser controls — rely on persistent custom controls
+                    container.innerHTML = buildFrameWrapper(`
+                        <video id="native-video" class="w-full h-full bg-black" src="${url}" poster="${poster}" autoplay playsinline webkit-playsinline preload="metadata"></video>
+                    `);
+                    const videoEl = document.getElementById('native-video');
+                    // attach persistent controls for native video (provide facade for native element)
+                    createPlayerControls(playerOverlay, true, () => videoEl, { skipControls: isDriveEmbed });
+                    videoEl.play().catch(()=>{});
+                    // fullscreen is managed by the persistent controls (no per-frame fullscreen button)
+                }
+            })();
         } else {
-            // Load as sandboxed iframe for embeds (tokyvideo and others). For the special case we relax sandbox for better compatibility.
-            const iframeHtml = `<iframe src="${url}" class="w-full h-full border-none" sandbox="${safeSandbox}" referrerpolicy="no-referrer" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+            // For all other links (embed hosts or generic urls) embed them in an iframe inside the player
+            // Use a permissive allow attribute to enable fullscreen/autoplay/clipboard where hosts permit it.
+            // make embeds responsive and mobile-friendly: wrap iframe in a fluid container,
+            // ensure allow attributes and playsinline where applicable and add a min-height for small viewports
+            // Build a conservative set of iframe attributes by default
+            let safeIframeAttr = 'allow="autoplay; fullscreen; encrypted-media; clipboard-write; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-forms allow-scripts allow-presentation"';
+
+            // For known embed hosts that should NOT be allowed to open external windows / navigate top-level,
+            // tighten the sandbox to prevent popups, top-navigation and same-origin privileges.
+            try {
+                const parsed = new URL(url, location.href);
+                const host = (parsed.hostname || '').toLowerCase();
+
+                if (host.includes('tokyvideo.com')) {
+                    // Tokyvideo embeds: keep restrictive sandbox to avoid popups or navigation
+                    safeIframeAttr = 'allow="autoplay; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts"';
+                } else if (host.includes('drive.google.com') || host.includes('googleusercontent.com') || host.includes('docs.google.com')) {
+                    // Google Drive / Drive preview hosts: treat as trusted for embedding.
+                    // Allow same-origin and scripts so the Drive preview player functions correctly,
+                    // and allow popups so features like fullscreen & share can work.
+                    safeIframeAttr = 'allow="autoplay; fullscreen; encrypted-media; clipboard-write; picture-in-picture; web-share" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups"';
+                }
+            } catch (e) {
+                // if URL parsing fails, keep the conservative default
+            }
+
+            const iframeHtml = `
+                <div style="width:100%;height:100%;min-height:56vh;display:flex;align-items:center;justify-content:center;background:#000">
+                    <iframe src="${url}" style="width:100%;height:100%;border:0;display:block;min-height:56vh;" ${safeIframeAttr}></iframe>
+                </div>
+            `;
 
             container.innerHTML = buildFrameWrapper(iframeHtml);
 
-            // Fullscreen button attempts to fullscreen the iframe wrapper
-            document.getElementById('player-fullscreen-btn').onclick = () => {
-                const wrapper = document.getElementById('player-frame-wrapper');
-                if (wrapper.requestFullscreen) wrapper.requestFullscreen();
-            };
+            // For iframe embeds we still add the persistent controls but with limited functionality (close, fullscreen, jump)
+            // HOWEVER: Do not inject our custom persistent controls for Google Drive/doc embeds so Drive's native chrome remains untouched
+            createPlayerControls(playerOverlay, false, null, { skipControls: isDriveEmbed });
         }
 
         // Keyboard: ESC closes player or exits fullscreen
         const escHandler = (ev) => {
             if (ev.key === 'Escape') {
-                // if in fullscreen, exit fullscreen first
                 if (document.fullscreenElement) {
                     document.exitFullscreen?.();
                 } else {
@@ -920,14 +1247,11 @@ function playMedia(id, season, epIndex) {
             }
         };
         window.addEventListener('keydown', escHandler, { once: false });
-
-        // Clean-up when overlay is closed: remove listener via mutation observer or override closePlayer to remove later.
-        // We will store a reference on the overlay for cleanup.
         playerOverlay._escHandler = escHandler;
 
-    }, 600);
+    }, 400);
 
-    // compute a sensible duration label: try episode-level info else default
+    // compute duration label
     let durationLabel = '—';
     try {
         if (item.type === 'serie') {
@@ -950,10 +1274,38 @@ function closePlayer() {
         document.exitFullscreen?.();
     }
 
+    // Save final playback position if possible
+    try {
+        const container = document.getElementById('player-container');
+        const v = container.querySelector('video');
+        if (v) {
+            const cur = v.currentTime || 0;
+            const playing = window.__lumina_current_playing || null;
+            if (playing && playing.id) {
+                addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), Math.round(cur));
+            }
+        } else if (playerOverlay._vjsPlayer) {
+            try {
+                const p = playerOverlay._vjsPlayer;
+                const cur = typeof p.currentTime === 'function' ? Math.round(p.currentTime()) : 0;
+                const playing = window.__lumina_current_playing || null;
+                if (playing && playing.id) {
+                    addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), cur);
+                }
+            } catch(e){}
+        }
+    } catch (e){ console.warn('Error saving final playback position', e); }
+
     // Remove/stop media playback safely
     const container = document.getElementById('player-container');
 
     try {
+        // Dispose Video.js player if present
+        if (playerOverlay._vjsPlayer && typeof playerOverlay._vjsPlayer.dispose === 'function') {
+            try { playerOverlay._vjsPlayer.dispose(); } catch(e){ console.warn('Error disposing Video.js player', e); }
+            delete playerOverlay._vjsPlayer;
+        }
+
         // If native <video> exists, pause and fully unload it
         const videoEl = container.querySelector('video#native-video') || container.querySelector('video');
         if (videoEl) {
@@ -993,32 +1345,72 @@ function closePlayer() {
         delete playerOverlay._escHandler;
     }
 
-    // remove animation class then hide after a short delay to allow CSS transitions to finish
+    // Remove persistent controls if present, call their cleanup if provided
+    const existingControls = document.getElementById('lumina-player-controls');
+    if (existingControls) {
+        if (typeof existingControls._cleanup === 'function') {
+            try { existingControls._cleanup(); } catch(e){/* ignore */ }
+        }
+        existingControls.remove();
+    }
+
+    // trigger close animation then hide after it finishes to free resources
     try {
-        playerOverlay.classList.remove('fade-in');
+        // remove any open class and start close animation
+        playerOverlay.classList.remove('player-open');
+        playerOverlay.classList.remove('player-close');
+        void playerOverlay.offsetWidth;
+        playerOverlay.classList.add('player-close');
         setTimeout(() => {
             playerOverlay.classList.add('hidden');
+            // cleanup close class so next open starts fresh
+            playerOverlay.classList.remove('player-close');
             updateContinueWatching();
-        }, 260);
+            // clear current playing marker
+            window.__lumina_current_playing = null;
+        }, 320);
     } catch (e) {
         playerOverlay.classList.add('hidden');
         updateContinueWatching();
+        window.__lumina_current_playing = null;
     }
 }
 
-function addToHistory(id, epTitle, duration = null, epIndex = null) {
-    // keep unique per id, store last episode title, duration and index for better Continue Assistindo info
-    state.history = state.history.filter(h => h.id !== id);
-    const entry = {
-        id,
-        lastEpisodeTitle: epTitle || null,
-        duration: duration || null,
-        episodeIndex: (epIndex !== null ? epIndex : null),
-        date: new Date().toISOString()
-    };
-    state.history.unshift(entry);
-    if (state.history.length > 10) state.history.pop();
+function addToHistory(id, epTitle, duration = null, epIndex = null, positionSeconds = null) {
+    // keep unique per id, store last episode title, duration, index and position for better Continue Assistindo info
+    // If an entry for this id exists, update it; otherwise insert at top
+    let existing = state.history.find(h => h.id === id);
+    const now = new Date().toISOString();
+    if (existing) {
+        existing.lastEpisodeTitle = epTitle || existing.lastEpisodeTitle || null;
+        existing.duration = duration || existing.duration || null;
+        existing.episodeIndex = (epIndex !== null ? epIndex : existing.episodeIndex !== undefined ? existing.episodeIndex : null);
+        existing.position = (positionSeconds !== null ? positionSeconds : existing.position || 0);
+        existing.date = now;
+        // move to front
+        state.history = state.history.filter(h => h.id !== id);
+        state.history.unshift(existing);
+    } else {
+        const entry = {
+            id,
+            lastEpisodeTitle: epTitle || null,
+            duration: duration || null,
+            episodeIndex: (epIndex !== null ? epIndex : null),
+            position: (positionSeconds !== null ? positionSeconds : 0),
+            date: now
+        };
+        state.history.unshift(entry);
+    }
+
+    // persist only last 20 entries
+    if (state.history.length > 20) state.history = state.history.slice(0,20);
     localStorage.setItem('lumina_history', JSON.stringify(state.history));
+
+    // Also mark last-watched pointer for quick lookup (store separately for fast access/highlighting)
+    try {
+        const pointer = { id, episodeIndex: (epIndex !== null ? epIndex : null), date: now, position: (positionSeconds !== null ? positionSeconds : 0) };
+        localStorage.setItem('lumina_last_watched', JSON.stringify(pointer));
+    } catch(e){}
 }
 
 function viewAll(type) {
@@ -1184,6 +1576,8 @@ function setupSearch() {
 }
 
 function clearFavorites() {
+    // ask for confirmation to avoid accidental clearing
+    if (!confirm('Tem certeza que deseja limpar sua lista? Esta ação removerá todos os itens salvos.')) return;
     state.favorites = [];
     localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
     renderMyList();
@@ -1198,7 +1592,306 @@ function scrollList(containerId, dir = 1) {
     el.scrollBy({ left: amount, behavior: 'smooth' });
 }
 
-window.onload = init;
+/* --- Name prompt + deep-link handling --- */
+function showNamePrompt(onComplete) {
+    const modal = document.getElementById('name-prompt');
+    const input = document.getElementById('visitorNameInput');
+    const saveBtn = document.getElementById('saveNameBtn');
+    const skipBtn = document.getElementById('skipNameBtn');
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    input.focus();
+
+    const finish = (name) => {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        if (typeof onComplete === 'function') onComplete(name);
+    };
+
+    const submit = () => {
+        const name = (input.value || '').trim();
+        if (name) {
+            localStorage.setItem('lumina_name', name);
+            finish(name);
+        } else {
+            // if empty still allow (skip) to avoid blocking
+            finish('');
+        }
+    };
+
+    saveBtn.onclick = submit;
+    skipBtn.onclick = () => finish('');
+    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') submit(); });
+}
+
+function handleDeepLinkPlay(id) {
+    if (!id) return;
+    const item = contentDB.find(i => i.id === id);
+    if (!item) return;
+    // ensure item is in favorites per requirement
+    if (!state.favorites.includes(id)) {
+        state.favorites.push(id);
+        localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
+    }
+    // If series, play first episode of season 1 index 0; else play movie directly
+    if (item.type === 'serie') {
+        // prefer season '1' if exists, otherwise first season key
+        const seasonKey = item.seasons['1'] ? '1' : Object.keys(item.seasons)[0];
+        playMedia(id, seasonKey, 0);
+    } else {
+        playMedia(id, '', 0);
+    }
+}
+
+/* On load: show name prompt if not set, then initialize and handle ?play= deep link */
+window.onload = () => {
+    // read deep play param from URL
+    const params = new URLSearchParams(location.search);
+    const deepPlay = params.get('play');
+
+    const storedName = localStorage.getItem('lumina_name');
+    if (!storedName) {
+        // show prompt, then init and handle deep link after user submits/skip
+        showNamePrompt((givenName) => {
+            // store empty string as well (explicit)
+            if (givenName !== null && givenName !== undefined) {
+                localStorage.setItem('lumina_name', givenName || '');
+            }
+            // initialize app and then handle deep play if present
+            init(deepPlay);
+            if (deepPlay) {
+                // small timeout to ensure UI ready
+                setTimeout(() => handleDeepLinkPlay(deepPlay), 500);
+            }
+        });
+    } else {
+        // name exists: init immediately and handle deep play
+        init(deepPlay);
+        if (deepPlay) {
+            setTimeout(() => handleDeepLinkPlay(deepPlay), 300);
+        }
+    }
+};
+
+/* --- Player persistent controls helper (injects a fixed overlay visible in fullscreen) --- */
+function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, options = {}) {
+    // if caller requests skipping controls (e.g. Google Drive embeds), do nothing
+    if (options && options.skipControls) return;
+
+    // avoid duplicating
+    if (document.getElementById('lumina-player-controls')) return;
+
+    // inject stylesheet once
+    if (!document.getElementById('lumina-player-controls-css')) {
+        const css = document.createElement('style');
+        css.id = 'lumina-player-controls-css';
+        css.innerHTML = `
+#lumina-player-controls {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 18px;
+    z-index: 99999;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+}
+#lumina-player-controls .lpc-btn {
+    min-width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(90deg,#7c3aed,#d946ef);
+    display:flex;align-items:center;justify-content:center;color:white;font-size:18px;border:none;box-shadow:0 8px 30px rgba(124,58,237,0.18);
+}
+#lumina-player-controls .lpc-secondary {
+    min-width: 48px;
+    height:48px;
+    border-radius:12px;
+    background: rgba(255,255,255,0.04);
+    display:flex;align-items:center;justify-content:center;color:white;font-size:16px;border:1px solid rgba(255,255,255,0.06);
+}
+#lumina-player-controls .lpc-range { width: 40%; height: 6px; -webkit-appearance:none; appearance:none; border-radius:6px; background: rgba(255,255,255,0.08);}
+#lumina-player-controls .lpc-range::-webkit-slider-thumb { -webkit-appearance:none; width:14px;height:14px;border-radius:999px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.4); }
+@media (max-width:520px) {
+    #lumina-player-controls { left:8px; right:8px; bottom:12px; gap:8px; }
+    #lumina-player-controls .lpc-range{width:35%;}
+}
+        `;
+        document.head.appendChild(css);
+    }
+
+    const controls = document.createElement('div');
+    controls.id = 'lumina-player-controls';
+    controls.innerHTML = `
+        <button class="lpc-secondary lpc-btn-close" title="Fechar (Esc)"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="lpc-secondary lpc-btn-back" title="-10s"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="lpc-btn lpc-btn-play" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
+        <button class="lpc-secondary lpc-btn-forward" title="+10s"><i class="fa-solid fa-rotate-right"></i></button>
+        <input class="lpc-range" type="range" min="0" max="100" value="0" />
+        <button class="lpc-secondary lpc-btn-full" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+    `;
+    // attach controls inside the player-frame-wrapper when available so they persist in fullscreen, fallback to body
+    const attachPoint = document.getElementById('player-frame-wrapper') || document.getElementById('player-container') || document.body;
+    attachPoint.appendChild(controls);
+
+    // helpers to get video-like control (Video.js player or native video element)
+    function resolvePlayer() {
+        try {
+            if (canControlVideo && typeof getPlayerFn === 'function') {
+                return getPlayerFn();
+            }
+        } catch (e) {}
+        // fallback: try to find native video in player-container
+        const container = document.getElementById('player-container');
+        if (!container) return null;
+        const v = container.querySelector('video');
+        return v || null;
+    }
+
+    const playBtn = controls.querySelector('.lpc-btn-play');
+    const closeBtn = controls.querySelector('.lpc-btn-close');
+    const backBtn = controls.querySelector('.lpc-btn-back');
+    const fwdBtn = controls.querySelector('.lpc-btn-forward');
+    const fullBtn = controls.querySelector('.lpc-btn-full');
+    const range = controls.querySelector('.lpc-range');
+
+    function updatePlayIcon(isPlaying) {
+        playBtn.innerHTML = `<i class="fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}"></i>`;
+    }
+
+    // Connect to video / player - support Video.js player API or native <video>
+    function getCurrentMedia() {
+        const p = resolvePlayer();
+        if (!p) {
+            // fallback: try to find native video in player-container
+            const container = document.getElementById('player-container');
+            if (!container) return null;
+            const v = container.querySelector('video');
+            return v || null;
+        }
+        // Video.js player instance: provide a simple facade
+        if (p && typeof p.play === 'function' && typeof p.currentTime === 'function' && typeof p.duration === 'function') {
+            return {
+                type: 'videojs',
+                instance: p,
+                play: () => p.play(),
+                pause: () => p.pause(),
+                paused: () => p.paused ? p.paused() : false,
+                currentTime: (v) => typeof v === 'number' ? p.currentTime(v) : p.currentTime(),
+                duration: () => p.duration ? p.duration() : NaN,
+                mute: (m) => p.muted ? p.muted(m) : null
+            };
+        }
+        // native <video> element
+        if (p && p.tagName && p.tagName.toLowerCase() === 'video') {
+            const v = p;
+            return {
+                type: 'native',
+                instance: v,
+                play: () => v.play(),
+                pause: () => v.pause(),
+                paused: () => v.paused,
+                currentTime: (val) => typeof val === 'number' ? (v.currentTime = val) : v.currentTime,
+                duration: () => v.duration || NaN,
+                mute: (m) => v.muted = !!m
+            };
+        }
+        return null;
+    }
+
+    // Play/pause toggle
+    playBtn.addEventListener('click', () => {
+        const media = getCurrentMedia();
+        if (!media) return;
+        try {
+            if (media.paused()) {
+                media.play();
+                updatePlayIcon(true);
+            } else {
+                media.pause();
+                updatePlayIcon(false);
+            }
+        } catch (e) {
+            // best-effort
+        }
+    });
+
+    // close player
+    closeBtn.addEventListener('click', () => {
+        closePlayer();
+    });
+
+    backBtn.addEventListener('click', () => {
+        const media = getCurrentMedia();
+        if (!media) return;
+        try {
+            const cur = media.currentTime();
+            media.currentTime(Math.max(0, cur - 10));
+        } catch(e){}
+    });
+    fwdBtn.addEventListener('click', () => {
+        const media = getCurrentMedia();
+        if (!media) return;
+        try {
+            const cur = media.currentTime();
+            const dur = media.duration() || 0;
+            media.currentTime(Math.min(dur, cur + 10));
+        } catch(e){}
+    });
+
+    fullBtn.addEventListener('click', () => {
+        const wrapper = document.getElementById('player-frame-wrapper') || document.getElementById('player-container');
+        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+    });
+
+    // range scrubber (updates position when playing video)
+    let scrubUpdating = false;
+    range.addEventListener('input', () => {
+        const media = getCurrentMedia();
+        if (!media) return;
+        const dur = media.duration() || 0;
+        const pct = parseFloat(range.value || 0) / 100;
+        const t = dur * pct;
+        try { media.currentTime(t); } catch(e){}
+    });
+
+    // periodic UI sync
+    const syncInterval = setInterval(() => {
+        const media = getCurrentMedia();
+        if (!media) return;
+        try {
+            const dur = media.duration() || 0;
+            const cur = media.currentTime();
+            if (!isNaN(dur) && dur > 0) {
+                const pct = Math.max(0, Math.min(1, cur / dur)) * 100;
+                if (!scrubUpdating) range.value = String(Math.round(pct));
+            }
+            updatePlayIcon(!media.paused());
+
+            // Save current playback position periodically (every sync) for this playing item
+            const playing = window.__lumina_current_playing || null;
+            if (playing && playing.id && typeof cur === 'number' && !isNaN(cur)) {
+                // persist seconds rounded to integer
+                addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), Math.round(cur));
+            }
+        } catch (e) {}
+    }, 500);
+
+    // cleanup when player closed
+    controls._cleanup = () => {
+        clearInterval(syncInterval);
+        // ensure overlay removed
+        try { controls.remove(); } catch(e){}
+        // also remove rotate overlay if exists
+        const rot = document.getElementById('lumina-rotate-overlay');
+        if (rot) rot.remove();
+    };
+}
+
+ // expose functions/globals
 window.navigate = navigate;
 window.openDetail = openDetail;
 window.viewAll = viewAll;
@@ -1211,3 +1904,5 @@ window.toggleLike = toggleLike;
 window.shareContent = shareContent;
 window.renderEpisodes = renderEpisodes;
 window.scrollList = scrollList;
+// expose season-pill helper to global scope so inline onclick handlers work in module context
+window.toggleSeasonPills = toggleSeasonPills;
