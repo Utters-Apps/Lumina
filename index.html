@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lumina Stream 2.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;700;900&display=swap');
+
+        :root {
+            --primary: #d946ef;
+            --secondary: #8b5cf6;
+            --bg-deep: #04040a;
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-deep);
+            background-image:
+                radial-gradient(circle at 8% 8%, rgba(139,92,246,0.08) 0%, transparent 35%),
+                radial-gradient(circle at 92% 92%, rgba(217,70,239,0.06) 0%, transparent 35%);
+            color: #eef2ff;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::-webkit-scrollbar { width: 0px; display: none; }
+
+        /* --- Glassmorphism --- */
+        .glass {
+            background: linear-gradient(180deg, rgba(10,7,20,0.6), rgba(10,7,20,0.35));
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+            border-top: 1px solid rgba(255,255,255,0.04);
+        }
+
+        /* --- Animations --- */
+        .page-transition {
+            transition: opacity 0.36s var(--ease-smooth), transform 0.36s var(--ease-smooth);
+        }
+        .page-hidden { opacity: 0; pointer-events: none; position: absolute; width: 100%; transform: scale(0.995); }
+        .page-active { opacity: 1; position: relative; z-index: 10; transform: scale(1); }
+
+        @keyframes modalEnter {
+            0% { opacity: 0; transform: scale(0.96) translateY(18px); filter: blur(8px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+        .animate-modal-enter { animation: modalEnter 0.48s var(--ease-liquid) forwards; }
+
+        /* modal image subtle zoom */
+        .animate-modal-img { transform-origin: center; animation: modalImgZoom 0.9s var(--ease-smooth) both; }
+        @keyframes modalImgZoom {
+            0% { transform: scale(1.04); filter: blur(6px); opacity: 0.0; }
+            40% { opacity: 0.6; filter: blur(2px); }
+            100% { transform: scale(1); filter: blur(0); opacity: 1; }
+        }
+
+        /* generic fade-in used for player and overlays */
+        .fade-in { animation: fadeInUp 0.36s var(--ease-smooth) forwards; }
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(8px) scale(0.996); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* slightly smoother card transitions */
+        .card-container { transition: transform 0.28s var(--ease-smooth), box-shadow 0.28s, opacity 0.28s; will-change: transform, opacity; }
+        .card-image-wrap img { transition: transform 0.6s var(--ease-liquid), opacity 0.3s var(--ease-smooth); }
+
+        /* subtle backdrop transition for modal and player */
+        #page-detail, #page-player { transition: opacity 0.32s var(--ease-smooth), transform 0.32s var(--ease-smooth); }
+
+        .cascade-up { opacity: 0; animation: slideUpFade 0.56s var(--ease-smooth) forwards; }
+        @keyframes slideUpFade {
+            0% { opacity: 0; transform: translateY(18px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+
+        /* --- Buttons --- */
+        .btn-liquid {
+            background: linear-gradient(90deg, rgba(217,70,239,0.98), rgba(139,92,246,0.95));
+            background-size: 200% auto;
+            animation: shine 6s linear infinite;
+            border: none;
+            box-shadow: 0 8px 30px rgba(139,92,246,0.12);
+            transition: transform 0.18s, box-shadow 0.18s;
+        }
+        .btn-liquid:active { transform: scale(0.98); }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .liquid-glass {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 40px -12px rgba(20,12,40,0.6), inset 0 1px 0 rgba(255,255,255,0.01);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
+            transition: transform 0.16s var(--ease-smooth), box-shadow 0.16s;
+            overflow: hidden;
+        }
+        .liquid-glass::before {
+            content: '';
+            position: absolute;
+            inset: -30% -40% auto auto;
+            width: 180%;
+            height: 180%;
+            background: radial-gradient(circle at 10% 0%, rgba(139,92,246,0.06), transparent 20%),
+                        radial-gradient(circle at 90% 100%, rgba(217,70,239,0.05), transparent 20%);
+            pointer-events: none;
+            mix-blend-mode: screen;
+        }
+        .liquid-glass:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(120,75,200,0.12); }
+
+        .card-container { transition: transform 0.28s var(--ease-smooth), box-shadow 0.28s; border-radius: 14px; }
+        .card-container:hover { transform: translateY(-6px) scale(1.01); }
+
+        .card-image-wrap {
+            position: relative;
+            overflow: hidden;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,0.03);
+            box-shadow: 0 8px 28px rgba(0,0,0,0.55);
+        }
+        .card-image-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.18) 55%, transparent 85%);
+            opacity: 0.7;
+            transition: opacity 0.28s;
+        }
+        .card-container:hover .card-image-wrap::after { opacity: 0.35; }
+
+        /* badge */
+        .card-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: linear-gradient(90deg, rgba(217,70,239,0.95), rgba(139,92,246,0.95));
+            padding: 6px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 6px 18px rgba(139,92,246,0.12);
+        }
+
+        /* --- Horizontal List Styling --- */
+        .snap-scroll-container {
+            display: flex;
+            gap: 18px;
+            overflow-x: auto;
+            padding-top: 14px;
+            padding-bottom: 18px;
+            scroll-snap-type: x mandatory;
+            padding-left: 20px;
+            padding-right: 20px;
+            align-items: center;
+            flex: 1;
+        }
+        .snap-item { scroll-snap-align: center; flex-shrink: 0; }
+
+        /* Adaptive sizes for cards */
+        .snap-item.w-72 { width: 280px; }
+        .snap-item.w-64 { width: 240px; }
+        @media(min-width: 900px) {
+            .snap-item.w-72 { width: 320px; }
+            .snap-item.w-64 { width: 280px; }
+        }
+
+        /* --- Player Styling --- */
+        .player-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent 20%); }
+
+        /* --- Loader --- */
+        .liquid-loader {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: conic-gradient(#0000 12%, var(--primary));
+            -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 4px),#000 0);
+            animation: spin 0.86s infinite linear;
+        }
+        @keyframes spin {to{transform: rotate(1turn)}}
+
+        .pop-heart { animation: heartPop 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.44); color: #ef4444; } 100% { transform: scale(1); } }
+
+        /* Arrow nav for horizontal lists */
+        .list-wrap { position: relative; padding-left: 0; display: flex; align-items: center; }
+        .list-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(10,6,20,0.6), rgba(10,6,20,0.4));
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+            cursor: pointer;
+            z-index: 30;
+            transition: transform 0.15s, background 0.15s;
+            backdrop-filter: blur(6px);
+        }
+        .list-arrow:hover { transform: translateY(-50%) scale(1.06); background: rgba(139,92,246,0.12); }
+        .list-arrow.left { left: 8px; }
+        .list-arrow.right { right: 8px; }
+
+        .btn-viewall {
+            background: linear-gradient(90deg,#7c3aed,#d946ef);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            color: white;
+            border: none;
+            box-shadow: 0 8px 28px rgba(139,92,246,0.14);
+            transition: transform 0.14s;
+        }
+        .btn-viewall:active { transform: scale(0.97); }
+    </style>
+</head>
+<body class="pb-24 antialiased selection:bg-purple-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 w-full z-50 px-6 py-5 flex justify-between items-center transition-all duration-300" id="mainHeader">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center shadow-[0_0_20px_rgba(217,70,239,0.4)] border border-white/10">
+                <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+            </div>
+            <h1 class="text-2xl font-black tracking-tighter text-white drop-shadow-lg">LUMINA <span class="text-purple-400">.</span></h1>
+        </div>
+        <button onclick="navigate('search')" class="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-90 transition-transform hover:bg-white/10">
+            <i class="fa-solid fa-magnifying-glass text-white/90"></i>
+        </button>
+    </header>
+
+    <main id="appContent" class="relative min-h-screen">
+        
+        <!-- HOME -->
+        <section id="page-home" class="page-transition page-active">
+            <div id="hero-container" class="relative w-full h-[48vh] overflow-hidden rounded-b-[32px] shadow-[0_12px_40px_-12px_rgba(139,92,246,0.18)] bg-[#1a1a1a]">
+                <!-- Injected Hero -->
+            </div>
+
+            <div class="mt-12 space-y-10 pb-10">
+                <div id="continue-section" class="hidden animate-slideUp">
+                    <div class="px-6 flex items-center gap-2 mb-4">
+                        <i class="fa-solid fa-clock-rotate-left text-purple-400 text-sm"></i>
+                        <h3 class="text-sm font-bold text-white/80 uppercase tracking-widest">Continue Assistindo</h3>
+                    </div>
+                    <div class="px-6 list-wrap">
+                        <button class="list-arrow left" onclick="scrollList('continue-list', -1)" aria-label="Anterior">
+                            <i class="fa-solid fa-chevron-left text-white"></i>
+                        </button>
+                        <div class="snap-scroll-container" id="continue-list"></div>
+                        <button class="list-arrow right" onclick="scrollList('continue-list', 1)" aria-label="Próximo">
+                            <i class="fa-solid fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="animate-slideUp delay-100">
+                    <div class="px-6 flex items-center justify-between mb-5">
+                        <h3 class="text-xl font-bold text-white">Séries do Momento</h3>
+                        <button onclick="viewAll('serie')" class="btn-viewall">
+                            Ver tudo
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                    <!-- Séries: Horizontal with arrows -->
+                    <div class="px-6 list-wrap">
+                        <button class="list-arrow left" onclick="scrollList('series-list', -1)" aria-label="Anterior">
+                            <i class="fa-solid fa-chevron-left text-white"></i>
+                        </button>
+                        <div class="snap-scroll-container" id="series-list"></div>
+                        <button class="list-arrow right" onclick="scrollList('series-list', 1)" aria-label="Próximo">
+                            <i class="fa-solid fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="animate-slideUp delay-200">
+                    <div class="px-6 flex items-center justify-between mb-5">
+                        <h3 class="text-xl font-bold text-white">Cinema em Casa</h3>
+                        <button onclick="viewAll('filme')" class="btn-viewall">
+                            Ver tudo
+                            <i class="fa-solid fa-film text-xs"></i>
+                        </button>
+                    </div>
+                    <!-- Filmes: Horizontal Layout (Cinematic) with arrows -->
+                    <div class="px-6 list-wrap">
+                        <button class="list-arrow left" onclick="scrollList('movies-list', -1)" aria-label="Anterior">
+                            <i class="fa-solid fa-chevron-left text-white"></i>
+                        </button>
+                        <div class="snap-scroll-container" id="movies-list"></div>
+                        <button class="list-arrow right" onclick="scrollList('movies-list', 1)" aria-label="Próximo">
+                            <i class="fa-solid fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SEARCH -->
+        <section id="page-search" class="page-transition page-hidden pt-32 px-6">
+            <div class="relative mb-6 group">
+                <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg transition-opacity opacity-50 group-hover:opacity-100"></div>
+                <input type="text" id="searchInput" placeholder="O que vamos assistir?" 
+                    class="relative w-full bg-[#0f0a15] border border-white/10 rounded-2xl py-5 px-12 text-white placeholder-white/30 focus:outline-none focus:border-purple-500/50 transition-all font-medium text-lg shadow-xl">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-white/30"></i>
+            </div>
+
+            <!-- Recommendations (shown when search is empty) -->
+            <div id="recommendations-section" class="mb-6">
+                <div class="px-6 flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-bold text-white/80 uppercase tracking-wider">Recomendações</h3>
+                    <button onclick="viewAll('filme')" class="text-sm text-white/40 hover:text-white/70 px-3 py-1 rounded-md bg-white/3">Ver tudo</button>
+                </div>
+                <div class="px-0 list-wrap">
+                    <button class="list-arrow left" onclick="scrollList('recommendations-list', -1)" aria-label="Anterior">
+                        <i class="fa-solid fa-chevron-left text-white"></i>
+                    </button>
+                    <div id="recommendations-list" class="snap-scroll-container pb-4"></div>
+                    <button class="list-arrow right" onclick="scrollList('recommendations-list', 1)" aria-label="Próximo">
+                        <i class="fa-solid fa-chevron-right text-white"></i>
+                    </button>
+                </div>
+            </div>
+
+            <h3 id="search-title" class="text-sm font-bold text-white/40 mb-4 uppercase tracking-wider hidden">Resultados</h3>
+            <div class="px-0 list-wrap">
+                <button class="list-arrow left" onclick="scrollList('search-results', -1)" aria-label="Anterior">
+                    <i class="fa-solid fa-chevron-left text-white"></i>
+                </button>
+                <div id="search-results" class="snap-scroll-container pb-10"></div>
+                <button class="list-arrow right" onclick="scrollList('search-results', 1)" aria-label="Próximo">
+                    <i class="fa-solid fa-chevron-right text-white"></i>
+                </button>
+            </div>
+            <div id="search-empty" class="hidden text-center text-white/50 mt-6">Nenhum resultado encontrado. Tente outro termo.</div>
+        </section>
+
+        <!-- MY LIST -->
+        <section id="page-mylist" class="page-transition page-hidden pt-28 px-6">
+            <div class="mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-white leading-tight">Minha Lista</h2>
+                        <p id="mylist-count" class="text-sm text-white/50 mt-1">Itens salvos</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="navigate('home')" class="text-sm text-white/40 hover:text-white/70 px-3 py-2 rounded-md bg-white/3">Explorar</button>
+                        <button id="clear-list-btn" onclick="clearFavorites()" class="text-sm text-red-400 hover:brightness-90 px-3 py-2 rounded-md bg-white/3">Limpar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-6 list-wrap">
+                <button class="list-arrow left" onclick="scrollList('favorites-grid', -1)" aria-label="Anterior">
+                    <i class="fa-solid fa-chevron-left text-white"></i>
+                </button>
+                <div id="favorites-grid" class="snap-scroll-container pb-24"></div>
+                <button class="list-arrow right" onclick="scrollList('favorites-grid', 1)" aria-label="Próximo">
+                    <i class="fa-solid fa-chevron-right text-white"></i>
+                </button>
+            </div>
+
+            <div id="empty-list" class="hidden flex flex-col items-center justify-center py-24 text-center gap-4 opacity-70">
+                <div class="w-20 h-20 rounded-xl bg-white/5 flex items-center justify-center border border-white/5">
+                    <i class="fa-regular fa-bookmark text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-white/70">Sua lista está vazia</h3>
+                <p class="text-sm text-white/40">Adicione títulos tocando no ícone de marcador para salvá-los aqui.</p>
+            </div>
+        </section>
+
+        <!-- DETAIL MODAL -->
+        <section id="page-detail" class="fixed inset-0 z-[60] bg-[#05000a] hidden overflow-y-auto">
+            <!-- Content Injected Here -->
+        </section>
+
+        <!-- PLAYER OVERLAY -->
+        <section id="page-player" class="fixed inset-0 z-[100] bg-black hidden transition-opacity duration-500">
+            <div class="absolute inset-0 z-20 pointer-events-none player-overlay flex flex-col justify-between p-6 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                <div class="flex justify-between items-start pointer-events-auto">
+                    <button onclick="closePlayer()" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-colors border border-white/5">
+                        <i class="fa-solid fa-arrow-left text-white"></i>
+                    </button>
+                    <div class="text-right">
+                        <h3 id="player-title" class="font-bold text-lg drop-shadow-md text-white">Title</h3>
+                        <p class="text-purple-400 text-xs font-medium tracking-wide">REPRODUZINDO</p>
+                    </div>
+                </div>
+            </div>
+            <div id="player-container" class="w-full h-full bg-black flex items-center justify-center"></div>
+        </section>
+
+    </main>
+
+    <!-- Navigation -->
+    <nav class="fixed bottom-0 left-0 w-full z-40 glass pb-safe rounded-t-[30px] border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+        <div class="flex justify-around items-center h-20 px-4">
+            <button onclick="navigate('home')" class="nav-icon active flex flex-col items-center gap-1.5 w-16 p-2 transition-all group" id="nav-home">
+                <div class="bg-transparent group-[.active]:bg-white/10 p-1.5 rounded-xl transition-colors">
+                    <i class="fa-solid fa-house text-xl transition-transform group-[.active]:text-purple-400 group-[.active]:scale-110 text-white/40"></i>
+                </div>
+                <span class="text-[10px] font-bold opacity-60 group-[.active]:opacity-100 group-[.active]:text-white">Início</span>
+            </button>
+            <button onclick="navigate('search')" class="nav-icon flex flex-col items-center gap-1.5 w-16 p-2 transition-all group" id="nav-search">
+                <div class="bg-transparent group-[.active]:bg-white/10 p-1.5 rounded-xl transition-colors">
+                    <i class="fa-solid fa-compass text-xl transition-transform group-[.active]:text-purple-400 group-[.active]:scale-110 text-white/40"></i>
+                </div>
+                <span class="text-[10px] font-bold opacity-60 group-[.active]:opacity-100 group-[.active]:text-white">Busca</span>
+            </button>
+            <button onclick="navigate('mylist')" class="nav-icon flex flex-col items-center gap-1.5 w-16 p-2 transition-all group" id="nav-mylist">
+                <div class="bg-transparent group-[.active]:bg-white/10 p-1.5 rounded-xl transition-colors">
+                    <i class="fa-solid fa-bookmark text-xl transition-transform group-[.active]:text-purple-400 group-[.active]:scale-110 text-white/40"></i>
+                </div>
+                <span class="text-[10px] font-bold opacity-60 group-[.active]:opacity-100 group-[.active]:text-white">Lista</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- App script -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
