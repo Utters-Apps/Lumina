@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lumina Stream 2.0</title>
+    <title>Lumina</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -312,6 +312,67 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Recomendações -->
+                <div class="animate-slideUp delay-250">
+                    <div class="px-6 flex items-center justify-between mb-5 mt-6">
+                        <h3 class="text-xl font-bold text-white">Recomendações</h3>
+                        <button onclick="viewAll('filme')" class="btn-viewall">
+                            Ver tudo
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 list-wrap">
+                        <button class="list-arrow left" onclick="scrollList('recommended-list', -1)" aria-label="Anterior">
+                            <i class="fa-solid fa-chevron-left text-white"></i>
+                        </button>
+                        <div class="snap-scroll-container" id="recommended-list"></div>
+                        <button class="list-arrow right" onclick="scrollList('recommended-list', 1)" aria-label="Próximo">
+                            <i class="fa-solid fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Novidades -->
+                <div class="animate-slideUp delay-300">
+                    <div class="px-6 flex items-center justify-between mb-5 mt-6">
+                        <h3 class="text-xl font-bold text-white">Novidades</h3>
+                        <button onclick="viewAll('filme')" class="btn-viewall">
+                            Ver tudo
+                            <i class="fa-solid fa-star text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 list-wrap">
+                        <button class="list-arrow left" onclick="scrollList('new-list', -1)" aria-label="Anterior">
+                            <i class="fa-solid fa-chevron-left text-white"></i>
+                        </button>
+                        <div class="snap-scroll-container" id="new-list"></div>
+                        <button class="list-arrow right" onclick="scrollList('new-list', 1)" aria-label="Próximo">
+                            <i class="fa-solid fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Top Rated -->
+                <div class="animate-slideUp delay-350">
+                    <div class="px-6 flex items-center justify-between mb-5 mt-6">
+                        <h3 class="text-xl font-bold text-white">Top Rated</h3>
+                        <button onclick="viewAll('filme')" class="btn-viewall">
+                            Ver tudo
+                            <i class="fa-solid fa-arrow-right text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="px-6 list-wrap">
+                        <button class="list-arrow left" onclick="scrollList('toprated-list', -1)" aria-label="Anterior">
+                            <i class="fa-solid fa-chevron-left text-white"></i>
+                        </button>
+                        <div class="snap-scroll-container" id="toprated-list"></div>
+                        <button class="list-arrow right" onclick="scrollList('toprated-list', 1)" aria-label="Próximo">
+                            <i class="fa-solid fa-chevron-right text-white"></i>
+                        </button>
+                    </div>
+                </div>
+
             </div>
         </section>
 
@@ -328,7 +389,10 @@
             <div id="recommendations-section" class="mb-6">
                 <div class="px-6 flex items-center justify-between mb-3">
                     <h3 class="text-sm font-bold text-white/80 uppercase tracking-wider">Recomendações</h3>
-                    <button onclick="viewAll('filme')" class="text-sm text-white/40 hover:text-white/70 px-3 py-1 rounded-md bg-white/3">Ver tudo</button>
+                    <button onclick="viewAll('filme')" class="btn-viewall flex items-center gap-2 py-2 px-3" title="Ver todos os filmes" aria-label="Ver tudo">
+                        Ver tudo
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
                 </div>
                 <div class="px-0 list-wrap">
                     <button class="list-arrow left" onclick="scrollList('recommendations-list', -1)" aria-label="Anterior">
@@ -363,8 +427,14 @@
                         <p id="mylist-count" class="text-sm text-white/50 mt-1">Itens salvos</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <button onclick="navigate('home')" class="text-sm text-white/40 hover:text-white/70 px-3 py-2 rounded-md bg-white/3">Explorar</button>
-                        <button id="clear-list-btn" onclick="clearFavorites()" class="text-sm text-red-400 hover:brightness-90 px-3 py-2 rounded-md bg-white/3">Limpar</button>
+                        <button onclick="navigate('home')" class="flex items-center gap-2 btn-viewall bg-white/6 text-white/90 py-2 px-3 rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.4)] hover:brightness-105" title="Voltar à exploração" aria-label="Explorar">
+                            <i class="fa-solid fa-compass text-sm"></i>
+                            Explorar
+                        </button>
+                        <button id="clear-list-btn" onclick="clearFavorites()" class="flex items-center gap-2 py-2 px-3 rounded-xl border border-red-500 text-red-400 bg-transparent hover:bg-red-500/10 transition-colors" title="Limpar minha lista" aria-label="Limpar lista">
+                            <i class="fa-solid fa-trash-can text-sm"></i>
+                            Limpar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -434,6 +504,19 @@
             </button>
         </div>
     </nav>
+
+    <!-- Name prompt modal (shown on first load if no name) -->
+    <div id="name-prompt" class="fixed inset-0 z-[120] bg-black/70 hidden items-center justify-center p-6">
+        <div class="w-full max-w-md bg-[#0b0710] rounded-2xl liquid-glass p-6">
+            <h3 class="text-xl font-extrabold text-white mb-2">Como devemos chamar você?</h3>
+            <p class="text-sm text-white/60 mb-4">Digite seu nome para personalizar a experiência.</p>
+            <input id="visitorNameInput" type="text" placeholder="Seu nome" class="w-full bg-[#0f0a15] border border-white/8 rounded-xl py-3 px-4 text-white placeholder-white/40 mb-4 focus:outline-none" />
+            <div class="flex gap-3">
+                <button id="saveNameBtn" class="btn-liquid flex-1 py-3 rounded-xl text-white font-bold">Continuar</button>
+                <button id="skipNameBtn" class="w-28 py-3 rounded-xl glass text-white">Pular</button>
+            </div>
+        </div>
+    </div>
 
     <!-- App script -->
     <script type="module" src="app.js"></script>
