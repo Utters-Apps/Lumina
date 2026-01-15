@@ -391,8 +391,56 @@ function disableContextMenu() {
     document.addEventListener('touchstart', () => {}, { passive: true });
 }
 
+/* Disable common mobile browser gestures to emulate an app experience:
+   - prevent double-tap zoom, two-finger pinch zoom, and gesturestart events
+   - prevent overscroll navigation where possible (back/forward)
+   - add a small timestamp guard to block rapid double-tap
+*/
+function disableBrowserGestures() {
+    // Prevent pinch zoom (two-finger wheel / gesture events)
+    window.addEventListener('gesturestart', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('gesturechange', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+    window.addEventListener('gestureend', (e) => {
+        e.preventDefault();
+    }, { passive: false });
+
+    // Prevent double-tap-to-zoom by blocking rapid sequential taps
+    let lastTouch = 0;
+    window.addEventListener('touchend', (e) => {
+        const now = Date.now();
+        if (now - lastTouch <= 300) {
+            e.preventDefault();
+        }
+        lastTouch = now;
+    }, { passive: false });
+
+    // Prevent two-finger pinch (touchmove with more than one touch) from zooming
+    window.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // Prevent overscroll navigation (swipe from edge) on some browsers by capturing touchstart edges
+    // and stopping propagation when near horizontal edges — best-effort.
+    const edgeThreshold = 20;
+    window.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length === 0) return;
+        const t = e.touches[0];
+        if (t.clientX <= edgeThreshold || (window.innerWidth - t.clientX) <= edgeThreshold) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+}
+
 function init(deepPlayId = null) {
     disableContextMenu();
+    // additional mobile gesture suppression to behave like a native app
+    try { disableBrowserGestures(); } catch(e) {}
     renderHome();
     setupSearch();
     setupScrollHeader();
@@ -1595,34 +1643,85 @@ function scrollList(containerId, dir = 1) {
 /* --- Name prompt + deep-link handling --- */
 function showNamePrompt(onComplete) {
     const modal = document.getElementById('name-prompt');
+    const card = document.getElementById('name-prompt-card');
     const input = document.getElementById('visitorNameInput');
     const saveBtn = document.getElementById('saveNameBtn');
     const skipBtn = document.getElementById('skipNameBtn');
 
+    // reveal overlay and play enter animation
     modal.classList.remove('hidden');
-    modal.style.display = 'flex';
-    input.focus();
+    modal.classList.add('show');
+    // ensure card animation runs from fresh state
+    card.classList.remove('leave');
+    void card.offsetWidth;
+    card.classList.add('enter');
+    // set focus after a small delay to allow animation to begin (improves mobile keyboard behavior)
+    setTimeout(() => input.focus(), 220);
+
+    // Accessibility: trap focus inside modal while open (basic)
+    const focusable = [input, saveBtn, skipBtn];
+    let focusIndex = 0;
+    function handleKey(e) {
+        if (e.key === 'Tab') {
+            e.preventDefault();
+            focusIndex = (e.shiftKey ? focusIndex - 1 : focusIndex + 1);
+            if (focusIndex < 0) focusIndex = focusable.length - 1;
+            if (focusIndex >= focusable.length) focusIndex = 0;
+            focusable[focusIndex].focus();
+        } else if (e.key === 'Escape') {
+            cleanupAndFinish('');
+        }
+    }
+    document.addEventListener('keydown', handleKey);
 
     const finish = (name) => {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-        if (typeof onComplete === 'function') onComplete(name);
+        // play leave animation
+        card.classList.remove('enter');
+        card.classList.add('leave');
+        // wait for animation end then hide
+        card.addEventListener('animationend', function onEnd() {
+            card.removeEventListener('animationend', onEnd);
+            modal.classList.remove('show');
+            modal.classList.add('hidden');
+            // reset card state for next open
+            card.classList.remove('leave');
+            // restore body scroll
+            try { document.body.style.overflow = 'auto'; } catch (e) {}
+            // cleanup keyboard trap
+            document.removeEventListener('keydown', handleKey);
+            if (typeof onComplete === 'function') onComplete(name);
+        }, { once: true });
+    };
+
+    const cleanupAndFinish = (name) => {
+        // ensure handlers removed and finalize
+        saveBtn.onclick = null;
+        skipBtn.onclick = null;
+        input.removeEventListener('keyup', inputKeyListener);
+        finish(name);
     };
 
     const submit = () => {
         const name = (input.value || '').trim();
         if (name) {
             localStorage.setItem('lumina_name', name);
-            finish(name);
+            cleanupAndFinish(name);
         } else {
-            // if empty still allow (skip) to avoid blocking
-            finish('');
+            // allow empty as explicit skip
+            cleanupAndFinish('');
         }
     };
 
+    const inputKeyListener = (e) => { if (e.key === 'Enter') submit(); };
     saveBtn.onclick = submit;
-    skipBtn.onclick = () => finish('');
-    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') submit(); });
+    skipBtn.onclick = () => cleanupAndFinish('');
+    input.addEventListener('keyup', inputKeyListener);
+
+    // close if clicking outside the card
+    function outsideClick(e) {
+        if (!card.contains(e.target)) cleanupAndFinish('');
+    }
+    setTimeout(() => document.addEventListener('pointerdown', outsideClick, { once: true }), 200);
 }
 
 function handleDeepLinkPlay(id) {
