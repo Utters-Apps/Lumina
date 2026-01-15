@@ -145,8 +145,8 @@ const contentDB = [
             1: [
                 { title: "Minha Pseudomorte", url: "https://www.dropbox.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm&raw=1" },
                 { title: "Cicatrizes Antigas", url: "https://www.dropbox.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os&raw=1" },
-                { title: "Morta e Confusa", url: "https://byseqekaho.com/e/cuz1nj9u9vrf/S_S_1_3_D" },
-                { title: "Intenções Mórbidas", url: "https://byseqekaho.com/e/xhhgql9zco83/S_S_1_4_D" },
+                { title: "Morta e Confusa", url: "https://www.dropbox.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux&raw=1" },
+                { title: "Intenções Mórbidas", url: "https://www.dropbox.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc&raw=1" },
                 { title: "O Passado Entra em Campo", url: "https://byseqekaho.com/e/4hpjrddjlbsw/S_S_1_5_D" },
                 { title: "Os Fantasmas se Divertem no Baile", url: "https://byseqekaho.com/e/ryaijcxd09b7/S_S_1_6_D" },
                 { title: "A Última Sessão Mediúnica", url: "https://byseqekaho.com/e/ckx4ss9nglzf/S_S_1_7_D" },
