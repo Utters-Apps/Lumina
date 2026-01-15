@@ -332,11 +332,17 @@ function disableContextMenu() {
     document.addEventListener('touchstart', () => {}, { passive: true });
 }
 
-function init() {
+function init(deepPlayId = null) {
     disableContextMenu();
     renderHome();
     setupSearch();
     setupScrollHeader();
+
+    // If a deep-play id was supplied (from URL), store it to auto-play after name prompt
+    if (deepPlayId) {
+        // store temporarily on window for usage after name prompt
+        window.__lumina_deepplay = deepPlayId;
+    }
 }
 
 function setupScrollHeader() {
@@ -352,6 +358,66 @@ function setupScrollHeader() {
             header.classList.remove('py-3');
         }
     });
+
+    // Clamp vertical scrolling so user cannot scroll past the Top Rated section.
+    // We listen to scroll, wheel and touchmove and programmatically restrict scrollTop.
+    function getMaxScroll() {
+        const topRatedEl = document.getElementById('toprated-list');
+        if (!topRatedEl) return document.body.scrollHeight;
+        // find the surrounding Top Rated section wrapper (fallback to the list itself)
+        const section = topRatedEl.closest('div.animate-slideUp') || topRatedEl;
+        const rect = section.getBoundingClientRect();
+        // rect.bottom is relative to viewport; add current scroll to get document coordinate
+        const bottomInDocument = window.scrollY + rect.bottom;
+        // return the bottom of the Top Rated section (plus a small padding) as the maximum scrollable top
+        return Math.max(0, Math.floor(bottomInDocument + 8));
+    }
+
+    let maxScroll = getMaxScroll();
+    // Recompute when layout changes (resize, content render)
+    window.addEventListener('resize', () => { maxScroll = getMaxScroll(); });
+    // Also refresh after a short delay when content updates (useful when lists render)
+    const refreshMax = () => { setTimeout(() => { maxScroll = getMaxScroll(); }, 120); };
+    // tie to some known events that re-render lists
+    window.addEventListener('load', refreshMax);
+    document.addEventListener('DOMContentLoaded', refreshMax);
+
+    // On scroll, clamp the scroll position
+    window.addEventListener('scroll', () => {
+        const cur = window.scrollY || document.documentElement.scrollTop;
+        maxScroll = getMaxScroll();
+        if (cur > maxScroll) {
+            window.scrollTo({ top: maxScroll, behavior: 'smooth' });
+        }
+    }, { passive: true });
+
+    // Prevent wheel / touchmove from scrolling past the max directly
+    window.addEventListener('wheel', (e) => {
+        const cur = window.scrollY || document.documentElement.scrollTop;
+        maxScroll = getMaxScroll();
+        if (e.deltaY > 0 && cur >= maxScroll - 2) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    let touchStartY = null;
+    window.addEventListener('touchstart', (e) => {
+        touchStartY = e.touches ? e.touches[0].clientY : null;
+        maxScroll = getMaxScroll();
+    }, { passive: true });
+
+    window.addEventListener('touchmove', (e) => {
+        if (touchStartY === null) return;
+        const touchY = e.touches ? e.touches[0].clientY : null;
+        if (touchY === null) return;
+        const delta = touchStartY - touchY;
+        const cur = window.scrollY || document.documentElement.scrollTop;
+        maxScroll = getMaxScroll();
+        // if moving downwards (trying to scroll further) and we're at or past max, block
+        if (delta > 0 && cur >= maxScroll - 2) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 }
 
 /* --- NAVIGATION --- */
@@ -375,9 +441,33 @@ function navigate(pageId) {
 }
 
 /* --- RENDERING --- */
+/* deterministic daily shuffle helper: returns a new array shuffled deterministically by date */
+function dailyShuffle(arr, salt = '') {
+    // simple seeded shuffle using date as seed so results change each day
+    const dateSeed = new Date().toISOString().slice(0,10) + '|' + salt; // YYYY-MM-DD
+    // build numeric seed by summing char codes
+    let seed = 0;
+    for (let i = 0; i < dateSeed.length; i++) seed = (seed * 31 + dateSeed.charCodeAt(i)) >>> 0;
+    // copy
+    const out = arr.slice();
+    // Fisher-Yates using seeded PRNG
+    function rand() {
+        seed = (seed ^ (seed << 13)) >>> 0;
+        seed = (seed ^ (seed >>> 17)) >>> 0;
+        seed = (seed ^ (seed << 5)) >>> 0;
+        return (seed >>> 0) / 4294967295;
+    }
+    for (let i = out.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+}
+
 function renderHome() {
-    // HERO
-    const heroData = contentDB.find(i => i.isHero) || contentDB[0];
+    // HERO (pick hero or rotate top hero by day)
+    const heroCandidates = contentDB.filter(i => i.isHero);
+    const heroData = (heroCandidates.length ? dailyShuffle(heroCandidates, 'hero')[0] : contentDB[0]);
     const heroHtml = `
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-102" style="background-image: url('${heroData.cover}');"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-[#05000a] via-[#05000a]/40 to-transparent"></div>
@@ -407,13 +497,34 @@ function renderHome() {
     document.getElementById('hero-container').innerHTML = heroHtml;
 
     // LISTS
-    // Series: Vertical Posters
-    renderList('series-list', contentDB.filter(i => i.type === 'serie'), 'vertical');
-    
-    // Movies: Horizontal (Wide) Cards for variety
-    renderList('movies-list', contentDB.filter(i => i.type === 'filme'), 'horizontal');
-    
+    // We'll rotate/update lists by day so users see fresh ordering each day.
+    // Prepare base sets
+    const allSeries = contentDB.filter(i => i.type === 'serie');
+    const allMovies = contentDB.filter(i => i.type === 'filme');
+
+    // Deterministically shuffle per day with different salts per section
+    const seriesForToday = dailyShuffle(allSeries, 'series').slice(0, 10);
+    const moviesForToday = dailyShuffle(allMovies, 'movies').slice(0, 10);
+    const recommendedForToday = dailyShuffle(contentDB, 'recommended').slice(0, 10);
+    const newReleasesForToday = dailyShuffle(contentDB.slice().sort((a,b) => (parseInt(b.year || '0') || 0) - (parseInt(a.year || '0') || 0)), 'new').slice(0, 8);
+    const topRatedForToday = (dailyShuffle(contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0)), 'toprated').slice(0,8).length)
+        ? dailyShuffle(contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0)), 'toprated').slice(0,8)
+        : dailyShuffle(contentDB, 'toprated').slice(0,8);
+
+    // Render using same rendering helper for visual consistency
+    renderList('series-list', seriesForToday, 'vertical');
+    renderList('movies-list', moviesForToday, 'horizontal');
+    renderList('recommended-list', recommendedForToday, 'horizontal');
+    renderList('new-list', newReleasesForToday, 'horizontal');
+    renderList('toprated-list', topRatedForToday, 'horizontal');
+
     updateContinueWatching();
+
+    // ensure the scroll clamping max is recalculated after lists render
+    setTimeout(() => {
+        const ev = new Event('resize');
+        window.dispatchEvent(ev);
+    }, 180);
 }
 
 function renderList(containerId, data, style = 'default') {
@@ -1181,6 +1292,8 @@ function setupSearch() {
 }
 
 function clearFavorites() {
+    // ask for confirmation to avoid accidental clearing
+    if (!confirm('Tem certeza que deseja limpar sua lista? Esta ação removerá todos os itens salvos.')) return;
     state.favorites = [];
     localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
     renderMyList();
@@ -1195,7 +1308,89 @@ function scrollList(containerId, dir = 1) {
     el.scrollBy({ left: amount, behavior: 'smooth' });
 }
 
-window.onload = init;
+/* --- Name prompt + deep-link handling --- */
+function showNamePrompt(onComplete) {
+    const modal = document.getElementById('name-prompt');
+    const input = document.getElementById('visitorNameInput');
+    const saveBtn = document.getElementById('saveNameBtn');
+    const skipBtn = document.getElementById('skipNameBtn');
+
+    modal.classList.remove('hidden');
+    modal.style.display = 'flex';
+    input.focus();
+
+    const finish = (name) => {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        if (typeof onComplete === 'function') onComplete(name);
+    };
+
+    const submit = () => {
+        const name = (input.value || '').trim();
+        if (name) {
+            localStorage.setItem('lumina_name', name);
+            finish(name);
+        } else {
+            // if empty still allow (skip) to avoid blocking
+            finish('');
+        }
+    };
+
+    saveBtn.onclick = submit;
+    skipBtn.onclick = () => finish('');
+    input.addEventListener('keyup', (e) => { if (e.key === 'Enter') submit(); });
+}
+
+function handleDeepLinkPlay(id) {
+    if (!id) return;
+    const item = contentDB.find(i => i.id === id);
+    if (!item) return;
+    // ensure item is in favorites per requirement
+    if (!state.favorites.includes(id)) {
+        state.favorites.push(id);
+        localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
+    }
+    // If series, play first episode of season 1 index 0; else play movie directly
+    if (item.type === 'serie') {
+        // prefer season '1' if exists, otherwise first season key
+        const seasonKey = item.seasons['1'] ? '1' : Object.keys(item.seasons)[0];
+        playMedia(id, seasonKey, 0);
+    } else {
+        playMedia(id, '', 0);
+    }
+}
+
+/* On load: show name prompt if not set, then initialize and handle ?play= deep link */
+window.onload = () => {
+    // read deep play param from URL
+    const params = new URLSearchParams(location.search);
+    const deepPlay = params.get('play');
+
+    const storedName = localStorage.getItem('lumina_name');
+    if (!storedName) {
+        // show prompt, then init and handle deep link after user submits/skip
+        showNamePrompt((givenName) => {
+            // store empty string as well (explicit)
+            if (givenName !== null && givenName !== undefined) {
+                localStorage.setItem('lumina_name', givenName || '');
+            }
+            // initialize app and then handle deep play if present
+            init(deepPlay);
+            if (deepPlay) {
+                // small timeout to ensure UI ready
+                setTimeout(() => handleDeepLinkPlay(deepPlay), 500);
+            }
+        });
+    } else {
+        // name exists: init immediately and handle deep play
+        init(deepPlay);
+        if (deepPlay) {
+            setTimeout(() => handleDeepLinkPlay(deepPlay), 300);
+        }
+    }
+};
+
+// expose functions/globals
 window.navigate = navigate;
 window.openDetail = openDetail;
 window.viewAll = viewAll;
