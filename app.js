@@ -1648,9 +1648,12 @@ function showNamePrompt(onComplete) {
     const saveBtn = document.getElementById('saveNameBtn');
     const skipBtn = document.getElementById('skipNameBtn');
 
-    // reveal overlay and play enter animation
+    // reveal overlay and play enter animation (use inline style to ensure visibility across environments)
     modal.classList.remove('hidden');
-    modal.classList.add('show');
+    // explicitly set display:flex in case 'hidden' class persists / tooling issues
+    modal.style.display = 'flex';
+    // small timeout to allow paint before adding animated 'show' state
+    setTimeout(() => modal.classList.add('show'), 20);
     // ensure card animation runs from fresh state
     card.classList.remove('leave');
     void card.offsetWidth;
@@ -1683,6 +1686,8 @@ function showNamePrompt(onComplete) {
             card.removeEventListener('animationend', onEnd);
             modal.classList.remove('show');
             modal.classList.add('hidden');
+            // hide inline display to ensure it can be shown again reliably
+            modal.style.display = 'none';
             // reset card state for next open
             card.classList.remove('leave');
             // restore body scroll
