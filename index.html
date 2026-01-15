@@ -28,6 +28,14 @@
             color: #eef2ff;
             overflow-x: hidden;
             -webkit-tap-highlight-color: transparent;
+
+            /* Mobile app-like behavior: disable pinch/double-tap zoom and overscroll navigation */
+            touch-action: manipulation;          /* prevents pinch-zoom and most two-finger gestures */
+            overscroll-behavior: none;           /* prevents swipe-to-navigate / pull-to-refresh */
+            -ms-touch-action: manipulation;
+            -webkit-user-select: none;           /* reduce accidental text selection on touch */
+            user-select: none;
+            -webkit-touch-callout: none;
         }
 
         ::-webkit-scrollbar { width: 0px; display: none; }
@@ -567,16 +575,50 @@
     </nav>
 
     <!-- Name prompt modal (shown on first load if no name) -->
-    <div id="name-prompt" class="fixed inset-0 z-[120] bg-black/70 hidden items-center justify-center p-6">
-        <div class="w-full max-w-md bg-[#0b0710] rounded-2xl liquid-glass p-6">
-            <h3 class="text-xl font-extrabold text-white mb-2">Como devemos chamar você?</h3>
-            <p class="text-sm text-white/60 mb-4">Digite seu nome para personalizar a experiência.</p>
-            <input id="visitorNameInput" type="text" placeholder="Seu nome" class="w-full bg-[#0f0a15] border border-white/8 rounded-xl py-3 px-4 text-white placeholder-white/40 mb-4 focus:outline-none" />
+    <div id="name-prompt" class="fixed inset-0 z-[120] bg-black/60 hidden items-center justify-center p-6">
+        <div id="name-prompt-card" class="w-full max-w-md bg-gradient-to-b from-[#0b0710]/80 to-[#0b0710]/60 rounded-2xl liquid-glass p-6 transform opacity-0 scale-96" role="dialog" aria-modal="true" aria-labelledby="namePromptTitle" aria-describedby="namePromptDesc">
+            <div class="flex items-start gap-3 mb-3">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center shadow-[0_8px_30px_rgba(217,70,239,0.16)] border border-white/6">
+                    <i class="fa-solid fa-user text-white text-lg"></i>
+                </div>
+                <div class="flex-1">
+                    <h3 id="namePromptTitle" class="text-xl font-extrabold text-white mb-1">Como devemos chamar você?</h3>
+                    <p id="namePromptDesc" class="text-sm text-white/60">Digite seu nome para personalizar a experiência.</p>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label for="visitorNameInput" class="sr-only">Seu nome</label>
+                <input id="visitorNameInput" type="text" placeholder="Seu nome" class="w-full bg-[#0f0a15] border border-white/8 rounded-2xl py-3 px-4 text-white placeholder-white/40 mb-4 focus:outline-none focus:ring-2 focus:ring-purple-500/40" />
+            </div>
+
             <div class="flex gap-3">
-                <button id="saveNameBtn" class="btn-liquid flex-1 py-3 rounded-xl text-white font-bold">Continuar</button>
-                <button id="skipNameBtn" class="w-28 py-3 rounded-xl glass text-white">Pular</button>
+                <button id="saveNameBtn" class="btn-liquid flex-1 py-3 rounded-2xl text-white font-bold shadow-lg">Continuar</button>
+                <button id="skipNameBtn" class="w-28 py-3 rounded-2xl glass text-white border border-white/8">Pular</button>
             </div>
         </div>
+
+        <style>
+            /* Name prompt animations and subtle decorations */
+            #name-prompt.show { display:flex; animation: overlayFadeIn 360ms cubic-bezier(.22,.9,.27,1) both; }
+            @keyframes overlayFadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            #name-prompt-card.enter { animation: cardEnter 420ms cubic-bezier(.2,.9,.3,1) both; }
+            #name-prompt-card.leave { animation: cardLeave 320ms cubic-bezier(.4,0,.2,1) both; }
+            @keyframes cardEnter {
+                0% { opacity: 0; transform: translateY(18px) scale(0.96); filter: blur(6px); }
+                60% { opacity: 1; transform: translateY(-6px) scale(1.01); filter: blur(0); }
+                100% { opacity: 1; transform: translateY(0) scale(1); }
+            }
+            @keyframes cardLeave {
+                0% { opacity: 1; transform: translateY(0) scale(1); }
+                100% { opacity: 0; transform: translateY(18px) scale(0.96); filter: blur(6px); }
+            }
+            /* slight glow for the input when focused */
+            #visitorNameInput:focus { box-shadow: 0 8px 36px rgba(124,58,237,0.12), inset 0 -2px 8px rgba(0,0,0,0.25); }
+        </style>
     </div>
 
     <!-- App script -->
