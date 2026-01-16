@@ -38,7 +38,7 @@ const contentDB = [
         type: 'serie',
         category: 'Sci-Fi / Terror',
         year: '2016',
-        cover: 'https://www.tallengestore.com/cdn/shop/products/stranger_things_12_01151e69-a27e-42c3-b339-eb3afc33a939.jpg?v=1514020430',
+        cover: 'https://dnm.nflximg.net/api/v6/BvVbc2Wxr2w6QuoANoSpJKEIWjQ/AAAAQUq_sj3y88nqrcBnRm69rS7xur65HYgLkCS5MxHbA-7Dvd72b3Mek4eoiDb5Rb4-dzpaJz260toRGHQIeKdtAvUxWmmk5hio-pquv_pTESDyz5XQuv6K0vlqFQvsPXGuMA0OfA7q27_8cBy9ds-8RroPX1Y.jpg?r=9d3',
         description: 'Uma carta de amor aos clássicos sobrenaturais dos anos 80, Stranger Things é a história de um menino que desaparece e de uma cidade que descobre segredos sombrios.',
         ratings: { imdb: 8.7, rottenTomatoes: 91, metascore: 78 },
         isHero: true,
@@ -133,6 +133,36 @@ const contentDB = [
         url: 'https://drive.google.com/file/d/1-50I_wADQMMNwc27F8gIwbffkJiptNHS/preview'
     },
     {
+        id: 'jujutsu-execucao',
+        title: 'JUJUTSU KAISEN: Execução',
+        type: 'filme',
+        category: 'Animação / Ação',
+        year: '2024',
+        cover: 'https://ingresso-a.akamaihd.net/b2b/production/uploads/article/image/4261/876d18b9b32b961a5ca7f7afe7250834.jpg',
+        description: 'Jujutsu Kaisen: Execução é um filme compilatório que resume o trágico Incidente em Shibuya, onde um véu aprisiona civis e o poderoso Satoru Gojo, levando Yuji Itadori e outros feiticeiros a uma batalha caótica contra maldições, resultando em um Japão dividido em colônias amaldiçoadas e iniciando o mortal Jogo do Abate (Culling Game), com Yuta Okkotsu encarregado de executar Yuji por seus crimes.',
+        url: 'https://playerflixapi.com/filme/tt38121182'
+    },
+    {
+        id: 'fnaf-nightmare',
+        title: "Five Nights At Freddy's: O Pesadelo Sem Fim",
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '2023',
+        cover: 'https://ingresso-a.akamaihd.net/b2b/production/uploads/article/image/1856/46d22a5f31d4977a391b2e1a8e9ebc21.jpg',
+        description: 'Mike Schmidt, um segurança noturno problemático que aceita um emprego na abandonada Pizzaria Freddy Fazbear para cuidar de sua irmã mais nova, Abby.',
+        url: 'https://playerflixapi.com/filme/tt4589218'
+    },
+    {
+        id: 'fnaf-2',
+        title: "Five Nights At Freddy's 2",
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '2025',
+        cover: 'https://cinepop.com.br/wp-content/uploads/2025/12/fnaf-2-3.jpg',
+        description: '‘Five Nights At Freddy’s 2‘, sequência do maior sucesso da história da Blumhouse, traz Mike, Abby e Vanessa tentando encontrar uma maneira de sobreviver por mais cinco noites quando um novo grupo de animatrônicos sai da pizzaria e causa o caos na cidade.',
+        url: 'https://playerflixapi.com/filme/tt30274401'
+    },
+    {
         id: 'espiritos-na-escola',
         title: 'Espíritos na Escola',
         type: 'serie',
@@ -147,10 +177,10 @@ const contentDB = [
                 { title: "Cicatrizes Antigas", url: "https://www.dropbox.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os&raw=1" },
                 { title: "Morta e Confusa", url: "https://www.dropbox.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux&raw=1" },
                 { title: "Intenções Mórbidas", url: "https://www.dropbox.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc&raw=1" },
-                { title: "O Passado Entra em Campo", url: "https://byseqekaho.com/e/4hpjrddjlbsw/S_S_1_5_D" },
-                { title: "Os Fantasmas se Divertem no Baile", url: "https://byseqekaho.com/e/ryaijcxd09b7/S_S_1_6_D" },
-                { title: "A Última Sessão Mediúnica", url: "https://byseqekaho.com/e/ckx4ss9nglzf/S_S_1_7_D" },
-                { title: "O Corpo de Madison", url: "https://byseqekaho.com/e/eo1rxcgbo5k3/S_S_1_8_D" }
+                { title: "O Passado Entra em Campo", url: "https://www.dropbox.com/scl/fi/eajat75t4zeeq1usv7ifa/S_S_1_5_D.mp4?rlkey=dlaqabp1m3g9o2ankaa7okhsk&raw=1" },
+                { title: "Os Fantasmas se Divertem no Baile", url: "https://www.dropbox.com/scl/fi/1uk571r9d12h0otsasdnp/S_S_1_6_D.mp4?rlkey=xp4z4l5dv4zj210ohyc53fj58&raw=1" },
+                { title: "A Última Sessão Mediúnica", url: "https://www.dropbox.com/scl/fi/8h4lqdo5f1daf4zxc6yeh/S_S_1_7_D.mp4?rlkey=0bt8rn6wquag21y7iwpaj06r5&raw=1" },
+                { title: "O Corpo de Madison", url: "https://www.dropbox.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq&raw=1" }
             ],
             2: [
                 { title: "O Que Terá Acontecido a Maddie Nears?", url: "https://byseqekaho.com/e/hg93enf8ahyg/SSPRTS_2_1.mp4" },
@@ -333,8 +363,178 @@ const contentDB = [
                 { title: "Humanos", url: "https://www.tokyvideo.com/br/embed/756126" }
             ]
         }
+    },
+    {
+        id: 'cassandra',
+        title: 'Cassandra',
+        type: 'serie',
+        category: 'Suspense / Ficção Científica / Thriller',
+        year: '2025',
+        cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABYegZ1f9bs8i9F0Iaf_HlCsnFMo4R8q4d9yq2prSTeuAyVyfRH4T-KVbGDmUQww_Ob9yEtTXdz5hAHq5foCnyVzYNc8H5JF0J94G.jpg?r=077',
+        ageRating: 'A16',
+        description: 'Uma família recomeça em uma casa inteligente dos anos 1970; ao reativar a assistente de IA chamada Cassandra, eles descobrem que a tecnologia fará de tudo para mantê-los ali.',
+        seasons: {
+            1: [
+                { title: 'Recomeço', url: 'https://www.tokyvideo.com/br/embed/667082' },
+                { title: 'Quem sou eu?', url: 'https://www.tokyvideo.com/br/embed/667076' },
+                { title: 'Último jogo', url: 'https://www.tokyvideo.com/br/embed/667085' },
+                { title: 'Brincadeira de criança', url: 'https://www.tokyvideo.com/br/embed/667086' },
+                { title: 'Você não estará sozinho', url: 'https://www.tokyvideo.com/br/embed/667101' },
+                { title: 'Feliz Natal', url: 'https://www.tokyvideo.com/br/embed/667105' }
+            ]
+        }
+    },
+    {
+        id: 'wonka',
+        title: 'Wonka',
+        type: 'filme',
+        category: 'Infantil / Fantasia',
+        year: '2023',
+        duration: '1h 56m',
+        ageRating: '10',
+        cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABRHL8-ZgVngYcZCuSxG5TN3rFyCUMb5JwehnM9rKRA2QFo_pNPR0ZT6rL-oFRRNy2UnnQogXXrmHMYr0FcUuknHYubC-ytMHyEzH.jpg?r=63a',
+        description: 'A origem do excêntrico chocolatier Willy Wonka e sua aventura até se tornar o mestre do chocolate.',
+        url: 'https://drive.google.com/file/d/11vKocNGSRAFApBxQBHRy65Zk4rqZLGu5/view?usp=sharing'
+    },
+    {
+        id: 'cuphead',
+        title: 'Cuphead: A Série',
+        type: 'serie',
+        category: 'Animação / Comédia / Aventura / Infantil/Familiar',
+        year: '2022',
+        ageRating: 'TV-Y7',
+        cover: 'https://i.ytimg.com/vi/vJBYsEim_yU/maxresdefault.jpg',
+        description: 'Acompanhe as desventuras do impulsivo Cuphead e seu irmão cauteloso Mugman pelas surreais Ilhas Inkwell, enfrentando fantasmas, concursos e até o próprio Diabo com humor inspirado nos desenhos dos anos 1930.',
+        seasons: {
+            1: [
+                { title: 'Carna-Mal', url: 'https://www.tokyvideo.com/br/embed/832860' },
+                { title: 'Mamadeira', url: 'https://www.tokyvideo.com/br/embed/833203' },
+                { title: 'Ribby e Croaks', url: 'https://www.tokyvideo.com/br/embed/834113' },
+                { title: 'Cuidado: Frágil', url: 'https://www.tokyvideo.com/br/embed/834342' },
+                { title: 'Jogando os Dados', url: 'https://www.tokyvideo.com/br/embed/834404' },
+                { title: 'Fantasmas Não Existem', url: 'https://www.tokyvideo.com/br/embed/834697' },
+                { title: 'Root Pack', url: 'https://www.tokyvideo.com/br/embed/834721' },
+                { title: 'Melhor de Suéter', url: 'https://www.tokyvideo.com/br/embed/835062' },
+                { title: 'Mais Suéter da Próxima Vez', url: 'https://www.tokyvideo.com/br/embed/836274' },
+                { title: 'Caneco Perigoso', url: 'https://www.tokyvideo.com/br/embed/836622' },
+                { title: 'Sono Profundo', url: 'https://www.tokyvideo.com/br/embed/837013' },
+                { title: 'Em Perigo', url: 'https://www.tokyvideo.com/br/embed/837357' }
+            ],
+            2: [
+                { title: 'Fuga da Prisão', url: 'https://www.tokyvideo.com/br/embed/838284' },
+                { title: 'Encantados e Perigosos', url: 'https://www.tokyvideo.com/br/embed/838622' },
+                { title: 'Uma Aventura em Alto-Mar', url: 'https://www.tokyvideo.com/br/embed/838659' },
+                { title: 'Outro Irmão', url: 'https://www.tokyvideo.com/br/embed/838716' },
+                { title: 'Doce Tentação', url: 'https://www.tokyvideo.com/br/embed/839084' },
+                { title: 'O Cara do Sorvete', url: 'https://www.tokyvideo.com/br/embed/839620' },
+                { title: 'Aula de Piano', url: 'https://www.tokyvideo.com/br/embed/840103' },
+                { title: 'Libere os Demônios!', url: 'https://www.tokyvideo.com/br/embed/841185' },
+                { title: 'Mortalmente Falidos', url: 'https://www.tokyvideo.com/br/embed/841436' },
+                { title: 'Por Hoje é Só, Ratinho', url: 'https://www.tokyvideo.com/br/embed/841972' },
+                { title: 'Diga Xis', url: 'https://www.tokyvideo.com/br/embed/842368' },
+                { title: 'Perdidos na Floresta', url: 'https://www.tokyvideo.com/br/embed/842422' },
+                { title: 'Tridente do Diabo', url: 'https://www.tokyvideo.com/br/embed/842701' }
+            ],
+            3: [
+                { title: 'Achado Não é Roubado!', url: 'https://www.tokyvideo.com/br/embed/845210' },
+                { title: 'Não Abram a Porta', url: 'https://www.tokyvideo.com/br/embed/845357' },
+                { title: 'Ofuscado', url: '' },
+                { title: 'Atropelamento', url: '' },
+                { title: 'Árvore de Natal', url: '' },
+                { title: 'Um Natal do Diabo', url: '' },
+                { title: 'Entrega Especial', url: '' },
+                { title: 'Dado', url: '' },
+                { title: 'Passeio Divertido', url: '' },
+                { title: 'Brincando com o Perigo', url: '' },
+                { title: 'O Diabo e Senhorita Cálice', url: '' }
+            ]
+        }
     }
 ];
+
+/* --- Ensure every item has an ageRating and add "The Amazing Digital Circus" series --- */
+try {
+    // Add new series: The Amazing Digital Circus (Portuguese title)
+    contentDB.push({
+        id: 'the-amazing-digital-circus',
+        title: 'O Incrível Circo Digital',
+        originalTitle: 'The Amazing Digital Circus',
+        type: 'serie',
+        category: 'Animação / Surreal',
+        year: '2023 - 2026',
+        ageRating: '12 anos',
+        cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABeSnycpEtbW-kf4BTjZdqNGjL39YFig-xRNfgSrG9Su1ayXXOhvMLgPsX3V6M-yQItQfqG1oqC-Shaq2_0Ll2OeOEGFaAiWw1OSP.jpg?r=988',
+        description: 'O Incrível Circo Digital acompanha Pomni, uma mulher que, ao usar um headset de realidade virtual, fica presa dentro de um universo digital com temática de circo. Lá, ela e outros humanos são transformados em personagens caricatos e forçados a participar de aventuras e jogos orquestrados por Caine, uma inteligência artificial excêntrica. A série mistura humor sombrio, surrealismo e drama psicológico enquanto explora identidade, memórias perdidas e a relação conflituosa entre criador e criado.',
+        seasons: {
+            1: [
+                { title: 'Piloto', duration: '25:14', url: 'https://www.youtube.com/embed/HwAPLk_sQ3w?si=Qh4qjTYd9fXuR2J1' },
+                { title: 'Desespero no Desfiladeiro Doce!', duration: '24:43', url: 'https://www.youtube.com/embed/4ofJpOEXrZs?si=6sdcIIKquTv7S30t' },
+                { title: 'O Mistério da Mansão Mildenhall', duration: '23:20', url: 'https://www.youtube.com/embed/bKjfw77cxeQ?si=K4_pNqRttkD4_0K-' },
+                { title: 'Um Dia a Máscara Cai', duration: '25:33', url: 'https://www.youtube.com/embed/Q9KWcWKo2T8?si=CnANivklIwA_GZao' },
+                { title: 'Sem Título', duration: '25:33', url: 'https://www.youtube.com/embed/mOvhHim78YA?si=YvnMgnKku-XI8_gE' },
+                { title: 'Todos Ganham Armas', duration: '33:54', url: 'https://www.youtube.com/embed/mOvhHim78YA?si=Yclny9rQrD1CqEpz' },
+                { title: 'Episódio de Praia', duration: '32:56', url: 'https://www.youtube.com/embed/oaOG1xOk7XY?si=MhRHzNYi5sa214Pb' }
+            ]
+        }
+    });
+
+    // Ensure every item has an ageRating property (default to 'Livre' if not present)
+    contentDB.forEach(item => {
+        if (!Object.prototype.hasOwnProperty.call(item, 'ageRating') || item.ageRating === undefined || item.ageRating === null || String(item.ageRating).trim() === '') {
+            item.ageRating = 'Livre';
+        }
+    });
+} catch (e) {
+    console.warn('Error while adding default ageRating or new series:', e);
+}
+
+/* --- CATEGORY COLORS --- */
+function getCategoryColor(category) {
+    // Accepts a category string like "Animação / Família" and returns a color for the primary category.
+    try {
+        if (!category) return '#6b7280'; // neutral gray for unknown
+        const primary = String(category).split('/')[0].trim().toLowerCase();
+        const map = {
+            'ação': '#ef4444',
+            'ação ': '#ef4444',
+            'animação': '#f59e0b',
+            'aventura': '#06b6d4',
+            'comédia': '#10b981',
+            'drama': '#8b5cf6',
+            'ficção científica': '#3b82f6',
+            'sci-fi': '#3b82f6',
+            'romance': '#ec4899',
+            'terror': '#ef4444',
+            'horror': '#ef4444',
+            'suspense': '#f97316',
+            'mistério': '#f97316',
+            'familia': '#f59e0b',
+            'família': '#f59e0b',
+            'animação / família': '#f59e0b',
+            'animação / aventura': '#06b6d4',
+            'ação / aventura': '#ef4444',
+            'ação / drama': '#ef4444',
+            'romance / drama': '#ec4899',
+            'animação / comédia': '#f59e0b',
+            'thriller': '#f97316',
+            'drama / suspense': '#8b5cf6',
+            'mistério / sobrenatural': '#7c3aed'
+        };
+        // fallback heuristics: check keywords
+        for (const key of Object.keys(map)) {
+            if (primary.includes(key)) return map[key];
+        }
+        // check direct map by word
+        const cleaned = primary.replace(/[^a-z0-9\s]/g, '');
+        for (const k in map) {
+            if (cleaned.includes(k)) return map[k];
+        }
+        // default accent
+        return '#7c3aed';
+    } catch (e) {
+        return '#7c3aed';
+    }
+}
 
 /* --- STATE --- */
 let state = {
@@ -397,43 +597,47 @@ function disableContextMenu() {
    - add a small timestamp guard to block rapid double-tap
 */
 function disableBrowserGestures() {
-    // Prevent pinch zoom (two-finger wheel / gesture events)
-    window.addEventListener('gesturestart', (e) => {
-        e.preventDefault();
-    }, { passive: false });
-    window.addEventListener('gesturechange', (e) => {
-        e.preventDefault();
-    }, { passive: false });
-    window.addEventListener('gestureend', (e) => {
-        e.preventDefault();
-    }, { passive: false });
+    // Best-effort: block large gesture events but remain friendly to browser optimizations.
+    // Use passive:true when possible to avoid forcing main-thread blocking that can trigger jank or reloads.
+    try {
+        // Some browsers support gesture events (iOS Safari); wrap in try/catch to avoid errors.
+        window.addEventListener('gesturestart', (e) => { try { e.preventDefault(); } catch(e){} }, { passive: true });
+        window.addEventListener('gesturechange', (e) => { try { e.preventDefault(); } catch(e){} }, { passive: true });
+        window.addEventListener('gestureend', (e) => { try { e.preventDefault(); } catch(e){} }, { passive: true });
+    } catch (e) {}
 
-    // Prevent double-tap-to-zoom by blocking rapid sequential taps
+    // Reduce aggressive touch blocking; only prevent multi-touch pinch and rapid double-tap via lightweight guards.
     let lastTouch = 0;
     window.addEventListener('touchend', (e) => {
-        const now = Date.now();
-        if (now - lastTouch <= 300) {
-            e.preventDefault();
-        }
-        lastTouch = now;
+        try {
+            const now = Date.now();
+            if (now - lastTouch <= 300) {
+                // only prevent default for rapid double-tap sequences
+                e.preventDefault();
+            }
+            lastTouch = now;
+        } catch (err) {}
     }, { passive: false });
 
-    // Prevent two-finger pinch (touchmove with more than one touch) from zooming
+    // Prevent two-finger pinch (touchmove with more than one touch) from zooming — guard to avoid heavy processing
     window.addEventListener('touchmove', (e) => {
-        if (e.touches && e.touches.length > 1) {
-            e.preventDefault();
-        }
+        try {
+            if (e.touches && e.touches.length > 1) {
+                e.preventDefault();
+            }
+        } catch (err) {}
     }, { passive: false });
 
-    // Prevent overscroll navigation (swipe from edge) on some browsers by capturing touchstart edges
-    // and stopping propagation when near horizontal edges — best-effort.
-    const edgeThreshold = 20;
+    // Prevent overscroll navigation near edges but avoid heavy work — minimal guard
+    const edgeThreshold = 18;
     window.addEventListener('touchstart', (e) => {
-        if (!e.touches || e.touches.length === 0) return;
-        const t = e.touches[0];
-        if (t.clientX <= edgeThreshold || (window.innerWidth - t.clientX) <= edgeThreshold) {
-            e.preventDefault();
-        }
+        try {
+            if (!e.touches || e.touches.length === 0) return;
+            const t = e.touches[0];
+            if (t.clientX <= edgeThreshold || (window.innerWidth - t.clientX) <= edgeThreshold) {
+                e.preventDefault();
+            }
+        } catch (err) {}
     }, { passive: false });
 }
 
@@ -469,15 +673,48 @@ function setupScrollHeader() {
     // Clamp vertical scrolling so user cannot scroll past the Top Rated section.
     // We listen to scroll, wheel and touchmove and programmatically restrict scrollTop.
     function getMaxScroll() {
-        const topRatedEl = document.getElementById('toprated-list');
-        if (!topRatedEl) return document.body.scrollHeight;
-        // find the surrounding Top Rated section wrapper (fallback to the list itself)
-        const section = topRatedEl.closest('div.animate-slideUp') || topRatedEl;
+        // Determine candidate target elements depending on current page so the same "stop at Top Rated"
+        // behavior applies across Search, Home and My List (also consider Recommendations and favorites).
+        const isSearchPage = (state && state.currentPage === 'search') || document.getElementById('page-search')?.classList.contains('page-active');
+        const isMyList = (state && state.currentPage === 'mylist') || document.getElementById('page-mylist')?.classList.contains('page-active');
+
+        // priority list of element ids to use as clamp target (first existing wins)
+        const candidates = isSearchPage
+            ? ['search-results', 'recommendations-list', 'recommended-list', 'toprated-list']
+            : (isMyList
+                ? ['favorites-grid', 'favorites-grid'] // favorites-grid is primary for My List
+                : ['toprated-list', 'recommended-list', 'recommended-list', 'new-list']);
+
+        // find the first candidate element that exists and has layout
+        let targetEl = null;
+        for (const id of candidates) {
+            const el = document.getElementById(id);
+            if (el) {
+                // ensure it's rendered and has width/height so we don't clamp to an empty node
+                const rectCheck = el.getBoundingClientRect();
+                if (rectCheck.width > 0 && rectCheck.height > 0) {
+                    targetEl = el;
+                    break;
+                } else {
+                    // also accept when the element has children (lists often have zero height but contain items)
+                    if (el.children && el.children.length > 0) {
+                        targetEl = el;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // fallback to body height (no clamp) if nothing suitable found
+        if (!targetEl) return document.body.scrollHeight;
+
+        // find the surrounding section wrapper (prefer the animate-slideUp wrapper, fallback to element)
+        const section = targetEl.closest('div.animate-slideUp') || targetEl;
         const rect = section.getBoundingClientRect();
         // rect.bottom is relative to viewport; add current scroll to get document coordinate
         const bottomInDocument = window.scrollY + rect.bottom;
-        // compute the maximum scrollTop so that the bottom of the Top Rated section aligns with the bottom of the viewport
-        // i.e. scrollTop = bottomOfSection - viewportHeight (+ small padding)
+        // compute the maximum scrollTop so that the bottom of the target section aligns with the bottom of the viewport
+        // small extra padding to avoid clipping controls
         const max = Math.floor(bottomInDocument - window.innerHeight + 8);
         return Math.max(0, max);
     }
@@ -588,36 +825,100 @@ function dailyShuffle(arr, salt = '') {
 }
 
 function renderHome() {
-    // HERO (pick hero or rotate top hero by day)
+    // HERO: build a small rotating carousel with up to 5 items.
+    // Prefer explicit isHero flags, but augment with good candidates so the hero area isn't a single item.
     const heroCandidates = contentDB.filter(i => i.isHero);
-    const heroData = (heroCandidates.length ? dailyShuffle(heroCandidates, 'hero')[0] : contentDB[0]);
-    const heroHtml = `
-        <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-102" style="background-image: url('${heroData.cover}');"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-[#05000a] via-[#05000a]/40 to-transparent"></div>
-        <div class="absolute inset-0 bg-gradient-to-r from-[#05000a]/90 via-transparent to-transparent"></div>
-        
-        <div class="absolute inset-0 flex flex-col justify-end px-6 pb-8 z-10">
-            <div class="flex items-center gap-2 mb-2 cascade-up delay-100">
-                <span class="px-2 py-0.5 rounded-full bg-purple-600 text-[9px] font-bold uppercase tracking-widest text-white shadow-md">Novo</span>
-                <span class="text-[11px] font-semibold text-white/80 drop-shadow-md border-l border-white/20 pl-3">${heroData.category}</span>
-            </div>
+
+    // If not enough explicit heroes, add other strong candidates:
+    // priority: items with ratings (top-rated), then recent releases with covers, then any item with a cover.
+    if (heroCandidates.length < 3) {
+        const needed = 5 - heroCandidates.length;
+        const already = new Set(heroCandidates.map(h => h.id));
+        // top-rated by imdb
+        const rated = contentDB.filter(i => i.ratings && i.ratings.imdb).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0));
+        const recentWithCover = contentDB.slice().reverse().filter(i => i.cover);
+        const fillers = [...rated, ...recentWithCover, ...contentDB].filter(i => !already.has(i.id) && i.cover);
+        for (let i = 0; i < fillers.length && heroCandidates.length < 5; i++) {
+            heroCandidates.push(fillers[i]);
+            already.add(fillers[i].id);
+        }
+    }
+
+    // final hero list: deterministic shuffle for day-to-day variation, limit to 5 items
+    const heroList = dailyShuffle(heroCandidates.length ? heroCandidates : (contentDB.filter(i => i.cover).slice(0,5) || [contentDB[0]]), 'hero').slice(0,5);
+
+    // cleanup any previous hero interval to avoid duplicates when re-rendering
+    if (window.__lumina_heroInterval) {
+        try { clearInterval(window.__lumina_heroInterval); } catch (e) {}
+        window.__lumina_heroInterval = null;
+    }
+
+    // ensure index persisted across re-renders but clamp to list length (guard against empty lists)
+    window.__lumina_heroIndex = (typeof window.__lumina_heroIndex === 'number' && window.__lumina_heroIndex >= 0) ? (window.__lumina_heroIndex % Math.max(1, heroList.length)) : 0;
+
+    // helper to render a single hero item into the hero container
+    function renderHero(heroData) {
+        if (!heroData) return;
+        // show last watched progress on hero if it matches history
+        const lastWatchedPointer = (() => {
+            try { return JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e){ return null; }
+        })();
+        const lastForHero = lastWatchedPointer && lastWatchedPointer.id === heroData.id ? lastWatchedPointer : null;
+        const progressPct = (lastForHero && lastForHero.position && lastForHero.duration) ? Math.max(0, Math.min(100, Math.round((lastForHero.position / Number(lastForHero.duration || 1)) * 100))) : (lastForHero && lastForHero.position && !lastForHero.duration ? 0 : null);
+
+        const heroHtml = `
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-[20s] hover:scale-102" style="background-image: url('${heroData.cover}');"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#05000a] via-[#05000a]/40 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#05000a]/90 via-transparent to-transparent"></div>
             
-            <h2 class="text-3xl md:text-4xl font-extrabold mb-3 text-white leading-tight cascade-up delay-200" style="text-shadow: 0 6px 18px rgba(0,0,0,0.6);">${heroData.title}</h2>
-            
-            <div class="flex gap-3 mt-2 cascade-up delay-300">
-                <button onclick="openDetail('${heroData.id}')" class="btn-liquid flex-1 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base group">
-                    <div class="w-7 h-7 rounded-full bg-white text-purple-600 flex items-center justify-center transition-transform">
-                        <i class="fa-solid fa-play text-[10px]"></i>
+            <div class="absolute inset-0 flex flex-col justify-end px-6 pb-8 z-10">
+                <div class="flex items-center gap-2 mb-2 cascade-up delay-100">
+                    <span class="px-2 py-0.5 rounded-full bg-purple-600 text-[9px] font-bold uppercase tracking-widest text-white shadow-md">Destaque</span>
+                    <span class="text-[11px] font-semibold text-white/80 drop-shadow-md border-l border-white/20 pl-3">${heroData.category || ''}</span>
+                </div>
+                
+                <h2 class="text-3xl md:text-4xl font-extrabold mb-3 text-white leading-tight cascade-up delay-200" style="text-shadow: 0 6px 18px rgba(0,0,0,0.6);">${heroData.title}</h2>
+                
+                <div class="flex gap-3 mt-2 cascade-up delay-300 w-full">
+                    <button onclick="${lastForHero ? `playMedia('${heroData.id}','',0)` : `openDetail('${heroData.id}')`}" class="btn-liquid flex-1 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-sm md:text-base group">
+                        <div class="w-7 h-7 rounded-full bg-white text-purple-600 flex items-center justify-center transition-transform">
+                            <i class="fa-solid ${lastForHero ? 'fa-rotate-right' : 'fa-play'} text-[10px]"></i>
+                        </div>
+                        ${lastForHero ? 'Continuar' : 'Assistir'} 
+                    </button>
+                    <button onclick="toggleFavorite('${heroData.id}')" class="w-12 h-12 rounded-xl glass flex items-center justify-center text-white active:scale-90 transition-transform border border-white/10 hover:border-purple-500/40">
+                        <i class="${state.favorites.includes(heroData.id) ? 'fa-solid text-purple-400' : 'fa-regular'} fa-bookmark text-lg"></i>
+                    </button>
+                </div>
+
+                ${progressPct !== null ? `
+                    <div class="mt-4 w-full cascade-up delay-350">
+                        <div class="w-full bg-white/6 rounded-full h-2 overflow-hidden">
+                            <div style="width:${progressPct}%" class="h-2 bg-gradient-to-r from-purple-400 to-pink-400"></div>
+                        </div>
+                        <div class="text-[12px] text-white/60 mt-2">Você parou em ${lastForHero.position ? `${lastForHero.position}s` : 'ponto anterior'}</div>
                     </div>
-                    Assistir
-                </button>
-                <button onclick="toggleFavorite('${heroData.id}')" class="w-12 h-12 rounded-xl glass flex items-center justify-center text-white active:scale-90 transition-transform border border-white/10 hover:border-purple-500/40">
-                    <i class="${state.favorites.includes(heroData.id) ? 'fa-solid text-purple-400' : 'fa-regular'} fa-bookmark text-lg"></i>
-                </button>
+                ` : ''}
             </div>
-        </div>
-    `;
-    document.getElementById('hero-container').innerHTML = heroHtml;
+        `;
+        const heroContainer = document.getElementById('hero-container');
+        if (heroContainer) heroContainer.innerHTML = heroHtml;
+    }
+
+    // initial render
+    renderHero(heroList[window.__lumina_heroIndex]);
+
+    // set interval to rotate hero every 10 seconds (only if more than one hero)
+    if (heroList.length > 1) {
+        window.__lumina_heroInterval = setInterval(() => {
+            try {
+                window.__lumina_heroIndex = (Number(window.__lumina_heroIndex) + 1) % heroList.length;
+                renderHero(heroList[window.__lumina_heroIndex]);
+            } catch (e) {
+                console.warn('Hero carousel rotation error', e);
+            }
+        }, 10000);
+    }
 
     // LISTS
     // We'll rotate/update lists by day so users see fresh ordering each day.
@@ -658,15 +959,47 @@ function renderList(containerId, data, style = 'default') {
     let lastWatched = null;
     try { lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e){ lastWatched = null; }
 
-    // Cinematic large cards for movies and series to improve visual consistency
+    // detect small/mobile breakpoint and unify card appearance to match Continue Assistindo on mobile
+    const isSmallScreen = window.innerWidth <= 420;
+
+    // unified small/mobile card markup (same as continue-watching style)
+    const mobileCardMarkup = (item, idx) => {
+        const lastEp = lastWatched && lastWatched.id === item.id ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${lastWatched.lastEpisodeTitle || ''}</div>` : '';
+        const duration = item.duration ? `<span class="text-[11px] text-white/40">${item.duration}</span>` : '';
+        return `
+            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
+                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy">
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                    <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
+                </div>
+                <div class="px-1">
+                    <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                    <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                    ${lastEp}
+                </div>
+            </div>
+        `;
+    };
+
+    // If on small/mobile, render every list using the continue-style card for consistency
+    if (isSmallScreen) {
+        container.innerHTML = data.map((item, idx) => mobileCardMarkup(item, idx)).join('');
+        return;
+    }
+
+    // For larger screens: previous behavior (distinct cinematic / compact cards)
+    const cinematicCardClass = 'w-96 md:w-104';
+    const compactCardWidth = 'w-72';
+
     if (containerId === 'movies-list' || containerId === 'series-list' || style === 'cinematic' || style === 'horizontal') {
         container.innerHTML = data.map(item => {
             const isLast = lastWatched && lastWatched.id === item.id;
             const lastBadge = isLast ? `<div class="absolute top-3 right-3 px-2 py-1 rounded text-[12px] font-semibold bg-purple-600 text-white">Último</div>` : '';
             return `
-                <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group">
+                <div onclick="openDetail('${item.id}')" class="card-container snap-item ${cinematicCardClass} flex-shrink-0 cursor-pointer group">
                     <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
-                        <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" loading="lazy">
+                        <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" loading="lazy" decoding="async">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90"></div>
 
                         <div class="absolute left-4 bottom-4 right-4 flex items-center justify-between gap-3">
@@ -686,7 +1019,7 @@ function renderList(containerId, data, style = 'default') {
                         </div>
 
                         ${lastBadge}
-                        <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
+                        <div class="absolute top-3 left-3 px-2 py-1 rounded-full text-[12px] font-semibold" style="background:${getCategoryColor(item.category)}; color: #fff;">${(item.category || '').split('/')[0] || ''}</div>
                     </div>
 
                     <div class="px-1">
@@ -699,12 +1032,12 @@ function renderList(containerId, data, style = 'default') {
         return;
     }
 
-    // Fallback: compact cards (used for series/search/others)
+    // Fallback: compact cards for search/other sections on larger screens
     container.innerHTML = data.map(item => {
         return `
-            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group">
+            <div onclick="openDetail('${item.id}')" class="card-container snap-item ${compactCardWidth} flex-shrink-0 cursor-pointer group">
                 <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 overflow-hidden relative">
-                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" decoding="async">
                     <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year}</div>
                 </div>
                 <div class="px-1">
@@ -719,48 +1052,182 @@ function renderList(containerId, data, style = 'default') {
 function updateContinueWatching() {
     const section = document.getElementById('continue-section');
     const list = document.getElementById('continue-list');
-    
-    if (state.history.length === 0) {
-        section.classList.add('hidden');
+
+    // Build up-to-date history from localStorage/state and enrich with contentDB metadata
+    const history = (state.history || []).slice(0, 12); // show up to 12 recent items
+    if (history.length === 0) {
+        // If empty, show a small "Suggestions to continue" row using recent or recommended items
+        section.classList.remove('hidden');
+        const suggestions = dailyShuffle(contentDB, 'continue-suggest').slice(0, 6);
+        list.innerHTML = suggestions.map((item, idx) => {
+            const duration = item.duration ? `<span class="text-[11px] text-white/40">${item.duration}</span>` : '';
+            return `
+                <div data-id="${item.id}" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                    <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
+                        <img src="${item.cover}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy">
+                        <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                        <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
+                    </div>
+                    <div class="px-1">
+                        <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                        <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                        <div class="text-[11px] text-white/50 mt-1 truncate">Sugestão</div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        // attach robust click handlers (delegated) so openDetail works reliably across environments
+        try {
+            list.querySelectorAll('.card-container').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.getAttribute('data-id');
+                    if (id) openDetail(id);
+                }, { passive: true });
+            });
+        } catch(e){}
+
         return;
     }
 
+    // If we have history, render items with resume affordance and progress
     section.classList.remove('hidden');
-    // Use the same card layout as other lists for visual consistency — show last episode title and duration
-    list.innerHTML = state.history.slice(0, 6).map((hist, idx) => {
+    list.innerHTML = history.map((hist, idx) => {
         const item = contentDB.find(i => i.id === hist.id);
         if (!item) return '';
+        // compute a progress percentage when duration and position exist, else fallback to presence of position
+        let pct = null;
+        if (hist.position !== undefined && hist.position !== null && hist.duration !== undefined && hist.duration !== null) {
+            const d = Number(hist.duration) || 0;
+            if (d > 0) pct = Math.max(0, Math.min(100, Math.round((Number(hist.position) / d) * 100)));
+        } else if (hist.position !== undefined && hist.position !== null) {
+            // we know a position but not duration — show a subtle dot indicating "resumed"
+            pct = 0;
+        }
+
         const lastEp = hist.lastEpisodeTitle ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${hist.lastEpisodeTitle}</div>` : '';
         const duration = hist.duration ? `<span class="text-[11px] text-white/40">${hist.duration}</span>` : '';
+        // compute resume params robustly
+        const seasonKey = (hist.season || (item.seasons ? (item.seasons['1'] ? '1' : Object.keys(item.seasons)[0]) : '1'));
+        const epIndexSafe = (hist.episodeIndex !== null && hist.episodeIndex !== undefined) ? hist.episodeIndex : 0;
+        const progressBar = (pct !== null) ? `
+            <div class="mt-2 w-full bg-white/6 rounded-full h-2 overflow-hidden">
+                <div style="width:${pct}%" class="h-2 bg-gradient-to-r from-purple-400 to-pink-400"></div>
+            </div>
+        ` : '';
+
         return `
-            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+            <div data-id="${item.id}" data-season="${seasonKey}" data-ep-index="${epIndexSafe}" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
                 <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
                     <img src="${item.cover}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy">
-                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year}</div>
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
                     <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
+
+                    <button data-resume class="absolute right-3 bottom-3 w-10 h-10 rounded-full btn-liquid flex items-center justify-center shadow-lg border border-white/10">
+                        <i class="fa-solid fa-rotate-right text-white text-sm"></i>
+                    </button>
                 </div>
+
                 <div class="px-1">
-                    <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
-                    <p class="text-[11px] text-white/40 truncate">${item.category}</p>
+                    <p class="detail-link text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                    <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
                     ${lastEp}
+                    ${progressBar}
                 </div>
             </div>
         `;
     }).join('');
+
+    // Attach robust event listeners for cards and resume buttons so clicks always trigger the expected actions
+    try {
+        list.querySelectorAll('.card-container').forEach(el => {
+            // card click now resumes playback directly (instead of opening detail)
+            el.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                const id = el.getAttribute('data-id');
+                if (!id) return;
+                const season = el.getAttribute('data-season') || '';
+                const epIndex = Number(el.getAttribute('data-ep-index') || 0);
+
+                const item = contentDB.find(i => i.id === id);
+                if (!item) {
+                    // fallback: open detail if item missing
+                    openDetail(id);
+                    return;
+                }
+
+                if (item.type === 'serie') {
+                    playMedia(id, season, epIndex);
+                } else {
+                    playMedia(id, '', 0);
+                }
+            }, { passive: true });
+
+            // resume button (explicit) will play media; find the resume button inside this card
+            const resumeBtn = el.querySelector('[data-resume]');
+            if (resumeBtn) {
+                resumeBtn.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    const id = el.getAttribute('data-id');
+                    const season = el.getAttribute('data-season') || '';
+                    const epIndex = Number(el.getAttribute('data-ep-index') || 0);
+                    if (!id) return;
+                    // decide play for series or movie
+                    const item = contentDB.find(i => i.id === id);
+                    if (!item) return;
+                    if (item.type === 'serie') {
+                        playMedia(id, season, epIndex);
+                    } else {
+                        playMedia(id, '', 0);
+                    }
+                }, { passive: true });
+            }
+
+            // also make title text open detail (in case event paths differ)
+            const titleEl = el.querySelector('.detail-link');
+            if (titleEl) {
+                titleEl.addEventListener('click', (e) => { e.stopPropagation(); const id = el.getAttribute('data-id'); if (id) openDetail(id); }, { passive: true });
+            }
+        });
+    } catch(e){}
+
+    // ensure small-screen consistency: on mobile the lists already unify card styles in renderList,
+    // but make sure Continue list arrows visibility is recalculated
+    try {
+        const wrap = document.querySelector('#continue-section .list-wrap');
+        if (wrap) {
+            const scrollable = document.getElementById('continue-list').scrollWidth > document.getElementById('continue-list').clientWidth;
+            wrap.setAttribute('data-scrollable', scrollable ? 'true' : 'false');
+        }
+    } catch(e){}
 }
 
 /* --- FEATURES --- */
 function toggleLike(id) {
-    const btn = event.currentTarget.querySelector('i');
+    // Defensive: try to obtain button icon element from event path or fallback to querying DOM
+    let btnIcon = null;
+    try { btnIcon = event?.currentTarget?.querySelector?.('i') || null; } catch(e){}
+    if (!btnIcon) {
+        const candidate = document.querySelector(`[onclick*="toggleLike('${id}')"]`);
+        if (candidate) btnIcon = candidate.querySelector('i');
+    }
+
     if (state.likes.includes(id)) {
         state.likes = state.likes.filter(item => item !== id);
-        btn.classList.replace('fa-solid', 'fa-regular');
-        btn.classList.remove('text-red-500');
+        if (btnIcon) {
+            btnIcon.classList.replace('fa-solid', 'fa-regular');
+            btnIcon.classList.remove('text-red-500', 'pop-like');
+            btnIcon.style.filter = '';
+        }
     } else {
         state.likes.push(id);
-        btn.classList.replace('fa-regular', 'fa-solid');
-        btn.classList.add('text-red-500', 'pop-heart');
-        setTimeout(() => btn.classList.remove('pop-heart'), 400);
+        if (btnIcon) {
+            btnIcon.classList.replace('fa-regular', 'fa-solid');
+            // stronger red + subtle glow and pop
+            btnIcon.classList.add('text-red-500', 'pop-like');
+            // ensure cleanup after animation
+            setTimeout(() => { try { btnIcon.classList.remove('pop-like'); } catch(e){} }, 520);
+        }
     }
     localStorage.setItem('lumina_likes', JSON.stringify(state.likes));
 }
@@ -813,25 +1280,34 @@ function shareContent(id, ev) {
 }
 
 function toggleFavorite(id, refreshDetail = false) {
-    const btn = event.currentTarget?.querySelector('i');
-    const isFav = state.favorites.includes(id);
+    // robustly locate icon element from event context or via querySelector fallback
+    let btnIcon = null;
+    try { btnIcon = event?.currentTarget?.querySelector?.('i') || null; } catch(e){}
+    if (!btnIcon) {
+        const candidate = document.querySelector(`[onclick*="toggleFavorite('${id}')"]`);
+        if (candidate) btnIcon = candidate.querySelector('i');
+    }
 
+    const isFav = state.favorites.includes(id);
     if (isFav) {
         state.favorites = state.favorites.filter(fav => fav !== id);
-        if(btn) {
-            btn.classList.replace('fa-solid', 'fa-regular');
-            btn.classList.remove('text-purple-400');
+        if (btnIcon) {
+            btnIcon.classList.replace('fa-solid', 'fa-regular');
+            btnIcon.classList.remove('text-yellow-400', 'pop-fav');
+            btnIcon.style.filter = '';
         }
     } else {
         state.favorites.push(id);
-        if(btn) {
-            btn.classList.replace('fa-regular', 'fa-solid');
-            btn.classList.add('text-purple-400', 'pop-heart');
-            setTimeout(() => btn.classList.remove('pop-heart'), 400);
+        if (btnIcon) {
+            btnIcon.classList.replace('fa-regular', 'fa-solid');
+            // apply yellow style and favorite pop animation + glow
+            btnIcon.classList.add('text-yellow-400', 'pop-fav');
+            // cleanup after animation
+            setTimeout(() => { try { btnIcon.classList.remove('pop-fav'); } catch(e){} }, 520);
         }
     }
+
     localStorage.setItem('lumina_favorites', JSON.stringify(state.favorites));
-    
     if (state.currentPage === 'mylist') renderMyList();
 }
 
@@ -849,41 +1325,67 @@ function renderMyList() {
     }
     empty.classList.add('hidden');
 
-    // Horizontal snap list: each card is wider (landscape) for a consistent horizontal feed — no rating dot on cards
-    // Use the same cinematic wide card layout used on the home lists for consistency
-    container.innerHTML = favItems.map((item, idx) => {
+    const isSmallScreen = window.innerWidth <= 420;
+
+    const mobileCard = (item, idx) => {
+        const lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null');
+        const lastEp = lastWatched && lastWatched.id === item.id ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${lastWatched.lastEpisodeTitle || ''}</div>` : '';
+        const duration = item.duration ? `<span class="text-[11px] text-white/40">${item.duration}</span>` : '';
         return `
-            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
-                <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
+            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
                     <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" loading="lazy">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90"></div>
-
-                    <div class="absolute left-4 bottom-4 right-4 flex items-center justify-between gap-3">
-                        <div>
-                            <div class="text-sm font-bold text-white leading-tight">${item.title}</div>
-                            <div class="text-[12px] text-white/60 mt-1">${item.category || ''} • ${item.year || ''}</div>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <button onclick="event.stopPropagation(); playMedia('${item.id}', '', 0)" class="w-12 h-12 rounded-full btn-liquid flex items-center justify-center shadow-lg border border-white/10">
-                                <i class="fa-solid fa-play text-white text-sm"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); toggleFavorite('${item.id}')" class="w-10 h-10 rounded-xl glass flex items-center justify-center border border-white/8">
-                                <i class="${state.favorites.includes(item.id) ? 'fa-solid text-purple-400' : 'fa-regular text-white/90'} fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                    <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
                 </div>
-
                 <div class="px-1">
-                    <p class="text-sm font-semibold truncate text-white/90 group-hover:text-purple-300 transition-colors">${item.title}</p>
-                    <p class="text-[11px] text-white/40 truncate">${item.description || ''}</p>
+                    <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                    <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                    ${lastEp}
                 </div>
             </div>
         `;
-    }).join('');
+    };
+
+    if (isSmallScreen) {
+        container.innerHTML = favItems.map((item, idx) => mobileCard(item, idx)).join('');
+    } else {
+        // Horizontal snap list: each card is wider (landscape) for a consistent horizontal feed — no rating dot on cards
+        // Use the same cinematic wide card layout used on the home lists for consistency
+        container.innerHTML = favItems.map((item, idx) => {
+            return `
+                <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                    <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
+                        <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90"></div>
+
+                        <div class="absolute left-4 bottom-4 right-4 flex items-center justify-between gap-3">
+                            <div>
+                                <div class="text-sm font-bold text-white leading-tight">${item.title}</div>
+                                <div class="text-[12px] text-white/60 mt-1">${item.category || ''} • ${item.year || ''}</div>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <button onclick="event.stopPropagation(); playMedia('${item.id}', '', 0)" class="w-12 h-12 rounded-full btn-liquid flex items-center justify-center shadow-lg border border-white/10">
+                                    <i class="fa-solid fa-play text-white text-sm"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); toggleFavorite('${item.id}')" class="w-10 h-10 rounded-xl glass flex items-center justify-center border border-white/8">
+                                    <i class="${state.favorites.includes(item.id) ? 'fa-solid text-purple-400' : 'fa-regular text-white/90'} fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
+                    </div>
+
+                    <div class="px-1">
+                        <p class="text-sm font-semibold truncate text-white/90 group-hover:text-purple-300 transition-colors">${item.title}</p>
+                        <p class="text-[11px] text-white/40 truncate">${item.description || ''}</p>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 }
 
 /* --- DETAIL MODAL LOGIC (Animated) --- */
@@ -909,7 +1411,7 @@ function openDetail(id) {
                     </div>
 
                     <div class="w-full overflow-x-auto no-scrollbar">
-                        <div class="inline-flex gap-2 py-1 px-1">
+                        <div id="seasonPillsContainer" class="inline-flex gap-2 py-1 px-1">
                             ${pills}
                         </div>
                     </div>
@@ -1009,6 +1511,34 @@ function openDetail(id) {
     // apply subtle image zoom animation if present
     const img = modal.querySelector('img');
     if (img) img.classList.add('animate-modal-img');
+
+    // ensure season pill sticky styles are available once modal is shown
+    if (!document.getElementById('lumina-season-sticky-css')) {
+        const style = document.createElement('style');
+        style.id = 'lumina-season-sticky-css';
+        style.textContent = `
+            /* sticky pill elevated style when pinned to top */
+            #seasonPillsContainer.pinned {
+                position: sticky;
+                top: 6px;
+                z-index: 60;
+                padding: 8px;
+                border-radius: 12px;
+                background: linear-gradient(90deg, rgba(12,8,28,0.88), rgba(20,12,36,0.78));
+                box-shadow: 0 12px 28px rgba(0,0,0,0.6), 0 6px 18px rgba(124,58,237,0.08);
+                border: 1px solid rgba(255,255,255,0.04);
+                transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+                transform: translateY(0);
+                backdrop-filter: blur(8px) saturate(120%);
+            }
+            /* slightly lift pills when pinned */
+            #seasonPillsContainer.pinned .season-pill.active {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 24px rgba(124,58,237,0.12);
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 function renderEpisodes(itemId, seasonKey) {
@@ -1017,42 +1547,117 @@ function renderEpisodes(itemId, seasonKey) {
     const container = document.getElementById('episodes-list');
     if (!container) return;
 
-    // Minimalist episode cards: compact, clean, with focused play affordance
-    // read last watched pointer to highlight episode
+    // Read last watched pointer to highlight episode
     let lastWatched = null;
     try { lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e){ lastWatched = null; }
 
+    // Larger, richer episode card layout with improved "Marcar" button and data attributes
     container.innerHTML = episodes.map((ep, index) => {
-        const duration = ep.duration ? ep.duration : '42 min';
+        const duration = ep.duration ? ep.duration : (ep.len || '42 min');
         const epTitle = `${index + 1}. ${ep.title}`;
         const isLast = lastWatched && lastWatched.id === itemId && Number(lastWatched.episodeIndex) === Number(index);
+
         return `
-            <div class="episode-row cascade-up" style="animation-delay:${index * 36}ms">
-                <div onclick="playMedia('${itemId}','${seasonKey}',${index})" class="flex items-center gap-3 p-3 rounded-2xl bg-black/30 hover:bg-white/6 transition-all cursor-pointer border border-transparent hover:border-white/6">
-                    <div class="w-20 h-12 rounded-md overflow-hidden flex-shrink-0 bg-black/20 relative">
-                        <img src="${item.cover}" alt="${ep.title}" class="w-full h-full object-cover object-center opacity-85 transition-opacity duration-300">
-                        ${isLast ? `<div class="absolute top-1 left-1 px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-600 text-white">Último</div>` : ''}
+            <div class="episode-row cascade-up" data-ep-index="${index}" data-season="${seasonKey}" data-item-id="${itemId}" style="animation-delay:${index * 36}ms">
+                <div class="flex flex-col md:flex-row items-stretch gap-3 p-4 rounded-2xl bg-gradient-to-r from-black/25 to-black/12 hover:from-black/30 hover:to-black/20 transition-all cursor-pointer border border-transparent hover:border-white/6">
+                    
+                    <div class="w-full md:w-56 h-36 md:h-28 rounded-lg overflow-hidden relative flex-shrink-0 bg-black/20">
+                        <img src="${ep.thumb || item.cover}" alt="${ep.title}" class="w-full h-full object-cover transition-transform duration-400 group-hover:scale-105">
+                        ${isLast ? `<div class="absolute top-2 left-2 px-2 py-0.5 rounded text-[11px] font-semibold bg-yellow-400 text-black">Último</div>` : ''}
+                        <div class="absolute bottom-2 left-2 px-2 py-0.5 rounded text-[11px] font-semibold bg-black/70 text-white">${duration}</div>
                     </div>
 
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-sm font-semibold text-white truncate">${epTitle}</h4>
-                            <span class="text-[11px] text-white/50 ml-3">${duration}</span>
+                    <div class="flex-1 min-w-0 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-3">
+                                <h4 class="text-lg md:text-xl font-bold text-white truncate">${epTitle}</h4>
+                                <span class="text-sm text-white/50">${(ep.airdate || ep.date) ? (ep.airdate || ep.date) : ''}</span>
+                            </div>
+                            <p class="text-sm text-white/60 mt-2 leading-relaxed line-clamp-3">${ep.summary || ep.description || item.description || ''}</p>
                         </div>
-                        <p class="text-[12px] text-white/50 mt-1 truncate">${ep.summary || item.description || ''}</p>
-                    </div>
 
-                    <button onclick="event.stopPropagation(); playMedia('${itemId}','${seasonKey}',${index})" class="ml-3 w-10 h-10 rounded-full btn-liquid flex items-center justify-center border border-white/8">
-                        <i class="fa-solid fa-play text-white text-sm"></i>
-                    </button>
+                        <div class="mt-3 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <button data-play class="flex items-center gap-2 py-2 px-3 rounded-lg btn-liquid text-sm font-bold">
+                                    <i class="fa-solid fa-play"></i>
+                                    Assistir
+                                </button>
+
+                                <button data-mark class="py-2 px-3 rounded-lg border border-white/6 text-white/80 hover:text-white transition-colors">
+                                    <i class="fa-regular fa-square-check mr-2"></i><span class="mark-label">Marcar</span>
+                                </button>
+                            </div>
+
+                            <div class="text-xs text-white/40">Ep. ${index + 1} • ${duration}</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
     }).join('');
 
-    // ensure active pill reflects current season (cosmetic)
+    // update season pill active state (cosmetic)
     const pills = document.querySelectorAll('.season-pill');
     pills.forEach(p => p.classList.toggle('active', p.dataset && p.dataset.season === String(seasonKey)));
+
+    // attach delegated handlers for the newly rendered episode rows
+    try {
+        // play buttons
+        container.querySelectorAll('[data-play]').forEach((btn) => {
+            btn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                const row = btn.closest('.episode-row');
+                if (!row) return;
+                const idx = Number(row.dataset.epIndex || row.getAttribute('data-ep-index') || 0);
+                const season = row.dataset.season;
+                const id = row.dataset.itemId;
+                playMedia(id, season, idx);
+            }, { passive: true });
+        });
+
+        // mark buttons
+        container.querySelectorAll('[data-mark]').forEach((btn) => {
+            btn.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                const row = btn.closest('.episode-row');
+                if (!row) return;
+                const idx = Number(row.dataset.epIndex || row.getAttribute('data-ep-index') || 0);
+                const season = row.dataset.season;
+                const id = row.dataset.itemId;
+                markEpisode(id, season, idx, btn);
+            }, { passive: true });
+        });
+    } catch (e) {
+        console.warn('renderEpisodes event binding error', e);
+    }
+
+    // ensure visual mark state is synchronized for episodes in this list
+    updateEpisodeMarks(itemId, seasonKey);
+
+    // setup a scroll listener to pin the season pills container when the episodes area scrolls up
+    try {
+        const modal = document.getElementById('page-detail');
+        const pillsContainer = document.getElementById('seasonPillsContainer');
+        if (modal && pillsContainer) {
+            // compute threshold based on header height inside modal (keeps pills nicely under the top controls)
+            const threshold = 84;
+            const onScroll = () => {
+                const rect = pillsContainer.getBoundingClientRect();
+                // when the top of the pills is near or above the threshold, apply pinned visual state
+                if (rect.top <= threshold) {
+                    pillsContainer.classList.add('pinned');
+                } else {
+                    pillsContainer.classList.remove('pinned');
+                }
+            };
+            // initial check and attach
+            onScroll();
+            modal.removeEventListener('scroll', onScroll);
+            modal.addEventListener('scroll', onScroll, { passive: true });
+            // also run on window resize to keep consistent
+            window.addEventListener('resize', onScroll);
+        }
+    } catch (e) { /* silent */ }
 }
 
 /* Helper to toggle season pill UI (used by the inline onclick on the pills) */
@@ -1067,6 +1672,76 @@ function toggleSeasonPills(el) {
     }
 }
 
+/* --- Episode marking: store per-item/season/episode marks and update UI --- */
+function _marksKey() { return 'lumina_marks_v1'; }
+
+function markEpisode(itemId, seasonKey, epIndex, btnElem = null) {
+    try {
+        const raw = localStorage.getItem(_marksKey());
+        const marks = raw ? JSON.parse(raw) : {};
+        const key = `${itemId}::${seasonKey}::${epIndex}`;
+        const isMarked = !!marks[key];
+        if (isMarked) {
+            delete marks[key];
+        } else {
+            marks[key] = { date: new Date().toISOString() };
+        }
+        localStorage.setItem(_marksKey(), JSON.stringify(marks));
+        // update UI immediately
+        updateEpisodeMarkButton(itemId, seasonKey, epIndex, btnElem);
+    } catch (e) {
+        console.warn('markEpisode error', e);
+    }
+}
+
+function updateEpisodeMarkButton(itemId, seasonKey, epIndex, btnElem = null) {
+    try {
+        const raw = localStorage.getItem(_marksKey());
+        const marks = raw ? JSON.parse(raw) : {};
+        const key = `${itemId}::${seasonKey}::${epIndex}`;
+        const isMarked = !!marks[key];
+
+        // if a specific button element provided, update it, otherwise query for all matching buttons
+        if (btnElem) {
+            btnElem.classList.toggle('marked', isMarked);
+            const icon = btnElem.querySelector('i');
+            const label = btnElem.querySelector('.mark-label');
+            if (icon) {
+                icon.className = isMarked ? 'fa-solid fa-square-check mr-2' : 'fa-regular fa-square-check mr-2';
+            }
+            if (label) label.textContent = isMarked ? 'Marcado' : 'Marcar';
+            return;
+        }
+
+        // find all rows and update matching one
+        document.querySelectorAll(`.episode-row[data-item-id="${itemId}"][data-season="${seasonKey}"][data-ep-index="${epIndex}"]`).forEach(row => {
+            const btn = row.querySelector('[data-mark]');
+            if (!btn) return;
+            btn.classList.toggle('marked', isMarked);
+            const icon = btn.querySelector('i');
+            const label = btn.querySelector('.mark-label');
+            if (icon) {
+                icon.className = isMarked ? 'fa-solid fa-square-check mr-2' : 'fa-regular fa-square-check mr-2';
+            }
+            if (label) label.textContent = isMarked ? 'Marcado' : 'Marcar';
+        });
+    } catch (e) {
+        // silent
+    }
+}
+
+function updateEpisodeMarks(itemId, seasonKey) {
+    try {
+        const raw = localStorage.getItem(_marksKey());
+        const marks = raw ? JSON.parse(raw) : {};
+        // iterate episodes in DOM for the given item/season and sync their mark state
+        document.querySelectorAll(`.episode-row[data-item-id="${itemId}"][data-season="${seasonKey}"]`).forEach(row => {
+            const idx = row.dataset.epIndex || row.getAttribute('data-ep-index');
+            updateEpisodeMarkButton(itemId, seasonKey, idx);
+        });
+    } catch (e) { /* silent */ }
+}
+
 function closeDetail() {
     const modal = document.getElementById('page-detail');
     modal.classList.add('hidden');
@@ -1075,32 +1750,103 @@ function closeDetail() {
 
 /* --- PLAYER LOGIC --- */
 function playMedia(id, season, epIndex) {
+    // Defensive checks to avoid TypeError when item / season / episode is missing
     const item = contentDB.find(i => i.id === id);
+    if (!item) {
+        console.warn(`playMedia: item with id "${id}" not found in contentDB`);
+        const playerOverlay = document.getElementById('page-player');
+        const container = document.getElementById('player-container');
+        const titleEl = document.getElementById('player-title');
+        titleEl.textContent = 'Conteúdo indisponível';
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center gap-4 p-6">
+                <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/6">
+                    <i class="fa-solid fa-ban text-2xl text-white/60"></i>
+                </div>
+                <div class="text-center max-w-xs">
+                    <h4 class="text-white font-bold">Conteúdo não encontrado</h4>
+                    <p class="text-white/60 text-sm mt-2">Não foi possível localizar este título. Verifique se ele existe na biblioteca.</p>
+                </div>
+            </div>
+        `;
+        playerOverlay.classList.remove('hidden');
+        playerOverlay.classList.remove('player-close');
+        playerOverlay.classList.remove('player-open');
+        void playerOverlay.offsetWidth;
+        playerOverlay.classList.add('player-open');
+        return;
+    }
+
+    // determine URL and title with safe fallbacks
     let url = '';
-    let title = item.title;
+    let title = item.title || 'Sem título';
 
     if (item.type === 'serie') {
-        const ep = item.seasons[season][epIndex];
-        url = ep.url;
-        title = `${item.title}: ${ep.title}`;
+        // Validate season and episode safely
+        const seasons = item.seasons || {};
+        const seasonKey = (season && String(season) in seasons) ? String(season) : (Object.keys(seasons)[0] || null);
+        if (!seasonKey) {
+            console.warn(`playMedia: series "${id}" has no seasons`);
+            url = '';
+        } else {
+            const eps = seasons[seasonKey] || [];
+            const idx = (typeof epIndex === 'number' && epIndex >= 0 && epIndex < eps.length) ? epIndex : 0;
+            const ep = eps[idx];
+            if (!ep) {
+                console.warn(`playMedia: episode not found for series "${id}", season "${seasonKey}", index ${idx}`);
+                url = '';
+            } else {
+                url = ep.url || '';
+                title = `${item.title}: ${ep.title || 'Episódio'}`;
+                // normalize season/episode selection to the resolved ones
+                season = seasonKey;
+                epIndex = idx;
+            }
+        }
     } else {
-        url = item.url;
+        url = item.url || '';
     }
 
     // Normalize Google Drive links to reliable preview embed URLs
     try { url = normalizeDriveUrl(url); } catch(e) { /* ignore */ }
 
-    // Basic host-blocking for clearly unsafe hosts
+    // If no usable URL, show friendly "unavailable" player UI and exit
+    if (!url) {
+        const playerOverlay = document.getElementById('page-player');
+        const container = document.getElementById('player-container');
+        const titleEl = document.getElementById('player-title');
+
+        titleEl.textContent = title;
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center gap-4 p-6">
+                <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center border border-white/6">
+                    <i class="fa-solid fa-ban text-2xl text-white/60"></i>
+                </div>
+                <div class="text-center max-w-xs">
+                    <h4 class="text-white font-bold">Conteúdo indisponível</h4>
+                    <p class="text-white/60 text-sm mt-2">O vídeo não pode ser carregado aqui. Tente outro episódio ou verifique a fonte.</p>
+                </div>
+            </div>
+        `;
+        playerOverlay.classList.remove('hidden');
+        // clear any closing/opening classes, then animate open
+        playerOverlay.classList.remove('player-close');
+        playerOverlay.classList.remove('player-open');
+        void playerOverlay.offsetWidth;
+        playerOverlay.classList.add('player-open');
+        return;
+    }
+
+    // Basic host-blocking for clearly unsafe hosts (kept minimal)
     try {
         const normalized = (url || '').toString().trim().toLowerCase();
-        // allow all hosts by default; keep list empty so we don't prematurely block embeds
-        const blockedHosts = [];
+        const blockedHosts = []; // reserved for future rules
         const isBlockedHost = blockedHosts.some(h => normalized.includes(h));
-        if (!url) {
+        if (isBlockedHost) {
+            console.warn('playMedia: blocked host for url', url);
             const playerOverlay = document.getElementById('page-player');
             const container = document.getElementById('player-container');
             const titleEl = document.getElementById('player-title');
-
             titleEl.textContent = title;
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center gap-4 p-6">
@@ -1108,13 +1854,12 @@ function playMedia(id, season, epIndex) {
                         <i class="fa-solid fa-ban text-2xl text-white/60"></i>
                     </div>
                     <div class="text-center max-w-xs">
-                        <h4 class="text-white font-bold">Conteúdo indisponível</h4>
-                        <p class="text-white/60 text-sm mt-2">O vídeo não pode ser carregado aqui. Tente outro episódio ou verifique a fonte.</p>
+                        <h4 class="text-white font-bold">Conteúdo bloqueado</h4>
+                        <p class="text-white/60 text-sm mt-2">O host deste vídeo não é permitido neste player.</p>
                     </div>
                 </div>
             `;
             playerOverlay.classList.remove('hidden');
-            // clear any closing/opening classes, then animate open
             playerOverlay.classList.remove('player-close');
             playerOverlay.classList.remove('player-open');
             void playerOverlay.offsetWidth;
@@ -1144,10 +1889,7 @@ function playMedia(id, season, epIndex) {
     setTimeout(() => {
         const lowerUrl = (url || '').toString().toLowerCase();
         const isMp4 = lowerUrl.endsWith('.mp4') || lowerUrl.includes('.mp4?') || lowerUrl.includes('/mp4/');
-        // use unrestricted iframe for external embeds so they run inside the site when allowed by the host
-        const safeSandbox = '';
 
-        // Helper: build the player chrome wrapper (fullscreen handled by persistent controls)
         const buildFrameWrapper = (innerHtml) => {
             return `
                 <div id="player-frame-wrapper" class="w-full h-full relative bg-black">
@@ -1156,22 +1898,31 @@ function playMedia(id, season, epIndex) {
             `;
         };
 
-        // determine if embed host is Google Drive so we can skip injecting custom controls
+        // determine if embed host is Google Drive or other hosts that should keep native chrome
         let isDriveEmbed = false;
+        let hostForUrl = '';
         try {
             const parsed = new URL(url, location.href);
             const host = (parsed.hostname || '').toLowerCase();
+            hostForUrl = host;
             if (host.includes('drive.google.com') || host.includes('googleusercontent.com') || host.includes('docs.google.com')) {
                 isDriveEmbed = true;
             }
         } catch (e) {
-            // ignore
+            // ignore parsing errors
         }
 
+        let skipInject = isDriveEmbed || false;
+        try {
+            const lowerHost = (hostForUrl || '').toLowerCase();
+            if (lowerHost.includes('tokyvideo.com') || lowerHost.includes('tokyvideo')) skipInject = true;
+            if (lowerHost.includes('brplayer') || lowerHost.includes('watch.brplayer')) skipInject = true;
+            if (id === 'it-bem-vindos-a-derry') skipInject = true;
+            if (id === 'heartstopper' && String(season) === '3') skipInject = true;
+        } catch(e){}
+
         if (isMp4) {
-            // Use Video.js for mp4 links (dynamic ESM import from esm.sh)
             const poster = item.cover || '';
-            // create a video element compatible with Video.js
             const vjsId = 'vjs_player_' + Math.random().toString(36).slice(2,9);
             const videoTag = `
                 <video id="${vjsId}" class="video-js vjs-big-play-centered w-full h-full" controls preload="metadata" poster="${poster}" playsinline webkit-playsinline>
@@ -1180,14 +1931,12 @@ function playMedia(id, season, epIndex) {
             `;
             container.innerHTML = buildFrameWrapper(videoTag);
 
-            // inject Video.js stylesheet if not present
             if (!document.getElementById('vjs-css')) {
                 const link = document.createElement('link');
                 link.id = 'vjs-css';
                 link.rel = 'stylesheet';
                 link.href = 'https://esm.sh/video.js@7.20.3/dist/video-js.css';
                 document.head.appendChild(link);
-                // inject a small theme to customize Video.js appearance
                 const style = document.createElement('style');
                 style.id = 'vjs-theme';
                 style.textContent = `
@@ -1201,29 +1950,24 @@ function playMedia(id, season, epIndex) {
                 document.head.appendChild(style);
             }
 
-            // dynamic import of Video.js from esm.sh and initialize player
             (async () => {
                 try {
                     const module = await import('https://esm.sh/video.js@7.20.3');
                     const videojs = module?.default || module;
                     const vEl = document.getElementById(vjsId);
-                    // create player with fluid responsive layout and a slightly customized control bar
-                    // Initialize Video.js without native controls (we'll use our persistent custom controls)
                     const player = videojs(vEl, {
-                        controls: false,     // hide Video.js built-in controls
-                        autoplay: false,     // autoplay attempts handled after attach
+                        controls: false,
+                        autoplay: false,
                         preload: 'auto',
                         fluid: true,
                         controlBar: false
                     });
-                    // store reference for cleanup
                     playerOverlay._vjsPlayer = player;
 
-                    // attach our persistent overlay controls (works with Video.js). Pass a getter returning the Video.js player instance.
-                    // skip injecting controls for Drive-hosted content (Drive manages its own chrome)
-                    createPlayerControls(playerOverlay, true, () => player, { skipControls: isDriveEmbed });
+                    if (isMp4 && !isDriveEmbed) {
+                        createPlayerControls(playerOverlay, true, () => player, { skipControls: false });
+                    }
 
-                    // Try to play (if autoplay is blocked, fallback to muted play later)
                     player.ready(() => {
                         player.play().catch(() => {
                             player.muted(true);
@@ -1232,59 +1976,260 @@ function playMedia(id, season, epIndex) {
                     });
                 } catch (err) {
                     console.warn('Video.js load/init failed, falling back to native video element', err);
-                    // fallback: simple native video (best-effort)
-                    // Use native video element but hide native browser controls — rely on persistent custom controls
                     container.innerHTML = buildFrameWrapper(`
                         <video id="native-video" class="w-full h-full bg-black" src="${url}" poster="${poster}" autoplay playsinline webkit-playsinline preload="metadata"></video>
                     `);
                     const videoEl = document.getElementById('native-video');
-                    // attach persistent controls for native video (provide facade for native element)
-                    createPlayerControls(playerOverlay, true, () => videoEl, { skipControls: isDriveEmbed });
+                    if (isMp4 && !isDriveEmbed) {
+                        createPlayerControls(playerOverlay, true, () => videoEl, { skipControls: false });
+                    }
                     videoEl.play().catch(()=>{});
-                    // fullscreen is managed by the persistent controls (no per-frame fullscreen button)
                 }
             })();
         } else {
-            // For all other links (embed hosts or generic urls) embed them in an iframe inside the player
-            // Use a permissive allow attribute to enable fullscreen/autoplay/clipboard where hosts permit it.
-            // make embeds responsive and mobile-friendly: wrap iframe in a fluid container,
-            // ensure allow attributes and playsinline where applicable and add a min-height for small viewports
-            // Build a conservative set of iframe attributes by default
             let safeIframeAttr = 'allow="autoplay; fullscreen; encrypted-media; clipboard-write; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-forms allow-scripts allow-presentation"';
 
-            // For known embed hosts that should NOT be allowed to open external windows / navigate top-level,
-            // tighten the sandbox to prevent popups, top-navigation and same-origin privileges.
             try {
                 const parsed = new URL(url, location.href);
                 const host = (parsed.hostname || '').toLowerCase();
 
                 if (host.includes('tokyvideo.com')) {
-                    // Tokyvideo embeds: keep restrictive sandbox to avoid popups or navigation
                     safeIframeAttr = 'allow="autoplay; picture-in-picture" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts"';
+                } else if (host.includes('playerflixapi.com')) {
+                    safeIframeAttr = 'allow="autoplay; fullscreen; encrypted-media; clipboard-write; picture-in-picture; web-share" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups"';
                 } else if (host.includes('drive.google.com') || host.includes('googleusercontent.com') || host.includes('docs.google.com')) {
-                    // Google Drive / Drive preview hosts: treat as trusted for embedding.
-                    // Allow same-origin and scripts so the Drive preview player functions correctly,
-                    // and allow popups so features like fullscreen & share can work.
                     safeIframeAttr = 'allow="autoplay; fullscreen; encrypted-media; clipboard-write; picture-in-picture; web-share" allowfullscreen referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups"';
                 }
             } catch (e) {
-                // if URL parsing fails, keep the conservative default
+                // keep default
             }
 
-            const iframeHtml = `
-                <div style="width:100%;height:100%;min-height:56vh;display:flex;align-items:center;justify-content:center;background:#000">
-                    <iframe src="${url}" style="width:100%;height:100%;border:0;display:block;min-height:56vh;" ${safeIframeAttr}></iframe>
-                </div>
-            `;
+            // Special handling for YouTube links: use YouTube IFrame API and a custom overlayed play/pause button
+            const isYouTube = (() => {
+                try {
+                    const parsed = new URL(url, location.href);
+                    const host = (parsed.hostname || '').toLowerCase();
+                    return host.includes('youtube.com') || host.includes('youtu.be');
+                } catch (e) {
+                    return String(url).includes('youtube') || String(url).includes('youtu.be');
+                }
+            })();
 
-            container.innerHTML = buildFrameWrapper(iframeHtml);
+            if (isYouTube) {
+                // extract embed-friendly video id or full embed url
+                let ytEmbedSrc = url;
+                try {
+                    const parsed = new URL(url, location.href);
+                    // handle common forms: /embed/ID, watch?v=ID, youtu.be/ID
+                    if (parsed.hostname.includes('youtu.be')) {
+                        const vid = parsed.pathname.slice(1);
+                        ytEmbedSrc = `https://www.youtube.com/embed/${vid}?enablejsapi=1`;
+                    } else if (parsed.searchParams && parsed.searchParams.get('v')) {
+                        const vid = parsed.searchParams.get('v');
+                        ytEmbedSrc = `https://www.youtube.com/embed/${vid}?enablejsapi=1`;
+                    } else if (parsed.pathname.includes('/embed/')) {
+                        // ensure enablejsapi
+                        ytEmbedSrc = url.includes('enablejsapi=1') ? url : (url + (url.includes('?') ? '&enablejsapi=1' : '?enablejsapi=1'));
+                    } else {
+                        // fallback to ensuring enablejsapi present
+                        ytEmbedSrc = url + (url.includes('?') ? '&enablejsapi=1' : '?enablejsapi=1');
+                    }
+                } catch (e) {
+                    if (!ytEmbedSrc.includes('enablejsapi=1')) ytEmbedSrc = ytEmbedSrc + (ytEmbedSrc.includes('?') ? '&enablejsapi=1' : '?enablejsapi=1');
+                }
 
-            // For iframe embeds we still add the persistent controls but with limited functionality (close, fullscreen, jump)
-            // HOWEVER: Do not inject our custom persistent controls for Google Drive/doc embeds so Drive's native chrome remains untouched
-            createPlayerControls(playerOverlay, false, null, { skipControls: isDriveEmbed });
+                const iframeHtml = `
+                    <div class="player-wrapper" style="position:relative;width:100%;height:100%;min-height:56vh;display:flex;align-items:center;justify-content:center;background:#000;">
+                        <div id="lumina-yt-player" style="width:100%;height:100%;pointer-events:none;"></div>
+
+                        <button id="lumina-yt-playpause" aria-label="Play/Pause" style="position:absolute;inset:0;margin:auto;width:80px;height:80px;border-radius:50%;font-size:30px;cursor:pointer;background:linear-gradient(90deg,#7c3aed,#d946ef);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(124,58,237,0.18);">
+                            <i class="fa-solid fa-play" style="color:white;font-size:26px;"></i>
+                        </button>
+                        <div style="display:none" id="lumina-yt-iframe-src">${ytEmbedSrc}</div>
+                    </div>
+                    <style>
+                        /* minimal pointer handling so clicks go to our play control only */
+                        #lumina-yt-player iframe { width:100%; height:100%; border:0; display:block; }
+                        /* ensure overlay button remains visible on small screens */
+                        @media (max-width:420px) {
+                            #lumina-yt-playpause { width:64px;height:64px;font-size:22px; }
+                        }
+                    </style>
+                `;
+
+                container.innerHTML = buildFrameWrapper(iframeHtml);
+
+                // Load YT API once
+                if (!window.__lumina_youtube_api_loading) {
+                    window.__lumina_youtube_api_loading = true;
+                    if (!window.YT) {
+                        const tag = document.createElement('script');
+                        tag.src = "https://www.youtube.com/iframe_api";
+                        document.head.appendChild(tag);
+                    }
+                }
+
+                // create or replace player after API is ready
+                function createYTPlayer() {
+                    try {
+                        const srcDiv = document.getElementById('lumina-yt-iframe-src');
+                        if (!srcDiv) return;
+                        const src = srcDiv.textContent || srcDiv.innerText || '';
+                        // remove any previous player container content
+                        const wrap = document.getElementById('lumina-yt-player');
+                        if (!wrap) return;
+
+                        // Build an iframe element but with player parameters that disable native controls and keyboard
+                        // We'll use the JS API (enablejsapi=1) but set playerVars to hide native UI so our custom controls take over.
+                        // append required params safely
+                        const sep = src.includes('?') ? '&' : '?';
+                        let embedWithParams = src + sep + 'rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
+                        // Use the iframe src directly for the player creation; YT.Player will respect playerVars below too.
+                        wrap.innerHTML = '';
+                        const placeholder = document.createElement('div');
+                        placeholder.id = 'lumina-yt-placeholder';
+                        placeholder.style.width = '100%';
+                        placeholder.style.height = '100%';
+                        wrap.appendChild(placeholder);
+
+                        // If a previous player exists, destroy it first
+                        if (window.__luminaYTPlayerInstance) {
+                            try { window.__luminaYTPlayerInstance.destroy(); } catch(e){}
+                            window.__luminaYTPlayerInstance = null;
+                        }
+
+                        // Create player with minimal native controls (controls:0) and disabled keyboard
+                        window.__luminaYTPlayerInstance = new YT.Player('lumina-yt-placeholder', {
+                            height: '100%',
+                            width: '100%',
+                            host: 'https://www.youtube.com',
+                            videoId: (function() {
+                                try {
+                                    const u = new URL(ytEmbedSrc, location.href);
+                                    // parse embed path /embed/VIDEOID
+                                    const m = u.pathname.match(/\/embed\/([^/?&]+)/);
+                                    if (m && m[1]) return m[1];
+                                    // fallback to query 'v'
+                                    const q = u.searchParams.get('v');
+                                    if (q) return q;
+                                } catch(e){}
+                                // last resort: return full src so player can decide
+                                return '';
+                            })(),
+                            playerVars: {
+                                controls: 0,
+                                disablekb: 1,
+                                modestbranding: 1,
+                                rel: 0,
+                                playsinline: 1,
+                                iv_load_policy: 3,
+                                showinfo: 0
+                            },
+                            events: {
+                                onReady: (ev) => {
+                                    // Keep iframe pointer-events disabled to avoid native clicks interfering;
+                                    // our controls will drive playback via the YT API.
+                                    try {
+                                        const iframeEl = wrap.querySelector('iframe');
+                                        if (iframeEl) iframeEl.style.pointerEvents = 'none';
+                                    } catch (err) { /* ignore */ }
+
+                                    // Attach our overlay play button to operate via YT API too
+                                    const playBtn = document.getElementById('lumina-yt-playpause');
+                                    const icon = playBtn.querySelector('i');
+                                    playBtn.onclick = () => {
+                                        const p = window.__luminaYTPlayerInstance;
+                                        if (!p) return;
+                                        const state = p.getPlayerState();
+                                        if (state === YT.PlayerState.PLAYING || state === YT.PlayerState.BUFFERING) {
+                                            p.pauseVideo();
+                                            icon.className = 'fa-solid fa-play';
+                                        } else {
+                                            p.playVideo();
+                                            icon.className = 'fa-solid fa-pause';
+                                        }
+                                    };
+
+                                    // Create our unified custom controls (same controls used for mp4)
+                                    // Provide a player facade that createPlayerControls can use.
+                                    createPlayerControls(playerOverlay, true, () => {
+                                        // return a facade object compatible with createPlayerControls expectations
+                                        const p = window.__luminaYTPlayerInstance;
+                                        if (!p) return null;
+                                        return {
+                                            // Video.js-like facade
+                                            play: () => p.playVideo(),
+                                            pause: () => p.pauseVideo(),
+                                            paused: () => {
+                                                const st = p.getPlayerState();
+                                                return !(st === YT.PlayerState.PLAYING || st === YT.PlayerState.BUFFERING);
+                                            },
+                                            currentTime: (val) => {
+                                                try {
+                                                    if (typeof val === 'number') {
+                                                        p.seekTo(Math.max(0, val), true);
+                                                        return val;
+                                                    } else {
+                                                        // YT API returns seconds via getCurrentTime
+                                                        return p.getCurrentTime();
+                                                    }
+                                                } catch (e) { return 0; }
+                                            },
+                                            duration: () => {
+                                                try {
+                                                    const d = p.getDuration();
+                                                    return isNaN(d) ? 0 : d;
+                                                } catch (e) { return 0; }
+                                            },
+                                            mute: (m) => {
+                                                try { if (m) p.mute(); else p.unMute(); } catch(e){}
+                                            }
+                                        };
+                                    }, { skipControls: false });
+
+                                },
+                                onStateChange: (ev) => {
+                                    // keep overlay icon synced for quick visual feedback
+                                    const playBtn = document.getElementById('lumina-yt-playpause');
+                                    if (!playBtn) return;
+                                    const icon = playBtn.querySelector('i');
+                                    if (ev.data === YT.PlayerState.PLAYING) {
+                                        icon.className = 'fa-solid fa-pause';
+                                    } else if (ev.data === YT.PlayerState.ENDED) {
+                                        icon.className = 'fa-solid fa-rotate-right';
+                                    } else {
+                                        icon.className = 'fa-solid fa-play';
+                                    }
+                                }
+                            }
+                        });
+                    } catch (e) {
+                        console.warn('createYTPlayer error', e);
+                    }
+                }
+
+                // If YT API already loaded, create immediately, otherwise hook into onYouTubeIframeAPIReady
+                if (window.YT && window.YT.Player) {
+                    createYTPlayer();
+                } else {
+                    // attach/override global callback safely
+                    const prev = window.onYouTubeIframeAPIReady;
+                    window.onYouTubeIframeAPIReady = function() {
+                        try { if (typeof prev === 'function') prev(); } catch(e){}
+                        createYTPlayer();
+                    };
+                }
+
+            } else {
+                const iframeHtml = `
+                    <div style="width:100%;height:100%;min-height:56vh;display:flex;align-items:center;justify-content:center;background:#000">
+                        <iframe src="${url}" style="width:100%;height:100%;border:0;display:block;min-height:56vh;" ${safeIframeAttr}></iframe>
+                    </div>
+                `;
+                container.innerHTML = buildFrameWrapper(iframeHtml);
+            }
         }
 
-        // Keyboard: ESC closes player or exits fullscreen
         const escHandler = (ev) => {
             if (ev.key === 'Escape') {
                 if (document.fullscreenElement) {
@@ -1303,7 +2248,9 @@ function playMedia(id, season, epIndex) {
     let durationLabel = '—';
     try {
         if (item.type === 'serie') {
-            const ep = item.seasons[season][epIndex];
+            const seasons = item.seasons || {};
+            const seasonKey = season && seasons[season] ? season : Object.keys(seasons)[0];
+            const ep = seasonKey && seasons[seasonKey] ? (seasons[seasonKey][epIndex] || null) : null;
             durationLabel = ep && ep.duration ? ep.duration : '42 min';
         } else {
             durationLabel = item.duration ? item.duration : '—';
@@ -1312,7 +2259,7 @@ function playMedia(id, season, epIndex) {
         durationLabel = '—';
     }
 
-    addToHistory(id, title, durationLabel, (item.type === 'serie' ? epIndex : null));
+    addToHistory(id, title, durationLabel, (item.type === 'serie' ? season : null), (item.type === 'serie' ? epIndex : null));
 }
 
 function closePlayer() {
@@ -1424,14 +2371,15 @@ function closePlayer() {
     }
 }
 
-function addToHistory(id, epTitle, duration = null, epIndex = null, positionSeconds = null) {
-    // keep unique per id, store last episode title, duration, index and position for better Continue Assistindo info
+function addToHistory(id, epTitle, duration = null, season = null, epIndex = null, positionSeconds = null) {
+    // keep unique per id, store last episode title, duration, season, index and position for better Continue Assistindo info
     // If an entry for this id exists, update it; otherwise insert at top
     let existing = state.history.find(h => h.id === id);
     const now = new Date().toISOString();
     if (existing) {
         existing.lastEpisodeTitle = epTitle || existing.lastEpisodeTitle || null;
         existing.duration = duration || existing.duration || null;
+        existing.season = (season !== null ? season : existing.season !== undefined ? existing.season : null);
         existing.episodeIndex = (epIndex !== null ? epIndex : existing.episodeIndex !== undefined ? existing.episodeIndex : null);
         existing.position = (positionSeconds !== null ? positionSeconds : existing.position || 0);
         existing.date = now;
@@ -1443,6 +2391,7 @@ function addToHistory(id, epTitle, duration = null, epIndex = null, positionSeco
             id,
             lastEpisodeTitle: epTitle || null,
             duration: duration || null,
+            season: (season !== null ? season : null),
             episodeIndex: (epIndex !== null ? epIndex : null),
             position: (positionSeconds !== null ? positionSeconds : 0),
             date: now
@@ -1456,7 +2405,7 @@ function addToHistory(id, epTitle, duration = null, epIndex = null, positionSeco
 
     // Also mark last-watched pointer for quick lookup (store separately for fast access/highlighting)
     try {
-        const pointer = { id, episodeIndex: (epIndex !== null ? epIndex : null), date: now, position: (positionSeconds !== null ? positionSeconds : 0) };
+        const pointer = { id, season: (season !== null ? season : null), episodeIndex: (epIndex !== null ? epIndex : null), date: now, position: (positionSeconds !== null ? positionSeconds : 0) };
         localStorage.setItem('lumina_last_watched', JSON.stringify(pointer));
     } catch(e){}
 }
@@ -1464,130 +2413,57 @@ function addToHistory(id, epTitle, duration = null, epIndex = null, positionSeco
 function viewAll(type) {
     // Show search-like horizontal list for a specific type
     navigate('search');
+    // hide the recommendations section so Search displays the focused "Ver tudo" results
+    document.getElementById('recommendations-section')?.classList.add('hidden');
+
     const results = contentDB.filter(i => i.type === type);
     const grid = document.getElementById('search-results');
     const titleEl = document.getElementById('search-title');
     const emptyEl = document.getElementById('search-empty');
 
-    document.getElementById('searchInput').value = '';
+    // clear search input and set title
+    const inputEl = document.getElementById('searchInput');
+    if (inputEl) inputEl.value = '';
     titleEl.textContent = type === 'serie' ? 'Séries' : 'Filmes';
     titleEl.classList.remove('hidden');
 
     if (results.length === 0) {
         grid.innerHTML = '';
         emptyEl.classList.remove('hidden');
+        // ensure arrows are hidden when no results
+        document.getElementById('search-results-wrap')?.classList.add('hide-arrows');
         return;
     } else {
         emptyEl.classList.add('hidden');
     }
 
-    // When viewAll is used to populate search results, render cinematic cards consistent with home
-    grid.innerHTML = results.map((item, idx) => {
+    const isSmallScreen = window.innerWidth <= 420;
+
+    const mobileCard = (item, idx) => {
+        const lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null');
+        const lastEp = lastWatched && lastWatched.id === item.id ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${lastWatched.lastEpisodeTitle || ''}</div>` : '';
+        const duration = item.duration ? `<span class="text-[11px] text-white/40">${item.duration}</span>` : '';
         return `
-            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
-                <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
-                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" loading="lazy">
-                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90"></div>
-
-                    <div class="absolute left-4 bottom-4 right-4 flex items-center justify-between gap-3">
-                        <div>
-                            <div class="text-sm font-bold text-white leading-tight">${item.title}</div>
-                            <div class="text-[12px] text-white/60 mt-1">${item.category || ''} • ${item.year || ''}</div>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <button onclick="event.stopPropagation(); playMedia('${item.id}', '', 0)" class="w-12 h-12 rounded-full btn-liquid flex items-center justify-center shadow-lg border border-white/10">
-                                <i class="fa-solid fa-play text-white text-sm"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); toggleFavorite('${item.id}')" class="w-10 h-10 rounded-xl glass flex items-center justify-center border border-white/8">
-                                <i class="${state.favorites.includes(item.id) ? 'fa-solid text-purple-400' : 'fa-regular text-white/90'} fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
+            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
+                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy">
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                    <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
                 </div>
-
                 <div class="px-1">
-                    <p class="text-sm font-semibold truncate text-white/90 group-hover:text-purple-300 transition-colors">${item.title}</p>
-                    <p class="text-[11px] text-white/40 truncate">${item.description || ''}</p>
+                    <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                    <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                    ${lastEp}
                 </div>
             </div>
         `;
-    }).join('');
-}
+    };
 
-/* Render a recommendations horizontal list shown under the search when empty */
-function renderRecommendations(limit = 8) {
-    const recContainer = document.getElementById('recommendations-list');
-    if (!recContainer) return;
-    // Simple recommendation strategy: hero first, then top-rated, then recent movies
-    const hero = contentDB.filter(i => i.isHero);
-    const rated = contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0));
-    const recent = contentDB.slice().reverse().filter(i => i.type === 'filme');
-    const combined = [...new Set([...hero, ...rated, ...recent, ...contentDB])].slice(0, limit);
-
-    recContainer.innerHTML = combined.map((item, idx) => `
-        <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
-            <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 overflow-hidden relative">
-                <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
-                <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
-            </div>
-            <div class="px-1">
-                <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
-                <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
-            </div>
-        </div>
-    `).join('');
-}
-
-function setupSearch() {
-    const input = document.getElementById('searchInput');
-    const grid = document.getElementById('search-results');
-    const titleEl = document.getElementById('search-title');
-    const emptyEl = document.getElementById('search-empty');
-
-    // initial recommendations render
-    renderRecommendations();
-
-    input.addEventListener('input', (e) => {
-        const query = e.target.value.toLowerCase().trim();
-        titleEl.classList.add('hidden');
-        emptyEl.classList.add('hidden');
-
-        if (query.length < 2) {
-            // show recommendations when search is empty/short
-            grid.innerHTML = '';
-            titleEl.classList.add('hidden');
-            emptyEl.classList.add('hidden');
-            document.getElementById('recommendations-section')?.classList.remove('hidden');
-            renderRecommendations();
-            return;
-        }
-
-        // hide recommendations when actively searching
-        document.getElementById('recommendations-section')?.classList.add('hidden');
-
-        const results = contentDB.filter(i =>
-            i.title.toLowerCase().includes(query) ||
-            (i.category && i.category.toLowerCase().includes(query)) ||
-            (i.description && i.description.toLowerCase().includes(query))
-        );
-
-        if (results.length === 0) {
-            grid.innerHTML = '';
-            emptyEl.classList.remove('hidden');
-            return;
-        }
-
-        titleEl.classList.remove('hidden');
-
-        // Render search results using the same cinematic card used on home for consistency
+    if (isSmallScreen) {
+        grid.innerHTML = results.map((item, idx) => mobileCard(item, idx)).join('');
+    } else {
+        // When viewAll is used to populate search results, render cinematic cards consistent with home
         grid.innerHTML = results.map((item, idx) => {
-            const ratingHtml = item.ratings ? `<div class="mt-2 flex items-center gap-2">
-                <span class="px-2 py-0.5 rounded bg-white/6 text-[11px] font-semibold">${item.ratings.imdb} IMDb</span>
-                <span class="px-2 py-0.5 rounded bg-white/6 text-[11px] font-semibold">${item.ratings.rottenTomatoes}% RT</span>
-            </div>` : '';
             return `
                 <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
                     <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
@@ -1612,14 +2488,190 @@ function setupSearch() {
 
                         <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
                     </div>
+
                     <div class="px-1">
                         <p class="text-sm font-semibold truncate text-white/90 group-hover:text-purple-300 transition-colors">${item.title}</p>
                         <p class="text-[11px] text-white/40 truncate">${item.description || ''}</p>
-                        ${ratingHtml}
                     </div>
                 </div>
             `;
         }).join('');
+    }
+
+    // ensure search view is scrolled to top of results to avoid leftover vertical gaps
+    try { grid.parentElement?.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch(e){}
+
+    // Important: ensure the search-results wrapper shows its arrows (remove any hide-arrows left by recommendations)
+    document.getElementById('search-results-wrap')?.classList.remove('hide-arrows');
+
+    // Recompute clamp bounds after rendering
+    setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 120);
+}
+
+/* Render a recommendations horizontal list shown under the search when empty */
+function renderRecommendations(limit = 8) {
+    const recContainer = document.getElementById('recommendations-list');
+    if (!recContainer) return;
+
+    // When recommendations are shown, ensure the search-results wrapper arrows are hidden
+    // to avoid duplicate arrow controls appearing beneath the Recommendations section.
+    document.getElementById('search-results-wrap')?.classList.add('hide-arrows');
+
+    // Simple recommendation strategy: hero first, then top-rated, then recent movies
+    const hero = contentDB.filter(i => i.isHero);
+    const rated = contentDB.filter(i => i.ratings).sort((a,b) => (b.ratings.imdb||0) - (a.ratings.imdb||0));
+    const recent = contentDB.slice().reverse().filter(i => i.type === 'filme');
+    const combined = [...new Set([...hero, ...rated, ...recent, ...contentDB])].slice(0, limit);
+
+    const isSmallScreen = window.innerWidth <= 420;
+
+    const mobileCard = (item, idx) => {
+        const lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null');
+        const lastEp = lastWatched && lastWatched.id === item.id ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${lastWatched.lastEpisodeTitle || ''}</div>` : '';
+        const duration = item.duration ? `<span class="text-[11px] text-white/40">${item.duration}</span>` : '';
+        return `
+            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
+                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy">
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                    <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
+                </div>
+                <div class="px-1">
+                    <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                    <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                    ${lastEp}
+                </div>
+            </div>
+        `;
+    };
+
+    if (isSmallScreen) {
+        recContainer.innerHTML = combined.map((item, idx) => mobileCard(item, idx)).join('');
+    } else {
+        recContainer.innerHTML = combined.map((item, idx) => `
+            <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 overflow-hidden relative">
+                    <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                </div>
+                <div class="px-1">
+                    <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                    <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+function setupSearch() {
+    const input = document.getElementById('searchInput');
+    const grid = document.getElementById('search-results');
+    const titleEl = document.getElementById('search-title');
+    const emptyEl = document.getElementById('search-empty');
+
+    // initial recommendations render
+    renderRecommendations();
+
+    input.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase().trim();
+        titleEl.classList.add('hidden');
+        emptyEl.classList.add('hidden');
+
+        if (query.length < 2) {
+            // show recommendations when search is empty/short
+            grid.innerHTML = '';
+            titleEl.classList.add('hidden');
+            emptyEl.classList.add('hidden');
+            document.getElementById('recommendations-section')?.classList.remove('hidden');
+            // hide the duplicate arrows under recommendations by marking the search results wrapper
+            document.getElementById('search-results-wrap')?.classList.add('hide-arrows');
+            renderRecommendations();
+            return;
+        }
+
+        // hide recommendations when actively searching
+        document.getElementById('recommendations-section')?.classList.add('hidden');
+        // ensure arrows reappear for actual search results
+        document.getElementById('search-results-wrap')?.classList.remove('hide-arrows');
+
+        const results = contentDB.filter(i =>
+            i.title.toLowerCase().includes(query) ||
+            (i.category && i.category.toLowerCase().includes(query)) ||
+            (i.description && i.description.toLowerCase().includes(query))
+        );
+
+        if (results.length === 0) {
+            grid.innerHTML = '';
+            emptyEl.classList.remove('hidden');
+            return;
+        }
+
+        titleEl.classList.remove('hidden');
+
+        // Render search results using the same cinematic card used on home for consistency,
+        // but on small/mobile screens render the compact Continue Assistindo style for consistency across Search and My List.
+        const isSmallScreen = window.innerWidth <= 420;
+        const mobileCard = (item, idx) => {
+            const lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null');
+            const lastEp = lastWatched && lastWatched.id === item.id ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${lastWatched.lastEpisodeTitle || ''}</div>` : '';
+            const duration = item.duration ? `<span class="text-[11px] text-white/40">${item.duration}</span>` : '';
+            return `
+                <div onclick="openDetail('${item.id}')" class="card-container snap-item w-72 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                    <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
+                        <img src="${item.cover}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy">
+                        <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${item.year || ''}</div>
+                        <div class="absolute top-3 left-3 bg-black/30 px-2 py-1 rounded text-[11px] text-white/80">${duration}</div>
+                    </div>
+                    <div class="px-1">
+                        <p class="text-sm font-bold truncate text-white/90 group-hover:text-purple-400 transition-colors">${item.title}</p>
+                        <p class="text-[11px] text-white/40 truncate">${item.category || ''}</p>
+                        ${lastEp}
+                    </div>
+                </div>
+            `;
+        };
+
+        if (isSmallScreen) {
+            grid.innerHTML = results.map((item, idx) => mobileCard(item, idx)).join('');
+        } else {
+            grid.innerHTML = results.map((item, idx) => {
+                const ratingHtml = item.ratings ? `<div class="mt-2 flex items-center gap-2">
+                    <span class="px-2 py-0.5 rounded bg-white/6 text-[11px] font-semibold">${item.ratings.imdb} IMDb</span>
+                    <span class="px-2 py-0.5 rounded bg-white/6 text-[11px] font-semibold">${item.ratings.rottenTomatoes}% RT</span>
+                </div>` : '';
+                return `
+                    <div onclick="openDetail('${item.id}')" class="card-container snap-item w-96 md:w-104 flex-shrink-0 cursor-pointer group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                        <div class="card-image-wrap rounded-2xl mb-3 bg-white/5 overflow-hidden relative" style="height:170px;">
+                            <img src="${item.cover}" class="w-full h-full object-cover transition-transform duration-600 group-hover:scale-105" loading="lazy">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-90"></div>
+
+                            <div class="absolute left-4 bottom-4 right-4 flex items-center justify-between gap-3">
+                                <div>
+                                    <div class="text-sm font-bold text-white leading-tight">${item.title}</div>
+                                    <div class="text-[12px] text-white/60 mt-1">${item.category || ''} • ${item.year || ''}</div>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <button onclick="event.stopPropagation(); playMedia('${item.id}', '', 0)" class="w-12 h-12 rounded-full btn-liquid flex items-center justify-center shadow-lg border border-white/10">
+                                        <i class="fa-solid fa-play text-white text-sm"></i>
+                                    </button>
+                                    <button onclick="event.stopPropagation(); toggleFavorite('${item.id}')" class="w-10 h-10 rounded-xl glass flex items-center justify-center border border-white/8">
+                                        <i class="${state.favorites.includes(item.id) ? 'fa-solid text-purple-400' : 'fa-regular text-white/90'} fa-bookmark"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="absolute top-3 left-3 px-2 py-1 rounded-full bg-white/6 text-[12px] font-semibold text-white">${(item.category || '').split('/')[0] || ''}</div>
+                        </div>
+                        <div class="px-1">
+                            <p class="text-sm font-semibold truncate text-white/90 group-hover:text-purple-300 transition-colors">${item.title}</p>
+                            <p class="text-[11px] text-white/40 truncate">${item.description || ''}</p>
+                            ${ratingHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
     });
 }
 
@@ -1722,11 +2774,9 @@ function showNamePrompt(onComplete) {
     skipBtn.onclick = () => cleanupAndFinish('');
     input.addEventListener('keyup', inputKeyListener);
 
-    // close if clicking outside the card
-    function outsideClick(e) {
-        if (!card.contains(e.target)) cleanupAndFinish('');
-    }
-    setTimeout(() => document.addEventListener('pointerdown', outsideClick, { once: true }), 200);
+    // For a more app-like experience, require explicit actions (buttons) to dismiss the name prompt.
+    // (Remove outside-click-to-close behavior to avoid accidental dismissal.)
+    // Note: keeping focus trap and explicit Save/Pular buttons for dismissal.
 }
 
 function handleDeepLinkPlay(id) {
@@ -1748,35 +2798,45 @@ function handleDeepLinkPlay(id) {
     }
 }
 
-/* On load: show name prompt if not set, then initialize and handle ?play= deep link */
-window.onload = () => {
-    // read deep play param from URL
-    const params = new URLSearchParams(location.search);
-    const deepPlay = params.get('play');
+/* On load: show name prompt if not set, then initialize and handle ?play= deep link
+   Improved: use DOMContentLoaded, defensive null checks and small throttles to avoid heavy work during load on mobile. */
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        const params = new URLSearchParams(location.search || '');
+        const deepPlay = params.get('play');
 
-    const storedName = localStorage.getItem('lumina_name');
-    if (!storedName) {
-        // show prompt, then init and handle deep link after user submits/skip
-        showNamePrompt((givenName) => {
-            // store empty string as well (explicit)
-            if (givenName !== null && givenName !== undefined) {
-                localStorage.setItem('lumina_name', givenName || '');
-            }
-            // initialize app and then handle deep play if present
+        const storedName = localStorage.getItem('lumina_name');
+        if (!storedName) {
+            // show prompt, then init and handle deep link after user submits/skip
+            showNamePrompt((givenName) => {
+                try {
+                    if (givenName !== null && givenName !== undefined) {
+                        localStorage.setItem('lumina_name', givenName || '');
+                    }
+                } catch (e) {}
+                // initialize app and then handle deep play if present
+                init(deepPlay);
+                if (deepPlay) {
+                    // small timeout to ensure UI ready
+                    setTimeout(() => {
+                        try { handleDeepLinkPlay(deepPlay); } catch(e){}
+                    }, 600);
+                }
+            });
+        } else {
+            // name exists: init immediately and handle deep play
             init(deepPlay);
             if (deepPlay) {
-                // small timeout to ensure UI ready
-                setTimeout(() => handleDeepLinkPlay(deepPlay), 500);
+                setTimeout(() => {
+                    try { handleDeepLinkPlay(deepPlay); } catch(e){}
+                }, 400);
             }
-        });
-    } else {
-        // name exists: init immediately and handle deep play
-        init(deepPlay);
-        if (deepPlay) {
-            setTimeout(() => handleDeepLinkPlay(deepPlay), 300);
         }
+    } catch (e) {
+        // fallback: ensure app still initializes even if URL parsing fails
+        try { init(null); } catch (err) { console.error('Init failed', err); }
     }
-};
+});
 
 /* --- Player persistent controls helper (injects a fixed overlay visible in fullscreen) --- */
 function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, options = {}) {
@@ -1786,7 +2846,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
     // avoid duplicating
     if (document.getElementById('lumina-player-controls')) return;
 
-    // inject stylesheet once
+    // inject stylesheet once (includes auto-hide behavior)
     if (!document.getElementById('lumina-player-controls-css')) {
         const css = document.createElement('style');
         css.id = 'lumina-player-controls-css';
@@ -1801,7 +2861,15 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
     gap: 10px;
     align-items: center;
     justify-content: center;
+    pointer-events: none;            /* default: not interactive until shown */
+    opacity: 0;
+    transition: opacity 260ms cubic-bezier(.2,.9,.2,1), transform 260ms;
+    transform: translateY(8px);
+}
+#lumina-player-controls.visible {
     pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
 }
 #lumina-player-controls .lpc-btn {
     min-width: 52px;
@@ -1829,11 +2897,15 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
 
     const controls = document.createElement('div');
     controls.id = 'lumina-player-controls';
+    // start hidden; we'll add .visible when user interacts
+    controls.classList.remove('visible');
     controls.innerHTML = `
         <button class="lpc-secondary lpc-btn-close" title="Fechar (Esc)"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="lpc-secondary lpc-btn-prev-ep" title="Episódio Anterior"><i class="fa-solid fa-backward-step"></i></button>
         <button class="lpc-secondary lpc-btn-back" title="-10s"><i class="fa-solid fa-rotate-left"></i></button>
         <button class="lpc-btn lpc-btn-play" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
         <button class="lpc-secondary lpc-btn-forward" title="+10s"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="lpc-secondary lpc-btn-next-ep" title="Próximo Episódio"><i class="fa-solid fa-forward-step"></i></button>
         <input class="lpc-range" type="range" min="0" max="100" value="0" />
         <button class="lpc-secondary lpc-btn-full" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
     `;
@@ -1946,6 +3018,67 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
         } catch(e){}
     });
 
+    // Next / Previous Episode handlers: use the current playing context to jump to adjacent episodes if available.
+    const prevEpBtn = controls.querySelector('.lpc-btn-prev-ep');
+    const nextEpBtn = controls.querySelector('.lpc-btn-next-ep');
+
+    function navigateEpisode(delta) {
+        try {
+            // Try to get the current playing context from memory, fall back to last-watched pointer
+            let playing = window.__lumina_current_playing || null;
+            if (!playing || !playing.id) {
+                try { playing = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e) { playing = null; }
+            }
+            if (!playing || !playing.id) return;
+
+            const item = contentDB.find(i => i.id === playing.id);
+            if (!item || item.type !== 'serie') return;
+            const seasons = item.seasons || {};
+            const seasonKeys = Object.keys(seasons).sort((a,b) => Number(a) - Number(b));
+            // Resolve a valid season key: prefer playing.season, then last-watched, then first available season
+            let seasonKey = (playing.season !== null && playing.season !== undefined) ? String(playing.season) : null;
+            if (!seasonKey || !seasons[seasonKey]) {
+                seasonKey = seasonKeys.length ? String(seasonKeys[0]) : null;
+            }
+            if (!seasonKey) return;
+
+            // Resolve a numeric episode index robustly
+            let idx = (playing.episodeIndex !== null && playing.episodeIndex !== undefined) ? Number(playing.episodeIndex) : 0;
+            if (isNaN(idx) || idx < 0) idx = 0;
+
+            const eps = seasons[seasonKey] || [];
+            const newIdx = idx + Number(delta || 0);
+
+            // If within same season, play directly
+            if (newIdx >= 0 && newIdx < eps.length) {
+                playMedia(playing.id, seasonKey, newIdx);
+                return;
+            }
+
+            // Otherwise try adjacent seasons (previous or next)
+            const currentSeasonIndex = seasonKeys.indexOf(seasonKey);
+            const targetSeasonIndex = delta > 0 ? currentSeasonIndex + 1 : currentSeasonIndex - 1;
+            if (targetSeasonIndex >= 0 && targetSeasonIndex < seasonKeys.length) {
+                const targetSeason = String(seasonKeys[targetSeasonIndex]);
+                const targetEps = seasons[targetSeason] || [];
+                const targetIdx = delta > 0 ? 0 : Math.max(0, targetEps.length - 1);
+                playMedia(playing.id, targetSeason, targetIdx);
+                return;
+            }
+
+            // If we reach here nothing changed (either out of bounds or single-episode series) — no-op
+        } catch (e) {
+            console.warn('navigateEpisode error', e);
+        }
+    }
+
+    if (prevEpBtn) {
+        prevEpBtn.addEventListener('click', () => navigateEpisode(-1));
+    }
+    if (nextEpBtn) {
+        nextEpBtn.addEventListener('click', () => navigateEpisode(1));
+    }
+
     fullBtn.addEventListener('click', () => {
         const wrapper = document.getElementById('player-frame-wrapper') || document.getElementById('player-container');
         if (wrapper.requestFullscreen) wrapper.requestFullscreen();
@@ -1984,9 +3117,104 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
         } catch (e) {}
     }, 500);
 
+    // Auto-hide / show behavior: show controls on pointermove / click / touchstart and hide after inactivity
+    let hideTimer = null;
+    const HIDE_DELAY = 2500; // ms
+
+    // references to UI parts that should sync with these controls (YouTube overlay and top overlay)
+    const getYTButton = () => document.getElementById('lumina-yt-playpause');
+    const getTopOverlay = () => document.querySelector('.player-overlay');
+
+    function showControls() {
+        try {
+            controls.classList.add('visible');
+
+            // reveal YT overlay button if present; keep top "REPRODUZINDO" overlay non-interactive
+            const ytBtn = getYTButton();
+            const topOverlay = getTopOverlay();
+            if (ytBtn) {
+                ytBtn.style.transition = 'opacity 160ms';
+                ytBtn.style.opacity = '1';
+                ytBtn.style.pointerEvents = 'auto';
+            }
+            if (topOverlay) {
+                // show visually and enable pointer-events so the top overlay buttons become interactive
+                topOverlay.style.transition = 'opacity 160ms';
+                topOverlay.style.opacity = '1';
+                topOverlay.style.pointerEvents = 'auto';
+            }
+
+            // clear previous hide timer
+            if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+            hideTimer = setTimeout(() => {
+                controls.classList.remove('visible');
+                // hide extras
+                if (ytBtn) {
+                    ytBtn.style.opacity = '0';
+                    ytBtn.style.pointerEvents = 'none';
+                }
+                if (topOverlay) {
+                    topOverlay.style.opacity = '0';
+                    // overlay container remains pointer-events:none so embedded players stay clickable
+                }
+            }, HIDE_DELAY);
+        } catch (e) {}
+    }
+
+    function immediateHide() {
+        try {
+            if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+            controls.classList.remove('visible');
+            const ytBtn = getYTButton();
+            const topOverlay = getTopOverlay();
+            if (ytBtn) {
+                ytBtn.style.opacity = '0';
+                ytBtn.style.pointerEvents = 'none';
+            }
+            if (topOverlay) {
+                // ensure overlay does not block clicks when controls are hidden
+                topOverlay.style.opacity = '0';
+                topOverlay.style.pointerEvents = 'none';
+            }
+        } catch (e) {}
+    }
+
+    // attach pointer listeners to the overlay and attachPoint so interactions reveal controls
+    const pointerTargets = [playerOverlay, attachPoint, controls];
+    pointerTargets.forEach(t => {
+        try {
+            if (!t) return;
+            t.addEventListener('mousemove', showControls, { passive: true });
+            t.addEventListener('click', showControls, { passive: true });
+            t.addEventListener('touchstart', showControls, { passive: true });
+        } catch (e) {}
+    });
+
+    // Also show controls when media starts buffering/playing via sync loop - helpful for remote players
+    const autoShowOnMedia = setInterval(() => {
+        const media = getCurrentMedia();
+        if (!media) return;
+        try {
+            if (!media.paused && !media.paused()) {
+                showControls();
+            }
+        } catch (e) {}
+    }, 2000);
+
     // cleanup when player closed
     controls._cleanup = () => {
         clearInterval(syncInterval);
+        clearInterval(autoShowOnMedia);
+        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+        // remove event listeners
+        pointerTargets.forEach(t => {
+            try {
+                if (!t) return;
+                t.removeEventListener('mousemove', showControls);
+                t.removeEventListener('click', showControls);
+                t.removeEventListener('touchstart', showControls);
+            } catch (e) {}
+        });
         // ensure overlay removed
         try { controls.remove(); } catch(e){}
         // also remove rotate overlay if exists
@@ -2010,3 +3238,20 @@ window.renderEpisodes = renderEpisodes;
 window.scrollList = scrollList;
 // expose season-pill helper to global scope so inline onclick handlers work in module context
 window.toggleSeasonPills = toggleSeasonPills;
+// expose addToHistory globally so inline onclick handlers inside rendered HTML can call it
+window.addToHistory = addToHistory;
+
+// Suppress a noisy browser Promise rejection when play() is interrupted by removing the media element.
+// This prevents the console spam: "The play() request was interrupted because the media was removed from the document."
+window.addEventListener('unhandledrejection', (evt) => {
+    try {
+        const reason = evt?.reason;
+        const msg = (typeof reason === 'string') ? reason : (reason && reason.message) ? reason.message : '';
+        if (msg && msg.includes('The play() request was interrupted because the media was removed')) {
+            // prevent default logging for this known benign race condition
+            evt.preventDefault?.();
+        }
+    } catch (e) {
+        // silent fallback
+    }
+});

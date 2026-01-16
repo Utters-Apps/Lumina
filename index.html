@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050212">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.json">
     <title>Lumina</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -189,6 +194,32 @@
             .snap-item.w-96 { width: 420px; }
         }
 
+        /* Mobile-specific layout improvements: larger touch targets, edge-to-edge cards, reduced hero space */
+        @media (max-width: 520px) {
+            /* make horizontal cards nearly full-viewport width for easier tapping and better visuals */
+            .snap-scroll-container .snap-item { width: calc(86vw) !important; min-width: calc(86vw) !important; }
+            .snap-item.w-72 { width: calc(86vw) !important; }
+            .snap-item.w-64 { width: calc(86vw) !important; }
+            .snap-item.w-96 { width: calc(86vw) !important; }
+
+            /* reduce hero height to fit more content above the fold on small screens */
+            #hero-container { height: 46vh !important; min-height:46vh !important; }
+            #page-home { min-height: calc(100vh - 7.5rem) !important; }
+
+            /* slightly tighter gaps and padding to avoid vertical overflow on one-screen layout */
+            .snap-scroll-container { gap: 12px; padding-left: 14px; padding-right: 14px; padding-top: 10px; padding-bottom: 14px; }
+            .card-container { border-radius: 12px; }
+            .card-image-wrap { border-radius: 12px; }
+
+            /* make arrow touch targets bigger and visible on mobile */
+            .list-arrow { width: 56px; height: 56px; border-radius: 14px; opacity: 0.98; pointer-events: auto; }
+            .list-arrow.left { left: 6px; }
+            .list-arrow.right { right: 6px; }
+
+            /* ensure nav bottom has comfortable hit area */
+            nav { padding-bottom: calc(env(safe-area-inset-bottom) + 10px); }
+        }
+
         /* subtle section separators to add depth */
         section > .px-6 { position: relative; z-index: 2; }
         .section-deco {
@@ -204,7 +235,17 @@
         }
 
         /* --- Player Styling --- */
-        .player-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.92), transparent 18%); }
+        /* Keep overlay visually interactive but allow clicks to pass through to embedded players.
+           Overlay container is pointer-events:none so it won't block clicks on iframes beneath;
+           individual interactive controls inside the overlay explicitly allow pointer events. */
+        .player-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.92), transparent 18%); pointer-events: none; }
+        /* allow overlay buttons / controls to receive clicks while the container stays pointer-events:none */
+        .player-overlay button,
+        .player-overlay .player-controls,
+        .player-overlay .player-title,
+        .player-overlay [data-interactive="true"] {
+            pointer-events: auto;
+        }
 
         /* Player open/close animations */
         @keyframes playerOpen {
@@ -235,10 +276,18 @@
         @keyframes spin {to{transform: rotate(1turn)}}
 
         .pop-heart { animation: heartPop 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .pop-like { animation: likePop 0.46s cubic-bezier(0.2,0.9,0.3,1.2); transform-origin:center; }
+        .pop-fav { animation: favPop 0.46s cubic-bezier(0.2,0.9,0.3,1.2); transform-origin:center; box-shadow: 0 6px 26px rgba(250, 204, 21, 0.14); }
         @keyframes heartPop { 0% { transform: scale(1); } 50% { transform: scale(1.44); color: #ef4444; } 100% { transform: scale(1); } }
+        @keyframes likePop { 0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,0,0,0)); } 40% { transform: scale(1.28); filter: drop-shadow(0 6px 22px rgba(255,80,80,0.14)); } 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(255,0,0,0)); } }
+        @keyframes favPop { 0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(250,204,21,0)); } 40% { transform: scale(1.28); filter: drop-shadow(0 10px 32px rgba(250,204,21,0.18)); } 100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(250,204,21,0)); } }
 
         /* Arrow nav for horizontal lists (improved: larger touch targets, visible on mobile, auto-hide if not scrollable) */
         .list-wrap { position: relative; padding-left: 0; display: flex; align-items: center; }
+        /* Hide specific arrows used on the Home page until the user chooses "Ver tudo".
+           Buttons intended to be hidden on Home get the class `home-arrow`. They remain usable
+           on the Search / View All screens which already have their own arrows. */
+        .list-arrow.home-arrow { opacity: 0; pointer-events: none; transform: translateY(-50%) scale(0.96); transition: opacity 0.18s, transform 0.18s; }
         .list-arrow {
             position: absolute;
             top: 50%;
@@ -276,8 +325,10 @@
 
         /* smaller arrows on very small screens to preserve layout but keep hit target via padding */
         @media (max-width: 420px) {
-            .list-arrow { width: 48px; height: 48px; }
-            .list-arrow i { font-size: 13px; }
+            .list-arrow { width: 56px; height: 56px; border-radius:14px; }
+            .list-arrow i { font-size: 14px; }
+            /* ensure arrows are visible on mobile home lists (home-arrow hidden only when intentionally set) */
+            .list-arrow.home-arrow { opacity: 0.98; pointer-events: auto; transform: translateY(-50%) scale(1); }
         }
 
         .btn-viewall {
@@ -299,6 +350,16 @@
         /* small utility for brighter headings */
         h3.section-title { color: #ffffff; text-shadow: 0 6px 24px rgba(0,0,0,0.6); }
 
+        /* Per-page vertical sizing: ensure Home, Search and My List don't share identical heights
+           Home gets a taller visual area for the hero; Search keeps a scrollable constrained area;
+           My List is tighter and grows only as needed. */
+        #page-home { min-height: calc(100vh - 8.5rem); } /* larger hero focus */
+        #page-search { max-height: calc(100vh - 6.5rem); overflow-y: auto; -webkit-overflow-scrolling: touch; } /* explicit */
+        #page-mylist { min-height: calc(100vh - 12.5rem); } /* compact list area */
+
+        /* Ensure body scrolling behavior remains consistent when pages switch */
+        .page-hidden { position: absolute; inset: auto; }
+
     </style>
 </head>
 <body class="pb-24 antialiased selection:bg-purple-500 selection:text-white">
@@ -316,7 +377,7 @@
         </button>
     </header>
 
-    <main id="appContent" class="relative min-h-screen">
+    <main id="appContent" class="relative">
         
         <!-- HOME -->
         <section id="page-home" class="page-transition page-active">
@@ -446,7 +507,7 @@
         </section>
 
         <!-- SEARCH -->
-        <section id="page-search" class="page-transition page-hidden pt-32 px-6">
+        <section id="page-search" class="page-transition page-hidden px-6" style="padding-top:5.5rem; max-height:calc(100vh - 6.5rem); overflow-y:auto; -webkit-overflow-scrolling:touch;">
             <div class="relative mb-6 group">
                 <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-2xl blur-lg transition-opacity opacity-50 group-hover:opacity-100"></div>
                 <input type="text" id="searchInput" placeholder="O que vamos assistir?" 
@@ -475,16 +536,21 @@
             </div>
 
             <h3 id="search-title" class="text-sm font-bold text-white/40 mb-4 uppercase tracking-wider hidden">Resultados</h3>
-            <div class="px-0 list-wrap">
+            <div id="search-results-wrap" class="px-0 list-wrap">
                 <button class="list-arrow left" onclick="scrollList('search-results', -1)" aria-label="Anterior">
                     <i class="fa-solid fa-chevron-left text-white"></i>
                 </button>
-                <div id="search-results" class="snap-scroll-container pb-10"></div>
+                <div id="search-results" class="snap-scroll-container pb-4"></div>
                 <button class="list-arrow right" onclick="scrollList('search-results', 1)" aria-label="Próximo">
                     <i class="fa-solid fa-chevron-right text-white"></i>
                 </button>
             </div>
             <div id="search-empty" class="hidden text-center text-white/50 mt-6">Nenhum resultado encontrado. Tente outro termo.</div>
+
+        <style>
+            /* Hide arrows when Search results wrapper has hide-arrows (used while Recommendations are shown) */
+            .list-wrap.hide-arrows .list-arrow { opacity: 0 !important; pointer-events: none !important; transform: translateY(-50%) scale(0.96) !important; }
+        </style>
         </section>
 
         <!-- MY LIST -->
@@ -512,7 +578,7 @@
                 <button class="list-arrow left" onclick="scrollList('favorites-grid', -1)" aria-label="Anterior">
                     <i class="fa-solid fa-chevron-left text-white"></i>
                 </button>
-                <div id="favorites-grid" class="snap-scroll-container pb-24"></div>
+                <div id="favorites-grid" class="snap-scroll-container pb-6"></div>
                 <button class="list-arrow right" onclick="scrollList('favorites-grid', 1)" aria-label="Próximo">
                     <i class="fa-solid fa-chevron-right text-white"></i>
                 </button>
@@ -535,7 +601,7 @@
         <!-- PLAYER OVERLAY -->
         <section id="page-player" class="fixed inset-0 z-[100] bg-black hidden transition-opacity duration-500">
             <div class="absolute inset-0 z-20 pointer-events-none player-overlay flex flex-col justify-between p-6 opacity-0 hover:opacity-100 transition-opacity duration-300">
-                <div class="flex justify-between items-start pointer-events-auto">
+                <div class="flex justify-between items-start">
                     <button onclick="closePlayer()" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-colors border border-white/5">
                         <i class="fa-solid fa-arrow-left text-white"></i>
                     </button>

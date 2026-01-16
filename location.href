@@ -1,0 +1,50 @@
+let skipInject = isDriveEmbed || false;
+            try {
+                const lowerHost = (hostForUrl || '').toLowerCase();
+                if (lowerHost.includes('tokyvideo.com')) skipInject = true;
+                if (lowerHost.includes('brplayer') || lowerHost.includes('watch.brplayer')) skipInject = true;
+                if (id === 'it-bem-vindos-a-derry') skipInject = true;
+                if (id === 'heartstopper' && String(season) === '3') skipInject = true;
+            } catch(e){}
+
+    ...
+            if (isYouTube) {
+                // extract embed-friendly video id or full embed url
+                let ytEmbedSrc = url;
+                try {
+                    const parsed = new URL(url, location.href);
+                    // handle common forms: /embed/ID, watch?v=ID, youtu.be/ID
+                    let base;
+                    if (parsed.hostname.includes('youtu.be')) {
+                        const vid = parsed.pathname.slice(1);
+                        base = `https://www.youtube.com/embed/${vid}`;
+                    } else if (parsed.searchParams && parsed.searchParams.get('v')) {
+                        const vid = parsed.searchParams.get('v');
+                        base = `https://www.youtube.com/embed/${vid}`;
+                    } else if (parsed.pathname.includes('/embed/')) {
+                        // keep provided embed path
+                        base = parsed.origin + parsed.pathname;
+                    } else {
+                        // fallback to raw url
+                        base = url.split('?')[0];
+                    }
+                    // Ensure flags that encourage PT-BR interface/captions preference:
+                    // hl=pt_BR sets UI language, cc_lang_pref=pt prefers captions language, cc_load_policy=1 attempts to enable captions if available.
+                    const params = new URLSearchParams(parsed.search);
+                    params.set('enablejsapi', '1');
+                    // prefer Portuguese captions / interface
+                    params.set('hl', 'pt_BR');
+                    params.set('cc_lang_pref', 'pt');
+                    params.set('cc_load_policy', '1');
+                    // merge params into embed src
+                    ytEmbedSrc = base + '?' + params.toString();
+                } catch (e) {
+                    // fallback: ensure we at least add enablejsapi and pt params
+                    try {
+                        if (!ytEmbedSrc.includes('enablejsapi=1')) ytEmbedSrc += (ytEmbedSrc.includes('?') ? '&' : '?') + 'enablejsapi=1';
+                        if (!ytEmbedSrc.includes('hl=pt_BR')) ytEmbedSrc += '&hl=pt_BR';
+                        if (!ytEmbedSrc.includes('cc_lang_pref=pt')) ytEmbedSrc += '&cc_lang_pref=pt';
+                        if (!ytEmbedSrc.includes('cc_load_policy=1')) ytEmbedSrc += '&cc_load_policy=1';
+                    } catch (ee){}
+                }
+    ...
