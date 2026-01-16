@@ -183,14 +183,14 @@ const contentDB = [
                 { title: "O Corpo de Madison", url: "https://www.dropbox.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq&raw=1" }
             ],
             2: [
-                { title: "O Que Terá Acontecido a Maddie Nears?", url: "https://byseqekaho.com/e/hg93enf8ahyg/SSPRTS_2_1.mp4" },
-                { title: "Campo dos Gritos", url: "https://byseqekaho.com/e/rcu67qzjqvdw/SSPRTS_2_2.mp4" },
-                { title: "Mal Posso Assombrar", url: "https://byseqekaho.com/e/dn31klu9jyd5/SSPRTS_2_3.mp4" },
-                { title: "Uma Troca de Corpos Para Recordar", url: "https://byseqekaho.com/e/xhd71esnwwcw/SPRTSNSCL_2_4.mp4" },
-                { title: "Adivinhe Quem Vem Para Assombrar", url: "https://byseqekaho.com/e/rfuckrs4iurr/ESPRTSNESCL_2_5.mp4" },
-                { title: "Assombração em Conflito", url: "https://byseqekaho.com/e/p8c97m81bw7h/SCHLSPRTS_2_6.mp4" },
-                { title: "Anatomia de um Abrigo Nuclear", url: "https://byseqekaho.com/e/oq15fmrcvtkf/SCHLSPRTS_2_7.mp4" },
-                { title: "Fogo, Fale Comigo", url: "https://byseqekaho.com/e/4rasekqi45hw/SCHLSPRT_2_8.mp4" }
+                { title: "O Que Terá Acontecido a Maddie Nears?", url: "https://www.dropbox.com/scl/fi/erfoa38zyjkll3z252pox/SSPRTS_2_1.mp4?rlkey=96tmhe507k8tsqueakqd6b9oo&raw=1" },
+                { title: "Campo dos Gritos", url: "https://www.dropbox.com/scl/fi/g50i68mjnp63fky9ww2lq/SSPRTS_2_2.mp4?rlkey=6gy3g6laqgwa3qw6s4un9c5qp&raw=1" },
+                { title: "Mal Posso Assombrar", url: "https://www.dropbox.com/scl/fi/8gcuxbsr0cmm3u8oqmp5r/SSPRTS_2_3.mp4?rlkey=tlsg1vc089sr3oq5d0rk1z9tt&raw=1" },
+                { title: "Uma Troca de Corpos Para Recordar", url: "https://www.dropbox.com/scl/fi/cka8c8cjwq77a7cyir9h2/SPRTSNSCL_2_4.mp4?rlkey=to8417he1echsb0yyakq4msrb&raw=1" },
+                { title: "Adivinhe Quem Vem Para Assombrar", url: "https://www.dropbox.com/scl/fi/bo40mxke2dd0ua5j6i2mz/ESPRTSNESCL_2_5.mp4?rlkey=jn1opprduik1yycb33y8hqf78&raw=1" },
+                { title: "Assombração em Conflito", url: "https://www.dropbox.com/scl/fi/4ad5lshp9nayiyvpd43h1/SCHLSPRTS_2_6.mp4?rlkey=cilch3l3un75nw0cgg0qyl6t2&raw=1" },
+                { title: "Anatomia de um Abrigo Nuclear", url: "https://www.dropbox.com/scl/fi/pwu7ta12jqnw9atmzgzha/SCHLSPRTS_2_7.mp4?rlkey=9mpeejrebfa90uayg1wzf7gwn&raw=1" },
+                { title: "Fogo, Fale Comigo", url: "https://www.dropbox.com/scl/fi/8slbpn2laeflspv59k6i4/SCHLSPRT_2_8.mp4?rlkey=m2f8kzp3crv1q07374qpay2gi&raw=1" }
             ]
         }
     },
@@ -449,6 +449,20 @@ const contentDB = [
                 { title: 'O Diabo e Senhorita Cálice', url: '' }
             ]
         }
+    },
+    {
+        id: 'el-camino',
+        title: 'El Camino: Um Filme de Breaking Bad',
+        originalTitle: 'El Camino: A Breaking Bad Movie',
+        type: 'filme',
+        category: 'Crime / Drama',
+        year: '2019',
+        ageRating: '16',
+        duration: 122,
+        cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABaU6IoT_jX47_a6rnhBYqj5x1UYUIPg-RPIErhVtQtk4nMt3yv6Un0Wz-dPf-WbjYdsqkg-8WdsOxxQbn7kn64hQu8s3urQX4Q-_.jpg?r=efe',
+        description: 'Jesse Pinkman fugindo da polícia e de seus traumas após escapar do cativeiro no final de Breaking Bad, buscando liberdade e um novo recomeço enquanto lida com flashbacks do passado e tenta garantir seu futuro.',
+        // prefer embed in a larger iframe — keep as provided src (will render in iframe)
+        url: '//assistir.biz/iframe/el-camino?player=1'
     },
     {
         id: 'scream-1996',
