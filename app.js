@@ -1864,6 +1864,15 @@ function playMedia(id, season, epIndex) {
             playerOverlay.classList.remove('player-open');
             void playerOverlay.offsetWidth;
             playerOverlay.classList.add('player-open');
+
+            // Mobile: try to lock orientation to landscape and update top overlay visibility depending on custom controls
+            try {
+                const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+                if (isMobile) lockToLandscape();
+            } catch (e) {}
+
+            // immediately set overlay visibility for mobile/non-custom players so mid-iframe taps won't surface top UI
+            try { updateOverlayForMobile(playerOverlay, !!playerOverlay._hasCustomControls); } catch(e){}
             return;
         }
     } catch (err) {
@@ -2268,6 +2277,13 @@ function closePlayer() {
     if (document.fullscreenElement) {
         document.exitFullscreen?.();
     }
+
+    // On close: restore portrait orientation on mobile and ensure top overlay is visible again
+    try { lockToPortrait(); } catch(e){}
+    try {
+        const topOverlay = document.querySelector('.player-overlay');
+        if (topOverlay) { topOverlay.style.display = 'flex'; topOverlay.style.pointerEvents = 'none'; }
+    } catch(e){}
 
     // Save final playback position if possible
     try {
@@ -2839,9 +2855,62 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* --- Player persistent controls helper (injects a fixed overlay visible in fullscreen) --- */
+
+/* Mobile orientation helpers: try to lock to landscape when player opens and restore portrait when closed */
+function lockToLandscape() {
+    try {
+        if (screen && screen.orientation && typeof screen.orientation.lock === 'function') {
+            screen.orientation.lock('landscape').catch(()=>{/* ignore */});
+        } else if (screen && typeof screen.lockOrientation === 'function') {
+            try { screen.lockOrientation('landscape'); } catch(e){}
+        }
+    } catch (e) {}
+}
+function lockToPortrait() {
+    try {
+        if (screen && screen.orientation && typeof screen.orientation.lock === 'function') {
+            screen.orientation.lock('portrait-primary').catch(()=>{ try { screen.orientation.unlock?.(); } catch(e){} });
+        } else if (screen && typeof screen.unlockOrientation === 'function') {
+            try { screen.unlockOrientation(); } catch(e){}
+        }
+    } catch (e) {}
+}
+
+/* Controls and overlay behavior on mobile for non-custom embeds:
+   When a player uses our custom controls we show the top overlay (REPRODUZINDO + back).
+   For non-custom iframe/native embeds on mobile we hide that top overlay so clicks on the iframe
+   do not open or interfere with the overlay controls. */
+function updateOverlayForMobile(playerOverlay, hasCustomControls) {
+    try {
+        const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+        const topOverlay = document.querySelector('.player-overlay');
+        if (!topOverlay) return;
+        if (isMobile) {
+            if (hasCustomControls) {
+                topOverlay.style.display = 'flex';
+                // keep pointer-events none on container, but make internal controls interactive (existing CSS handles that)
+                topOverlay.style.pointerEvents = 'none';
+            } else {
+                // hide completely so taps on iframe don't trigger any top UI
+                topOverlay.style.display = 'none';
+                topOverlay.style.pointerEvents = 'none';
+            }
+        } else {
+            // desktop/tablet: always show overlay (original behavior)
+            topOverlay.style.display = 'flex';
+            topOverlay.style.pointerEvents = 'none';
+        }
+    } catch (e) {}
+}
+
 function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, options = {}) {
-    // if caller requests skipping controls (e.g. Google Drive embeds), do nothing
-    if (options && options.skipControls) return;
+    // mark that custom controls were requested for this overlay so other code can react (e.g. overlay visibility)
+    try { if (playerOverlay) playerOverlay._hasCustomControls = true; } catch(e){}
+    // if caller requests skipping controls (e.g. Google Drive embeds), mark that we did NOT create custom controls and do nothing
+    if (options && options.skipControls) {
+        try { if (playerOverlay) playerOverlay._hasCustomControls = false; } catch(e){}
+        return;
+    }
 
     // avoid duplicating
     if (document.getElementById('lumina-player-controls')) return;
@@ -3220,6 +3289,8 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
         // also remove rotate overlay if exists
         const rot = document.getElementById('lumina-rotate-overlay');
         if (rot) rot.remove();
+        // when we remove custom controls, mark overlay state on player element
+        try { if (playerOverlay) playerOverlay._hasCustomControls = false; } catch(e){}
     };
 }
 
