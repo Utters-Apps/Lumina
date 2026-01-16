@@ -15,12 +15,17 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;700;900&display=swap');
 
         :root {
-            --primary: #d946ef;
-            --secondary: #8b5cf6;
+            --primary: #f472b6; /* slightly warmer pink */
+            --secondary: #6d28d9; /* deeper purple accent */
             --bg-deep: #050212;
             --glass-border: rgba(255, 255, 255, 0.06);
             --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
             --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* navigation / header tuning */
+            --nav-active-bg: linear-gradient(90deg, rgba(124,58,237,0.12), rgba(244,114,182,0.08));
+            --nav-icon-color: #ffffff;
+            --nav-icon-accent: #ffd6f7;
         }
 
         body {
@@ -359,6 +364,34 @@
 
         /* Ensure body scrolling behavior remains consistent when pages switch */
         .page-hidden { position: absolute; inset: auto; }
+
+        /* Header + Navigation polish */
+        #mainHeader {
+            transition: background-color 220ms var(--ease-smooth), box-shadow 220ms var(--ease-smooth), padding 160ms var(--ease-smooth);
+            background: linear-gradient(180deg, rgba(10,8,18,0.0), rgba(10,8,18,0.0));
+            backdrop-filter: blur(6px) saturate(120%);
+        }
+        #mainHeader.glass {
+            background: linear-gradient(180deg, rgba(7,4,20,0.72), rgba(7,4,20,0.6));
+            box-shadow: 0 8px 30px rgba(6,4,20,0.6);
+        }
+
+        /* Navigation icons stronger visual states */
+        .nav-icon { transition: transform 180ms var(--ease-smooth), color 160ms ease; }
+        .nav-icon .fa-solid, .nav-icon .fa-regular { color: rgba(255,255,255,0.72); transition: color 160ms ease, transform 160ms ease; }
+        .nav-icon.active .fa-solid, .nav-icon.active .fa-regular {
+            color: var(--nav-icon-accent);
+            transform: scale(1.08);
+            filter: drop-shadow(0 8px 22px rgba(124,58,237,0.12));
+        }
+        .nav-icon.active span { color: #fff; opacity: 1; }
+
+        /* slight background for active nav button for clearer tap target */
+        .nav-icon.active > div { background: var(--nav-active-bg); border-radius: 12px; padding: 6px; }
+
+        /* ensure header controls remain accessible on dark backgrounds */
+        header button { outline-offset: 3px; }
+
 
     </style>
 </head>
