@@ -1907,7 +1907,7 @@ function playMedia(id, season, epIndex) {
             `;
         };
 
-        // determine if embed host is Google Drive or other hosts that should keep native chrome
+        // determine if embed host is Google Drive or other hosts
         let isDriveEmbed = false;
         let hostForUrl = '';
         try {
@@ -1921,7 +1921,9 @@ function playMedia(id, season, epIndex) {
             // ignore parsing errors
         }
 
-        let skipInject = isDriveEmbed || false;
+        // DEFAULT: do not force skip injection for Drive — treat Drive like a desktop embed even on mobile
+        // only skip inject for specific known problematic hosts/ids
+        let skipInject = false;
         try {
             const lowerHost = (hostForUrl || '').toLowerCase();
             if (lowerHost.includes('tokyvideo.com') || lowerHost.includes('tokyvideo')) skipInject = true;
@@ -2236,6 +2238,55 @@ function playMedia(id, season, epIndex) {
                     </div>
                 `;
                 container.innerHTML = buildFrameWrapper(iframeHtml);
+
+                // If this is a Google Drive / googleusercontent embed, keep our custom overlay/controls active on mobile
+                // and ensure taps on the embed surface reveal the top "REPRODUZINDO" overlay (back/close button).
+                try {
+                    const parsedHost = (new URL(url, location.href).hostname || '').toLowerCase();
+                    const isDriveHost = parsedHost.includes('drive.google.com') || parsedHost.includes('googleusercontent.com') || parsedHost.includes('docs.google.com');
+                    if (isDriveHost) {
+                        // create our player controls (even if they can't control iframe internals, they provide the top overlay and consistent UX)
+                        try {
+                            createPlayerControls(playerOverlay, true, () => {
+                                // iframe-based players don't expose a standard media API; return null so controls still render but gracefully no-op controls
+                                return null;
+                            }, { skipControls: false });
+                        } catch (e) { /* ignore */ }
+
+                        // ensure overlay is displayed and allowed to receive pointer events on interaction
+                        updateOverlayForMobile(playerOverlay, true);
+
+                        // ensure taps on the player container reveal the overlay (use capture to be robust)
+                        const iframeEl = container.querySelector('iframe');
+                        if (iframeEl) {
+                            // reveal overlay when user taps the iframe area
+                            const reveal = () => {
+                                try {
+                                    const topOverlay = document.querySelector('.player-overlay');
+                                    if (topOverlay) {
+                                        topOverlay.style.display = 'flex';
+                                        topOverlay.style.pointerEvents = 'auto';
+                                        topOverlay.style.opacity = '1';
+                                    }
+                                } catch (e) {}
+                            };
+                            // On some browsers clicking an iframe doesn't bubble; also attach to container as fallback
+                            iframeEl.addEventListener('load', () => {
+                                try {
+                                    // attach a delegated click on the wrapper to reveal overlay
+                                    const wrapper = document.getElementById('player-frame-wrapper') || container;
+                                    wrapper.addEventListener('click', reveal, { passive: true });
+                                } catch (e) {}
+                            }, { passive: true });
+
+                            // immediate attach fallback
+                            try {
+                                const wrapper = document.getElementById('player-frame-wrapper') || container;
+                                wrapper.addEventListener('click', reveal, { passive: true });
+                            } catch(e){}
+                        }
+                    }
+                } catch (e) { /* silent */ }
             }
         }
 
