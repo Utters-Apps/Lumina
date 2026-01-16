@@ -960,7 +960,7 @@ function renderList(containerId, data, style = 'default') {
     try { lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e){ lastWatched = null; }
 
     // detect small/mobile breakpoint and unify card appearance to match Continue Assistindo on mobile
-    const isSmallScreen = window.innerWidth <= 420;
+    const isSmallScreen = window.innerWidth <= 520;
 
     // unified small/mobile card markup (same as continue-watching style)
     const mobileCardMarkup = (item, idx) => {
@@ -1325,7 +1325,7 @@ function renderMyList() {
     }
     empty.classList.add('hidden');
 
-    const isSmallScreen = window.innerWidth <= 420;
+    const isSmallScreen = window.innerWidth <= 520;
 
     const mobileCard = (item, idx) => {
         const lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null');
@@ -2677,7 +2677,7 @@ function setupSearch() {
 
         // Render search results using the same cinematic card used on home for consistency,
         // but on small/mobile screens render the compact Continue Assistindo style for consistency across Search and My List.
-        const isSmallScreen = window.innerWidth <= 420;
+        const isSmallScreen = window.innerWidth <= 520;
         const mobileCard = (item, idx) => {
             const lastWatched = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null');
             const lastEp = lastWatched && lastWatched.id === item.id ? `<div class="text-[11px] text-white/50 mt-1 truncate">Último: ${lastWatched.lastEpisodeTitle || ''}</div>` : '';
@@ -2754,7 +2754,41 @@ function clearFavorites() {
 function scrollList(containerId, dir = 1) {
     const el = document.getElementById(containerId);
     if (!el) return;
-    // amount is roughly 80% of container width for a noticeable page-like scroll
+
+    // If mobile (narrow viewport), scroll exactly one card and center it
+    const isMobile = window.innerWidth <= 520;
+    const children = Array.from(el.children).filter(c => c.classList && c.classList.contains('snap-item'));
+    if (isMobile && children.length) {
+        try {
+            const containerCenter = el.scrollLeft + (el.clientWidth / 2);
+            // find index of child whose center is nearest to current center
+            let closestIndex = 0;
+            let closestDist = Infinity;
+            children.forEach((child, idx) => {
+                const childCenter = child.offsetLeft + (child.clientWidth / 2);
+                const dist = Math.abs(childCenter - containerCenter);
+                if (dist < closestDist) {
+                    closestDist = dist;
+                    closestIndex = idx;
+                }
+            });
+
+            // target index is one step in dir direction
+            let targetIndex = closestIndex + (dir > 0 ? 1 : -1);
+            if (targetIndex < 0) targetIndex = 0;
+            if (targetIndex >= children.length) targetIndex = children.length - 1;
+
+            const targetChild = children[targetIndex];
+            // compute scrollLeft to center the target child
+            const targetLeft = Math.max(0, targetChild.offsetLeft - (el.clientWidth - targetChild.clientWidth) / 2);
+            el.scrollTo({ left: targetLeft, behavior: 'smooth' });
+            return;
+        } catch (e) {
+            // fallback to previous behavior on error
+        }
+    }
+
+    // Desktop / fallback: amount is roughly 80% of container width for a noticeable page-like scroll
     const amount = Math.round(el.clientWidth * 0.78) * dir;
     el.scrollBy({ left: amount, behavior: 'smooth' });
 }
