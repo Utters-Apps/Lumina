@@ -449,6 +449,84 @@ const contentDB = [
                 { title: 'O Diabo e Senhorita Cálice', url: '' }
             ]
         }
+    },
+    {
+        id: 'scream-1996',
+        title: 'Pânico',
+        originalTitle: 'Scream (1996)',
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '1996',
+        ageRating: '14 anos',
+        cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABccXgqXjgC0o-ud2hGqkysjV8V0ij3sXQxmmqZ99kxjKx94xoigeHgXolIeIiFQCgolwKcektQP-D30bVrHAl3q2PVwLOleXyUwf.jpg?r=f12',
+        description: 'Em uma pacata cidade da Califórnia, um assassino mascarado fanático por filmes de terror assombra estudantes com telefonemas e violência brutal.',
+        ratings: { imdb: 7.4, rottenTomatoes: 77 },
+        url: 'https://drive.google.com/file/d/1LOZ7dLBCqW5aGdd-ZeqnPD9oQlXfCjUC/view?usp=drive_link'
+    },
+    {
+        id: 'scream-2-1997',
+        title: 'Pânico 2',
+        originalTitle: 'Scream 2 (1997)',
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '1997',
+        ageRating: '14 anos',
+        cover: 'https://static.ndmais.com.br/2022/01/panico-2.jpg',
+        description: 'Dois anos após os assassinatos em Woodsboro, Sidney e seus aliados enfrentam um novo Ghostface numa universidade enquanto tentam reconstruir suas vidas.',
+        ratings: { imdb: 6.3, rottenTomatoes: 82 },
+        url: 'https://drive.google.com/file/d/1yEGI2yX8nwZI9K6qyTvwtMvcNWVVAMhQ/view?usp=drive_link'
+    },
+    {
+        id: 'scream-3-2000',
+        title: 'Pânico 3',
+        originalTitle: 'Scream 3 (2000)',
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '2000',
+        ageRating: '14/16 anos',
+        cover: 'https://cinepop.com.br/wp-content/uploads/2020/05/p%C3%A2nico-3-1.png',
+        description: 'Sidney é atraída para Hollywood quando um novo Ghostface começa a matar o elenco de um filme baseado nos assassinatos de Woodsboro.',
+        ratings: { imdb: 5.6, rottenTomatoes: 44 },
+        url: 'https://drive.google.com/file/d/1lWid2HnPNskekGH5RnRrQNkQGQNm4g40/view?usp=drive_link'
+    },
+    {
+        id: 'scream-4-2011',
+        title: 'Pânico 4',
+        originalTitle: 'Scream 4 (2011)',
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '2011',
+        ageRating: '14 anos',
+        cover: 'https://cinepop.com.br/wp-content/uploads/2021/04/scream4-cinepop1.jpg',
+        description: 'Quinze anos depois, Sidney retorna a Woodsboro e, ao promover seu livro, enfrenta um novo assassino Ghostface que mira jovens fãs dos antigos crimes.',
+        ratings: { imdb: 6.2, rottenTomatoes: 61 },
+        url: 'https://drive.google.com/file/d/1OMVakVXur6eW4l_azw3wK2FzaBIx1bxd/view?usp=drive_link'
+    },
+    {
+        id: 'scream-5-2022',
+        title: 'Pânico (2022)',
+        originalTitle: 'Scream (2022)',
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '2022',
+        ageRating: '16 anos',
+        cover: 'https://tm.ibxk.com.br/2022/01/13/13093300424066.jpg',
+        description: 'Vinte e cinco anos após os crimes originais, um novo Ghostface persegue um grupo de adolescentes em Woodsboro, reacesando segredos do passado mortal da cidade.',
+        ratings: { imdb: 6.3, rottenTomatoes: 76 },
+        url: 'https://drive.google.com/file/d/1ne_SKq9wJWYfjnYCpM9v7K-q4UodlaDa/view?usp=drive_link'
+    },
+    {
+        id: 'scream-6-2023',
+        title: 'Pânico 6',
+        originalTitle: 'Scream VI (2023)',
+        type: 'filme',
+        category: 'Terror / Suspense',
+        year: '2023',
+        ageRating: '18 anos',
+        cover: 'https://s2-techtudo.glbimg.com/hhNztmkaLms4ZRgVaaFqGgIwzpQ=/0x0:1440x750/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/C/I/XXlufbQK6zXbAijdbRNw/scream-6.webp',
+        description: 'Os sobreviventes deixam Woodsboro e recomeçam em Nova York, mas um novo e mais brutal Ghostface os persegue pela metrópole.',
+        ratings: { imdb: 7.6, rottenTomatoes: 77 },
+        url: 'https://drive.google.com/file/d/1gWY53IfGAnNsIi4p8yvqyHcZGVPrlSVD/view?usp=drive_link'
     }
 ];
 
@@ -1921,15 +1999,26 @@ function playMedia(id, season, epIndex) {
             // ignore parsing errors
         }
 
-        // DEFAULT: do not force skip injection for Drive — treat Drive like a desktop embed even on mobile
-        // only skip inject for specific known problematic hosts/ids
-        let skipInject = false;
+        // Determine whether to use Lumina's custom controls for this playback.
+        // We explicitly disable custom controls for Google Drive embeds and for all "Pânico" (scream-*) films.
+        let useCustomControls = true;
         try {
             const lowerHost = (hostForUrl || '').toLowerCase();
-            if (lowerHost.includes('tokyvideo.com') || lowerHost.includes('tokyvideo')) skipInject = true;
-            if (lowerHost.includes('brplayer') || lowerHost.includes('watch.brplayer')) skipInject = true;
-            if (id === 'it-bem-vindos-a-derry') skipInject = true;
-            if (id === 'heartstopper' && String(season) === '3') skipInject = true;
+            // keep custom controls for common safe hosts by default
+            if (lowerHost.includes('tokyvideo.com') || lowerHost.includes('tokyvideo')) {
+                useCustomControls = true;
+            }
+            // hosts that historically break injected controls -> disable
+            if (lowerHost.includes('brplayer') || lowerHost.includes('watch.brplayer')) {
+                useCustomControls = false;
+            }
+            // certain IDs we prefer to avoid injecting controls into
+            if (id === 'it-bem-vindos-a-derry') useCustomControls = false;
+            if (id === 'heartstopper' && String(season) === '3') useCustomControls = false;
+            // All "Pânico" items use ids that start with 'scream-': disable custom controls for them
+            if (String(id).toLowerCase().startsWith('scream-')) useCustomControls = false;
+            // If the embed is a Google Drive host, prefer the native Drive player (no custom controls)
+            if (isDriveEmbed) useCustomControls = false;
         } catch(e){}
 
         if (isMp4) {
@@ -1976,7 +2065,9 @@ function playMedia(id, season, epIndex) {
                     playerOverlay._vjsPlayer = player;
 
                     if (isMp4 && !isDriveEmbed) {
-                        createPlayerControls(playerOverlay, true, () => player, { skipControls: false });
+                        if (useCustomControls) {
+    createPlayerControls(playerOverlay, true, () => player, { skipControls: false });
+}
                     }
 
                     player.ready(() => {
@@ -1992,7 +2083,9 @@ function playMedia(id, season, epIndex) {
                     `);
                     const videoEl = document.getElementById('native-video');
                     if (isMp4 && !isDriveEmbed) {
-                        createPlayerControls(playerOverlay, true, () => videoEl, { skipControls: false });
+                        if (useCustomControls) {
+    createPlayerControls(playerOverlay, true, () => videoEl, { skipControls: false });
+}
                     }
                     videoEl.play().catch(()=>{});
                 }
@@ -2245,16 +2338,18 @@ function playMedia(id, season, epIndex) {
                     const parsedHost = (new URL(url, location.href).hostname || '').toLowerCase();
                     const isDriveHost = parsedHost.includes('drive.google.com') || parsedHost.includes('googleusercontent.com') || parsedHost.includes('docs.google.com');
                     if (isDriveHost) {
-                        // create our player controls (even if they can't control iframe internals, they provide the top overlay and consistent UX)
+                        // Only create Lumina custom controls for drive embeds if explicitly allowed by the earlier host/ID heuristics.
                         try {
-                            createPlayerControls(playerOverlay, true, () => {
-                                // iframe-based players don't expose a standard media API; return null so controls still render but gracefully no-op controls
-                                return null;
-                            }, { skipControls: false });
+                            if (useCustomControls) {
+                                createPlayerControls(playerOverlay, true, () => {
+                                    // iframe-based players don't expose a standard media API; return null so controls still render but gracefully no-op controls
+                                    return null;
+                                }, { skipControls: false });
+                            }
                         } catch (e) { /* ignore */ }
 
-                        // ensure overlay is displayed and allowed to receive pointer events on interaction
-                        updateOverlayForMobile(playerOverlay, true);
+                        // ensure overlay visibility follows whether custom controls are active
+                        updateOverlayForMobile(playerOverlay, !!useCustomControls);
 
                         // ensure taps on the player container reveal the overlay (use capture to be robust)
                         const iframeEl = container.querySelector('iframe');
