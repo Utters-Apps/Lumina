@@ -727,6 +727,62 @@ function init(deepPlayId = null) {
     setupSearch();
     setupScrollHeader();
 
+    // Mobile double-tap anywhere to reveal the top player overlay (REPRODUZINDO + Voltar)
+    // Implementation: lightweight two-tap detector that toggles the overlay for a short duration.
+    try {
+        let lastTap = 0;
+        const DOUBLE_TAP_MAX = 320; // ms
+        const OVERLAY_SHOW_MS = 3000; // how long overlay stays visible after double-tap
+        let overlayHideTimer = null;
+
+        function showTopOverlayTemporarily() {
+            const topOverlay = document.querySelector('.player-overlay');
+            if (!topOverlay) return;
+            // Only on mobile narrow viewports
+            const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+            if (!isMobile) return;
+
+            // make overlay visible and ensure interactive elements accept pointer-events
+            try {
+                topOverlay.style.display = 'flex';
+                topOverlay.style.pointerEvents = 'auto';
+                topOverlay.style.opacity = '1';
+                // If there are custom-controls state flags, prefer using them to decide visibility
+                // but we always show visually for the double-tap gesture so user can access back button.
+            } catch (e) {}
+
+            // clear previous timer
+            if (overlayHideTimer) clearTimeout(overlayHideTimer);
+            overlayHideTimer = setTimeout(() => {
+                try {
+                    // hide overlay but leave pointer-events none to keep iframe clickable
+                    topOverlay.style.opacity = '0';
+                    topOverlay.style.pointerEvents = 'none';
+                    // keep display:flex to avoid reflow jank; optionally hide entirely
+                    topOverlay.style.display = 'flex';
+                } catch (e) {}
+            }, OVERLAY_SHOW_MS);
+        }
+
+        // Attach a global touchend listener for lightweight double-tap detection on mobile
+        window.addEventListener('touchend', (ev) => {
+            try {
+                const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+                if (!isMobile) return;
+                const now = Date.now();
+                if (now - lastTap <= DOUBLE_TAP_MAX) {
+                    // double-tap detected
+                    showTopOverlayTemporarily();
+                    lastTap = 0;
+                } else {
+                    lastTap = now;
+                }
+            } catch (e) {}
+        }, { passive: true });
+    } catch (e) {
+        console.warn('Double-tap overlay init failed', e);
+    }
+
     // If a deep-play id was supplied (from URL), store it to auto-play after name prompt
     if (deepPlayId) {
         // store temporarily on window for usage after name prompt
