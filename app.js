@@ -747,8 +747,6 @@ function init(deepPlayId = null) {
                 topOverlay.style.display = 'flex';
                 topOverlay.style.pointerEvents = 'auto';
                 topOverlay.style.opacity = '1';
-                // If there are custom-controls state flags, prefer using them to decide visibility
-                // but we always show visually for the double-tap gesture so user can access back button.
             } catch (e) {}
 
             // clear previous timer
@@ -764,6 +762,23 @@ function init(deepPlayId = null) {
             }, OVERLAY_SHOW_MS);
         }
 
+        // Helper: reveal when user taps near the top edge (single tap)
+        const TOP_TAP_THRESHOLD_PX = 120; // region from top that counts as "top tap"
+        function handleTopTap(ev) {
+            try {
+                const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+                if (!isMobile) return;
+                const touch = (ev.changedTouches && ev.changedTouches[0]) || ev;
+                if (!touch) return;
+                const y = touch.clientY;
+                if (typeof y !== 'number') return;
+                if (y <= TOP_TAP_THRESHOLD_PX) {
+                    // show overlay when tapping near top
+                    showTopOverlayTemporarily();
+                }
+            } catch (e) {}
+        }
+
         // Attach a global touchend listener for lightweight double-tap detection on mobile
         window.addEventListener('touchend', (ev) => {
             try {
@@ -776,6 +791,22 @@ function init(deepPlayId = null) {
                     lastTap = 0;
                 } else {
                     lastTap = now;
+                    // also treat a single tap near the top as an intent to reveal overlay
+                    handleTopTap(ev);
+                }
+            } catch (e) {}
+        }, { passive: true });
+
+        // Also support single 'click' fallback (some devices fire click instead of touchend)
+        window.addEventListener('click', (ev) => {
+            try {
+                // Only check clicks when overlay is likely present (player open) to avoid unintended reveals
+                const playerOverlayEl = document.getElementById('page-player');
+                if (!playerOverlayEl || playerOverlayEl.classList.contains('hidden')) return;
+                // Use clientY from MouseEvent
+                const y = ev.clientY;
+                if (typeof y === 'number' && y <= TOP_TAP_THRESHOLD_PX && window.innerWidth <= 520) {
+                    showTopOverlayTemporarily();
                 }
             } catch (e) {}
         }, { passive: true });
