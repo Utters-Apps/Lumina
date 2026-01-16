@@ -2566,6 +2566,11 @@ function closePlayer() {
         }
         existingControls.remove();
     }
+    // Also remove the mobile floating close button if present
+    const existingMobileClose = document.getElementById('lumina-mobile-close');
+    if (existingMobileClose) {
+        try { existingMobileClose.remove(); } catch(e){}
+    }
 
     // trigger close animation then hide after it finishes to free resources
     try {
@@ -3192,6 +3197,26 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
 }
 #lumina-player-controls .lpc-range { width: 40%; height: 6px; -webkit-appearance:none; appearance:none; border-radius:6px; background: rgba(255,255,255,0.08);}
 #lumina-player-controls .lpc-range::-webkit-slider-thumb { -webkit-appearance:none; width:14px;height:14px;border-radius:999px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.4); }
+#lumina-mobile-close {
+    position: fixed;
+    right: 14px;
+    bottom: 14px;
+    z-index: 100000;
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(90deg,#7c3aed,#d946ef);
+    box-shadow: 0 12px 36px rgba(124,58,237,0.18);
+    color: #fff;
+    border: none;
+}
+#lumina-mobile-close.show { display:flex; }
+@media (min-width:521px) {
+    #lumina-mobile-close { display:none !important; }
+}
 @media (max-width:520px) {
     #lumina-player-controls { left:8px; right:8px; bottom:12px; gap:8px; }
     #lumina-player-controls .lpc-range{width:35%;}
@@ -3217,6 +3242,16 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
     // attach controls inside the player-frame-wrapper when available so they persist in fullscreen, fallback to body
     const attachPoint = document.getElementById('player-frame-wrapper') || document.getElementById('player-container') || document.body;
     attachPoint.appendChild(controls);
+
+    // Create a persistent mobile close button (bottom-right) that shows on small viewports
+    if (!document.getElementById('lumina-mobile-close')) {
+        const mClose = document.createElement('button');
+        mClose.id = 'lumina-mobile-close';
+        mClose.title = 'Fechar';
+        mClose.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+        mClose.addEventListener('click', () => closePlayer());
+        document.body.appendChild(mClose);
+    }
 
     // helpers to get video-like control (Video.js player or native video element)
     function resolvePlayer() {
@@ -3429,6 +3464,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
     // references to UI parts that should sync with these controls (YouTube overlay and top overlay)
     const getYTButton = () => document.getElementById('lumina-yt-playpause');
     const getTopOverlay = () => document.querySelector('.player-overlay');
+    const getMobileClose = () => document.getElementById('lumina-mobile-close');
 
     function showControls() {
         try {
@@ -3437,6 +3473,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
             // reveal YT overlay button if present; keep top "REPRODUZINDO" overlay non-interactive
             const ytBtn = getYTButton();
             const topOverlay = getTopOverlay();
+            const mClose = getMobileClose();
             if (ytBtn) {
                 ytBtn.style.transition = 'opacity 160ms';
                 ytBtn.style.opacity = '1';
@@ -3447,6 +3484,11 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
                 topOverlay.style.transition = 'opacity 160ms';
                 topOverlay.style.opacity = '1';
                 topOverlay.style.pointerEvents = 'auto';
+            }
+            // show mobile close when on mobile
+            if (mClose) {
+                const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+                if (isMobile) mClose.classList.add('show');
             }
 
             // clear previous hide timer
@@ -3462,6 +3504,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
                     topOverlay.style.opacity = '0';
                     // overlay container remains pointer-events:none so embedded players stay clickable
                 }
+                if (mClose) mClose.classList.remove('show');
             }, HIDE_DELAY);
         } catch (e) {}
     }
@@ -3472,6 +3515,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
             controls.classList.remove('visible');
             const ytBtn = getYTButton();
             const topOverlay = getTopOverlay();
+            const mClose = getMobileClose();
             if (ytBtn) {
                 ytBtn.style.opacity = '0';
                 ytBtn.style.pointerEvents = 'none';
@@ -3481,6 +3525,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
                 topOverlay.style.opacity = '0';
                 topOverlay.style.pointerEvents = 'none';
             }
+            if (mClose) mClose.classList.remove('show');
         } catch (e) {}
     }
 
@@ -3525,6 +3570,9 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
         // also remove rotate overlay if exists
         const rot = document.getElementById('lumina-rotate-overlay');
         if (rot) rot.remove();
+        // remove mobile close button if present
+        const mClose = document.getElementById('lumina-mobile-close');
+        if (mClose) try { mClose.remove(); } catch(e){}
         // when we remove custom controls, mark overlay state on player element
         try { if (playerOverlay) playerOverlay._hasCustomControls = false; } catch(e){}
     };
