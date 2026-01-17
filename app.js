@@ -3700,6 +3700,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
     });
 
     // Update UI loop (sync current time, duration, buffer) with lower interval for mobile battery saving
+    // Reduce UI sync frequency to lower CPU and battery usage on mobile devices (from 300ms -> 1000ms).
     const uiInterval = setInterval(() => {
         const m = resolveMediaFacade();
         if (!m) return;
@@ -3733,7 +3734,7 @@ function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, optio
                 addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), Math.round(cur));
             }
         } catch (e) {}
-    }, 300);
+    }, 1000);
 
     // Auto-show / hide controls on pointer activity (touch-friendly): keep controls visible on mobile while interacting
     let hideTimer = null;
@@ -3881,76 +3882,31 @@ function isEligibleForOffline(url) {
    - For large files this can consume memory; this is a pragmatic implementation for moderate file sizes and common mobile usage but not a stream-into-cache solution.
 */
 async function requestDownload(itemId, url, onProgress = null) {
+    // Lightweight delegation to the service worker to avoid large in-page buffering (reduces memory spikes on mobile).
     if (!isEligibleForOffline(url)) throw new Error('URL not eligible for offline download (must be direct .mp4 and accessible).');
     const catalog = readOfflineCatalog();
     catalog[itemId] = { url, status: 'downloading', updatedAt: new Date().toISOString(), size: null, progress: 0 };
     writeOfflineCatalog(catalog);
-    // notify UI via custom event
     dispatchOfflineEvent('offline-status-changed', { itemId, status: 'downloading' });
 
+    // Prefer asking the service worker to perform the fetch+cache so the page doesn't hold large blobs in memory.
     try {
-        const resp = await fetch(url, { method: 'GET', mode: 'cors' });
-        if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
-        // get content-length if available
-        const contentLength = resp.headers.get('Content-Length') ? Number(resp.headers.get('Content-Length')) : null;
-        catalog[itemId].size = contentLength;
-        writeOfflineCatalog(catalog);
-
-        // stream with progress
-        if (resp.body && resp.body.getReader) {
-            const reader = resp.body.getReader();
-            const chunks = [];
-            let received = 0;
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-                chunks.push(value);
-                received += value.length || value.byteLength || 0;
-                const pct = contentLength ? Math.round((received / contentLength) * 100) : null;
-                catalog[itemId].progress = pct !== null ? pct : null;
-                writeOfflineCatalog(catalog);
-                if (typeof onProgress === 'function') onProgress({ received, total: contentLength, percent: pct });
-                dispatchOfflineEvent('offline-download-progress', { itemId, received, total: contentLength, percent: pct });
-            }
-            // assemble blob
-            const blob = new Blob(chunks, { type: 'video/mp4' });
-            // place into cache via service worker message (service worker will fetch again in SW context if desired)
-            // For reliability across browsers, we use Cache API from the page when possible (same-origin & CORS).
-            try {
-                const cache = await caches.open('lumina-media-v1');
-                const response = new Response(blob, { status: 200, statusText: 'OK', headers: { 'Content-Type': 'video/mp4' } });
-                await cache.put(url, response.clone());
-                // update catalog
-                catalog[itemId].status = 'stored';
-                catalog[itemId].updatedAt = new Date().toISOString();
-                writeOfflineCatalog(catalog);
-                dispatchOfflineEvent('offline-status-changed', { itemId, status: 'stored' });
-                // also notify service worker in case it wants to mirror state
-                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ type: 'DOWNLOAD_VIDEO', url });
-                }
-                return { ok: true };
-            } catch (cacheErr) {
-                // fallback: ask service worker to fetch & cache the URL (may lose progress data)
-                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-                    navigator.serviceWorker.controller.postMessage({ type: 'DOWNLOAD_VIDEO', url });
-                }
-                catalog[itemId].status = 'stored'; // best-effort
-                writeOfflineCatalog(catalog);
-                dispatchOfflineEvent('offline-status-changed', { itemId, status: 'stored' });
-                return { ok: true, warning: 'cached-by-sw' };
-            }
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'DOWNLOAD_VIDEO', url, itemId });
+            return { ok: true, delegatedToSW: true };
         } else {
-            // older browsers: consume fully as blob
-            const blob = await resp.blob();
-            const cache = await caches.open('lumina-media-v1');
-            const response = new Response(blob, { status: 200, statusText: 'OK', headers: { 'Content-Type': 'video/mp4' } });
-            await cache.put(url, response.clone());
-            catalog[itemId].status = 'stored';
-            catalog[itemId].updatedAt = new Date().toISOString();
+            // fallback: if no SW controller, attempt a small progressive fetch but avoid buffering everything at once.
+            // We'll do a minimal fetch to validate the URL and then instruct the SW to fetch when available.
+            const resp = await fetch(url, { method: 'HEAD' }).catch(() => null);
+            if (resp && resp.ok) {
+                catalog[itemId].size = resp.headers.get('Content-Length') ? Number(resp.headers.get('Content-Length')) : null;
+                writeOfflineCatalog(catalog);
+            }
+            // mark as queued; the SW registration listener will pick up real download when SW is available.
+            catalog[itemId].status = 'queued';
             writeOfflineCatalog(catalog);
-            dispatchOfflineEvent('offline-status-changed', { itemId, status: 'stored' });
-            return { ok: true };
+            dispatchOfflineEvent('offline-status-changed', { itemId, status: 'queued' });
+            return { ok: true, delegatedToSW: false };
         }
     } catch (e) {
         catalog[itemId].status = 'error';
@@ -4140,10 +4096,9 @@ if ('serviceWorker' in navigator) {
             }
         });
 
-        // When the new SW takes control, reload to apply
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            window.location.reload();
-        });
+        // When the new SW takes control, we will NOT force an immediate reload.
+        // Instead the app dispatches 'pwa-update-available' and waits for the user to trigger 'pwa-apply-update'.
+        // This avoids unexpected reloads on low-memory mobile devices that can cause crash/loop behavior.
     }).catch(err => {
         console.warn('SW registration failed:', err);
     });

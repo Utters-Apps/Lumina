@@ -20,7 +20,7 @@ const MEDIA_CACHE = 'lumina-media-v1';
 const PRECACHE_URLS = [
   '/',
   '/index.html',
-  '/app.js',
+  // intentionally do NOT precache /app.js to reduce install payload and memory pressure on low-end devices
   '/service-worker.js',
   '/manifest.json',
   'https://cdn.tailwindcss.com',
