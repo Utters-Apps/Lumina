@@ -956,7 +956,7 @@ function setupScrollHeader() {
 
 /* --- NAVIGATION --- */
 function navigate(pageId) {
-    ['page-home', 'page-search', 'page-mylist'].forEach(id => {
+    ['page-home', 'page-search', 'page-downloads', 'page-mylist'].forEach(id => {
         const el = document.getElementById(id);
         if (!el) return;
         el.classList.remove('page-active');
@@ -968,13 +968,18 @@ function navigate(pageId) {
         console.warn('navigate: target page not found:', pageId);
         return;
     }
+    // reveal selected page
     target.classList.remove('page-hidden');
     setTimeout(() => target.classList.add('page-active'), 50);
 
+    // update nav active state
     document.querySelectorAll('.nav-icon').forEach(btn => btn.classList.remove('active'));
     document.getElementById(`nav-${pageId}`)?.classList.add('active');
 
+    // page-specific render hooks
     if (pageId === 'mylist') renderMyList();
+    if (pageId === 'downloads') renderDownloads();
+
     state.currentPage = pageId;
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
@@ -1573,6 +1578,171 @@ function renderMyList() {
     }
 }
 
+/* --- DOWNLOADS PAGE RENDERER --- */
+function renderDownloads() {
+    const listEl = document.getElementById('downloads-list');
+    const emptyEl = document.getElementById('downloads-empty');
+    const countEl = document.getElementById('downloads-count');
+
+    const catalog = readOfflineCatalog();
+    const entries = Object.keys(catalog).map(k => ({ key: k, ...catalog[k] }));
+    if (!listEl) return;
+    if (!entries || entries.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl && emptyEl.classList.remove('hidden');
+        if (countEl) countEl.textContent = `0 itens`;
+        return;
+    }
+    emptyEl && emptyEl.classList.add('hidden');
+
+    // Build cards for each cached item
+    const itemsHtml = entries.map((entry, idx) => {
+        // try to find metadata in contentDB by matching url to show friendly title when possible
+        let displayTitle = entry.title || '';
+        let thumb = '';
+        try {
+            // match item-level url
+            const metaItem = contentDB.find(i => i.url === entry.url);
+            if (metaItem) {
+                displayTitle = displayTitle || metaItem.title;
+                thumb = metaItem.cover || '';
+            } else {
+                // try match episode inside seasons
+                for (const item of contentDB) {
+                    if (item.seasons) {
+                        for (const sKey of Object.keys(item.seasons)) {
+                            const eps = item.seasons[sKey] || [];
+                            const epIndex = eps.findIndex(ep => normalizeDriveUrl(ep.url || '') === normalizeDriveUrl(entry.url || '') || (ep.url || '') === (entry.url || ''));
+                            if (epIndex >= 0) {
+                                const ep = eps[epIndex];
+                                displayTitle = displayTitle || `${item.title} • S${sKey}E${epIndex+1} — ${ep.title || ''}`;
+                                thumb = item.cover || ep.thumb || '';
+                                break;
+                            }
+                        }
+                        if (thumb) break;
+                    }
+                }
+            }
+        } catch (e) {
+            // fallback: keep provided title or key
+        }
+
+        // fallback display title
+        if (!displayTitle) displayTitle = entry.title || `Offline ${idx+1}`;
+
+        const status = entry.status || 'stored';
+        const sizeLabel = entry.size ? `${(entry.size/1024/1024).toFixed(1)} MB` : '';
+
+        // progress UI for downloading state (use entry.progress 0-100 if available)
+        const progressPct = (status === 'downloading' && typeof entry.progress === 'number') ? Math.max(0, Math.min(100, Math.round(entry.progress))) : null;
+        const progressHtml = progressPct !== null ? `
+            <div class="mt-3">
+                <div class="w-full bg-white/6 rounded-full h-2 overflow-hidden">
+                    <div style="width:${progressPct}%" class="h-2 bg-gradient-to-r from-purple-400 to-pink-400"></div>
+                </div>
+                <div class="text-[11px] text-white/50 mt-2">${progressPct}% — Baixando...</div>
+            </div>
+        ` : (status === 'error' ? `<div class="mt-3 text-[12px] text-yellow-300">Erro no download</div>` : `<div class="mt-3 text-[12px] text-white/50">${status === 'stored' ? 'Disponível offline' : status}</div>`);
+
+        return `
+            <div class="card-container snap-item w-72 flex-shrink-0 cursor-default group animate-slideUp" style="animation-delay: ${idx * 40}ms">
+                <div class="card-image-wrap aspect-video rounded-2xl mb-3 bg-white/5 relative overflow-hidden">
+                    <img src="${thumb || ''}" class="w-full h-full object-cover transition-transform group-hover:scale-105" loading="lazy" onerror="this.style.objectFit='cover';this.src='fiveicon.png'">
+                    <div class="absolute top-3 left-3 px-2 py-1 rounded-full text-[12px] font-semibold" style="background:${getCategoryColor('')}; color: #fff;">Offline</div>
+                    <div class="absolute bottom-3 left-3 bg-black/50 px-3 py-1 rounded text-[12px] font-semibold text-white">${sizeLabel}</div>
+                </div>
+                <div class="px-1">
+                    <p class="text-sm font-bold truncate text-white/90">${displayTitle}</p>
+                    <!-- hide raw URL: show friendly source text instead -->
+                    <p class="text-[11px] text-white/40 truncate">${entry.sourceName || ''}</p>
+                    ${progressHtml}
+                    <div class="mt-3 flex gap-2">
+                        <button onclick="event.stopPropagation(); playOfflinePreview('${entry.url}')" class="btn-liquid flex-1 py-2 rounded-lg text-white text-sm">Reproduzir</button>
+                        <button onclick="event.stopPropagation(); removeOfflineByUrl('${entry.url}')" class="w-10 h-10 rounded-xl glass flex items-center justify-center border border-white/8" title="Remover">
+                            <i class="fa-solid fa-trash-can text-white/90"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    listEl.innerHTML = itemsHtml;
+    if (countEl) countEl.textContent = `${entries.length} ${entries.length === 1 ? 'item' : 'itens'}`;
+
+    // ensure UI reflects latest progress/status after small delay (useful after SW messages)
+    setTimeout(() => updateOfflineButtons(), 300);
+}
+
+/* Remove offline entry by url helper (calls removeOffline and updates UI) */
+async function removeOfflineByUrl(url) {
+    try {
+        // find itemId in catalog
+        const catalog = readOfflineCatalog();
+        const key = Object.keys(catalog).find(k => catalog[k] && catalog[k].url === url);
+        if (key) {
+            await removeOffline(key);
+        } else {
+            // direct remove via SW message as fallback
+            if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                navigator.serviceWorker.controller.postMessage({ type: 'REMOVE_VIDEO', url });
+            }
+        }
+    } catch (e) {
+        console.warn('removeOfflineByUrl', e);
+    } finally {
+        setTimeout(renderDownloads, 400);
+    }
+}
+
+/* Play offline preview: use getCachedVideoObjectUrl to load blob URL into player */
+async function playOfflinePreview(url) {
+    try {
+        const objUrl = await getCachedVideoObjectUrl(url);
+        if (!objUrl) {
+            alert('Arquivo offline não encontrado no cache.');
+            return;
+        }
+        // create a temporary player entry and open the same player UI
+        // try to find corresponding content id to create a friendly title
+        const meta = contentDB.find(i => i.url === url || (i.seasons && Object.values(i.seasons || {}).flat().some(ep => ep.url === url)));
+        const fakeId = `offline::${btoa(url).slice(0,8)}`;
+        const playerOverlay = document.getElementById('page-player');
+        const container = document.getElementById('player-container');
+        const titleEl = document.getElementById('player-title');
+        titleEl.textContent = meta ? `${meta.title} (Offline)` : 'Reprodução Offline';
+        container.innerHTML = `<video id="lumina-offline-video" class="w-full h-full" controls playsinline webkit-playsinline src="${objUrl}"></video>`;
+        playerOverlay.classList.remove('hidden');
+        playerOverlay.classList.remove('player-close');
+        playerOverlay.classList.remove('player-open');
+        void playerOverlay.offsetWidth;
+        playerOverlay.classList.add('player-open');
+        const v = document.getElementById('lumina-offline-video');
+        try { v.play().catch(()=>{}); } catch(e){}
+    } catch (e) {
+        console.warn('playOfflinePreview', e);
+        alert('Erro ao reproduzir offline.');
+    }
+}
+
+/* Clear all downloads */
+async function clearAllDownloads() {
+    if (!confirm('Remover todos os downloads offline?')) return;
+    const catalog = readOfflineCatalog();
+    for (const key of Object.keys(catalog)) {
+        try { await removeOffline(key); } catch(e){}
+    }
+    setTimeout(renderDownloads, 400);
+}
+
+/* Listen for offline catalog changes and re-render downloads page when needed */
+window.addEventListener('offline-status-changed', (ev) => {
+    try {
+        if (state.currentPage === 'downloads') renderDownloads();
+    } catch (e){}
+});
+
 /* --- DETAIL MODAL LOGIC (Animated) --- */
 function openDetail(id) {
     const item = contentDB.find(i => i.id === id);
@@ -1639,6 +1809,34 @@ function openDetail(id) {
         ? `<span class="text-green-400 font-bold text-xs"><i class="fa-solid fa-star text-[10px]"></i> ${item.ratings.imdb || '—'}</span><span class="ml-2 text-[11px] text-white/60">• ${item.ratings.rottenTomatoes ? item.ratings.rottenTomatoes + '% RT' : '—'}</span>`
         : `<span class="text-green-400 font-bold text-xs"><i class="fa-solid fa-star text-[10px]"></i> —</span>`;
 
+    // Build a download button only when a sensible MP4 URL is available for this title.
+    // For films we check item.url; for series we check the first episode of the selected season (or season 1).
+    let downloadButtonHtml = '';
+    try {
+        let candidateUrl = '';
+        if (item.type === 'serie') {
+            const seasonKeys = Object.keys(item.seasons || {});
+            const firstSeason = seasonKeys[0] || '';
+            const firstEp = (item.seasons && item.seasons[firstSeason] && item.seasons[firstSeason][0]) ? item.seasons[firstSeason][0] : null;
+            candidateUrl = firstEp ? normalizeDriveUrl(firstEp.url || '') : '';
+        } else {
+            candidateUrl = normalizeDriveUrl(item.url || '');
+        }
+        if (candidateUrl && isEligibleForOffline(candidateUrl)) {
+            downloadButtonHtml = `
+                <button id="download-btn-${item.id}" onclick="event.stopPropagation(); toggleDownload('${item.id}')" class="flex flex-col items-center gap-2 group p-2" title="Download">
+                    <i id="download-icon-${item.id}" class="fa-solid fa-download text-2xl text-white/50"></i>
+                    <span id="download-label-${item.id}" class="text-[10px] font-medium text-white/40 uppercase tracking-wider">Download</span>
+                </button>
+            `;
+        } else {
+            // show a disabled/hidden placeholder to keep grid alignment or provide info (kept empty to hide)
+            downloadButtonHtml = '';
+        }
+    } catch (e) {
+        downloadButtonHtml = '';
+    }
+
     modal.innerHTML = `
         <div class="relative w-full h-[60vh] md:h-[70vh]">
             <img src="${item.cover}" class="w-full h-full object-cover animate-modal-img">
@@ -1664,7 +1862,7 @@ function openDetail(id) {
 
                 <p class="text-white/70 text-sm leading-relaxed mb-8 font-light tracking-wide">${item.description}</p>
                 
-                <div class="grid grid-cols-3 gap-2 py-4 border-t border-b border-white/5 bg-white/[0.02] rounded-2xl">
+                <div class="grid grid-cols-4 gap-2 py-4 border-t border-b border-white/5 bg-white/[0.02] rounded-2xl">
                     <button onclick="toggleFavorite('${item.id}', true)" class="flex flex-col items-center gap-2 group p-2">
                         <i class="${isFav ? 'fa-solid text-purple-400' : 'fa-regular text-white/50'} fa-bookmark text-2xl group-active:scale-125 transition-transform"></i>
                         <span class="text-[10px] font-medium text-white/40 uppercase tracking-wider">Minha Lista</span>
@@ -1677,6 +1875,7 @@ function openDetail(id) {
                         <i class="fa-solid fa-share-nodes text-2xl text-white/50 group-active:scale-125 transition-transform"></i>
                         <span class="text-[10px] font-medium text-white/40 uppercase tracking-wider">Partilhar</span>
                     </button>
+                    ${downloadButtonHtml}
                 </div>
 
                 ${seasonsHtml}
@@ -1742,6 +1941,13 @@ function renderEpisodes(itemId, seasonKey) {
         const epTitle = `${index + 1}. ${ep.title}`;
         const isLast = lastWatched && lastWatched.id === itemId && Number(lastWatched.episodeIndex) === Number(index);
 
+        // determine whether this episode is eligible for offline download
+        const epUrl = ep.url ? normalizeDriveUrl(ep.url) : '';
+        const epEligible = !!epUrl && isEligibleForOffline(epUrl);
+        const downloadBtn = epEligible ? `<button data-download class="py-2 px-3 rounded-lg border border-white/6 text-white/80 hover:text-white transition-colors" title="Download">
+                                            <i class="fa-solid fa-download mr-2"></i><span class="download-label">Download</span>
+                                        </button>` : '';
+
         return `
             <div class="episode-row cascade-up" data-ep-index="${index}" data-season="${seasonKey}" data-item-id="${itemId}" style="animation-delay:${index * 36}ms">
                 <div class="flex flex-col md:flex-row items-stretch gap-3 p-4 rounded-2xl bg-gradient-to-r from-black/25 to-black/12 hover:from-black/30 hover:to-black/20 transition-all cursor-pointer border border-transparent hover:border-white/6">
@@ -1771,6 +1977,8 @@ function renderEpisodes(itemId, seasonKey) {
                                 <button data-mark class="py-2 px-3 rounded-lg border border-white/6 text-white/80 hover:text-white transition-colors">
                                     <i class="fa-regular fa-square-check mr-2"></i><span class="mark-label">Marcar</span>
                                 </button>
+
+                                ${downloadBtn}
                             </div>
 
                             <div class="text-xs text-white/40">Ep. ${index + 1} • ${duration}</div>
@@ -1812,6 +2020,70 @@ function renderEpisodes(itemId, seasonKey) {
                 markEpisode(id, season, idx, btn);
             }, { passive: true });
         });
+
+        // download buttons (attach handler to each episode download button and pass episode-specific context)
+        container.querySelectorAll('[data-download]').forEach((btn) => {
+            btn.addEventListener('click', async (ev) => {
+                ev.stopPropagation();
+                try {
+                    const row = btn.closest('.episode-row');
+                    if (!row) return;
+                    const idx = Number(row.dataset.epIndex || row.getAttribute('data-ep-index') || 0);
+                    const season = row.dataset.season;
+                    const id = row.dataset.itemId;
+                    const item = contentDB.find(i => i.id === id);
+                    if (!item) return alert('Conteúdo não encontrado para download.');
+
+                    // resolve episode URL robustly
+                    const ep = (item.seasons && item.seasons[season] && item.seasons[season][idx]) ? item.seasons[season][idx] : null;
+                    const rawUrl = ep ? (ep.url || '') : '';
+                    const normalizedUrl = normalizeDriveUrl(rawUrl || '');
+
+                    if (!normalizedUrl) return alert('URL do episódio inválida.');
+
+                    if (!isEligibleForOffline(normalizedUrl)) return alert('Este episódio não é elegível para download offline (apenas diretos).');
+
+                    // visually indicate download started on this button
+                    const icon = btn.querySelector('i');
+                    const label = btn.querySelector('.download-label');
+                    if (icon) { icon.className = 'fa-solid fa-spinner fa-spin mr-2'; }
+                    if (label) { label.textContent = 'Baixando...'; }
+
+                    // create a stable catalog key for episode-level entries: itemId::season::index
+                    const epKey = `${id}::s${season}::e${idx}`;
+                    const catalog = readOfflineCatalog();
+                    catalog[epKey] = {
+                        url: normalizedUrl,
+                        status: 'downloading',
+                        title: `${item.title} • S${season}E${idx+1} - ${ep ? (ep.title || '') : ''}`,
+                        size: null,
+                        updatedAt: new Date().toISOString()
+                    };
+                    writeOfflineCatalog(catalog);
+                    dispatchOfflineEvent('offline-status-changed', { itemId: epKey, status: 'downloading' });
+
+                    // request download (delegates to SW when available)
+                    try {
+                        await requestDownload(epKey, normalizedUrl);
+                        // mark queued/stored will be updated by SW message; still update label optimistically
+                        setTimeout(() => updateOfflineButtons(), 600);
+                    } catch (err) {
+                        console.warn('Episode requestDownload failed', err);
+                        catalog[epKey].status = 'error';
+                        catalog[epKey].error = String(err);
+                        catalog[epKey].updatedAt = new Date().toISOString();
+                        writeOfflineCatalog(catalog);
+                        dispatchOfflineEvent('offline-status-changed', { itemId: epKey, status: 'error' });
+                        if (icon) icon.className = 'fa-solid fa-triangle-exclamation mr-2 text-yellow-400';
+                        if (label) label.textContent = 'Erro';
+                        alert('Falha ao iniciar o download do episódio.');
+                    }
+                } catch (e) {
+                    console.warn('episode download handler error', e);
+                }
+            }, { passive: true });
+        });
+
     } catch (e) {
         console.warn('renderEpisodes event binding error', e);
     }
@@ -3807,6 +4079,12 @@ window.scrollList = scrollList;
 window.toggleSeasonPills = toggleSeasonPills;
 // expose addToHistory globally so inline onclick handlers inside rendered HTML can call it
 window.addToHistory = addToHistory;
+// expose toggleDownload so inline buttons can call download/remove actions
+window.toggleDownload = toggleDownload;
+// ensure offline playback helper is globally available for inline onclick usage
+window.playOfflinePreview = playOfflinePreview;
+// expose removeOfflineByUrl globally so inline remove buttons can call it without errors
+window.removeOfflineByUrl = removeOfflineByUrl;
 
  // Suppress a noisy browser Promise rejection when play() is interrupted by removing the media element.
  // This prevents the console spam: "The play() request was interrupted because the media was removed from the document."
@@ -4066,9 +4344,178 @@ if (navigator.serviceWorker) {
     });
 }
 
+/* ---------- Offline download UI helpers & wiring ---------- */
+/* Toggle download / remove for an item (movie or series). Picks a sensible URL:
+   - For series: current season/first ep url is used (modal sets seasonSelectHidden value)
+   - For films: item.url is used.
+*/
+async function toggleDownload(itemId, opts = {}) {
+    // Improved: supports episode-level keys and direct url overrides via opts.url
+    try {
+        // If opts.url provided, treat itemId as a catalog key name (or compute ep key if itemId is base id)
+        let url = opts.url || '';
+        let catalogKey = itemId;
+
+        // If itemId refers to an actual contentDB item and opts.episodeIndex/season provided, build epKey
+        const maybeItem = contentDB.find(i => i.id === itemId);
+        if (maybeItem && typeof opts.episodeIndex === 'number' && opts.season) {
+            catalogKey = `${itemId}::s${opts.season}::e${opts.episodeIndex}`;
+        }
+
+        // If url not provided and we have a referenced content item, derive URL (movie or first ep of selected season)
+        if (!url && maybeItem) {
+            if (maybeItem.type === 'serie') {
+                const seasonKey = opts.season || (document.getElementById('seasonSelectHidden')?.value) || Object.keys(maybeItem.seasons || {})[0];
+                const epIndex = (typeof opts.episodeIndex === 'number') ? opts.episodeIndex : 0;
+                const ep = (maybeItem.seasons && maybeItem.seasons[seasonKey] && maybeItem.seasons[seasonKey][epIndex]) ? maybeItem.seasons[seasonKey][epIndex] : null;
+                url = ep ? normalizeDriveUrl(ep.url || '') : '';
+                catalogKey = `${itemId}::s${seasonKey}::e${epIndex}`;
+            } else {
+                url = normalizeDriveUrl(maybeItem.url || '');
+                catalogKey = itemId;
+            }
+        }
+
+        if (!url) return alert('URL não disponível para download.');
+
+        // Check if already present in catalog (by exact url)
+        const catalog = readOfflineCatalog();
+        const existingKey = Object.keys(catalog).find(k => catalog[k] && catalog[k].url === url);
+
+        // If exists -> remove it
+        if (existingKey) {
+            const confirmRemove = confirm('Remover este item dos downloads offline?');
+            if (!confirmRemove) return;
+            await removeOffline(existingKey);
+            setTimeout(() => updateOfflineButtons(), 300);
+            return;
+        }
+
+        // Validate eligibility
+        if (!isEligibleForOffline(url)) return alert('Este URL não é elegível para download offline (apenas diretos).');
+
+        // Optimistic UI feedback: find any related buttons/labels
+        const icon = document.getElementById(`download-icon-${itemId}`) || document.querySelector(`[data-item-id="${itemId}"] [data-download] i`);
+        const label = document.getElementById(`download-label-${itemId}`) || document.querySelector(`[data-item-id="${itemId}"] [data-download] .download-label`);
+
+        if (icon) { icon.className = 'fa-solid fa-spinner fa-spin'; }
+        if (label) { label.textContent = 'Baixando...'; }
+
+        // Create or update catalog entry keyed by computed catalogKey
+        const entry = {
+            url,
+            status: 'downloading',
+            title: opts.title || (maybeItem ? (maybeItem.title + (maybeItem.type === 'serie' && opts.season ? ` • S${opts.season}E${opts.episodeIndex+1}` : '')) : ('Offline ' + new Date().toISOString())),
+            size: null,
+            updatedAt: new Date().toISOString()
+        };
+        catalog[catalogKey] = entry;
+        writeOfflineCatalog(catalog);
+        dispatchOfflineEvent('offline-status-changed', { itemId: catalogKey, status: 'downloading' });
+
+        // Delegate fetch+cache to service worker for memory efficiency when possible
+        try {
+            const res = await requestDownload(catalogKey, url);
+            // requestDownload already wrote catalog entries when delegated; ensure UI updates
+            setTimeout(() => updateOfflineButtons(), 600);
+            return res;
+        } catch (err) {
+            console.warn('toggleDownload -> requestDownload failed', err);
+            catalog[catalogKey].status = 'error';
+            catalog[catalogKey].error = String(err);
+            catalog[catalogKey].updatedAt = new Date().toISOString();
+            writeOfflineCatalog(catalog);
+            dispatchOfflineEvent('offline-status-changed', { itemId: catalogKey, status: 'error' });
+            if (icon) icon.className = 'fa-solid fa-triangle-exclamation text-yellow-400';
+            if (label) label.textContent = 'Erro';
+            alert('Falha ao iniciar o download.');
+            return { ok: false, error: String(err) };
+        }
+    } catch (e) {
+        console.warn('toggleDownload error', e);
+    }
+}
+
+/* Update download buttons across UI to reflect catalog state */
+function updateOfflineButtons() {
+    try {
+        const catalog = readOfflineCatalog();
+        // Update detail modal buttons
+        Object.keys(catalog).forEach(key => {
+            const entry = catalog[key];
+            // find matching itemId key first (explicit itemId entries) or url matches
+            const itemIsKey = document.getElementById(`download-btn-${key}`);
+            if (itemIsKey) {
+                const btnIcon = document.getElementById(`download-icon-${key}`);
+                const btnLabel = document.getElementById(`download-label-${key}`);
+                if (entry.status === 'stored') {
+                    if (btnIcon) btnIcon.className = 'fa-solid fa-check text-green-400';
+                    if (btnLabel) btnLabel.textContent = 'Offline';
+                } else if (entry.status === 'downloading') {
+                    if (btnIcon) btnIcon.className = 'fa-solid fa-spinner fa-spin';
+                    if (btnLabel) btnLabel.textContent = 'Baixando...';
+                } else if (entry.status === 'error') {
+                    if (btnIcon) btnIcon.className = 'fa-solid fa-triangle-exclamation text-yellow-400';
+                    if (btnLabel) btnLabel.textContent = 'Erro';
+                }
+            }
+        });
+
+        // Update episode download buttons (by URL match)
+        document.querySelectorAll('[data-download]').forEach(btn => {
+            const row = btn.closest('.episode-row');
+            if (!row) return;
+            const url = (function() {
+                try {
+                    const itemId = row.dataset.itemId;
+                    const season = row.dataset.season;
+                    const idx = Number(row.dataset.epIndex || row.getAttribute('data-ep-index') || 0);
+                    const item = contentDB.find(i => i.id === itemId);
+                    if (!item || !item.seasons || !item.seasons[season]) return '';
+                    const ep = item.seasons[season][idx];
+                    return ep ? normalizeDriveUrl(ep.url || '') : '';
+                } catch (e) { return ''; }
+            })();
+            if (!url) return;
+            const matchKey = Object.keys(readOfflineCatalog()).find(k => readOfflineCatalog()[k] && readOfflineCatalog()[k].url === url);
+            const label = btn.querySelector('.download-label');
+            const icon = btn.querySelector('i');
+            if (matchKey) {
+                const status = readOfflineCatalog()[matchKey].status;
+                if (status === 'stored') { icon.className = 'fa-solid fa-check mr-2 text-green-400'; if (label) label.textContent = 'Offline'; }
+                else if (status === 'downloading') { icon.className = 'fa-solid fa-spinner fa-spin mr-2'; if (label) label.textContent = 'Baixando...'; }
+                else if (status === 'error') { icon.className = 'fa-solid fa-triangle-exclamation mr-2 text-yellow-400'; if (label) label.textContent = 'Erro'; }
+            } else {
+                if (icon) icon.className = 'fa-solid fa-download mr-2';
+                if (label) label.textContent = 'Download';
+            }
+        });
+    } catch (e) {
+        console.warn('updateOfflineButtons error', e);
+    }
+}
+
+/* Listen to offline catalog change events (dispatched by SW message handler earlier) to refresh UI */
+window.addEventListener('offline-status-changed', (ev) => {
+    try {
+        updateOfflineButtons();
+    } catch (e) {}
+});
+
+/* Also listen to service worker messages (already wired below) - ensure updateOfflineButtons is invoked on DOWNLOAD_COMPLETE / REMOVE_COMPLETE */
+if (navigator.serviceWorker) {
+    navigator.serviceWorker.addEventListener('message', (ev) => {
+        const data = ev.data || {};
+        if (!data || !data.type) return;
+        if (data.type === 'DOWNLOAD_COMPLETE' || data.type === 'REMOVE_COMPLETE') {
+            setTimeout(updateOfflineButtons, 300);
+        }
+    });
+}
+
 /* Register Service Worker (if supported) and handle update flow */
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/service-worker.js').then(reg => {
+    navigator.serviceWorker.register('service-worker.js').then(reg => {
         console.log('Lumina SW registered:', reg);
 
         // Listen for updates and notify UI (simple flow)
