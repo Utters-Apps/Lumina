@@ -10,7 +10,7 @@ const contentDB = [
         ratings: { imdb: 6.3, rottenTomatoes: 54, audienceScore: 50 },
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/53bd6d9c03d61fecdee73974365e26b3276e3b7e2fb93f9319b28eebc1c0fa26._SX1080_FMjpg_.jpg',
         description: 'Greg Heffley está destinado a grandes coisas, mas primeiro ele precisa sobreviver à coisa mais assustadora e humilhante de todas: o ensino fundamental.',
-        url: 'https://drive.google.com/file/d/1qBGYMGHOShcyS0_meDv35wG4K5nzU28E/preview'
+        url: 'https://def1.pcloud.com/cfZvRd0rk7ZL3fQDP7ZKlNC7ZZdOcq0kZQ5ZZMFXZZST5SvZ7HZwQZwRZn0ZuzZrXZA8ZeJZBzZIFZ1mZTQZr4ZVFZpch6kTz25LVB2NTQABpcO7XfJMzX/53f2a0d97fd98ff3efef952370abc7665fc1f9895723538f5917f8b7ef2c4667.mp4'
     },
     {
         id: 'diario-banana-2',
@@ -20,7 +20,7 @@ const contentDB = [
         year: '2011',
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/12bd2a9871c75d6abfddb48638342629f8190b81c3784e15e468eb3c96d53e31._UR1920,1080_.jpg',
         description: 'De volta às aulas, Greg e seu irmão mais velho Rodrick lidam com suas tentativas hilárias e desajeitadas de se darem bem (ou não).',
-        url: 'https://drive.google.com/file/d/1uXk9Zz13N84yXOq-I-bycbMT4RUPoosP/preview'
+        url: 'https://def4.pcloud.com/cfZs6K0rk7ZBYSQDP7ZKlNC7ZZQAcq0kZQ5ZZMFXZZ93MNy7ZlpZy9ZDRZrFZ7mZYpZOLZbmZgLZA4ZbHZiLZA0ZRZVglFfwLyoX5fxbwV6SnkczJHPMRX/b3c16646244d9ca0a9a3f6c2243af2de469c68d7195ada34d4ee66a6c5a1f4dd.mp4'
     },
     {
         id: 'diario-banana-3',
@@ -30,7 +30,7 @@ const contentDB = [
         year: '2012',
         cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/019b2f32-b4d6-7163-9299-3e0e72111f11/compose?aspectRatio=1.78&format=webp&width=1200',
         description: 'As férias de verão chegaram e Greg quer passar o tempo jogando videogame, mas seu pai tem outros planos para ele.',
-        url: 'https://drive.google.com/file/d/17u9eihi4QzkIwzeGatm1pyAbvh8VC774/preview'
+        url: 'https://def1.pcloud.com/cfZslSJrk7ZG25hDP7ZKlNC7ZZfhoq0kZQ5ZZMFXZZv745rZELZYmZYHZIFZqFZqmZx4Z4QZ18ZARZSRZo8ZHmZOzZAKSj5OnwNouoCLfYcGQyOHmtPpdy/5197274c04d77a609efabbede1b1b5d98b1aed377010aa8988f5b05df950a695.mp4'
     },
     {
         id: 'stranger-things',
@@ -43,11 +43,11 @@ const contentDB = [
         ratings: { imdb: 8.7, rottenTomatoes: 91, metascore: 78 },
         isHero: true,
         seasons: {
-            1: [ { title: "O desaparecimento de Will Byers", url: "https://drive.google.com/file/d/1jA0SUmrcvDJSRxTPWRkCh__yPxGXKs2Q/preview" }, { title: "A estranha da Maple Street", url: "https://drive.google.com/file/d/1pglYy77Xa8o0dYr0frDST_wtceovJKB6/preview" }, { title: "Caramba", url: "https://drive.google.com/file/d/1E9BmsgTCviJGsazvx_q0D_qNng1k2Cop/preview" }, { title: "O corpo", url: "https://drive.google.com/file/d/1APURKFILNPvNGAT5Z18Zs2YtNdpnhwWL/preview" }, { title: "A pulga e o acrobata", url: "https://drive.google.com/file/d/1UIRAu43z4qHuTtWxPDvs03mq61OjWpJh/preview" }, { title: "O monstro", url: "https://drive.google.com/file/d/1QQQfaiAdD7inyyRgjWeAnzxKDtxaQmU6/preview" }, { title: "A banheira", url: "https://drive.google.com/file/d/1Nr7BB5TZMUN8FJQJk5Eu81Nz32Ijj9-M/preview" }, { title: "De ponta-cabeça", url: "https://drive.google.com/file/d/1lt6WZmAHr40_ofQ3YI0Ir0WqONMt3sxp/preview" } ],
-            2: [ { title: "Mad Max", url: "https://drive.google.com/file/d/1vWObqz3txFCkAsmlF6rP0hnkLXQdYNTg/preview" }, { title: "Gostosura ou travessura", url: "https://drive.google.com/file/d/15LkiyN-XNsKTsKuIinx1lxGEJ6atqEB3/preview" }, { title: "O girino", url: "https://drive.google.com/file/d/1aOYmRWV7aAiuDm7F-L8d2nWPXsnK3u2N/preview" }, { title: "Will, o sábio", url: "https://drive.google.com/file/d/1EbN2px12MOdlv8t3bG1lzW8CHKX19S3f/preview" }, { title: "Dig Dug", url: "https://drive.google.com/file/d/15RS3bamEfRrHxtUgOPgrPbjWQnGCs9K3/preview" }, { title: "O espião", url: "https://drive.google.com/file/d/1eftQ6iiGIegch1OxNC8g_impKYvdvMsx/preview" }, { title: "A irmã perdida", url: "https://drive.google.com/file/d/14go4_qruYL5gVU5MWzwmeLzNR8rFGRrB/preview" }, { title: "O Devorador de Mentes", url: "https://drive.google.com/file/d/1hsJCe8ryMDaz5iHMxF5i9UvRGRJp51gc/preview" }, { title: "O portal", url: "https://drive.google.com/file/d/1KGNzD6d4sLvhpsT0xGGF9Z8gEesGtPFD/preview" } ],
-            3: [ { title: "Está me ouvindo, Suzie?", url: "https://drive.google.com/file/d/1XfzDMa5UUXTEGYI7rRor16xMLqns21-S/preview" }, { title: "O caso dos ratos", url: "https://drive.google.com/file/d/1uDZAS0aOjS-bQipiFiGYG0X2zK1Bc3Jt/preview" }, { title: "A salva-vidas desaparecida", url: "https://drive.google.com/file/d/1VpRDqWLTi4QsU01GcNxJrwmKP5MS6Lo5/preview" }, { title: "A prova da sauna", url: "https://drive.google.com/file/d/1IVZ1hfGl8YIeTfGQO5Jp3DJd4jVQeDmj/preview" }, { title: "Os devorados", url: "https://drive.google.com/file/d/1SVXkvGOx2HMa8iS5WCRY8PuoQSA8J6YK/preview" }, { title: "E pluribus unum", url: "https://drive.google.com/file/d/1uam4RJCEYkFGtyinYJ8Ljo-JkHIpSLc1/preview" }, { title: "A mordida", url: "https://drive.google.com/file/d/1JiRmtEHXa83vleGIBTv-1yg_OCIYZaCW/preview" }, { title: "A batalha de Starcourt", url: "https://drive.google.com/file/d/1_F6_qA9MtI7SR9mr3C4CW-wen5i9yu6u/preview" } ],
-            4: [ { title: "O Clube Hellfire", url: "https://drive.google.com/file/d/1ZDiFOud9zBnrsegnKCo1oEoW6iBbzCS2/preview" }, { title: "A maldição de Vecna", url: "https://drive.google.com/file/d/1BLh9YesJz1mWYZxFw-EjVM0BRulY305u/preview" }, { title: "O monstro e a super-heroína", url: "https://drive.google.com/file/d/17d7rivkMsdtf8l500URgQGdvMaggSS1k/preview" }, { title: "Querido Billy", url: "https://drive.google.com/file/d/1z_rVv032G7-UXqb45OCtNLpDkVG8ZKpq/preview" }, { title: "Projeto Nina", url: "https://drive.google.com/file/d/1OD2KvUHg_9xWMWkbAdh__w5Dau8JFUTS/preview" }, { title: "Mergulho", url: "https://drive.google.com/file/d/1WegNowrQi1EsSQZO7Uz_A3GowbBfH9FO/preview" }, { title: "O massacre no laboratório", url: "https://drive.google.com/file/d/1ipI0psTtKFSw6OcoQiXvFot2koGJW2W0/preview" }, { title: "Papai", url: "https://drive.google.com/file/d/16NS_DpktJW4a7M9aqflF9m7Iv3Z4z0LJ/preview" }, { title: "E o plano de Onze", url: "https://drive.google.com/file/d/1i_qekb-WZTIkkFlRM36FIjHKPjfTZ3Y6/preview" } ],
-            5: [ { title: "Missão de resgate", url: "https://drive.google.com/file/d/1xFrwPesQ0zXWoRsBaL9ZIDTPnvVSkkuF/preview" }, { title: "O desaparecimento de Holly Wheeler", url: "https://drive.google.com/file/d/1f7j3ma94atswrsZVf9-uSiqPLNeixHrC/preview" }, { title: "A armadilha", url: "https://drive.google.com/file/d/1Um1zw_iXsah4kh3AzDBSOuMek6kbZxI2/preview" }, { title: "Feiticeiro", url: "https://drive.google.com/file/d/1_dBex9phSWyauWp1eoFoRx9AN9i31dPA/preview" }, { title: "Tratamento de choque", url: "https://drive.google.com/file/d/1wvZIvfHngKO8b7yurLrDsPIzX3ijLZHE/preview" }, { title: "A fuga de Camazotz", url: "https://drive.google.com/file/d/15J4JKrp2BVQQCdoQcHU_JnYHOzdNd3qJ/preview" }, { title: "A ponte", url: "https://drive.google.com/file/d/1OzFsVQtKLWbAiXQgF1iGiTzSGuuPRFX0/preview" }, { title: "O mundo direito", url: "https://drive.google.com/file/d/1XSlN4w9H4jsas08jGrMhthBHspHNm3QS/preview" } ]
+            1: [ { title: "O desaparecimento de Will Byers", url: "https://def3.pcloud.com/cfZQMEf4wZgrqCDP7ZKUNC7ZZuU7t0kZQ5ZZMFXZZw0nMqZjXZORZUTZd8ZMmZa8ZUmZhYZiQZkQZ6TZ79ZBLZ3FZiHqPsYhWQ0VB31vnWTHKrHlgSc27/T01EP01.mp4" }, { title: "A estranha da Maple Street", url: "https://def4.pcloud.com/cfZCuv6dIZpQ6CDP7ZKUNC7ZZOA7t0kZQ5ZZMFXZZVaMcIZ2mZeYZvRZ8HZwYZYmZG4Z3TZRYZSYZkQZ9FZdYZKTZljIbYnNECv8TXTHWhPbgu7elDLBy/T01EP02.mp4" }, { title: "Caramba", url: "https://def3.pcloud.com/cfZJpr6dIZo3wCDP7ZKUNC7ZZeN7t0kZQ5ZZMFXZZUOnwEZAQZdTZv8ZmYZLYZP8ZMmZVRZYLZOpZeYZxmZ0mZaTZUFQu66Ciw4FnlXTd3jdKdHc2pbdk/T01EP03.mp4" }, { title: "O corpo", url: "https://def3.pcloud.com/cfZIYp8rk7ZzJKCDP7ZKUNC7ZZ5a7t0kZQ5ZZMFXZZ9iQh6Z8QZIVZy8ZjRZlLZipZrLZAYZEFZURZxYZrYZYmZzYZLq5eJGJhu3FkEfoBDrzRozx9imCy/T01EP04.mp4" }, { title: "A pulga e o acrobata", url: "https://def1.pcloud.com/cfZH9J8rk7ZbagCDP7ZKUNC7ZZAa7t0kZQ5ZZMFXZZQ5d6OZYLZMFZjLZaYZlzZR4ZfzZ2QZIQZapZFJZwHZTRZV4ZnRDVbYXCf34XgmKMGqjl1zbDOtb7/T01EP05.mp4" }, { title: "O monstro", url: "https://def3.pcloud.com/cfZMkJ8rk7ZPfTCDP7ZKUNC7ZZl37t0kZQ5ZZMFXZZG9D3lZY8ZWYZeJZl4Zr4Z6zZxHZUQZ5VZN8Z0RZIFZU4ZHLZnEnbKYAC6D8w3FH4PNooxRedY9yV/T01EP06.mp4" }, { title: "A banheira", url: "https://def4.pcloud.com/cfZVo08rk7ZVKnCDP7ZKUNC7ZZ0G7t0kZQ5ZZMFXZZFDvDCZspZYzZsYZLYZtpZr8Zx8ZSRZtYZHzZ3zZn7ZxLZBLZvo1yIxA5SOLIr93ONXCeyJgSq7nk/T01EP07.mp4" }, { title: "De ponta-cabeça", url: "https://def1.pcloud.com/cfZYNV8rk7Z8xDCDP7ZKUNC7ZZ2G7t0kZQ5ZZMFXZZ9VuuIZULZj4ZKFZyzZ5QZmLZSmZTQZVHZ3mZbYZtQZ1LZU8ZSnYq9l0GSiybUT0uOvGGwVzd5pCk/T01EP08.mp4" } ],
+            2: [ { title: "Mad Max", url: "https://def1.pcloud.com/cfZWAPQrk7ZvWplDP7Z8INC7ZZqmkt0kZQ5ZZMFXZZlvcKoZnRZJLZU4Zn8ZB8ZwLZxpZaLZp4ZlQZF4Zm8ZmLZwHZF0KhCSp6wzmpBfTWPU9vGF4GRGak/T02EP01.mp4" }, { title: "Gostosura ou travessura", url: "https://def4.pcloud.com/cfZOTU8rk7Z9ebwDP7ZKUNC7ZZtkkt0kZQ5ZZMFXZZGddCp7ZNYZLmZ9RZAQZvRZFHZcRZPXZ98ZlFZaFZeLZfLZc7ZKCTFzNTra2fcVWazf3RQX5ve2nRX/T02EP02.mp4" }, { title: "O girino", url: "https://def4.pcloud.com/cfZpMI8rk7ZJyjwDP7ZKUNC7ZZ0Vkt0kZQ5ZZMFXZZesw4X7ZtYZc7ZBLZ9LZuzZJRZpLZ74ZbHZl4ZTzZWzZLJZYYZRg24TAeQDmjLeELLRQ4FkYrvS9P7/T02EP03.mp4" }, { title: "Will, o sábio", url: "https://def2.pcloud.com/cfZ9G68rk7ZHnLwDP7ZKUNC7ZZL0kt0kZQ5ZZMFXZZCyPSrZ2JZyYZOzZoHZd4ZeFZRzZ9YZqYZOFZbYZxHZQQZ9mZqD1S3oWcOAVai05G4pO02Y9LQeCk/T02EP04.mp4" }, { title: "Dig Dug", url: "https://def4.pcloud.com/cfZw368rk7ZySLwDP7ZKUNC7ZZN0kt0kZQ5ZZMFXZZLpcQR7ZUQZjRZg8ZzFZIFZwLZJZTzZbQZn4ZaRZERZlmZWzZ4aAsJ6jNjljYaOONEn0NupeViwEk/T02EP05.mp4" }, { title: "O espião", url: "https://def1.pcloud.com/cfZzxqQrk7ZWgelDP7Z8INC7ZZGbkt0kZQ5ZZMFXZZemxSV7ZFJZxYZvFZN7Zp8ZOQZl8ZNLZK4Z6YZLmZ3zZnLZRmZ9zLAeUolTSFTlhr5blVYFhd7yrrX/T02EP06.mp4" }, { title: "A irmã perdida", url: "https://def1.pcloud.com/cfZYCKQrk7ZrThlDP7Z8INC7ZZfhkt0kZQ5ZZMFXZZnLYsiZMmZ4RZPzZRQZ0RZDLZ5pZJZ0zZNRZN4ZPXZNLZO8ZP53t1mNG2C5yxULM3lMo6pTonRC7/T02EP07.mp4" }, { title: "O Devorador de Mentes", url: "https://def2.pcloud.com/cfZs0KQrk7ZDlmlDP7Z8INC7ZZUhkt0kZQ5ZZMFXZZMxbQoZaRZAQZXHZHpZKpZaYZRQZBmZrFZWQZrLZy9ZbLZwmZnEQAr6KAlj7IrSk6GxNvtbWfvnay/T02EP08.mp4" }, { title: "O portal", url: "https://def3.pcloud.com/cfZMiCQrk7Zt6zlDP7Z8INC7ZZlSkt0kZQ5ZZMFXZZYvzsY7ZbQZqpZ04ZHzZA4ZwRZe4Z1HZHpZH4Z6zZiLZzRZVFZgSuQeODK27uxIOfc7hO23HdJQ6ay/T02EP09.mp4" } ],
+            3: [ { title: "Está me ouvindo, Suzie?", url: "https://def1.pcloud.com/cfZFaGYrk7ZlKHtDP7ZAINC7ZZsqkt0kZQ5ZZMFXZZnvOV07ZtLZn8ZsRZ4LZN0Zk4ZORZFYZK4ZFmZy8ZlQZgQZWYZy00oW13kBUzEdNyac4XVjpwF6FOX/T03EP01.mp4" }, { title: "O caso dos ratos", url: "https://def1.pcloud.com/cfZrfvYrk7Z0xztDP7ZAINC7ZZNqkt0kZQ5ZZMFXZZ7I3eV7ZTJZYmZUzZYRZ1YZ14ZL8ZWXZT8ZDHZO8ZLzZTmZd7ZWKy1LvjSHUpEux5KjilUJysC0dq7/T03EP02.mp4" }, { title: "A salva-vidas desaparecida", url: "https://def1.pcloud.com/cfZzXNYrk7ZfyXtDP7ZAINC7ZZRtkt0kZQ5ZZMFXZZXMg507ZDJZyYZHzZKYZvHZCRZSRZMmZvpZrFZNzZBmZKpZfLZdKv6ArzuYFVqCSnfoVmwvFyuwBq7/T03EP03.mp4" }, { title: "A prova da sauna", url: "https://def3.pcloud.com/cfZh0aYrk7ZzH0tDP7ZAINC7ZZGtkt0kZQ5ZZMFXZZe1UFp7ZqLZApZizZbQZyYZRzZsYZXzZwzZSmZTHZfQZbRZgLZVcuGXAHJLgSuSQHW0zGcUQG1MVtk/T03EP04.mp4" }, { title: "Os devorados", url: "https://def3.pcloud.com/cfZ1l4Yrk7ZAmqdDP7Z8INC7ZZw9kt0kZQ5ZZMFXZZf8SHF7Z0QZXRZYHZW4ZHzZ3RZGLZVHZfHZoRZr4Z1zZNVZ4YZxfQqf4hRHSpdggXfH87FXuiw4gSX/T03EP05.mp4" }, { title: "E pluribus unum", url: "https://def3.pcloud.com/cfZHxRYrk7ZNQxdDP7Z8INC7ZZH9kt0kZQ5ZZMFXZZt1GtY7Z1YZ04ZdLZgmZe8Z5pZPRZJYZKYZiLZd8ZVmZIQZ8XZsbG9kPexr5XlN7nTk0G7e8AKyeq7/T03EP06.mp4" }, { title: "A mordida", url: "https://def1.pcloud.com/cfZBEJYrk7ZHFsdDP7Z8INC7ZZdnkt0kZQ5ZZMFXZZH87Iz7ZUzZq4ZN4Z88ZhzZtzZMQZRRZxHZsLZamZnmZ5pZyLZcJ72eUqxYDQPjNtquuKILVcpHQly/T03EP07.mp4" }, { title: "A batalha de Starcourt", url: "https://def3.pcloud.com/cfZ6pRYrk7Z7YCdDP7Z8INC7ZZoekt0kZQ5ZZMFXZZktXDd7Zr0ZrQZvFZpHZjzZERZ6pZg4ZJLZw8Z98ZwYZA8ZGLZRYRRXh6ewDfHuW5xKEhRyuehbCi7/T03EP08.mp4" } ],
+            4: [ { title: "O Clube Hellfire", url: "https://def3.pcloud.com/cfZXmBbrk7ZnflODP7Z9ANC7ZZaLXt0kZQ5ZZMFXZZpXdhs7ZtQZNmZ3mZl4ZTJZ14ZX4ZwHZ8HZlLZcHZLzZd8ZmYZLfAyOAfMwo7eKI0NcMwl9FpeQmiV/T04EP01.mp4" }, { title: "A maldição de Vecna", url: "https://def1.pcloud.com/cfZyYjbrk7Z3DMODP7Z9ANC7ZZe4Xt0kZQ5ZZMFXZZtXs8u7Zv0ZNRZbmZ2YZmYZgYZrFZm4Z8QZhzZv8ZOFZkmZkJZbnO02GYbcqmnydeFlDOjjVsMw5oV/T04EP02.mp4" }, { title: "O monstro e a super-heroína", url: "https://def1.pcloud.com/cfZOfBbrk7ZbllODP7Z9ANC7ZZk8Xt0kZQ5ZZMFXZZR7xK77ZgzZBLZqQZX8ZmHZ5RZYQZbmZ84ZvpZVFZDYZ04Z0HZtWb47x2b9LVhx8AeKdPnjYOmeER7/T04EP03.mp4" }, { title: "Querido Billy", url: "https://def2.pcloud.com/cfZ6gSbrk7ZzAnODP7Z9ANC7ZZK8Xt0kZQ5ZZMFXZZ60F8S7ZLJZIYZ0HZc7ZDLZeYZbRZ4HZqFZQzZUQZnLZrQZTHZ4tEJlMdEWkpwHH452xqLO4u1jldX/T04EP04.mp4" }, { title: "Projeto Nina", url: "https://def2.pcloud.com/cfZ2vmbrk7ZDF2ODP7Z9ANC7ZZYRXt0kZQ5ZZMFXZZvO2DQ7Z5mZwmZ2YZizZRZgpZoYZSYZzLZwzZF4ZCRZ18ZLQZ2P67xf9DBuHF1DX6nfg5JVXjGg4k/T04EP05.mp4" }, { title: "Mergulho", url: "https://def1.pcloud.com/cfZbn1mrk7Z78D6DP7ZAINC7ZZIokt0kZQ5ZZMFXZZ60XzR7ZqJZbQZr4ZwkZRQZGHZpmZ7YZDzZUFZXzZm4ZQzZa4ZlAkYDwDCKcmfYF3xaafAtQiC6JXV/T04EP06.mp4" }, { title: "O massacre no laboratório", url: "https://def4.pcloud.com/cfZYOWmrk7Zb7u6DP7ZAINC7ZZSokt0kZQ5ZZMFXZZnI7qd7ZAzZtzZbQZImZALZQLZG4Z7zZumZo4Zs8Zw8Z9RZ7RZvU72nx3vpsb3UqMFs4LYYpwvjG4V/T04EP07.mp4" }, { title: "Papai", url: "https://def4.pcloud.com/cfZBjumrk7ZXzL6DP7ZAINC7ZZpckt0kZQ5ZZMFXZZ4VjYx7ZUFZqFZc7ZtzZHzZ2pZPzZsQZ3QZKmZgpZl7ZgmZmFZFdBAUgzLBULqB2PxbkVH20zoc5rk/T04EP08.mp4" }, { title: "E o plano de Onze", url: "https://def1.pcloud.com/cfZi6Bmrk7ZJlm6DP7ZAINC7ZZMrkt0kZQ5ZZMFXZZzJurgkZpLZFYZNzZdYZlRZk4Z6pZ14ZYmZ0zZhRZhYZCHZFQZFu03Xo4lAtLNhMYkSyw2XFp3zMOk/T04EP09.mp4" } ],
+            5: [ { title: "Missão de resgate", url: "https://def1.pcloud.com/cfZ8A9hrk7ZnkzADP7Z0NNC7ZZCPXt0kZQ5ZZMFXZZLXTGL7ZMLZeRZC4ZwkZbRZrQZm8Z0YZUQZVLZnmZN4ZjYZNVZQVByBFVfCoRQc81lt6wGhRQVrMtV/ep1.mp4" }, { title: "O desaparecimento de Holly Wheeler", url: "https://def1.pcloud.com/cfZRK3brk7Z0UAUDP7Z9ANC7ZZvBXt0kZQ5ZZMFXZZxETlIZTzZJLZOFZRzZILZkLZY8ZURZ04ZWQZYmZ0RZRYZiFZ8rxkblwsm4Q3qRCVAJy40SlG8gUV/ep2.mp4" }, { title: "A armadilha", url: "https://def1.pcloud.com/cfZqSNbrk7Z6gEUDP7Z9ANC7ZZQBXt0kZQ5ZZMFXZZMh8gV7Zq4Z0FZFmZK7ZT8ZDJZwRZTVZy4ZwQZsQZG4Z0RZg4ZfgJPXQsl5L4a0Us237VzBbvcEwVk/ep3.mp4" }, { title: "Feiticeiro", url: "https://def3.pcloud.com/cfZNkGbrk7ZfeNUDP7Z9ANC7ZZOfXt0kZQ5ZZMFXZZBtDSl7Z34ZY0ZwzZApZ0QZf4ZjYZ04ZIVZNQZg4ZvmZ44Z9pZoqK2x5yFTsVEnGCNF6Du9hf0Ne7y/ep4.mp4" }, { title: "Tratamento de choque", url: "https://def1.pcloud.com/cfZQ4ghrk7ZB0QADP7Z0NNC7ZZ4CXt0kZQ5ZZMFXZZmvJkTZjmZnLZr8ZO8ZNLZQHZqFZcpZcRZN4ZxYZy4ZuQZpYZ8rMKPGKupdLo0cDAIQocbQrLjzH7/05.%20Tratamento%20de%20choque_.mp4"}, { title: "A fuga de Camazotz", url: "https://def2.pcloud.com/cfZnmPhrk7ZzQmADP7Z0NNC7ZZaCXt0kZQ5ZZMFXZZIlYjB7ZAYZFHZP8ZSYZA8ZgzZkLZI4ZJmZLYZhRZJRZfLZj4ZPKC8R084WHYlN6do1BSGv5lNHzKk/06.%20A%20fuga%20de%20Camazotz.mp4" }, { title: "A ponte", url: "https://def1.pcloud.com/cfZJC9hrk7ZS9HADP7Z0NNC7ZZfxXt0kZQ5ZZMFXZZV993eZ3QZwHZURZfzZAzZlRZ18ZPLZbmZTQZLYZDYZIYZ5RZxMNzpn9b0o0fgFLibMqfKhCzl24k/07.%20A%20ponte.mp4" }, { title: "O mundo direito", url: "https://def4.pcloud.com/cfZOnnhrk7ZdhFADP7Z0NNC7ZZNxXt0kZQ5ZZMFXZZxH3Uy7ZC4ZzLZrXZa4ZA8ZCHZtpZr4ZkLZRzZFpZW8ZNYZpQZWxamFaXPtN0f6nhRutcJ1VrADvcV/08.%20O%20mundo%20_direito_.mp4" } ]
         }
     },
     {
@@ -58,7 +58,7 @@ const contentDB = [
         year: '2024',
         cover: 'https://cdn.oantagonista.com/uploads/2024/08/Divertida-Mente-2-entra-top-10-de-bilheterias-da-historia.jpg',
         description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
-        url: 'https://drive.google.com/file/d/1-qpXor4EgfGwNzxNmETa3PriyCwLH7SM/preview'
+        url: 'https://def4.pcloud.com/cfZbQFSrk7ZqMSNDP7Z0NNC7ZZ63Xt0kZQ5ZZMFXZZrmfdRXZFHZlHZeFZtYZYHZk4ZjRZv5ZELZcRZlpZD7ZqmZAYZG1okJwXfDqRGsNkmoMqisbqcIXXy/Divertida%20Mente%202%20%5B1080p%5D%5BDual%5D.mp4'
     },
     {
         id: 'heartstopper',
@@ -71,24 +71,24 @@ const contentDB = [
         ratings: { imdb: 8.5, rottenTomatoes: 96, metascore: 82 },
         seasons: {
             1: [
-                { title: "Encontro", url: "https://drive.google.com/file/d/1-XQTUcmZMrifBtswcMpUQ7QBQLvN5IyD/preview" },
-                { title: "Crush", url: "https://drive.google.com/file/d/1-fGEdyrKidSQ6C0r8EHwUpPOQflHAggg/preview" },
-                { title: "Beijo", url: "https://drive.google.com/file/d/1-lM9sujEr8bi1fHWkqgbnwyNkDBdZ-eL/preview" },
-                { title: "Segredo", url: "https://drive.google.com/file/d/1-pxm8g27HfJXkoOIZCCL2CRDOe-rFTDy/preview" },
-                { title: "Amizade", url: "https://drive.google.com/file/d/1-uj-i3VCEtTKIdkU6-VWgj34OipCWJ3i/preview" },
-                { title: "Garotas", url: "https://drive.google.com/file/d/10CpJx8PQInleDzrJ2uBcCE9CqBLDw3PB/preview" },
-                { title: "Bullying", url: "https://drive.google.com/file/d/106b-VrCsV2WGBN_-xOQn8Id2_GnPL0Ds/preview" },
-                { title: "Namoro", url: "https://drive.google.com/file/d/100CmcZLLxrh2_FwFj1uR_RF1CP1r9EvC/preview" }
+                { title: "Encontro", url: "https://def2.pcloud.com/cfZt6yRrk7ZdjheDP7ZKlNC7ZZYtyt0kZQ5ZZMFXZZQkXEQZ7YZ94ZVzZ8LZVmZgpZHHZ4mZApZqFZwLZeQZDHZv8ZsIlUm0QxMVHzaQJVJQNo2jIUAAX7/Episódio.01.mp4" },
+                { title: "Crush", url: "https://def4.pcloud.com/cfZF8yRrk7ZU1beDP7ZKlNC7ZZttyt0kZQ5ZZMFXZZbGgKhZ5RZcpZd4ZNQZmmZOFZlzZn7Z8pZbHZiHZkQZ2XZqHZFV45UARHo1zUEbBsaUSwkRibxOuX/Episódio.02.mp4" },
+                { title: "Beijo", url: "https://def4.pcloud.com/cfZh4ozrk7ZOWYeDP7ZKlNC7ZZ76yt0kZQ5ZZMFXZZsFtYmZQzZkpZaRZUQZOpZFQZgLZHFZ9RZA4ZOHZXzZeHZs8ZtC56LRlC6LYw6HuKYp2uFRdJPEYX/Episódio.03.mp4" },
+                { title: "Segredo", url: "https://def4.pcloud.com/cfZR5yRrk7ZYLbeDP7ZKlNC7ZZs6yt0kZQ5ZZMFXZZT2FWjZDHZpmZQLZqFZILZm4ZvpZTmZeRZXQZl7ZA4Z5pZ2QZ1W6aHoYIIykkeaSLuIM8bLGXow8V/Episódio.04.mp4" },
+                { title: "Amizade", url: "https://def2.pcloud.com/cfZ8e8Rrk7Zfm3eDP7ZKlNC7ZZxUyt0kZQ5ZZMFXZZOLNxmZ4QZ3QZwQZnYZa8ZrQZM4ZmRZOzZn7ZQHZG4ZTQZTJZHz3x92E4DvXHoT5KiIHL65zrJjiV/Episódio.05.mp4" },
+                { title: "Garotas", url: "https://def3.pcloud.com/cfZ2o4Rrk7ZMiNeDP7ZKlNC7ZZ5Iyt0kZQ5ZZMFXZZ2evibZImZHRZIHZrFZH4ZqpZ79ZUQZeHZamZA4Zo8ZNVZSYZvHxTorrERrSgvRC2WQOGcfDIM9sy/Episódio.06.mp4" },
+                { title: "Bullying", url: "https://def1.pcloud.com/cfZPS4Rrk7ZyxAeDP7ZKlNC7ZZxIyt0kZQ5ZZMFXZZDr6eQZ9mZORZ74ZbmZPHZbYZeLZH4ZdzZJLZo4ZGLZfQZ8QZBf375SekFd44BwV45hlRV7loTOby/Episódio.07.mp4" },
+                { title: "Namoro", url: "https://def2.pcloud.com/cfZE58Rrk7Z5YaeDP7ZKlNC7ZZiIyt0kZQ5ZZMFXZZ3axysZT8Zf8ZFQZ4LZNYZNFZzpZSQZeYZK4ZezZUQZoRZJRZKE8vjnmXPhuDfuxrlDpXbVvNX357/Episódio.08.mp4" }
             ],
             2: [
-                { title: "Revelação", url: "https://drive.google.com/file/d/1-aZ9bPvwzRsQ8DMXeSQBnVdAdvT8sLrx/preview" },
-                { title: "Família", url: "https://drive.google.com/file/d/1-gQWx2K2BslWQTuie5ki0O0jbffsDjzt/preview" },
-                { title: "Promessa", url: "https://drive.google.com/file/d/10AKli13FqeQ9hyH8bxJXDXncbPSgaGS1/preview" },
-                { title: "Desafio", url: "https://drive.google.com/file/d/10B6kAjTiAmvIl1UhVgEaUa9R47IQkrDI/preview" },
-                { title: "Calor", url: "https://drive.google.com/file/d/10BUmeEr9gJNoerUehzUbY756ogWNmC6s/preview" },
-                { title: "Verdade ou consequência", url: "https://drive.google.com/file/d/10C-ukTNUr_gXzDf3GeV70yF0Oo5Iizo4/preview" },
-                { title: "Desculpas e arrependimentos", url: "https://drive.google.com/file/d/10DxmTRS53SIwwFD7s0VZOgrljPmV8cFj/preview" },
-                { title: "Perfeito", url: "https://drive.google.com/file/d/10XYkW1ohpvtS1oaRJAht_gQMyVjzPem7/preview" }
+                { title: "Revelação", url: "https://def3.pcloud.com/cfZ5TbLrk7ZvXSMDP7ZW6NC7ZZ6H7t0kZQ5ZZMFXZZUX81xZrRZCYZ1HZ7zZVHZ24ZW8Z3zZOLZxHZ79ZfQZIYZ34ZemsLcvOehyQScTtfwFUiPS3X86ey/Episódio.01%20%281%29.mp4" },
+                { title: "Família", url: "https://def4.pcloud.com/cfZbfbLrk7ZOPhMDP7ZW6NC7ZZFz7t0kZQ5ZZMFXZZFJ1ftZlLZnzZeJZAYZ3mZlkZFHZf4ZtQZNRZm8ZBmZrzZOmZ9hC4YxOG3t7WzAQtzkxbS8a1AXNy/Episódio.02%20%281%29.mp4" },
+                { title: "Promessa", url: "https://def4.pcloud.com/cfZN5mLrk7ZARYMDP7ZW6NC7ZZFR7t0kZQ5ZZMFXZZa5mUwZGQZPHZC4ZlzZUHZF4Z8HZ7LZbRZWRZTJZwRZvpZ4LZ1BXb8aQTzWY9KDt83JB9W4UjJ6c7/Episódio.03%20%281%29.mp4" },
+                { title: "Desafio", url: "https://def4.pcloud.com/cfZ90YLrk7ZBU4MDP7ZW6NC7ZZyL7t0kZQ5ZZMFXZZFR1OUZNFZ18ZUpZxLZXHZkmZtmZ9FZ78Zx8ZDLZ04ZxHZKpZyEGXXGrA5rmIABPuCHItVfPmGGkX/Episódio.04%20%281%29.mp4" },
+                { title: "Calor", url: "https://def2.pcloud.com/cfZkQ8Lrk7ZXJHMDP7ZW6NC7ZZhL7t0kZQ5ZZMFXZZfJTs3ZvmZnHZJYZfkZlYZfzZcpZeFZtpZ44ZRmZVQZ28ZzQZNQ0qAg6WlbjpbGRvMXiQaFYUYTlV/Episódio.05%20%281%29.mp4" },
+                { title: "Verdade ou consequência", url: "https://def4.pcloud.com/cfZNfQLrk7ZCrRMDP7ZW6NC7ZZUL7t0kZQ5ZZMFXZZ7j19GZMpZQpZvHZamZdzZB8ZY8ZvpZpmZG7ZPRZnHZ70ZPHZLc4xsjhHJw7bSVAlzC2FKuFz3rX7/Episódio.06%20%281%29.mp4" },
+                { title: "Desculpas e arrependimentos", url: "https://def2.pcloud.com/cfZIaxRrk7ZVoInDP7ZKlNC7ZZ0cyt0kZQ5ZZMFXZZa1nuwZ8pZOFZJRZHFZeHZWmZP8ZdLZUQZ9QZ1mZDLZvFZ3mZy7fUJlkG4NQxIhfo98IVpRcMzKwy/Episódio.07%20%281%29.mp4" },
+                { title: "Perfeito", url: "https://def2.pcloud.com/cfZRAxRrk7ZJGInDP7ZKlNC7ZZUcyt0kZQ5ZZMFXZZrQNky7ZvmZT8Zc4ZkpZALZPLZazZApZ1pZYLZeHZwQZNRZWXZ8QjYI0r5LcunI0YLDgRYjF6syIQX/Episódio.08%20%281%29.mp4" }
             ],
             3: [
                 { title: "Amor", url: "https://watch.brplayer.cc/watch?v=NLE41OIK" },
@@ -110,7 +110,7 @@ const contentDB = [
         year: '2021',
         cover: 'https://thepausemenucouk.wordpress.com/wp-content/uploads/2021/06/luca-featured-image.jpg?w=1200',
         description: 'Na Riviera Italiana, uma amizade improvável, mas forte, cresce entre um ser humano e um monstro marinho disfarçado de humano.',
-        url: 'https://drive.google.com/file/d/1k1zHNwZ91U1_-Hc0aYT8awp5U2t-cdcL/preview'
+        url: 'https://def2.pcloud.com/cfZOSsj11Z8LcTDP7ZW6NC7ZZQs7t0kZQ5ZZMFXZZLVSKnkZoYZdTZSQZi4ZGQZ0mZu4ZxQZ2QZT4ZMmZoRZOQZUTZrgMOLsmpRE7yBReTmeo2MbILa9ay/Luca.2021.1080p.WEB-DL.DUAL.5.1.COMANDO.TO.mp4'
     },
     {
         id: 'soul',
@@ -120,7 +120,7 @@ const contentDB = [
         year: '2020',
         cover: 'https://businessisjammin.ca/wp-content/uploads/2021/02/soul-poster-fi-e1573147724188.jpg',
         description: 'Joe Gardner é um professor de música que recebe a chance de tocar no melhor clube de jazz da cidade, mas um pequeno passo em falso o leva das ruas de Nova York para o Pré-Vida.',
-        url: 'https://drive.google.com/file/d/1wixB2432TFKEhWy_N6b374VRHldoUX0b/preview'
+        url: 'https://def4.pcloud.com/cfZU0YhxWZVV8aDP7Z0NNC7ZZLvXt0kZQ5ZZMFXZZR5SwG5ZqTZFLZxmZ0QZITZD8ZwRZX4ZAYZG4ZcYZjLZAmZozZqJMdlLYPxub9YkcjK5BzfRvsL9p7/%28AnimesTotais%29%20Soul.2020.1080p.WEB-DL.x264-DUAL.mp4'
     },
     {
         id: 'divertida-mente-1',
@@ -291,7 +291,7 @@ const contentDB = [
         year: '2023',
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/a8d4b023bc418eaf7583a9336843c8c0b341d4ceec6d341e3308a293ad8baadf._SX1080_FMjpg_.jpg',
         description: 'Uma aventura alucinante quando a turma de South Park é lançada por acidente em múltiplos universos paralelos.',
-        url: 'https://www.tokyvideo.com/br/embed/639806'
+        url: 'https://def4.pcloud.com/cfZVAl7rk7ZFfVFDP7ZKlNC7ZZb2rq0kZQ5ZZMFXZZjObzvZ88Zj4ZgmZ3YZELZTzZAQZF4ZwQZ1HZ7mZkHZQQZUHZ2OfYt4sD8suYcCwXRQH9Df99WOQy/cc232c0973606f2e33859affe682c2edbdb417ca825ae83e1acbd47067b053b4.mp4'
     },
     {
         id: 'it-bem-vindos-a-derry',
@@ -322,7 +322,7 @@ const contentDB = [
         year: '2025',
         cover: 'https://images.justwatch.com/backdrop/333384494/s640/demon-slayer-kimetsu-no-yaiba-infinity-castle',
         description: 'Tanjiro e seus aliados enfrentam a ameaça dos Dez Lendários Lua para salvar Nezuko e acabar com o reinado de terror dos demônios.',
-        url: 'https://drive.google.com/file/d/1NveQ-a7JXkArdeHdedqy_DPPYgF2S3en/view?usp=sharing'
+        url: 'https://def4.pcloud.com/cfZK9y4rk7Z5oiTDP7ZW6NC7ZZIu7t0kZQ5ZZMFXZZvdr1kkZU8ZFHZRRZDHZfQZpmZvpZT8ZbHZK4Z6QZwHZWLZbmZdntDq2TrTA5rDcwlMazz5kDbUDM7/demon%20slayer_%20castelo%20infinito%20dublado%20%28camrip%29%20-%20%40drivesintelectuais.mp4'
     },
     {
         id: 'round-6',
@@ -527,7 +527,7 @@ const contentDB = [
         cover: 'https://tm.ibxk.com.br/2022/01/13/13093300424066.jpg',
         description: 'Vinte e cinco anos após os crimes originais, um novo Ghostface persegue um grupo de adolescentes em Woodsboro, reacesando segredos do passado mortal da cidade.',
         ratings: { imdb: 6.3, rottenTomatoes: 76 },
-        url: 'https://drive.google.com/file/d/1ne_SKq9wJWYfjnYCpM9v7K-q4UodlaDa/view?usp=drive_link'
+        url: 'https://def1.pcloud.com/cfZ6rfzrk7ZkBNDDP7ZKlNC7ZZzPyt0kZQ5ZZMFXZZIazPVkZiFZIFZLzZvpZQLZwHZ7QZRZB8ZJLZ14ZjLZ30ZSmZbmWS2P7vepBwub4iplIRiuR9Wn0y/Panico.mp4'
     },
     {
         id: 'scream-6-2023',
@@ -1335,10 +1335,14 @@ function updateContinueWatching() {
                     return;
                 }
 
+                // attempt to read saved position from history for this id
+                const hist = (state.history || []).find(h => h.id === id);
+                const pos = hist && typeof hist.position === 'number' ? Number(hist.position) : 0;
+
                 if (item.type === 'serie') {
-                    playMedia(id, season, epIndex);
+                    playMedia(id, season, epIndex, pos);
                 } else {
-                    playMedia(id, '', 0);
+                    playMedia(id, '', 0, pos);
                 }
             }, { passive: true });
 
@@ -1351,13 +1355,15 @@ function updateContinueWatching() {
                     const season = el.getAttribute('data-season') || '';
                     const epIndex = Number(el.getAttribute('data-ep-index') || 0);
                     if (!id) return;
-                    // decide play for series or movie
+                    // decide play for series or movie and pass saved position
                     const item = contentDB.find(i => i.id === id);
+                    const hist = (state.history || []).find(h => h.id === id);
+                    const pos = hist && typeof hist.position === 'number' ? Number(hist.position) : 0;
                     if (!item) return;
                     if (item.type === 'serie') {
-                        playMedia(id, season, epIndex);
+                        playMedia(id, season, epIndex, pos);
                     } else {
-                        playMedia(id, '', 0);
+                        playMedia(id, '', 0, pos);
                     }
                 }, { passive: true });
             }
@@ -1928,7 +1934,7 @@ function closeDetail() {
 }
 
 /* --- PLAYER LOGIC --- */
-function playMedia(id, season, epIndex) {
+async function playMedia(id, season, epIndex, startSeconds = 0) {
     // Defensive checks to avoid TypeError when item / season / episode is missing
     const item = contentDB.find(i => i.id === id);
     if (!item) {
@@ -1954,6 +1960,13 @@ function playMedia(id, season, epIndex) {
         void playerOverlay.offsetWidth;
         playerOverlay.classList.add('player-open');
         return;
+    }
+
+    // On mobile portrait, show rotate prompt and await user decision / rotation before opening player
+    try {
+        await showRotatePromptIfPortrait();
+    } catch(e) {
+        // ignore and continue opening player
     }
 
     // determine URL and title with safe fallbacks
@@ -2116,8 +2129,6 @@ function playMedia(id, season, epIndex) {
             // certain IDs we prefer to avoid injecting controls into
             if (id === 'it-bem-vindos-a-derry') useCustomControls = false;
             if (id === 'heartstopper' && String(season) === '3') useCustomControls = false;
-            // All "Pânico" items use ids that start with 'scream-': disable custom controls for them
-            if (String(id).toLowerCase().startsWith('scream-')) useCustomControls = false;
             // If the embed is a Google Drive host, prefer the native Drive player (no custom controls)
             if (isDriveEmbed) useCustomControls = false;
         } catch(e){}
@@ -2172,6 +2183,11 @@ function playMedia(id, season, epIndex) {
                     }
 
                     player.ready(() => {
+                        try {
+                            if (typeof startSeconds === 'number' && startSeconds > 0 && typeof player.currentTime === 'function') {
+                                try { player.currentTime(Number(startSeconds)); } catch(e){}
+                            }
+                        } catch(e){}
                         player.play().catch(() => {
                             player.muted(true);
                             player.play().catch(()=>{});
@@ -2180,15 +2196,45 @@ function playMedia(id, season, epIndex) {
                 } catch (err) {
                     console.warn('Video.js load/init failed, falling back to native video element', err);
                     container.innerHTML = buildFrameWrapper(`
-                        <video id="native-video" class="w-full h-full bg-black" src="${url}" poster="${poster}" autoplay playsinline webkit-playsinline preload="metadata"></video>
+                        <video id="native-video" class="w-full h-full bg-black" src="${url}" poster="${poster}" playsinline webkit-playsinline preload="metadata"></video>
                     `);
                     const videoEl = document.getElementById('native-video');
+
+                    // Ensure we seek only after metadata is available to reliably set currentTime for resume
+                    if (videoEl) {
+                        const trySeekAndPlay = () => {
+                            try {
+                                if (typeof startSeconds === 'number' && startSeconds > 0) {
+                                    // clamp to safe number
+                                    videoEl.currentTime = Math.max(0, Number(startSeconds));
+                                }
+                            } catch (e) { /* ignore */ }
+                            // Attempt play; if blocked by autoplay policies we'll mute and retry
+                            videoEl.play().catch(() => {
+                                try {
+                                    videoEl.muted = true;
+                                    videoEl.play().catch(()=>{});
+                                } catch (e) {}
+                            });
+                        };
+
+                        // If metadata already loaded, perform seek/play immediately; otherwise wait for loadedmetadata
+                        if (videoEl.readyState >= 1) {
+                            trySeekAndPlay();
+                        } else {
+                            const onMeta = () => {
+                                videoEl.removeEventListener('loadedmetadata', onMeta);
+                                trySeekAndPlay();
+                            };
+                            videoEl.addEventListener('loadedmetadata', onMeta, { passive: true });
+                        }
+                    }
+
                     if (isMp4 && !isDriveEmbed) {
                         if (useCustomControls) {
     createPlayerControls(playerOverlay, true, () => videoEl, { skipControls: false });
 }
                     }
-                    videoEl.play().catch(()=>{});
                 }
             })();
         } else {
@@ -2354,6 +2400,20 @@ function playMedia(id, season, epIndex) {
                                             icon.className = 'fa-solid fa-pause';
                                         }
                                     };
+
+                                    // If we have a starting offset, seek to it now (small timeout to ensure readiness)
+                                    try {
+                                        if (typeof startSeconds === 'number' && startSeconds > 0) {
+                                            setTimeout(() => {
+                                                try {
+                                                    const inst = window.__luminaYTPlayerInstance;
+                                                    if (inst && typeof inst.seekTo === 'function') {
+                                                        inst.seekTo(Number(startSeconds), true);
+                                                    }
+                                                } catch(e){}
+                                            }, 240);
+                                        }
+                                    } catch(e){}
 
                                     // Create our unified custom controls (same controls used for mp4)
                                     // Provide a player facade that createPlayerControls can use.
@@ -2532,17 +2592,20 @@ function closePlayer() {
         if (topOverlay) { topOverlay.style.display = 'flex'; topOverlay.style.pointerEvents = 'none'; }
     } catch(e){}
 
-    // Save final playback position if possible
+    // Save final playback position if possible (native video, Video.js, or YouTube API)
     try {
         const container = document.getElementById('player-container');
-        const v = container.querySelector('video');
+        // native video element (most direct)
+        const v = container ? container.querySelector('video') : null;
         if (v) {
-            const cur = v.currentTime || 0;
+            const cur = Math.round(v.currentTime || 0);
             const playing = window.__lumina_current_playing || null;
             if (playing && playing.id) {
-                addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), Math.round(cur));
+                addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), cur);
             }
-        } else if (playerOverlay._vjsPlayer) {
+        } 
+        // Video.js player instance saved on overlay
+        else if (playerOverlay._vjsPlayer) {
             try {
                 const p = playerOverlay._vjsPlayer;
                 const cur = typeof p.currentTime === 'function' ? Math.round(p.currentTime()) : 0;
@@ -2551,6 +2614,17 @@ function closePlayer() {
                     addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), cur);
                 }
             } catch(e){}
+        } 
+        // YouTube IFrame API instance (if present)
+        else if (window.__luminaYTPlayerInstance && typeof window.__luminaYTPlayerInstance.getCurrentTime === 'function') {
+            try {
+                const curFloat = window.__luminaYTPlayerInstance.getCurrentTime();
+                const cur = Math.round(typeof curFloat === 'number' ? curFloat : 0);
+                const playing = window.__lumina_current_playing || null;
+                if (playing && playing.id) {
+                    addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), cur);
+                }
+            } catch (e) { /* ignore */ }
         }
     } catch (e){ console.warn('Error saving final playback position', e); }
 
@@ -3162,464 +3236,520 @@ function lockToPortrait() {
     } catch (e) {}
 }
 
+/* --- Rotate-to-vertical prompt for mobile portrait when opening player --- */
+function showRotatePromptIfPortrait() {
+    return new Promise((resolve) => {
+        try {
+            const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+            const isPortrait = window.innerHeight >= window.innerWidth;
+            if (!isMobile || !isPortrait) return resolve();
+
+            const prompt = document.getElementById('rotate-prompt');
+            const continueBtn = document.getElementById('rotate-continue-btn');
+            const waitBtn = document.getElementById('rotate-wait-btn');
+
+            if (!prompt) return resolve();
+
+            // show prompt
+            prompt.classList.remove('hidden');
+            prompt.style.display = 'flex';
+
+            // Handler to dismiss when orientation changes to portrait/vertical orientation satisfied
+            function onOrientationChange() {
+                // if device is now vertical (portrait) hide prompt and resolve
+                if (window.innerHeight >= window.innerWidth) {
+                    cleanupAndResolve();
+                }
+            }
+
+            // If user chooses to continue anyway, resolve immediately
+            function onContinue() {
+                cleanupAndResolve();
+            }
+
+            // If user chooses to wait, we keep the prompt until orientation changes; no extra action needed
+            function cleanupAndResolve() {
+                try {
+                    prompt.classList.add('hidden');
+                    prompt.style.display = 'none';
+                    window.removeEventListener('orientationchange', onOrientationChange);
+                    window.removeEventListener('resize', onOrientationChange);
+                    if (continueBtn) continueBtn.removeEventListener('click', onContinue);
+                    if (waitBtn) waitBtn.removeEventListener('click', onContinue);
+                } catch (e) {}
+                resolve();
+            }
+
+            // Attach listeners
+            window.addEventListener('orientationchange', onOrientationChange, { passive: true });
+            window.addEventListener('resize', onOrientationChange, { passive: true });
+
+            if (continueBtn) continueBtn.addEventListener('click', onContinue, { passive: true });
+            if (waitBtn) {
+                // also allow wait button to hint user they can rotate; but clicking it will simply focus waiting for orientation change
+                waitBtn.addEventListener('click', () => {
+                    // small visual feedback: briefly pulse the prompt
+                    try {
+                        waitBtn.classList.add('animate-pulse');
+                        setTimeout(() => waitBtn.classList.remove('animate-pulse'), 600);
+                    } catch (e) {}
+                }, { passive: true });
+            }
+
+            // Safety: also hide automatically after 10s if no rotation and user hasn't acted (tolerant fallback)
+            const autoTimeout = setTimeout(() => { cleanupAndResolve(); }, 10000);
+            // ensure cleanup clears timeout
+            const origCleanup = cleanupAndResolve;
+            cleanupAndResolve = function() {
+                clearTimeout(autoTimeout);
+                origCleanup();
+            };
+        } catch (e) {
+            // on any error, just resolve so playback can continue
+            resolve();
+        }
+    });
+}
+
 /* Controls and overlay behavior on mobile for non-custom embeds:
    When a player uses our custom controls we show the top overlay (REPRODUZINDO + back).
    For non-custom iframe/native embeds on mobile we hide that top overlay so clicks on the iframe
    do not open or interfere with the overlay controls. */
 function updateOverlayForMobile(playerOverlay, hasCustomControls) {
     try {
-        const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
         const topOverlay = document.querySelector('.player-overlay');
         if (!topOverlay) return;
+
+        const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+        const inFullscreen = !!(document.fullscreenElement || document.webkitFullscreenElement);
+
+        // Always favor a visible overlay when in fullscreen so users have consistent access to controls.
+        if (inFullscreen) {
+            topOverlay.classList.add('overlay-visible');
+            // ensure element is displayed flex to properly position its children
+            topOverlay.style.display = 'flex';
+            return;
+        }
+
+        // Non-fullscreen behaviour: on mobile hide overlay for opaque iframes unless we have custom controls
         if (isMobile) {
             if (hasCustomControls) {
                 topOverlay.style.display = 'flex';
-                // keep pointer-events none on container, but make internal controls interactive (existing CSS handles that)
-                topOverlay.style.pointerEvents = 'none';
+                // when custom controls exist, keep subtle non-blocking state; JS adds 'overlay-visible' when needed
+                topOverlay.classList.toggle('overlay-visible', true);
             } else {
-                // hide completely so taps on iframe don't trigger any top UI
+                // hide overlay to avoid intercepting taps on third-party players
+                topOverlay.classList.remove('overlay-visible');
                 topOverlay.style.display = 'none';
-                topOverlay.style.pointerEvents = 'none';
             }
         } else {
-            // desktop/tablet: always show overlay (original behavior)
+            // Desktop/tablet: keep overlay visible but non-blocking by default
             topOverlay.style.display = 'flex';
-            topOverlay.style.pointerEvents = 'none';
+            topOverlay.classList.toggle('overlay-visible', true);
+            // preserve pointer-events: let interactive children accept clicks per CSS rules
         }
-    } catch (e) {}
+    } catch (e) {
+        // silent
+    }
 }
 
 function createPlayerControls(playerOverlay, canControlVideo, getPlayerFn, options = {}) {
-    // mark that custom controls were requested for this overlay so other code can react (e.g. overlay visibility)
+    // mark custom controls presence
     try { if (playerOverlay) playerOverlay._hasCustomControls = true; } catch(e){}
-    // if caller requests skipping controls (e.g. Google Drive embeds), mark that we did NOT create custom controls and do nothing
-    if (options && options.skipControls) {
-        try { if (playerOverlay) playerOverlay._hasCustomControls = false; } catch(e){}
-        return;
-    }
-
-    // avoid duplicating
+    if (options && options.skipControls) { try { if (playerOverlay) playerOverlay._hasCustomControls = false; } catch(e){}; return; }
     if (document.getElementById('lumina-player-controls')) return;
 
-    // inject stylesheet once (includes auto-hide behavior)
+    // Modern responsive controls CSS (single injection) — optimized for touch (larger hit targets)
     if (!document.getElementById('lumina-player-controls-css')) {
         const css = document.createElement('style');
         css.id = 'lumina-player-controls-css';
         css.innerHTML = `
+/* Layout */
 #lumina-player-controls {
-    position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 18px;
-    z-index: 99999;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;            /* default: not interactive until shown */
-    opacity: 0;
-    transition: opacity 260ms cubic-bezier(.2,.9,.2,1), transform 260ms;
-    transform: translateY(8px);
+  position: fixed;
+  left: 12px;
+  right: 12px;
+  bottom: 18px;
+  z-index: 99999;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:space-between;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(12px);
+  transition:opacity .18s ease, transform .18s cubic-bezier(.2,.9,.2,1);
+  max-width:1200px;
+  margin:0 auto;
+  width:calc(100% - 24px);
 }
-#lumina-player-controls.visible {
-    pointer-events: auto;
-    opacity: 1;
-    transform: translateY(0);
+#lumina-player-controls.visible{ pointer-events:auto; opacity:1; transform:translateY(0); }
+
+/* Panels */
+.lpc-left, .lpc-center, .lpc-right { display:flex; align-items:center; gap:10px; }
+.lpc-left { flex:0 0 auto; }
+.lpc-center { flex:1 1 auto; justify-content:center; gap:12px; }
+.lpc-right { flex:0 0 auto; }
+
+/* Buttons — increased sizes for mobile touch */
+.lpc-btn { min-width:56px; height:56px; border-radius:14px; display:flex;align-items:center;justify-content:center;border:none;color:#fff;background:linear-gradient(90deg,#7c3aed,#d946ef);box-shadow:0 12px 36px rgba(124,58,237,0.18); font-size:18px; cursor:pointer; }
+.lpc-small { width:48px; height:48px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); color:#fff; border-radius:12px; cursor:pointer; }
+.lpc-btn:active, .lpc-small:active { transform:scale(.98); }
+
+/* Time display */
+.lpc-time { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; font-size:13px; color:rgba(255,255,255,0.92); min-width:88px; text-align:center; }
+
+/* Progress bar (improved and touch-friendly) */
+.lpc-progress-wrap { position:relative; height:12px; border-radius:10px; background:rgba(255,255,255,0.06); width:100%; overflow:hidden; cursor:pointer; touch-action:none; }
+.lpc-buffer { position:absolute; left:0; top:0; height:100%; background:linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04)); width:0%; }
+.lpc-played { position:absolute; left:0; top:0; height:100%; background:linear-gradient(90deg,#a78bfa,#f472b6); width:0%; transition:width .12s linear; }
+.lpc-thumb { position:absolute; left:0; top:50%; transform:translateY(-50%); width:18px; height:18px; border-radius:50%; background:#fff; box-shadow:0 8px 22px rgba(0,0,0,0.45); transform-origin:center; pointer-events:none; }
+
+/* Range for precise scrubbing (visible on focus for accessibility) */
+.lpc-scrub { position:absolute; inset:0; width:100%; height:100%; opacity:0; -webkit-appearance:none; appearance:none; cursor:pointer; }
+
+/* Playback rate */
+.lpc-rate-btn { padding:10px 12px; border-radius:12px; background:rgba(0,0,0,0.36); color:#fff; border:1px solid rgba(255,255,255,0.04); font-weight:700; cursor:pointer; }
+
+/* Mobile adjustments */
+@media (max-width:520px){
+  #lumina-player-controls { bottom:14px; left:8px; right:8px; gap:8px; padding:8px; }
+  .lpc-center { gap:8px; }
+  .lpc-time { display:none; }
+  .lpc-btn { min-width:50px; height:50px; }
+  .lpc-small { width:44px; height:44px; }
+  .lpc-progress-wrap { height:10px; border-radius:8px; }
+  #lumina-mobile-close { position: fixed; left: 12px; top: 12px; z-index:100020; width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.36); color:white; border:1px solid rgba(255,255,255,0.06); box-shadow:0 10px 30px rgba(0,0,0,0.6); }
+  #lumina-mobile-close.show { opacity:1; transform:translateY(0); }
 }
-#lumina-player-controls .lpc-btn {
-    min-width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    background: linear-gradient(90deg,#7c3aed,#d946ef);
-    display:flex;align-items:center;justify-content:center;color:white;font-size:18px;border:none;box-shadow:0 8px 30px rgba(124,58,237,0.18);
-}
-#lumina-player-controls .lpc-secondary {
-    min-width: 48px;
-    height:48px;
-    border-radius:12px;
-    background: rgba(255,255,255,0.04);
-    display:flex;align-items:center;justify-content:center;color:white;font-size:16px;border:1px solid rgba(255,255,255,0.06);
-}
-#lumina-player-controls .lpc-range { width: 40%; height: 6px; -webkit-appearance:none; appearance:none; border-radius:6px; background: rgba(255,255,255,0.08);}
-#lumina-player-controls .lpc-range::-webkit-slider-thumb { -webkit-appearance:none; width:14px;height:14px;border-radius:999px;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,0.4); }
-#lumina-mobile-close {
-    position: fixed;
-    right: 14px;
-    bottom: 14px;
-    z-index: 100000;
-    width: 56px;
-    height: 56px;
-    border-radius: 14px;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(90deg,#7c3aed,#d946ef);
-    box-shadow: 0 12px 36px rgba(124,58,237,0.18);
-    color: #fff;
-    border: none;
-}
-#lumina-mobile-close.show { display:flex; }
-@media (min-width:521px) {
-    #lumina-mobile-close { display:none !important; }
-}
-@media (max-width:520px) {
-    #lumina-player-controls { left:8px; right:8px; bottom:12px; gap:8px; }
-    #lumina-player-controls .lpc-range{width:35%;}
-}
+
+/* Small utility */
+.lpc-hidden { display:none !important; }
         `;
         document.head.appendChild(css);
     }
 
+    // Build controls DOM
     const controls = document.createElement('div');
     controls.id = 'lumina-player-controls';
-    // start hidden; we'll add .visible when user interacts
-    controls.classList.remove('visible');
     controls.innerHTML = `
-        <button class="lpc-secondary lpc-btn-close" title="Fechar (Esc)"><i class="fa-solid fa-arrow-left"></i></button>
-        <button class="lpc-secondary lpc-btn-prev-ep" title="Episódio Anterior"><i class="fa-solid fa-backward-step"></i></button>
-        <button class="lpc-secondary lpc-btn-back" title="-10s"><i class="fa-solid fa-rotate-left"></i></button>
-        <button class="lpc-btn lpc-btn-play" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
-        <button class="lpc-secondary lpc-btn-forward" title="+10s"><i class="fa-solid fa-rotate-right"></i></button>
-        <button class="lpc-secondary lpc-btn-next-ep" title="Próximo Episódio"><i class="fa-solid fa-forward-step"></i></button>
-        <input class="lpc-range" type="range" min="0" max="100" value="0" />
-        <button class="lpc-secondary lpc-btn-full" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+      <div class="lpc-left">
+        <button class="lpc-small lpc-btn-close" title="Fechar (Esc)"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="lpc-small lpc-prev-ep" title="Episódio anterior"><i class="fa-solid fa-backward-step"></i></button>
+        <button class="lpc-small lpc-back-10" title="-10s"><i class="fa-solid fa-rotate-left"></i></button>
+        <button class="lpc-btn lpc-play" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
+        <button class="lpc-small lpc-forward-10" title="+10s"><i class="fa-solid fa-rotate-right"></i></button>
+        <button class="lpc-small lpc-next-ep" title="Próximo episódio"><i class="fa-solid fa-forward-step"></i></button>
+      </div>
+      <div class="lpc-center">
+        <div class="lpc-time lpc-current">00:00</div>
+        <div class="lpc-progress-wrap" aria-label="Barra de progresso" role="slider" tabindex="0">
+            <div class="lpc-buffer"></div>
+            <div class="lpc-played"></div>
+            <div class="lpc-thumb" aria-hidden="true"></div>
+            <input class="lpc-scrub" type="range" min="0" max="100" value="0" />
+        </div>
+        <div class="lpc-time lpc-duration">00:00</div>
+      </div>
+      <div class="lpc-right">
+        <button class="lpc-rate-btn" title="Velocidade">1x</button>
+        <button class="lpc-small lpc-full" title="Fullscreen"><i class="fa-solid fa-expand"></i></button>
+      </div>
     `;
-    // attach controls inside the player-frame-wrapper when available so they persist in fullscreen, fallback to body
     const attachPoint = document.getElementById('player-frame-wrapper') || document.getElementById('player-container') || document.body;
     attachPoint.appendChild(controls);
 
-    // Create a persistent mobile close button (bottom-right) that shows on small viewports
+    // Mobile close button (improved placement & always available on touch)
     if (!document.getElementById('lumina-mobile-close')) {
         const mClose = document.createElement('button');
         mClose.id = 'lumina-mobile-close';
         mClose.title = 'Fechar';
         mClose.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+        mClose.style.opacity = '0';
         mClose.addEventListener('click', () => closePlayer());
         document.body.appendChild(mClose);
     }
 
-    // helpers to get video-like control (Video.js player or native video element)
-    function resolvePlayer() {
+    // Element refs
+    const btnPlay = controls.querySelector('.lpc-play');
+    const btnClose = controls.querySelector('.lpc-btn-close');
+    const btnBack10 = controls.querySelector('.lpc-back-10');
+    const btnFwd10 = controls.querySelector('.lpc-forward-10');
+    const btnPrevEp = controls.querySelector('.lpc-prev-ep');
+    const btnNextEp = controls.querySelector('.lpc-next-ep');
+    const btnFull = controls.querySelector('.lpc-full');
+    const rateBtn = controls.querySelector('.lpc-rate-btn');
+
+    const timeCur = controls.querySelector('.lpc-current');
+    const timeDur = controls.querySelector('.lpc-duration');
+    const progressWrap = controls.querySelector('.lpc-progress-wrap');
+    const playedEl = controls.querySelector('.lpc-played');
+    const bufferEl = controls.querySelector('.lpc-buffer');
+    const thumb = controls.querySelector('.lpc-thumb');
+    const scrub = controls.querySelector('.lpc-scrub');
+
+    // Helper: resolve current media (video-js facade or native)
+    function resolveMediaFacade() {
         try {
-            if (canControlVideo && typeof getPlayerFn === 'function') {
-                return getPlayerFn();
+            const p = (canControlVideo && typeof getPlayerFn === 'function') ? getPlayerFn() : null;
+            if (!p) {
+                const container = document.getElementById('player-container');
+                if (!container) return null;
+                const v = container.querySelector('video');
+                return v || null;
+            }
+            // Video.js-like player
+            if (p && typeof p.currentTime === 'function' && typeof p.duration === 'function') {
+                return {
+                    type: 'videojs',
+                    inst: p,
+                    play: () => p.play(),
+                    pause: () => p.pause(),
+                    paused: () => p.paused ? p.paused() : false,
+                    currentTime: (v) => typeof v === 'number' ? p.currentTime(v) : p.currentTime(),
+                    duration: () => p.duration ? p.duration() : NaN,
+                    buffered: () => (typeof p.buffered === 'function' ? p.buffered() : null),
+                    mute: (m) => p.muted ? p.muted(m) : null
+                };
+            }
+            // native video element
+            if (p && p.tagName && p.tagName.toLowerCase() === 'video') {
+                const v = p;
+                return {
+                    type: 'native',
+                    inst: v,
+                    play: () => v.play(),
+                    pause: () => v.pause(),
+                    paused: () => v.paused,
+                    currentTime: (val) => typeof val === 'number' ? (v.currentTime = val) : v.currentTime,
+                    duration: () => v.duration || NaN,
+                    buffered: () => v.buffered || null,
+                    mute: (m) => v.muted = !!m
+                };
+            }
+            return null;
+        } catch (e) { return null; }
+    }
+
+    // Time formatting
+    function fmt(sec) {
+        if (!sec || isNaN(sec)) return '00:00';
+        sec = Math.floor(sec);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60).toString().padStart(2,'0');
+        const s = (sec % 60).toString().padStart(2,'0');
+        return h ? `${h}:${m}:${s}` : `${m}:${s}`;
+    }
+
+    // Playback rate options
+    const rates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+    let rateIndex = 2; // default 1x
+    rateBtn.addEventListener('click', () => {
+        rateIndex = (rateIndex + 1) % rates.length;
+        const newRate = rates[rateIndex];
+        const media = resolveMediaFacade();
+        try {
+            // Video.js instance
+            if (media && media.type === 'videojs' && media.inst) {
+                try {
+                    if (typeof media.inst.playbackRate === 'function') media.inst.playbackRate(newRate);
+                    else if (typeof media.inst.playbackRate === 'number') media.inst.playbackRate = newRate;
+                } catch (e) { /* ignore */ }
+            }
+            // Native video element
+            else if (media && media.type === 'native' && media.inst) {
+                try { media.inst.playbackRate = newRate; } catch (e) {}
+            } else {
+                const nv = document.querySelector('#player-container video');
+                if (nv) try { nv.playbackRate = newRate; } catch (e) {}
+            }
+            if (window.__luminaYTPlayerInstance && typeof window.__luminaYTPlayerInstance.setPlaybackRate === 'function') {
+                try { window.__luminaYTPlayerInstance.setPlaybackRate(newRate); } catch (e) {}
             }
         } catch (e) {}
-        // fallback: try to find native video in player-container
-        const container = document.getElementById('player-container');
-        if (!container) return null;
-        const v = container.querySelector('video');
-        return v || null;
-    }
-
-    const playBtn = controls.querySelector('.lpc-btn-play');
-    const closeBtn = controls.querySelector('.lpc-btn-close');
-    const backBtn = controls.querySelector('.lpc-btn-back');
-    const fwdBtn = controls.querySelector('.lpc-btn-forward');
-    const fullBtn = controls.querySelector('.lpc-btn-full');
-    const range = controls.querySelector('.lpc-range');
-
-    function updatePlayIcon(isPlaying) {
-        playBtn.innerHTML = `<i class="fa-solid ${isPlaying ? 'fa-pause' : 'fa-play'}"></i>`;
-    }
-
-    // Connect to video / player - support Video.js player API or native <video>
-    function getCurrentMedia() {
-        const p = resolvePlayer();
-        if (!p) {
-            // fallback: try to find native video in player-container
-            const container = document.getElementById('player-container');
-            if (!container) return null;
-            const v = container.querySelector('video');
-            return v || null;
-        }
-        // Video.js player instance: provide a simple facade
-        if (p && typeof p.play === 'function' && typeof p.currentTime === 'function' && typeof p.duration === 'function') {
-            return {
-                type: 'videojs',
-                instance: p,
-                play: () => p.play(),
-                pause: () => p.pause(),
-                paused: () => p.paused ? p.paused() : false,
-                currentTime: (v) => typeof v === 'number' ? p.currentTime(v) : p.currentTime(),
-                duration: () => p.duration ? p.duration() : NaN,
-                mute: (m) => p.muted ? p.muted(m) : null
-            };
-        }
-        // native <video> element
-        if (p && p.tagName && p.tagName.toLowerCase() === 'video') {
-            const v = p;
-            return {
-                type: 'native',
-                instance: v,
-                play: () => v.play(),
-                pause: () => v.pause(),
-                paused: () => v.paused,
-                currentTime: (val) => typeof val === 'number' ? (v.currentTime = val) : v.currentTime,
-                duration: () => v.duration || NaN,
-                mute: (m) => v.muted = !!m
-            };
-        }
-        return null;
-    }
-
-    // Play/pause toggle
-    playBtn.addEventListener('click', () => {
-        const media = getCurrentMedia();
-        if (!media) return;
-        try {
-            if (media.paused()) {
-                media.play();
-                updatePlayIcon(true);
-            } else {
-                media.pause();
-                updatePlayIcon(false);
-            }
-        } catch (e) {
-            // best-effort
-        }
+        rateBtn.textContent = newRate + 'x';
     });
 
-    // close player
-    closeBtn.addEventListener('click', () => {
-        closePlayer();
+    // Play/pause
+    btnPlay.addEventListener('click', () => {
+        const m = resolveMediaFacade();
+        if (!m) return;
+        try {
+            if (m.paused()) { m.play(); btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>'; }
+            else { m.pause(); btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>'; }
+        } catch (e) {}
     });
 
-    backBtn.addEventListener('click', () => {
-        const media = getCurrentMedia();
-        if (!media) return;
-        try {
-            const cur = media.currentTime();
-            media.currentTime(Math.max(0, cur - 10));
-        } catch(e){}
-    });
-    fwdBtn.addEventListener('click', () => {
-        const media = getCurrentMedia();
-        if (!media) return;
-        try {
-            const cur = media.currentTime();
-            const dur = media.duration() || 0;
-            media.currentTime(Math.min(dur, cur + 10));
-        } catch(e){}
-    });
+    // Close / snippet controls
+    btnClose.addEventListener('click', closePlayer);
+    btnBack10.addEventListener('click', () => { const m = resolveMediaFacade(); if (!m) return; try { m.currentTime(Math.max(0, m.currentTime() - 10)); } catch(e){} });
+    btnFwd10.addEventListener('click', () => { const m = resolveMediaFacade(); if (!m) return; try { m.currentTime(Math.min((m.duration()||0), m.currentTime() + 10)); } catch(e){} });
+    btnPrevEp.addEventListener('click', () => { try { /* reuse earlier helper */ navigateEpisode && navigateEpisode(-1); } catch(e){} });
+    btnNextEp.addEventListener('click', () => { try { navigateEpisode && navigateEpisode(1); } catch(e){} });
 
-    // Next / Previous Episode handlers: use the current playing context to jump to adjacent episodes if available.
-    const prevEpBtn = controls.querySelector('.lpc-btn-prev-ep');
-    const nextEpBtn = controls.querySelector('.lpc-btn-next-ep');
-
-    function navigateEpisode(delta) {
-        try {
-            // Try to get the current playing context from memory, fall back to last-watched pointer
-            let playing = window.__lumina_current_playing || null;
-            if (!playing || !playing.id) {
-                try { playing = JSON.parse(localStorage.getItem('lumina_last_watched') || 'null'); } catch(e) { playing = null; }
-            }
-            if (!playing || !playing.id) return;
-
-            const item = contentDB.find(i => i.id === playing.id);
-            if (!item || item.type !== 'serie') return;
-            const seasons = item.seasons || {};
-            const seasonKeys = Object.keys(seasons).sort((a,b) => Number(a) - Number(b));
-            // Resolve a valid season key: prefer playing.season, then last-watched, then first available season
-            let seasonKey = (playing.season !== null && playing.season !== undefined) ? String(playing.season) : null;
-            if (!seasonKey || !seasons[seasonKey]) {
-                seasonKey = seasonKeys.length ? String(seasonKeys[0]) : null;
-            }
-            if (!seasonKey) return;
-
-            // Resolve a numeric episode index robustly
-            let idx = (playing.episodeIndex !== null && playing.episodeIndex !== undefined) ? Number(playing.episodeIndex) : 0;
-            if (isNaN(idx) || idx < 0) idx = 0;
-
-            const eps = seasons[seasonKey] || [];
-            const newIdx = idx + Number(delta || 0);
-
-            // If within same season, play directly
-            if (newIdx >= 0 && newIdx < eps.length) {
-                playMedia(playing.id, seasonKey, newIdx);
-                return;
-            }
-
-            // Otherwise try adjacent seasons (previous or next)
-            const currentSeasonIndex = seasonKeys.indexOf(seasonKey);
-            const targetSeasonIndex = delta > 0 ? currentSeasonIndex + 1 : currentSeasonIndex - 1;
-            if (targetSeasonIndex >= 0 && targetSeasonIndex < seasonKeys.length) {
-                const targetSeason = String(seasonKeys[targetSeasonIndex]);
-                const targetEps = seasons[targetSeason] || [];
-                const targetIdx = delta > 0 ? 0 : Math.max(0, targetEps.length - 1);
-                playMedia(playing.id, targetSeason, targetIdx);
-                return;
-            }
-
-            // If we reach here nothing changed (either out of bounds or single-episode series) — no-op
-        } catch (e) {
-            console.warn('navigateEpisode error', e);
-        }
-    }
-
-    if (prevEpBtn) {
-        prevEpBtn.addEventListener('click', () => navigateEpisode(-1));
-    }
-    if (nextEpBtn) {
-        nextEpBtn.addEventListener('click', () => navigateEpisode(1));
-    }
-
-    fullBtn.addEventListener('click', () => {
+    btnFull.addEventListener('click', () => {
         const wrapper = document.getElementById('player-frame-wrapper') || document.getElementById('player-container');
-        if (wrapper.requestFullscreen) wrapper.requestFullscreen();
+        if (wrapper && wrapper.requestFullscreen) wrapper.requestFullscreen();
     });
 
-    // range scrubber (updates position when playing video)
-    let scrubUpdating = false;
-    range.addEventListener('input', () => {
-        const media = getCurrentMedia();
-        if (!media) return;
-        const dur = media.duration() || 0;
-        const pct = parseFloat(range.value || 0) / 100;
+    // Enhanced scrub interactions: support touch gestures and reduce jank
+    let userScrubbing = false;
+    function setScrubUI(pct, instant = true) {
+        playedEl.style.width = (pct*100) + '%';
+        thumb.style.left = (pct*100) + '%';
+        scrub.value = String(Math.round(pct*100));
+    }
+
+    scrub.addEventListener('input', (e) => {
+        userScrubbing = true;
+        const pct = Number(e.target.value || 0) / 100;
+        const m = resolveMediaFacade();
+        const dur = m ? (m.duration() || 0) : 0;
         const t = dur * pct;
-        try { media.currentTime(t); } catch(e){}
+        setScrubUI(pct);
+        timeCur.textContent = fmt(t);
+    }, { passive: true });
+
+    scrub.addEventListener('change', (e) => {
+        const pct = Number(e.target.value || 0) / 100;
+        const m = resolveMediaFacade();
+        if (!m) { userScrubbing = false; return; }
+        const dur = m.duration() || 0;
+        try { m.currentTime(dur * pct); } catch(e){}
+        setTimeout(()=> userScrubbing = false, 120);
+    }, { passive: true });
+
+    // Touch-drag on progress for more responsive seeking on mobile
+    let dragging = false;
+    function handlePointerDown(ev) {
+        dragging = true;
+        userScrubbing = true;
+        progressWrap.setPointerCapture && progressWrap.setPointerCapture(ev.pointerId);
+    }
+    function handlePointerMove(ev) {
+        if (!dragging) return;
+        const rect = progressWrap.getBoundingClientRect();
+        const x = Math.max(0, Math.min(rect.width, (ev.clientX - rect.left)));
+        const pct = x / rect.width;
+        setScrubUI(pct);
+        const m = resolveMediaFacade();
+        const dur = m ? (m.duration() || 0) : 0;
+        timeCur.textContent = fmt(dur * pct);
+    }
+    function handlePointerUp(ev) {
+        if (!dragging) return;
+        dragging = false;
+        userScrubbing = false;
+        const rect = progressWrap.getBoundingClientRect();
+        const x = Math.max(0, Math.min(rect.width, (ev.clientX - rect.left)));
+        const pct = x / rect.width;
+        const m = resolveMediaFacade();
+        const dur = m ? (m.duration() || 0) : 0;
+        try { if (m) m.currentTime(dur * pct); } catch(e){}
+        progressWrap.releasePointerCapture && progressWrap.releasePointerCapture(ev.pointerId);
+    }
+    progressWrap.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+
+    // Click on progress to seek (fallback for non-pointer)
+    progressWrap.addEventListener('click', (ev) => {
+        const rect = progressWrap.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        const pct = Math.max(0, Math.min(1, x / rect.width));
+        const m = resolveMediaFacade();
+        if (!m) return;
+        const dur = m.duration() || 0;
+        try { m.currentTime(dur * pct); } catch(e){}
     });
 
-    // periodic UI sync
-    const syncInterval = setInterval(() => {
-        const media = getCurrentMedia();
-        if (!media) return;
+    // Update UI loop (sync current time, duration, buffer) with lower interval for mobile battery saving
+    const uiInterval = setInterval(() => {
+        const m = resolveMediaFacade();
+        if (!m) return;
         try {
-            const dur = media.duration() || 0;
-            const cur = media.currentTime();
-            if (!isNaN(dur) && dur > 0) {
-                const pct = Math.max(0, Math.min(1, cur / dur)) * 100;
-                if (!scrubUpdating) range.value = String(Math.round(pct));
+            const dur = m.duration() || 0;
+            const cur = m.currentTime();
+            if (!userScrubbing) {
+                const pct = (dur > 0 && !isNaN(cur)) ? Math.max(0, Math.min(1, cur / dur)) : 0;
+                setScrubUI(pct);
+                timeCur.textContent = fmt(cur);
             }
-            updatePlayIcon(!media.paused());
+            timeDur.textContent = fmt(dur);
+            // buffered
+            let bufPct = 0;
+            try {
+                const b = m.buffered ? m.buffered() : null;
+                if (b && typeof b.length === 'number' && b.length > 0) {
+                    const end = b.end(b.length - 1);
+                    bufPct = dur > 0 ? Math.max(0, Math.min(1, end / dur)) : 0;
+                }
+            } catch (e) { bufPct = 0; }
+            bufferEl.style.width = (bufPct*100) + '%';
 
-            // Save current playback position periodically (every sync) for this playing item
+            // Play/pause icon sync
+            const paused = m.paused();
+            btnPlay.innerHTML = `<i class="fa-solid ${paused ? 'fa-play' : 'fa-pause'}"></i>`;
+
+            // persist playback position periodically (throttled)
             const playing = window.__lumina_current_playing || null;
             if (playing && playing.id && typeof cur === 'number' && !isNaN(cur)) {
-                // persist seconds rounded to integer
                 addToHistory(playing.id, (playing.episodeIndex !== null ? (contentDB.find(i=>i.id===playing.id)?.seasons?.[playing.season]?.[playing.episodeIndex]?.title || '') : contentDB.find(i=>i.id===playing.id)?.title), null, (playing.episodeIndex !== undefined ? playing.episodeIndex : null), Math.round(cur));
             }
         } catch (e) {}
-    }, 500);
+    }, 300);
 
-    // Auto-hide / show behavior: show controls on pointermove / click / touchstart and hide after inactivity
+    // Auto-show / hide controls on pointer activity (touch-friendly): keep controls visible on mobile while interacting
     let hideTimer = null;
-    const HIDE_DELAY = 2500; // ms
-
-    // references to UI parts that should sync with these controls (YouTube overlay and top overlay)
-    const getYTButton = () => document.getElementById('lumina-yt-playpause');
-    const getTopOverlay = () => document.querySelector('.player-overlay');
-    const getMobileClose = () => document.getElementById('lumina-mobile-close');
-
     function showControls() {
-        try {
-            controls.classList.add('visible');
-
-            // reveal YT overlay button if present; keep top "REPRODUZINDO" overlay non-interactive
-            const ytBtn = getYTButton();
-            const topOverlay = getTopOverlay();
-            const mClose = getMobileClose();
-            if (ytBtn) {
-                ytBtn.style.transition = 'opacity 160ms';
-                ytBtn.style.opacity = '1';
-                ytBtn.style.pointerEvents = 'auto';
-            }
-            if (topOverlay) {
-                // show visually and enable pointer-events so the top overlay buttons become interactive
-                topOverlay.style.transition = 'opacity 160ms';
-                topOverlay.style.opacity = '1';
-                topOverlay.style.pointerEvents = 'auto';
-            }
-            // show mobile close when on mobile
-            if (mClose) {
-                const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
-                if (isMobile) mClose.classList.add('show');
-            }
-
-            // clear previous hide timer
-            if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-            hideTimer = setTimeout(() => {
-                controls.classList.remove('visible');
-                // hide extras
-                if (ytBtn) {
-                    ytBtn.style.opacity = '0';
-                    ytBtn.style.pointerEvents = 'none';
-                }
-                if (topOverlay) {
-                    topOverlay.style.opacity = '0';
-                    // overlay container remains pointer-events:none so embedded players stay clickable
-                }
-                if (mClose) mClose.classList.remove('show');
-            }, HIDE_DELAY);
-        } catch (e) {}
-    }
-
-    function immediateHide() {
-        try {
-            if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+        controls.classList.add('visible');
+        const ytBtn = document.getElementById('lumina-yt-playpause');
+        const topOverlay = document.querySelector('.player-overlay');
+        const mClose = document.getElementById('lumina-mobile-close');
+        if (ytBtn) { ytBtn.style.opacity = '1'; ytBtn.style.pointerEvents = 'auto'; }
+        if (topOverlay) { topOverlay.style.opacity = '1'; topOverlay.style.pointerEvents = 'auto'; }
+        if (mClose) {
+            const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+            if (isMobile) { mClose.style.opacity = '1'; mClose.classList.add('show'); }
+            else { mClose.style.opacity = '0'; mClose.classList.remove('show'); }
+        }
+        if (hideTimer) clearTimeout(hideTimer);
+        // On touch devices, keep controls visible longer to avoid accidental disappearance during interaction
+        const timeout = (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520) ? 3600 : 1700;
+        hideTimer = setTimeout(() => {
             controls.classList.remove('visible');
-            const ytBtn = getYTButton();
-            const topOverlay = getTopOverlay();
-            const mClose = getMobileClose();
-            if (ytBtn) {
-                ytBtn.style.opacity = '0';
-                ytBtn.style.pointerEvents = 'none';
-            }
-            if (topOverlay) {
-                // ensure overlay does not block clicks when controls are hidden
-                topOverlay.style.opacity = '0';
-                topOverlay.style.pointerEvents = 'none';
-            }
-            if (mClose) mClose.classList.remove('show');
-        } catch (e) {}
+            if (ytBtn) { ytBtn.style.opacity = '0'; ytBtn.style.pointerEvents = 'none'; }
+            if (topOverlay) { topOverlay.style.opacity = '0'; topOverlay.style.pointerEvents = 'none'; }
+            if (mClose) { mClose.style.opacity = '0'; mClose.classList.remove('show'); }
+        }, timeout);
     }
-
-    // attach pointer listeners to the overlay and attachPoint so interactions reveal controls
-    const pointerTargets = [playerOverlay, attachPoint, controls];
-    pointerTargets.forEach(t => {
+    // use passive true where safe; pointer events used above handle dragging
+    ['mousemove','click','touchstart','pointerdown'].forEach(evt => {
         try {
-            if (!t) return;
-            t.addEventListener('mousemove', showControls, { passive: true });
-            t.addEventListener('click', showControls, { passive: true });
-            t.addEventListener('touchstart', showControls, { passive: true });
-        } catch (e) {}
+            (document.getElementById('player-container') || document).addEventListener(evt, showControls, { passive:true });
+        } catch (e){}
     });
 
-    // Also show controls when media starts buffering/playing via sync loop - helpful for remote players
-    const autoShowOnMedia = setInterval(() => {
-        const media = getCurrentMedia();
-        if (!media) return;
-        try {
-            if (!media.paused && !media.paused()) {
-                showControls();
-            }
-        } catch (e) {}
-    }, 2000);
+    // initial reveal
+    setTimeout(showControls, 220);
 
-    // cleanup when player closed
+    // Ensure overlay visibility on mobile when custom controls are present
+    try { updateOverlayForMobile(playerOverlay, true); } catch(e){}
+
+    // cleanup
     controls._cleanup = () => {
-        clearInterval(syncInterval);
-        clearInterval(autoShowOnMedia);
-        if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
-        // remove event listeners
-        pointerTargets.forEach(t => {
-            try {
-                if (!t) return;
-                t.removeEventListener('mousemove', showControls);
-                t.removeEventListener('click', showControls);
-                t.removeEventListener('touchstart', showControls);
-            } catch (e) {}
-        });
-        // ensure overlay removed
-        try { controls.remove(); } catch(e){}
-        // also remove rotate overlay if exists
-        const rot = document.getElementById('lumina-rotate-overlay');
-        if (rot) rot.remove();
-        // remove mobile close button if present
-        const mClose = document.getElementById('lumina-mobile-close');
-        if (mClose) try { mClose.remove(); } catch(e){}
-        // when we remove custom controls, mark overlay state on player element
-        try { if (playerOverlay) playerOverlay._hasCustomControls = false; } catch(e){}
+        try {
+            clearInterval(uiInterval);
+            if (hideTimer) { clearTimeout(hideTimer); hideTimer = null; }
+            // remove pointer listeners
+            progressWrap.removeEventListener('pointerdown', handlePointerDown);
+            window.removeEventListener('pointermove', handlePointerMove);
+            window.removeEventListener('pointerup', handlePointerUp);
+            // remove DOM nodes
+            controls.remove();
+            const mClose = document.getElementById('lumina-mobile-close'); if (mClose) mClose.remove();
+            if (playerOverlay) playerOverlay._hasCustomControls = false;
+        } catch(e){}
     };
 }
 
