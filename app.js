@@ -10,7 +10,7 @@ const contentDB = [
         ratings: { imdb: 6.3, rottenTomatoes: 54, audienceScore: 50 },
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/53bd6d9c03d61fecdee73974365e26b3276e3b7e2fb93f9319b28eebc1c0fa26._SX1080_FMjpg_.jpg',
         description: 'Greg Heffley está destinado a grandes coisas, mas primeiro ele precisa sobreviver à coisa mais assustadora e humilhante de todas: o ensino fundamental.',
-        url: 'https://def1.pcloud.com/cfZvRd0rk7ZL3fQDP7ZKlNC7ZZdOcq0kZQ5ZZMFXZZST5SvZ7HZwQZwRZn0ZuzZrXZA8ZeJZBzZIFZ1mZTQZr4ZVFZpch6kTz25LVB2NTQABpcO7XfJMzX/53f2a0d97fd98ff3efef952370abc7665fc1f9895723538f5917f8b7ef2c4667.mp4'
+        url: 'https://drive.google.com/file/d/1qBGYMGHOShcyS0_meDv35wG4K5nzU28E/preview'
     },
     {
         id: 'diario-banana-2',
@@ -20,7 +20,7 @@ const contentDB = [
         year: '2011',
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/12bd2a9871c75d6abfddb48638342629f8190b81c3784e15e468eb3c96d53e31._UR1920,1080_.jpg',
         description: 'De volta às aulas, Greg e seu irmão mais velho Rodrick lidam com suas tentativas hilárias e desajeitadas de se darem bem (ou não).',
-        url: 'https://def4.pcloud.com/cfZs6K0rk7ZBYSQDP7ZKlNC7ZZQAcq0kZQ5ZZMFXZZ93MNy7ZlpZy9ZDRZrFZ7mZYpZOLZbmZgLZA4ZbHZiLZA0ZRZVglFfwLyoX5fxbwV6SnkczJHPMRX/b3c16646244d9ca0a9a3f6c2243af2de469c68d7195ada34d4ee66a6c5a1f4dd.mp4'
+        url: 'https://drive.google.com/file/d/1uXk9Zz13N84yXOq-I-bycbMT4RUPoosP/preview'
     },
     {
         id: 'diario-banana-3',
@@ -30,7 +30,7 @@ const contentDB = [
         year: '2012',
         cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/019b2f32-b4d6-7163-9299-3e0e72111f11/compose?aspectRatio=1.78&format=webp&width=1200',
         description: 'As férias de verão chegaram e Greg quer passar o tempo jogando videogame, mas seu pai tem outros planos para ele.',
-        url: 'https://def1.pcloud.com/cfZslSJrk7ZG25hDP7ZKlNC7ZZfhoq0kZQ5ZZMFXZZv745rZELZYmZYHZIFZqFZqmZx4Z4QZ18ZARZSRZo8ZHmZOzZAKSj5OnwNouoCLfYcGQyOHmtPpdy/5197274c04d77a609efabbede1b1b5d98b1aed377010aa8988f5b05df950a695.mp4'
+        url: 'https://drive.google.com/file/d/17u9eihi4QzkIwzeGatm1pyAbvh8VC774/preview'
     },
     {
         id: 'stranger-things',
@@ -43,11 +43,11 @@ const contentDB = [
         ratings: { imdb: 8.7, rottenTomatoes: 91, metascore: 78 },
         isHero: true,
         seasons: {
-            1: [ { title: "O desaparecimento de Will Byers", url: "https://def3.pcloud.com/cfZQMEf4wZgrqCDP7ZKUNC7ZZuU7t0kZQ5ZZMFXZZw0nMqZjXZORZUTZd8ZMmZa8ZUmZhYZiQZkQZ6TZ79ZBLZ3FZiHqPsYhWQ0VB31vnWTHKrHlgSc27/T01EP01.mp4" }, { title: "A estranha da Maple Street", url: "https://def4.pcloud.com/cfZCuv6dIZpQ6CDP7ZKUNC7ZZOA7t0kZQ5ZZMFXZZVaMcIZ2mZeYZvRZ8HZwYZYmZG4Z3TZRYZSYZkQZ9FZdYZKTZljIbYnNECv8TXTHWhPbgu7elDLBy/T01EP02.mp4" }, { title: "Caramba", url: "https://def3.pcloud.com/cfZJpr6dIZo3wCDP7ZKUNC7ZZeN7t0kZQ5ZZMFXZZUOnwEZAQZdTZv8ZmYZLYZP8ZMmZVRZYLZOpZeYZxmZ0mZaTZUFQu66Ciw4FnlXTd3jdKdHc2pbdk/T01EP03.mp4" }, { title: "O corpo", url: "https://def3.pcloud.com/cfZIYp8rk7ZzJKCDP7ZKUNC7ZZ5a7t0kZQ5ZZMFXZZ9iQh6Z8QZIVZy8ZjRZlLZipZrLZAYZEFZURZxYZrYZYmZzYZLq5eJGJhu3FkEfoBDrzRozx9imCy/T01EP04.mp4" }, { title: "A pulga e o acrobata", url: "https://def1.pcloud.com/cfZH9J8rk7ZbagCDP7ZKUNC7ZZAa7t0kZQ5ZZMFXZZQ5d6OZYLZMFZjLZaYZlzZR4ZfzZ2QZIQZapZFJZwHZTRZV4ZnRDVbYXCf34XgmKMGqjl1zbDOtb7/T01EP05.mp4" }, { title: "O monstro", url: "https://def3.pcloud.com/cfZMkJ8rk7ZPfTCDP7ZKUNC7ZZl37t0kZQ5ZZMFXZZG9D3lZY8ZWYZeJZl4Zr4Z6zZxHZUQZ5VZN8Z0RZIFZU4ZHLZnEnbKYAC6D8w3FH4PNooxRedY9yV/T01EP06.mp4" }, { title: "A banheira", url: "https://def4.pcloud.com/cfZVo08rk7ZVKnCDP7ZKUNC7ZZ0G7t0kZQ5ZZMFXZZFDvDCZspZYzZsYZLYZtpZr8Zx8ZSRZtYZHzZ3zZn7ZxLZBLZvo1yIxA5SOLIr93ONXCeyJgSq7nk/T01EP07.mp4" }, { title: "De ponta-cabeça", url: "https://def1.pcloud.com/cfZYNV8rk7Z8xDCDP7ZKUNC7ZZ2G7t0kZQ5ZZMFXZZ9VuuIZULZj4ZKFZyzZ5QZmLZSmZTQZVHZ3mZbYZtQZ1LZU8ZSnYq9l0GSiybUT0uOvGGwVzd5pCk/T01EP08.mp4" } ],
-            2: [ { title: "Mad Max", url: "https://def1.pcloud.com/cfZWAPQrk7ZvWplDP7Z8INC7ZZqmkt0kZQ5ZZMFXZZlvcKoZnRZJLZU4Zn8ZB8ZwLZxpZaLZp4ZlQZF4Zm8ZmLZwHZF0KhCSp6wzmpBfTWPU9vGF4GRGak/T02EP01.mp4" }, { title: "Gostosura ou travessura", url: "https://def4.pcloud.com/cfZOTU8rk7Z9ebwDP7ZKUNC7ZZtkkt0kZQ5ZZMFXZZGddCp7ZNYZLmZ9RZAQZvRZFHZcRZPXZ98ZlFZaFZeLZfLZc7ZKCTFzNTra2fcVWazf3RQX5ve2nRX/T02EP02.mp4" }, { title: "O girino", url: "https://def4.pcloud.com/cfZpMI8rk7ZJyjwDP7ZKUNC7ZZ0Vkt0kZQ5ZZMFXZZesw4X7ZtYZc7ZBLZ9LZuzZJRZpLZ74ZbHZl4ZTzZWzZLJZYYZRg24TAeQDmjLeELLRQ4FkYrvS9P7/T02EP03.mp4" }, { title: "Will, o sábio", url: "https://def2.pcloud.com/cfZ9G68rk7ZHnLwDP7ZKUNC7ZZL0kt0kZQ5ZZMFXZZCyPSrZ2JZyYZOzZoHZd4ZeFZRzZ9YZqYZOFZbYZxHZQQZ9mZqD1S3oWcOAVai05G4pO02Y9LQeCk/T02EP04.mp4" }, { title: "Dig Dug", url: "https://def4.pcloud.com/cfZw368rk7ZySLwDP7ZKUNC7ZZN0kt0kZQ5ZZMFXZZLpcQR7ZUQZjRZg8ZzFZIFZwLZJZTzZbQZn4ZaRZERZlmZWzZ4aAsJ6jNjljYaOONEn0NupeViwEk/T02EP05.mp4" }, { title: "O espião", url: "https://def1.pcloud.com/cfZzxqQrk7ZWgelDP7Z8INC7ZZGbkt0kZQ5ZZMFXZZemxSV7ZFJZxYZvFZN7Zp8ZOQZl8ZNLZK4Z6YZLmZ3zZnLZRmZ9zLAeUolTSFTlhr5blVYFhd7yrrX/T02EP06.mp4" }, { title: "A irmã perdida", url: "https://def1.pcloud.com/cfZYCKQrk7ZrThlDP7Z8INC7ZZfhkt0kZQ5ZZMFXZZnLYsiZMmZ4RZPzZRQZ0RZDLZ5pZJZ0zZNRZN4ZPXZNLZO8ZP53t1mNG2C5yxULM3lMo6pTonRC7/T02EP07.mp4" }, { title: "O Devorador de Mentes", url: "https://def2.pcloud.com/cfZs0KQrk7ZDlmlDP7Z8INC7ZZUhkt0kZQ5ZZMFXZZMxbQoZaRZAQZXHZHpZKpZaYZRQZBmZrFZWQZrLZy9ZbLZwmZnEQAr6KAlj7IrSk6GxNvtbWfvnay/T02EP08.mp4" }, { title: "O portal", url: "https://def3.pcloud.com/cfZMiCQrk7Zt6zlDP7Z8INC7ZZlSkt0kZQ5ZZMFXZZYvzsY7ZbQZqpZ04ZHzZA4ZwRZe4Z1HZHpZH4Z6zZiLZzRZVFZgSuQeODK27uxIOfc7hO23HdJQ6ay/T02EP09.mp4" } ],
-            3: [ { title: "Está me ouvindo, Suzie?", url: "https://def1.pcloud.com/cfZFaGYrk7ZlKHtDP7ZAINC7ZZsqkt0kZQ5ZZMFXZZnvOV07ZtLZn8ZsRZ4LZN0Zk4ZORZFYZK4ZFmZy8ZlQZgQZWYZy00oW13kBUzEdNyac4XVjpwF6FOX/T03EP01.mp4" }, { title: "O caso dos ratos", url: "https://def1.pcloud.com/cfZrfvYrk7Z0xztDP7ZAINC7ZZNqkt0kZQ5ZZMFXZZ7I3eV7ZTJZYmZUzZYRZ1YZ14ZL8ZWXZT8ZDHZO8ZLzZTmZd7ZWKy1LvjSHUpEux5KjilUJysC0dq7/T03EP02.mp4" }, { title: "A salva-vidas desaparecida", url: "https://def1.pcloud.com/cfZzXNYrk7ZfyXtDP7ZAINC7ZZRtkt0kZQ5ZZMFXZZXMg507ZDJZyYZHzZKYZvHZCRZSRZMmZvpZrFZNzZBmZKpZfLZdKv6ArzuYFVqCSnfoVmwvFyuwBq7/T03EP03.mp4" }, { title: "A prova da sauna", url: "https://def3.pcloud.com/cfZh0aYrk7ZzH0tDP7ZAINC7ZZGtkt0kZQ5ZZMFXZZe1UFp7ZqLZApZizZbQZyYZRzZsYZXzZwzZSmZTHZfQZbRZgLZVcuGXAHJLgSuSQHW0zGcUQG1MVtk/T03EP04.mp4" }, { title: "Os devorados", url: "https://def3.pcloud.com/cfZ1l4Yrk7ZAmqdDP7Z8INC7ZZw9kt0kZQ5ZZMFXZZf8SHF7Z0QZXRZYHZW4ZHzZ3RZGLZVHZfHZoRZr4Z1zZNVZ4YZxfQqf4hRHSpdggXfH87FXuiw4gSX/T03EP05.mp4" }, { title: "E pluribus unum", url: "https://def3.pcloud.com/cfZHxRYrk7ZNQxdDP7Z8INC7ZZH9kt0kZQ5ZZMFXZZt1GtY7Z1YZ04ZdLZgmZe8Z5pZPRZJYZKYZiLZd8ZVmZIQZ8XZsbG9kPexr5XlN7nTk0G7e8AKyeq7/T03EP06.mp4" }, { title: "A mordida", url: "https://def1.pcloud.com/cfZBEJYrk7ZHFsdDP7Z8INC7ZZdnkt0kZQ5ZZMFXZZH87Iz7ZUzZq4ZN4Z88ZhzZtzZMQZRRZxHZsLZamZnmZ5pZyLZcJ72eUqxYDQPjNtquuKILVcpHQly/T03EP07.mp4" }, { title: "A batalha de Starcourt", url: "https://def3.pcloud.com/cfZ6pRYrk7Z7YCdDP7Z8INC7ZZoekt0kZQ5ZZMFXZZktXDd7Zr0ZrQZvFZpHZjzZERZ6pZg4ZJLZw8Z98ZwYZA8ZGLZRYRRXh6ewDfHuW5xKEhRyuehbCi7/T03EP08.mp4" } ],
-            4: [ { title: "O Clube Hellfire", url: "https://def3.pcloud.com/cfZXmBbrk7ZnflODP7Z9ANC7ZZaLXt0kZQ5ZZMFXZZpXdhs7ZtQZNmZ3mZl4ZTJZ14ZX4ZwHZ8HZlLZcHZLzZd8ZmYZLfAyOAfMwo7eKI0NcMwl9FpeQmiV/T04EP01.mp4" }, { title: "A maldição de Vecna", url: "https://def1.pcloud.com/cfZyYjbrk7Z3DMODP7Z9ANC7ZZe4Xt0kZQ5ZZMFXZZtXs8u7Zv0ZNRZbmZ2YZmYZgYZrFZm4Z8QZhzZv8ZOFZkmZkJZbnO02GYbcqmnydeFlDOjjVsMw5oV/T04EP02.mp4" }, { title: "O monstro e a super-heroína", url: "https://def1.pcloud.com/cfZOfBbrk7ZbllODP7Z9ANC7ZZk8Xt0kZQ5ZZMFXZZR7xK77ZgzZBLZqQZX8ZmHZ5RZYQZbmZ84ZvpZVFZDYZ04Z0HZtWb47x2b9LVhx8AeKdPnjYOmeER7/T04EP03.mp4" }, { title: "Querido Billy", url: "https://def2.pcloud.com/cfZ6gSbrk7ZzAnODP7Z9ANC7ZZK8Xt0kZQ5ZZMFXZZ60F8S7ZLJZIYZ0HZc7ZDLZeYZbRZ4HZqFZQzZUQZnLZrQZTHZ4tEJlMdEWkpwHH452xqLO4u1jldX/T04EP04.mp4" }, { title: "Projeto Nina", url: "https://def2.pcloud.com/cfZ2vmbrk7ZDF2ODP7Z9ANC7ZZYRXt0kZQ5ZZMFXZZvO2DQ7Z5mZwmZ2YZizZRZgpZoYZSYZzLZwzZF4ZCRZ18ZLQZ2P67xf9DBuHF1DX6nfg5JVXjGg4k/T04EP05.mp4" }, { title: "Mergulho", url: "https://def1.pcloud.com/cfZbn1mrk7Z78D6DP7ZAINC7ZZIokt0kZQ5ZZMFXZZ60XzR7ZqJZbQZr4ZwkZRQZGHZpmZ7YZDzZUFZXzZm4ZQzZa4ZlAkYDwDCKcmfYF3xaafAtQiC6JXV/T04EP06.mp4" }, { title: "O massacre no laboratório", url: "https://def4.pcloud.com/cfZYOWmrk7Zb7u6DP7ZAINC7ZZSokt0kZQ5ZZMFXZZnI7qd7ZAzZtzZbQZImZALZQLZG4Z7zZumZo4Zs8Zw8Z9RZ7RZvU72nx3vpsb3UqMFs4LYYpwvjG4V/T04EP07.mp4" }, { title: "Papai", url: "https://def4.pcloud.com/cfZBjumrk7ZXzL6DP7ZAINC7ZZpckt0kZQ5ZZMFXZZ4VjYx7ZUFZqFZc7ZtzZHzZ2pZPzZsQZ3QZKmZgpZl7ZgmZmFZFdBAUgzLBULqB2PxbkVH20zoc5rk/T04EP08.mp4" }, { title: "E o plano de Onze", url: "https://def1.pcloud.com/cfZi6Bmrk7ZJlm6DP7ZAINC7ZZMrkt0kZQ5ZZMFXZZzJurgkZpLZFYZNzZdYZlRZk4Z6pZ14ZYmZ0zZhRZhYZCHZFQZFu03Xo4lAtLNhMYkSyw2XFp3zMOk/T04EP09.mp4" } ],
-            5: [ { title: "Missão de resgate", url: "https://def1.pcloud.com/cfZ8A9hrk7ZnkzADP7Z0NNC7ZZCPXt0kZQ5ZZMFXZZLXTGL7ZMLZeRZC4ZwkZbRZrQZm8Z0YZUQZVLZnmZN4ZjYZNVZQVByBFVfCoRQc81lt6wGhRQVrMtV/ep1.mp4" }, { title: "O desaparecimento de Holly Wheeler", url: "https://def1.pcloud.com/cfZRK3brk7Z0UAUDP7Z9ANC7ZZvBXt0kZQ5ZZMFXZZxETlIZTzZJLZOFZRzZILZkLZY8ZURZ04ZWQZYmZ0RZRYZiFZ8rxkblwsm4Q3qRCVAJy40SlG8gUV/ep2.mp4" }, { title: "A armadilha", url: "https://def1.pcloud.com/cfZqSNbrk7Z6gEUDP7Z9ANC7ZZQBXt0kZQ5ZZMFXZZMh8gV7Zq4Z0FZFmZK7ZT8ZDJZwRZTVZy4ZwQZsQZG4Z0RZg4ZfgJPXQsl5L4a0Us237VzBbvcEwVk/ep3.mp4" }, { title: "Feiticeiro", url: "https://def3.pcloud.com/cfZNkGbrk7ZfeNUDP7Z9ANC7ZZOfXt0kZQ5ZZMFXZZBtDSl7Z34ZY0ZwzZApZ0QZf4ZjYZ04ZIVZNQZg4ZvmZ44Z9pZoqK2x5yFTsVEnGCNF6Du9hf0Ne7y/ep4.mp4" }, { title: "Tratamento de choque", url: "https://def1.pcloud.com/cfZQ4ghrk7ZB0QADP7Z0NNC7ZZ4CXt0kZQ5ZZMFXZZmvJkTZjmZnLZr8ZO8ZNLZQHZqFZcpZcRZN4ZxYZy4ZuQZpYZ8rMKPGKupdLo0cDAIQocbQrLjzH7/05.%20Tratamento%20de%20choque_.mp4"}, { title: "A fuga de Camazotz", url: "https://def2.pcloud.com/cfZnmPhrk7ZzQmADP7Z0NNC7ZZaCXt0kZQ5ZZMFXZZIlYjB7ZAYZFHZP8ZSYZA8ZgzZkLZI4ZJmZLYZhRZJRZfLZj4ZPKC8R084WHYlN6do1BSGv5lNHzKk/06.%20A%20fuga%20de%20Camazotz.mp4" }, { title: "A ponte", url: "https://def1.pcloud.com/cfZJC9hrk7ZS9HADP7Z0NNC7ZZfxXt0kZQ5ZZMFXZZV993eZ3QZwHZURZfzZAzZlRZ18ZPLZbmZTQZLYZDYZIYZ5RZxMNzpn9b0o0fgFLibMqfKhCzl24k/07.%20A%20ponte.mp4" }, { title: "O mundo direito", url: "https://def4.pcloud.com/cfZOnnhrk7ZdhFADP7Z0NNC7ZZNxXt0kZQ5ZZMFXZZxH3Uy7ZC4ZzLZrXZa4ZA8ZCHZtpZr4ZkLZRzZFpZW8ZNYZpQZWxamFaXPtN0f6nhRutcJ1VrADvcV/08.%20O%20mundo%20_direito_.mp4" } ]
+            1: [ { title: "O desaparecimento de Will Byers", url: "https://drive.google.com/file/d/1jA0SUmrcvDJSRxTPWRkCh__yPxGXKs2Q/preview" }, { title: "A estranha da Maple Street", url: "https://drive.google.com/file/d/1pglYy77Xa8o0dYr0frDST_wtceovJKB6/preview" }, { title: "Caramba", url: "https://drive.google.com/file/d/1E9BmsgTCviJGsazvx_q0D_qNng1k2Cop/preview" }, { title: "O corpo", url: "https://drive.google.com/file/d/1APURKFILNPvNGAT5Z18Zs2YtNdpnhwWL/preview" }, { title: "A pulga e o acrobata", url: "https://drive.google.com/file/d/1UIRAu43z4qHuTtWxPDvs03mq61OjWpJh/preview" }, { title: "O monstro", url: "https://drive.google.com/file/d/1QQQfaiAdD7inyyRgjWeAnzxKDtxaQmU6/preview" }, { title: "A banheira", url: "https://drive.google.com/file/d/1Nr7BB5TZMUN8FJQJk5Eu81Nz32Ijj9-M/preview" }, { title: "De ponta-cabeça", url: "https://drive.google.com/file/d/1lt6WZmAHr40_ofQ3YI0Ir0WqONMt3sxp/preview" } ],
+            2: [ { title: "Mad Max", url: "https://drive.google.com/file/d/1vWObqz3txFCkAsmlF6rP0hnkLXQdYNTg/preview" }, { title: "Gostosura ou travessura", url: "https://drive.google.com/file/d/15LkiyN-XNsKTsKuIinx1lxGEJ6atqEB3/preview" }, { title: "O girino", url: "https://drive.google.com/file/d/1aOYmRWV7aAiuDm7F-L8d2nWPXsnK3u2N/preview" }, { title: "Will, o sábio", url: "https://drive.google.com/file/d/1EbN2px12MOdlv8t3bG1lzW8CHKX19S3f/preview" }, { title: "Dig Dug", url: "https://drive.google.com/file/d/15RS3bamEfRrHxtUgOPgrPbjWQnGCs9K3/preview" }, { title: "O espião", url: "https://drive.google.com/file/d/1eftQ6iiGIegch1OxNC8g_impKYvdvMsx/preview" }, { title: "A irmã perdida", url: "https://drive.google.com/file/d/14go4_qruYL5gVU5MWzwmeLzNR8rFGRrB/preview" }, { title: "O Devorador de Mentes", url: "https://drive.google.com/file/d/1hsJCe8ryMDaz5iHMxF5i9UvRGRJp51gc/preview" }, { title: "O portal", url: "https://drive.google.com/file/d/1KGNzD6d4sLvhpsT0xGGF9Z8gEesGtPFD/preview" } ],
+            3: [ { title: "Está me ouvindo, Suzie?", url: "https://drive.google.com/file/d/1XfzDMa5UUXTEGYI7rRor16xMLqns21-S/preview" }, { title: "O caso dos ratos", url: "https://drive.google.com/file/d/1uDZAS0aOjS-bQipiFiGYG0X2zK1Bc3Jt/preview" }, { title: "A salva-vidas desaparecida", url: "https://drive.google.com/file/d/1VpRDqWLTi4QsU01GcNxJrwmKP5MS6Lo5/preview" }, { title: "A prova da sauna", url: "https://drive.google.com/file/d/1IVZ1hfGl8YIeTfGQO5Jp3DJd4jVQeDmj/preview" }, { title: "Os devorados", url: "https://drive.google.com/file/d/1SVXkvGOx2HMa8iS5WCRY8PuoQSA8J6YK/preview" }, { title: "E pluribus unum", url: "https://drive.google.com/file/d/1uam4RJCEYkFGtyinYJ8Ljo-JkHIpSLc1/preview" }, { title: "A mordida", url: "https://drive.google.com/file/d/1JiRmtEHXa83vleGIBTv-1yg_OCIYZaCW/preview" }, { title: "A batalha de Starcourt", url: "https://drive.google.com/file/d/1_F6_qA9MtI7SR9mr3C4CW-wen5i9yu6u/preview" } ],
+            4: [ { title: "O Clube Hellfire", url: "https://drive.google.com/file/d/1ZDiFOud9zBnrsegnKCo1oEoW6iBbzCS2/preview" }, { title: "A maldição de Vecna", url: "https://drive.google.com/file/d/1BLh9YesJz1mWYZxFw-EjVM0BRulY305u/preview" }, { title: "O monstro e a super-heroína", url: "https://drive.google.com/file/d/17d7rivkMsdtf8l500URgQGdvMaggSS1k/preview" }, { title: "Querido Billy", url: "https://drive.google.com/file/d/1z_rVv032G7-UXqb45OCtNLpDkVG8ZKpq/preview" }, { title: "Projeto Nina", url: "https://drive.google.com/file/d/1OD2KvUHg_9xWMWkbAdh__w5Dau8JFUTS/preview" }, { title: "Mergulho", url: "https://drive.google.com/file/d/1WegNowrQi1EsSQZO7Uz_A3GowbBfH9FO/preview" }, { title: "O massacre no laboratório", url: "https://drive.google.com/file/d/1ipI0psTtKFSw6OcoQiXvFot2koGJW2W0/preview" }, { title: "Papai", url: "https://drive.google.com/file/d/16NS_DpktJW4a7M9aqflF9m7Iv3Z4z0LJ/preview" }, { title: "E o plano de Onze", url: "https://drive.google.com/file/d/1i_qekb-WZTIkkFlRM36FIjHKPjfTZ3Y6/preview" } ],
+            5: [ { title: "Missão de resgate", url: "https://drive.google.com/file/d/1xFrwPesQ0zXWoRsBaL9ZIDTPnvVSkkuF/preview" }, { title: "O desaparecimento de Holly Wheeler", url: "https://drive.google.com/file/d/1f7j3ma94atswrsZVf9-uSiqPLNeixHrC/preview" }, { title: "A armadilha", url: "https://drive.google.com/file/d/1Um1zw_iXsah4kh3AzDBSOuMek6kbZxI2/preview" }, { title: "Feiticeiro", url: "https://drive.google.com/file/d/1_dBex9phSWyauWp1eoFoRx9AN9i31dPA/preview" }, { title: "Tratamento de choque", url: "https://drive.google.com/file/d/1wvZIvfHngKO8b7yurLrDsPIzX3ijLZHE/preview" }, { title: "A fuga de Camazotz", url: "https://drive.google.com/file/d/15J4JKrp2BVQQCdoQcHU_JnYHOzdNd3qJ/preview" }, { title: "A ponte", url: "https://drive.google.com/file/d/1OzFsVQtKLWbAiXQgF1iGiTzSGuuPRFX0/preview" }, { title: "O mundo direito", url: "https://drive.google.com/file/d/1XSlN4w9H4jsas08jGrMhthBHspHNm3QS/preview" } ]
         }
     },
     {
@@ -58,7 +58,7 @@ const contentDB = [
         year: '2024',
         cover: 'https://cdn.oantagonista.com/uploads/2024/08/Divertida-Mente-2-entra-top-10-de-bilheterias-da-historia.jpg',
         description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
-        url: 'https://def4.pcloud.com/cfZbQFSrk7ZqMSNDP7Z0NNC7ZZ63Xt0kZQ5ZZMFXZZrmfdRXZFHZlHZeFZtYZYHZk4ZjRZv5ZELZcRZlpZD7ZqmZAYZG1okJwXfDqRGsNkmoMqisbqcIXXy/Divertida%20Mente%202%20%5B1080p%5D%5BDual%5D.mp4'
+        url: 'https://drive.google.com/file/d/1-qpXor4EgfGwNzxNmETa3PriyCwLH7SM/preview'
     },
     {
         id: 'heartstopper',
@@ -71,24 +71,24 @@ const contentDB = [
         ratings: { imdb: 8.5, rottenTomatoes: 96, metascore: 82 },
         seasons: {
             1: [
-                { title: "Encontro", url: "https://def2.pcloud.com/cfZt6yRrk7ZdjheDP7ZKlNC7ZZYtyt0kZQ5ZZMFXZZQkXEQZ7YZ94ZVzZ8LZVmZgpZHHZ4mZApZqFZwLZeQZDHZv8ZsIlUm0QxMVHzaQJVJQNo2jIUAAX7/Episódio.01.mp4" },
-                { title: "Crush", url: "https://def4.pcloud.com/cfZF8yRrk7ZU1beDP7ZKlNC7ZZttyt0kZQ5ZZMFXZZbGgKhZ5RZcpZd4ZNQZmmZOFZlzZn7Z8pZbHZiHZkQZ2XZqHZFV45UARHo1zUEbBsaUSwkRibxOuX/Episódio.02.mp4" },
-                { title: "Beijo", url: "https://def4.pcloud.com/cfZh4ozrk7ZOWYeDP7ZKlNC7ZZ76yt0kZQ5ZZMFXZZsFtYmZQzZkpZaRZUQZOpZFQZgLZHFZ9RZA4ZOHZXzZeHZs8ZtC56LRlC6LYw6HuKYp2uFRdJPEYX/Episódio.03.mp4" },
-                { title: "Segredo", url: "https://def4.pcloud.com/cfZR5yRrk7ZYLbeDP7ZKlNC7ZZs6yt0kZQ5ZZMFXZZT2FWjZDHZpmZQLZqFZILZm4ZvpZTmZeRZXQZl7ZA4Z5pZ2QZ1W6aHoYIIykkeaSLuIM8bLGXow8V/Episódio.04.mp4" },
-                { title: "Amizade", url: "https://def2.pcloud.com/cfZ8e8Rrk7Zfm3eDP7ZKlNC7ZZxUyt0kZQ5ZZMFXZZOLNxmZ4QZ3QZwQZnYZa8ZrQZM4ZmRZOzZn7ZQHZG4ZTQZTJZHz3x92E4DvXHoT5KiIHL65zrJjiV/Episódio.05.mp4" },
-                { title: "Garotas", url: "https://def3.pcloud.com/cfZ2o4Rrk7ZMiNeDP7ZKlNC7ZZ5Iyt0kZQ5ZZMFXZZ2evibZImZHRZIHZrFZH4ZqpZ79ZUQZeHZamZA4Zo8ZNVZSYZvHxTorrERrSgvRC2WQOGcfDIM9sy/Episódio.06.mp4" },
-                { title: "Bullying", url: "https://def1.pcloud.com/cfZPS4Rrk7ZyxAeDP7ZKlNC7ZZxIyt0kZQ5ZZMFXZZDr6eQZ9mZORZ74ZbmZPHZbYZeLZH4ZdzZJLZo4ZGLZfQZ8QZBf375SekFd44BwV45hlRV7loTOby/Episódio.07.mp4" },
-                { title: "Namoro", url: "https://def2.pcloud.com/cfZE58Rrk7Z5YaeDP7ZKlNC7ZZiIyt0kZQ5ZZMFXZZ3axysZT8Zf8ZFQZ4LZNYZNFZzpZSQZeYZK4ZezZUQZoRZJRZKE8vjnmXPhuDfuxrlDpXbVvNX357/Episódio.08.mp4" }
+                { title: "Encontro", url: "https://www.dropbox.com/scl/fi/hngjcsx55y01xa5qit5yy/Epis‑dio.01.mp4?rlkey=6hl0rxem4io4118fc00wjlgq2&raw=1" },
+                { title: "Crush", url: "https://www.dropbox.com/scl/fi/dltfolwgk6pptsl1lx4jk/Epis‑dio.02.mp4?rlkey=41lzw3p7p1qbq30rv6oud4eje&raw=1" },
+                { title: "Beijo", url: "https://www.dropbox.com/scl/fi/hr48fa5bxeynq9p24jjvq/Epis-dio.03.mp4?rlkey=sjqdwjqqyzjmbvwf53g7harhu&raw=1" },
+                { title: "Segredo", url: "https://www.dropbox.com/scl/fi/lqhi6a4ru2vh2wpl5by6y/Epis-dio.04.mp4?rlkey=1wzhsmlmyrsgk88ic19k0oelc&raw=1" },
+                { title: "Amizade", url: "https://www.dropbox.com/scl/fi/t5do3ztz0v95ad0pcxqvj/Epis-dio.05.mp4?rlkey=1qtqi4buifhnre62et57eeb5f&raw=1" },
+                { title: "Garotas", url: "https://www.dropbox.com/scl/fi/idxnh4xvzysany1z260on/Epis-dio.06.mp4?rlkey=03e8notm84gvojmdp5knbivqi&raw=1" },
+                { title: "Bullying", url: "https://www.dropbox.com/scl/fi/l5abe3fa54ofovs66bx4w/Epis-dio.07.mp4?rlkey=ru9qskk96v2uavprilr0p6z0f&raw=1" },
+                { title: "Namoro", url: "https://www.dropbox.com/scl/fi/z5slaudy4yd3odi0mc31s/Epis-dio.08.mp4?rlkey=yroyahhemiimiz4fidbb4giym&raw=1" }
             ],
             2: [
-                { title: "Revelação", url: "https://def3.pcloud.com/cfZ5TbLrk7ZvXSMDP7ZW6NC7ZZ6H7t0kZQ5ZZMFXZZUX81xZrRZCYZ1HZ7zZVHZ24ZW8Z3zZOLZxHZ79ZfQZIYZ34ZemsLcvOehyQScTtfwFUiPS3X86ey/Episódio.01%20%281%29.mp4" },
-                { title: "Família", url: "https://def4.pcloud.com/cfZbfbLrk7ZOPhMDP7ZW6NC7ZZFz7t0kZQ5ZZMFXZZFJ1ftZlLZnzZeJZAYZ3mZlkZFHZf4ZtQZNRZm8ZBmZrzZOmZ9hC4YxOG3t7WzAQtzkxbS8a1AXNy/Episódio.02%20%281%29.mp4" },
-                { title: "Promessa", url: "https://def4.pcloud.com/cfZN5mLrk7ZARYMDP7ZW6NC7ZZFR7t0kZQ5ZZMFXZZa5mUwZGQZPHZC4ZlzZUHZF4Z8HZ7LZbRZWRZTJZwRZvpZ4LZ1BXb8aQTzWY9KDt83JB9W4UjJ6c7/Episódio.03%20%281%29.mp4" },
-                { title: "Desafio", url: "https://def4.pcloud.com/cfZ90YLrk7ZBU4MDP7ZW6NC7ZZyL7t0kZQ5ZZMFXZZFR1OUZNFZ18ZUpZxLZXHZkmZtmZ9FZ78Zx8ZDLZ04ZxHZKpZyEGXXGrA5rmIABPuCHItVfPmGGkX/Episódio.04%20%281%29.mp4" },
-                { title: "Calor", url: "https://def2.pcloud.com/cfZkQ8Lrk7ZXJHMDP7ZW6NC7ZZhL7t0kZQ5ZZMFXZZfJTs3ZvmZnHZJYZfkZlYZfzZcpZeFZtpZ44ZRmZVQZ28ZzQZNQ0qAg6WlbjpbGRvMXiQaFYUYTlV/Episódio.05%20%281%29.mp4" },
-                { title: "Verdade ou consequência", url: "https://def4.pcloud.com/cfZNfQLrk7ZCrRMDP7ZW6NC7ZZUL7t0kZQ5ZZMFXZZ7j19GZMpZQpZvHZamZdzZB8ZY8ZvpZpmZG7ZPRZnHZ70ZPHZLc4xsjhHJw7bSVAlzC2FKuFz3rX7/Episódio.06%20%281%29.mp4" },
-                { title: "Desculpas e arrependimentos", url: "https://def2.pcloud.com/cfZIaxRrk7ZVoInDP7ZKlNC7ZZ0cyt0kZQ5ZZMFXZZa1nuwZ8pZOFZJRZHFZeHZWmZP8ZdLZUQZ9QZ1mZDLZvFZ3mZy7fUJlkG4NQxIhfo98IVpRcMzKwy/Episódio.07%20%281%29.mp4" },
-                { title: "Perfeito", url: "https://def2.pcloud.com/cfZRAxRrk7ZJGInDP7ZKlNC7ZZUcyt0kZQ5ZZMFXZZrQNky7ZvmZT8Zc4ZkpZALZPLZazZApZ1pZYLZeHZwQZNRZWXZ8QjYI0r5LcunI0YLDgRYjF6syIQX/Episódio.08%20%281%29.mp4" }
+                { title: "Revelação", url: "https://www.dropbox.com/scl/fi/z6wxqembvpx5re74txwyl/Epis-dio.01-1.mp4?rlkey=7duwphgvio102s6vlc9sgw609&raw=1" },
+                { title: "Família", url: "https://www.dropbox.com/scl/fi/m2ebxrdm0u5x2todblboy/Epis-dio.02-1.mp4?rlkey=4db0xj9uxla1an618je1sd95s&raw=1" },
+                { title: "Promessa", url: "https://www.dropbox.com/scl/fi/ti0m6hhzbb3mm1uo6hg2u/Epis-dio.03-1.mp4?rlkey=wc4hvcrodzsd4ooaj96w8jxkv&raw=1" },
+                { title: "Desafio", url: "https://drive.google.com/file/d/10B6kAjTiAmvIl1UhVgEaUa9R47IQkrDI/preview" },
+                { title: "Calor", url: "https://drive.google.com/file/d/10BUmeEr9gJNoerUehzUbY756ogWNmC6s/preview" },
+                { title: "Verdade ou consequência", url: "https://drive.google.com/file/d/10C-ukTNUr_gXzDf3GeV70yF0Oo5Iizo4/preview" },
+                { title: "Desculpas e arrependimentos", url: "https://drive.google.com/file/d/10DxmTRS53SIwwFD7s0VZOgrljPmV8cFj/preview" },
+                { title: "Perfeito", url: "https://drive.google.com/file/d/10XYkW1ohpvtS1oaRJAht_gQMyVjzPem7/preview" }
             ],
             3: [
                 { title: "Amor", url: "https://watch.brplayer.cc/watch?v=NLE41OIK" },
@@ -110,7 +110,7 @@ const contentDB = [
         year: '2021',
         cover: 'https://thepausemenucouk.wordpress.com/wp-content/uploads/2021/06/luca-featured-image.jpg?w=1200',
         description: 'Na Riviera Italiana, uma amizade improvável, mas forte, cresce entre um ser humano e um monstro marinho disfarçado de humano.',
-        url: 'https://def2.pcloud.com/cfZOSsj11Z8LcTDP7ZW6NC7ZZQs7t0kZQ5ZZMFXZZLVSKnkZoYZdTZSQZi4ZGQZ0mZu4ZxQZ2QZT4ZMmZoRZOQZUTZrgMOLsmpRE7yBReTmeo2MbILa9ay/Luca.2021.1080p.WEB-DL.DUAL.5.1.COMANDO.TO.mp4'
+        url: 'https://drive.google.com/file/d/1k1zHNwZ91U1_-Hc0aYT8awp5U2t-cdcL/preview'
     },
     {
         id: 'soul',
@@ -120,7 +120,7 @@ const contentDB = [
         year: '2020',
         cover: 'https://businessisjammin.ca/wp-content/uploads/2021/02/soul-poster-fi-e1573147724188.jpg',
         description: 'Joe Gardner é um professor de música que recebe a chance de tocar no melhor clube de jazz da cidade, mas um pequeno passo em falso o leva das ruas de Nova York para o Pré-Vida.',
-        url: 'https://def4.pcloud.com/cfZU0YhxWZVV8aDP7Z0NNC7ZZLvXt0kZQ5ZZMFXZZR5SwG5ZqTZFLZxmZ0QZITZD8ZwRZX4ZAYZG4ZcYZjLZAmZozZqJMdlLYPxub9YkcjK5BzfRvsL9p7/%28AnimesTotais%29%20Soul.2020.1080p.WEB-DL.x264-DUAL.mp4'
+        url: 'https://drive.google.com/file/d/1wixB2432TFKEhWy_N6b374VRHldoUX0b/preview'
     },
     {
         id: 'divertida-mente-1',
@@ -291,7 +291,7 @@ const contentDB = [
         year: '2023',
         cover: 'https://m.media-amazon.com/images/S/pv-target-images/a8d4b023bc418eaf7583a9336843c8c0b341d4ceec6d341e3308a293ad8baadf._SX1080_FMjpg_.jpg',
         description: 'Uma aventura alucinante quando a turma de South Park é lançada por acidente em múltiplos universos paralelos.',
-        url: 'https://def4.pcloud.com/cfZVAl7rk7ZFfVFDP7ZKlNC7ZZb2rq0kZQ5ZZMFXZZjObzvZ88Zj4ZgmZ3YZELZTzZAQZF4ZwQZ1HZ7mZkHZQQZUHZ2OfYt4sD8suYcCwXRQH9Df99WOQy/cc232c0973606f2e33859affe682c2edbdb417ca825ae83e1acbd47067b053b4.mp4'
+        url: 'https://www.tokyvideo.com/br/embed/639806'
     },
     {
         id: 'it-bem-vindos-a-derry',
@@ -322,7 +322,7 @@ const contentDB = [
         year: '2025',
         cover: 'https://images.justwatch.com/backdrop/333384494/s640/demon-slayer-kimetsu-no-yaiba-infinity-castle',
         description: 'Tanjiro e seus aliados enfrentam a ameaça dos Dez Lendários Lua para salvar Nezuko e acabar com o reinado de terror dos demônios.',
-        url: 'https://def4.pcloud.com/cfZK9y4rk7Z5oiTDP7ZW6NC7ZZIu7t0kZQ5ZZMFXZZvdr1kkZU8ZFHZRRZDHZfQZpmZvpZT8ZbHZK4Z6QZwHZWLZbmZdntDq2TrTA5rDcwlMazz5kDbUDM7/demon%20slayer_%20castelo%20infinito%20dublado%20%28camrip%29%20-%20%40drivesintelectuais.mp4'
+        url: 'https://drive.google.com/file/d/1NveQ-a7JXkArdeHdedqy_DPPYgF2S3en/view?usp=sharing'
     },
     {
         id: 'round-6',
@@ -394,7 +394,7 @@ const contentDB = [
         ageRating: '10',
         cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABRHL8-ZgVngYcZCuSxG5TN3rFyCUMb5JwehnM9rKRA2QFo_pNPR0ZT6rL-oFRRNy2UnnQogXXrmHMYr0FcUuknHYubC-ytMHyEzH.jpg?r=63a',
         description: 'A origem do excêntrico chocolatier Willy Wonka e sua aventura até se tornar o mestre do chocolate.',
-        url: 'https://drive.google.com/file/d/11vKocNGSRAFApBxQBHRy65Zk4rqZLGu5/view?usp=sharing'
+        url: 'https://www.dropbox.com/scl/fi/gx0kl1kqo7gnyo71poid7/WONKA-drivesdublados.mp4?rlkey=no0w57exdacuaowkps9fkpkis&raw=1'
     },
     {
         id: 'cuphead',
@@ -527,7 +527,7 @@ const contentDB = [
         cover: 'https://tm.ibxk.com.br/2022/01/13/13093300424066.jpg',
         description: 'Vinte e cinco anos após os crimes originais, um novo Ghostface persegue um grupo de adolescentes em Woodsboro, reacesando segredos do passado mortal da cidade.',
         ratings: { imdb: 6.3, rottenTomatoes: 76 },
-        url: 'https://def1.pcloud.com/cfZ6rfzrk7ZkBNDDP7ZKlNC7ZZzPyt0kZQ5ZZMFXZZIazPVkZiFZIFZLzZvpZQLZwHZ7QZRZB8ZJLZ14ZjLZ30ZSmZbmWS2P7vepBwub4iplIRiuR9Wn0y/Panico.mp4'
+        url: 'https://drive.google.com/file/d/1ne_SKq9wJWYfjnYCpM9v7K-q4UodlaDa/view?usp=drive_link'
     },
     {
         id: 'scream-6-2023',
@@ -2189,7 +2189,16 @@ async function playMedia(id, season, epIndex, startSeconds = 0) {
                             }
                         } catch(e){}
                         player.play().catch(() => {
-                            player.muted(true);
+                            try {
+                                // Defensive: video.js player may not expose muted as a function in all builds/techs
+                                if (player && typeof player.muted === 'function') {
+                                    player.muted(true);
+                                } else if (player && 'muted' in player) {
+                                    try { player.muted = true; } catch(e){}
+                                }
+                            } catch (muteErr) {
+                                // silent fallback
+                            }
                             player.play().catch(()=>{});
                         });
                     });
@@ -3798,17 +3807,350 @@ window.toggleSeasonPills = toggleSeasonPills;
 // expose addToHistory globally so inline onclick handlers inside rendered HTML can call it
 window.addToHistory = addToHistory;
 
-// Suppress a noisy browser Promise rejection when play() is interrupted by removing the media element.
-// This prevents the console spam: "The play() request was interrupted because the media was removed from the document."
-window.addEventListener('unhandledrejection', (evt) => {
+ // Suppress a noisy browser Promise rejection when play() is interrupted by removing the media element.
+ // This prevents the console spam: "The play() request was interrupted because the media was removed from the document."
+ window.addEventListener('unhandledrejection', (evt) => {
+     try {
+         const reason = evt?.reason;
+         const msg = (typeof reason === 'string') ? reason : (reason && reason.message) ? reason.message : '';
+         if (msg && msg.includes('The play() request was interrupted because the media was removed')) {
+             // prevent default logging for this known benign race condition
+             evt.preventDefault?.();
+         }
+     } catch (e) {
+         // silent fallback
+     }
+ });
+ 
+/* --- PWA + Offline MP4 Download Manager --- */
+/*
+  Overview:
+  - Only direct .mp4 URLs without DRM are eligible for offline download.
+  - Downloads stored in Cache Storage (MEDIA_CACHE). Metadata persisted in localStorage under 'lumina_offline_catalog'.
+  - The Service Worker handles put/delete operations via postMessage (DOWNLOAD_VIDEO / REMOVE_VIDEO) and responds with DOWNLOAD_COMPLETE / REMOVE_COMPLETE messages.
+  - Page-side manager provides UI hooks: isEligibleForOffline(url), requestDownload(itemId, url), removeOffline(itemId, url), getOfflineStatus(itemId)
+  - Playback logic: when offline (navigator.onLine === false) playMedia will attempt to load cached .mp4 via caches.match(url) and use blob URL. When online, prefer network source but will fall back to cached if network fails.
+  - Limitations: iOS Safari has aggressive storage eviction; user should be informed in UX. Only .mp4 direct URLs are supported for offline.
+*/
+
+/* --- Config --- */
+const OFFLINE_CATALOG_KEY = 'lumina_offline_catalog_v1'; // maps itemId -> { url, status: 'stored'|'downloading'|'error'|'removed', size, updatedAt }
+
+/* --- Helper: manage offline catalog in localStorage --- */
+function readOfflineCatalog() {
     try {
-        const reason = evt?.reason;
-        const msg = (typeof reason === 'string') ? reason : (reason && reason.message) ? reason.message : '';
-        if (msg && msg.includes('The play() request was interrupted because the media was removed')) {
-            // prevent default logging for this known benign race condition
-            evt.preventDefault?.();
+        return JSON.parse(localStorage.getItem(OFFLINE_CATALOG_KEY) || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+function writeOfflineCatalog(obj) {
+    try {
+        localStorage.setItem(OFFLINE_CATALOG_KEY, JSON.stringify(obj));
+    } catch (e) {}
+}
+
+/* --- Eligibility check: only allow direct .mp4 URLs (http(s) + .mp4 at path end or query) --- */
+function isEligibleForOffline(url) {
+    try {
+        if (!url) return false;
+        const s = String(url).trim();
+        // reject data:, blob:, about:, javascript:
+        if (s.startsWith('data:') || s.startsWith('blob:') || s.startsWith('javascript:')) return false;
+        const parsed = new URL(s, location.href);
+        // only http(s)
+        if (!(parsed.protocol === 'https:' || parsed.protocol === 'http:')) return false;
+        // reject known embed hosts that are iframe-only (they cannot be cached reliably here)
+        const host = (parsed.hostname || '').toLowerCase();
+        const forbiddenHosts = ['tokyvideo.com','brplayer','watch.brplayer','playerflixapi.com','embedplay.icu','watch.brplayer.cc'];
+        if (forbiddenHosts.some(h => host.includes(h))) return false;
+        // Accept only when path or pathname ends with .mp4 or there's a direct file param to mp4
+        if (parsed.pathname && parsed.pathname.toLowerCase().endsWith('.mp4')) return true;
+        // e.g. ?file=video.mp4 or direct raw param raw=1 with mp4 in path
+        if ((parsed.search || '').toLowerCase().includes('.mp4')) return true;
+        return false;
+    } catch (e) {
+        return false;
+    }
+}
+
+/* --- Request download: fetch (with progress reporting) and instruct service worker to cache the final URL
+   Implementation notes:
+   - We perform a full fetch in the page to provide progress events and estimate size.
+   - After the fetch completes (arrayBuffer/blob), we send the blob to the service worker by first placing it into the Cache with cache.put via a fetch-like Response.
+   - For large files this can consume memory; this is a pragmatic implementation for moderate file sizes and common mobile usage but not a stream-into-cache solution.
+*/
+async function requestDownload(itemId, url, onProgress = null) {
+    if (!isEligibleForOffline(url)) throw new Error('URL not eligible for offline download (must be direct .mp4 and accessible).');
+    const catalog = readOfflineCatalog();
+    catalog[itemId] = { url, status: 'downloading', updatedAt: new Date().toISOString(), size: null, progress: 0 };
+    writeOfflineCatalog(catalog);
+    // notify UI via custom event
+    dispatchOfflineEvent('offline-status-changed', { itemId, status: 'downloading' });
+
+    try {
+        const resp = await fetch(url, { method: 'GET', mode: 'cors' });
+        if (!resp.ok) throw new Error(`Fetch failed: ${resp.status}`);
+        // get content-length if available
+        const contentLength = resp.headers.get('Content-Length') ? Number(resp.headers.get('Content-Length')) : null;
+        catalog[itemId].size = contentLength;
+        writeOfflineCatalog(catalog);
+
+        // stream with progress
+        if (resp.body && resp.body.getReader) {
+            const reader = resp.body.getReader();
+            const chunks = [];
+            let received = 0;
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+                received += value.length || value.byteLength || 0;
+                const pct = contentLength ? Math.round((received / contentLength) * 100) : null;
+                catalog[itemId].progress = pct !== null ? pct : null;
+                writeOfflineCatalog(catalog);
+                if (typeof onProgress === 'function') onProgress({ received, total: contentLength, percent: pct });
+                dispatchOfflineEvent('offline-download-progress', { itemId, received, total: contentLength, percent: pct });
+            }
+            // assemble blob
+            const blob = new Blob(chunks, { type: 'video/mp4' });
+            // place into cache via service worker message (service worker will fetch again in SW context if desired)
+            // For reliability across browsers, we use Cache API from the page when possible (same-origin & CORS).
+            try {
+                const cache = await caches.open('lumina-media-v1');
+                const response = new Response(blob, { status: 200, statusText: 'OK', headers: { 'Content-Type': 'video/mp4' } });
+                await cache.put(url, response.clone());
+                // update catalog
+                catalog[itemId].status = 'stored';
+                catalog[itemId].updatedAt = new Date().toISOString();
+                writeOfflineCatalog(catalog);
+                dispatchOfflineEvent('offline-status-changed', { itemId, status: 'stored' });
+                // also notify service worker in case it wants to mirror state
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'DOWNLOAD_VIDEO', url });
+                }
+                return { ok: true };
+            } catch (cacheErr) {
+                // fallback: ask service worker to fetch & cache the URL (may lose progress data)
+                if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({ type: 'DOWNLOAD_VIDEO', url });
+                }
+                catalog[itemId].status = 'stored'; // best-effort
+                writeOfflineCatalog(catalog);
+                dispatchOfflineEvent('offline-status-changed', { itemId, status: 'stored' });
+                return { ok: true, warning: 'cached-by-sw' };
+            }
+        } else {
+            // older browsers: consume fully as blob
+            const blob = await resp.blob();
+            const cache = await caches.open('lumina-media-v1');
+            const response = new Response(blob, { status: 200, statusText: 'OK', headers: { 'Content-Type': 'video/mp4' } });
+            await cache.put(url, response.clone());
+            catalog[itemId].status = 'stored';
+            catalog[itemId].updatedAt = new Date().toISOString();
+            writeOfflineCatalog(catalog);
+            dispatchOfflineEvent('offline-status-changed', { itemId, status: 'stored' });
+            return { ok: true };
         }
     } catch (e) {
-        // silent fallback
+        catalog[itemId].status = 'error';
+        catalog[itemId].error = String(e);
+        catalog[itemId].updatedAt = new Date().toISOString();
+        writeOfflineCatalog(catalog);
+        dispatchOfflineEvent('offline-status-changed', { itemId, status: 'error', error: String(e) });
+        throw e;
     }
+}
+
+async function removeOffline(itemId) {
+    const catalog = readOfflineCatalog();
+    const entry = catalog[itemId];
+    if (!entry) return { ok: false, reason: 'not-found' };
+    const url = entry.url;
+    try {
+        const cache = await caches.open('lumina-media-v1');
+        await cache.delete(url);
+    } catch (e) {
+        // ignore
+    }
+    delete catalog[itemId];
+    writeOfflineCatalog(catalog);
+    dispatchOfflineEvent('offline-status-changed', { itemId, status: 'removed' });
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'REMOVE_VIDEO', url });
+    }
+    return { ok: true };
+}
+
+/* Helper: check catalog status for a given item */
+function getOfflineStatus(itemId) {
+    const catalog = readOfflineCatalog();
+    return catalog[itemId] || null;
+}
+
+/* Playback helper: when offline, attempt to get cached response and create an object URL */
+async function getCachedVideoObjectUrl(url) {
+    try {
+        const cache = await caches.open('lumina-media-v1');
+        const match = await cache.match(url);
+        if (!match) return null;
+        const blob = await match.blob();
+        return URL.createObjectURL(blob);
+    } catch (e) {
+        return null;
+    }
+}
+
+/* Dispatch custom events for UI updates */
+function dispatchOfflineEvent(name, detail) {
+    try {
+        window.dispatchEvent(new CustomEvent(name, { detail }));
+    } catch (e) {}
+}
+
+/* Integrate with existing playMedia: attempt offline playback when navigator.onLine === false
+   We'll wrap the earlier playMedia implementation by checking catalog first before constructing iframes/native players.
+   To avoid modifying large sections, we augment playMedia with a pre-check: if offline and cached -> serve blob URL
+*/
+const _orig_playMedia = window.playMedia || null;
+window.playMedia = async function(id, season, epIndex, startSeconds = 0) {
+    // Resolve item and url like original does (basic)
+    const item = contentDB.find(i => i.id === id);
+    if (!item) return _orig_playMedia ? _orig_playMedia(id, season, epIndex, startSeconds) : null;
+
+    // determine url for series or movie
+    let url = '';
+    if (item.type === 'serie') {
+        const seasons = item.seasons || {};
+        const seasonKey = (season && String(season) in seasons) ? String(season) : (Object.keys(seasons)[0] || null);
+        if (!seasonKey) url = '';
+        else {
+            const eps = seasons[seasonKey] || [];
+            const idx = (typeof epIndex === 'number' && epIndex >= 0 && epIndex < eps.length) ? epIndex : 0;
+            const ep = eps[idx] || {};
+            url = ep.url || '';
+        }
+    } else {
+        url = item.url || '';
+    }
+
+    // if url is an eligible .mp4 and we are offline, try to serve cached media
+    const eligible = isEligibleForOffline(url);
+    const isOffline = !navigator.onLine;
+    if (eligible) {
+        const catalog = readOfflineCatalog();
+        // find by matching url in catalog entries
+        const foundEntryKey = Object.keys(catalog).find(k => catalog[k] && catalog[k].url === url);
+        if (isOffline && foundEntryKey) {
+            const objUrl = await getCachedVideoObjectUrl(url);
+            if (objUrl) {
+                // prepare a simple native <video> playback using the local blob
+                const playerOverlay = document.getElementById('page-player');
+                const container = document.getElementById('player-container');
+                const titleEl = document.getElementById('player-title');
+                titleEl.textContent = `${item.title}${item.type === 'serie' ? ` • Ep ${Number(epIndex || 0) + 1}` : ''} (Offline)`;
+                container.innerHTML = `<video id="lumina-offline-video" class="w-full h-full" controls playsinline webkit-playsinline src="${objUrl}"></video>`;
+                playerOverlay.classList.remove('hidden');
+                playerOverlay.classList.remove('player-close');
+                playerOverlay.classList.remove('player-open');
+                void playerOverlay.offsetWidth;
+                playerOverlay.classList.add('player-open');
+                const v = document.getElementById('lumina-offline-video');
+                // seek to startSeconds if provided (guard)
+                if (v && startSeconds && !isNaN(Number(startSeconds))) {
+                    v.currentTime = Number(startSeconds);
+                }
+                try { v.play().catch(()=>{}); } catch(e){}
+                return;
+            }
+        }
+    }
+
+    // if not offline-cached, fall back to original playMedia (network)
+    if (_orig_playMedia) return _orig_playMedia(id, season, epIndex, startSeconds);
+    return null;
+};
+
+/* UI integration points (lightweight) — expose helpers so openDetail / renderEpisodes can show buttons */
+window.offline = {
+    isEligibleForOffline,
+    requestDownload,
+    removeOffline,
+    getOfflineStatus,
+    readOfflineCatalog
+};
+
+/* Listen to service-worker messages to update UI */
+if (navigator.serviceWorker) {
+    navigator.serviceWorker.addEventListener('message', (ev) => {
+        const data = ev.data || {};
+        if (!data || !data.type) return;
+        if (data.type === 'DOWNLOAD_COMPLETE') {
+            // find item by URL and update catalog accordingly (best-effort)
+            const catalog = readOfflineCatalog();
+            for (const k of Object.keys(catalog)) {
+                if (catalog[k] && catalog[k].url === data.url) {
+                    catalog[k].status = data.status === 'ok' ? 'stored' : 'error';
+                    catalog[k].updatedAt = new Date().toISOString();
+                }
+            }
+            writeOfflineCatalog(catalog);
+            dispatchOfflineEvent('offline-status-changed', { url: data.url, status: data.status });
+        }
+        if (data.type === 'REMOVE_COMPLETE') {
+            const catalog = readOfflineCatalog();
+            for (const k of Object.keys(catalog)) {
+                if (catalog[k] && catalog[k].url === data.url) {
+                    delete catalog[k];
+                }
+            }
+            writeOfflineCatalog(catalog);
+            dispatchOfflineEvent('offline-status-changed', { url: data.url, status: 'removed' });
+        }
+    });
+}
+
+/* Register Service Worker (if supported) and handle update flow */
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js').then(reg => {
+        console.log('Lumina SW registered:', reg);
+
+        // Listen for updates and notify UI (simple flow)
+        reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            if (!newWorker) return;
+            newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed') {
+                    // If there's a controller already, the new SW is waiting — prompt user to refresh
+                    if (navigator.serviceWorker.controller) {
+                        // emit event for UI to show "Atualização disponível"
+                        window.dispatchEvent(new CustomEvent('pwa-update-available'));
+                    } else {
+                        // first install
+                        console.log('Lumina ready for offline use.');
+                    }
+                }
+            });
+        });
+
+        // Active update: when user clicks "refresh" in UI, call skipWaiting
+        window.addEventListener('pwa-apply-update', () => {
+            if (reg.waiting) {
+                reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+        });
+
+        // When the new SW takes control, reload to apply
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            window.location.reload();
+        });
+    }).catch(err => {
+        console.warn('SW registration failed:', err);
+    });
+}
+
+/* Informational helper event for UI to present storage guidance, limitations, and allow user to manage space */
+window.addEventListener('offline-status-changed', (ev) => {
+    // Could be used by the UI to update a badge or list; left lightweight here.
+    console.debug('Offline status changed:', ev.detail);
 });
