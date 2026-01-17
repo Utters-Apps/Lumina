@@ -18,11 +18,10 @@ const MEDIA_CACHE = 'lumina-media-v1';
 
 // list of shell assets to precache (minimal; app.js and index.html are large, but include common assets)
 const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  // intentionally do NOT precache /app.js to reduce install payload and memory pressure on low-end devices
-  '/service-worker.js',
-  '/manifest.json',
+  'index.html',
+  // intentionally do NOT precache app.js to reduce install payload and memory pressure on low-end devices
+  'service-worker.js',
+  'manifest.json',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
 ];
