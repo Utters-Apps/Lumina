@@ -4077,6 +4077,7 @@ window.playMedia = playMedia;
 window.closePlayer = closePlayer;
 window.closeDetail = closeDetail;
 window.clearFavorites = clearFavorites;
+window.clearAllDownloads = clearAllDownloads;
 window.toggleLike = toggleLike;
 window.shareContent = shareContent;
 window.renderEpisodes = renderEpisodes;
