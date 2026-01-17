@@ -477,6 +477,62 @@
         /* ensure header controls remain accessible on dark backgrounds */
         header button { outline-offset: 3px; }
 
+        /* --- Mobile: improved episode card layout and tap targets --- */
+        @media (max-width: 520px) {
+            /* Make each episode row a roomy stacked card for easy tapping */
+            .episode-row {
+                padding: 14px !important;
+                margin-bottom: 12px !important;
+                border-radius: 14px;
+                background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+                border: 1px solid rgba(255,255,255,0.04);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            }
+
+            .episode-row .flex { flex-direction: column !important; gap: 12px !important; }
+            .episode-row .w-full.md\\:w-56 { width: 100% !important; min-height: 140px !important; height: 140px !important; }
+            .episode-row .h-36.md\\:h-28 { height: 140px !important; }
+
+            /* Larger titles and clearer metadata */
+            .episode-row h4 { font-size: 18px !important; line-height: 1.15 !important; }
+            .episode-row p { font-size: 13px !important; color: rgba(255,255,255,0.82) !important; }
+
+            /* Bottom action bar becomes stacked and touch-friendly */
+            .episode-row .mt-3 { display: flex !important; flex-direction: column !important; gap: 8px !important; align-items: stretch; }
+            /* Stack action buttons vertically on narrow screens so "Marcar" appears above "Download" */
+            .episode-row .mt-3 .flex.items-center.gap-3 { display:flex !important; flex-direction:column !important; gap:8px !important; align-items: stretch; }
+
+            /* Make primary play button big and full-width for easier access */
+            .episode-row [data-play] {
+                flex: 1 1 auto;
+                width: 100%;
+                justify-content: center;
+                padding: 12px 14px !important;
+                font-weight: 800;
+                border-radius: 12px !important;
+                font-size: 15px !important;
+            }
+
+            /* Secondary buttons become full-width small pill buttons */
+            .episode-row [data-mark], .episode-row [data-download] {
+                flex: 0 0 auto;
+                min-width: 120px;
+                padding: 10px 12px !important;
+                border-radius: 12px !important;
+                font-size: 13px !important;
+            }
+
+            /* Ensure icons are visible and not crowded */
+            .episode-row .absolute.top-2.left-2, .episode-row .absolute.bottom-2.left-2 {
+                transform: translateZ(0);
+            }
+
+            /* Improve image cropping focus and rounded corners */
+            .episode-row img {
+                border-radius: 10px !important;
+                object-fit: cover !important;
+            }
+        }
 
     </style>
 </head>
@@ -772,20 +828,17 @@
             <div id="player-container" class="w-full h-full bg-black flex items-center justify-center"></div>
         </section>
 
-        <!-- Rotate-to-vertical prompt shown when opening player on mobile portrait -->
-        <div id="rotate-prompt" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/80">
+        <!-- Rotate-to-vertical prompt shown when opening player or when closing on mobile -->
+        <div id="rotate-prompt" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/80" aria-hidden="true" role="dialog" aria-label="Prompt de rotação">
             <div class="w-[86vw] max-w-md p-6 rounded-2xl liquid-glass text-center">
                 <div class="mb-4">
                     <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 mx-auto flex items-center justify-center">
                         <i class="fa-solid fa-rotate-left text-white text-2xl"></i>
                     </div>
                 </div>
-                <h3 class="text-xl font-extrabold text-white mb-2">Gire o celular</h3>
-                <p id="rotate-prompt-desc" class="text-sm text-white/70 mb-4">Para a melhor experiência de reprodução, por favor gire o celular para o modo horizontal.</p>
-                <div class="flex gap-3 justify-center">
-                    <button id="rotate-continue-btn" class="btn-liquid py-3 px-4 rounded-2xl text-white font-bold">Continuar mesmo assim</button>
-                    <button id="rotate-wait-btn" class="py-3 px-4 rounded-2xl glass text-white border border-white/8">Aguardar rotação</button>
-                </div>
+                <h3 id="rotate-prompt-title" class="text-xl font-extrabold text-white mb-2">Gire o celular</h3>
+                <p id="rotate-prompt-desc" class="text-sm text-white/70 mb-2">Ajuste o dispositivo para a orientação solicitada para continuar.</p>
+                <!-- NOTE: Buttons intentionally removed for a silent orientation-only prompt on mobile -->
             </div>
         </div>
 
