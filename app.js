@@ -1962,9 +1962,9 @@ async function playMedia(id, season, epIndex, startSeconds = 0) {
         return;
     }
 
-    // On mobile portrait, show rotate prompt and await user decision / rotation before opening player
+    // On mobile, require landscape before opening player (prompt); await user decision / rotation
     try {
-        await showRotatePromptIfPortrait();
+        await showRotatePrompt('enter-player');
     } catch(e) {
         // ignore and continue opening player
     }
@@ -3192,6 +3192,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (e) {}
                 // initialize app and then handle deep play if present
                 init(deepPlay);
+                // If the user is already in landscape on load, show an outside prompt asking to rotate to portrait
+                try {
+                    const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+                    if (isMobile && window.innerWidth > window.innerHeight) {
+                        // show gentle prompt asking to rotate to vertical for browsing
+                        setTimeout(() => showRotatePrompt('outside'), 500);
+                    }
+                } catch (e) {}
                 if (deepPlay) {
                     // small timeout to ensure UI ready
                     setTimeout(() => {
@@ -3202,6 +3210,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             // name exists: init immediately and handle deep play
             init(deepPlay);
+            // If user loaded in landscape, prompt to return to portrait for browsing
+            try {
+                const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+                if (isMobile && window.innerWidth > window.innerHeight) {
+                    setTimeout(() => showRotatePrompt('outside'), 500);
+                }
+            } catch (e) {}
             if (deepPlay) {
                 setTimeout(() => {
                     try { handleDeepLinkPlay(deepPlay); } catch(e){}
@@ -3236,44 +3251,59 @@ function lockToPortrait() {
     } catch (e) {}
 }
 
-/* --- Rotate-to-vertical prompt for mobile portrait when opening player --- */
-function showRotatePromptIfPortrait() {
+/* --- Dynamic rotate prompt (mode: 'enter-player' requires landscape; 'outside' requests portrait) --- */
+function showRotatePrompt(mode = 'enter-player') {
     return new Promise((resolve) => {
         try {
             const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
             const isPortrait = window.innerHeight >= window.innerWidth;
-            if (!isMobile || !isPortrait) return resolve();
+            const isLandscape = window.innerWidth > window.innerHeight;
+
+            // If not mobile, nothing to do
+            if (!isMobile) return resolve();
+
+            // Determine whether prompt is relevant for this mode
+            if (mode === 'enter-player' && isLandscape) return resolve(); // already landscape, no need
+            if (mode === 'outside' && isPortrait) return resolve(); // already portrait, no need
 
             const prompt = document.getElementById('rotate-prompt');
+            const desc = document.getElementById('rotate-prompt-desc');
             const continueBtn = document.getElementById('rotate-continue-btn');
             const waitBtn = document.getElementById('rotate-wait-btn');
 
-            if (!prompt) return resolve();
+            if (!prompt || !desc) return resolve();
+
+            // set text based on mode
+            if (mode === 'enter-player') {
+                // request landscape for better playback
+                desc.textContent = 'Para a melhor experiência de reprodução, por favor gire o celular para o modo horizontal.';
+            } else {
+                // outside player ask portrait to restore normal browsing
+                desc.textContent = 'Para navegar confortavelmente, por favor gire o celular para o modo vertical.';
+            }
 
             // show prompt
             prompt.classList.remove('hidden');
             prompt.style.display = 'flex';
 
-            // Handler to dismiss when orientation changes to portrait/vertical orientation satisfied
-            function onOrientationChange() {
-                // if device is now vertical (portrait) hide prompt and resolve
-                if (window.innerHeight >= window.innerWidth) {
-                    cleanupAndResolve();
+            function checkOrientationAndCleanup() {
+                if (mode === 'enter-player') {
+                    if (window.innerWidth > window.innerHeight) cleanupAndResolve();
+                } else {
+                    if (window.innerHeight >= window.innerWidth) cleanupAndResolve();
                 }
             }
 
             // If user chooses to continue anyway, resolve immediately
-            function onContinue() {
-                cleanupAndResolve();
-            }
+            function onContinue() { cleanupAndResolve(); }
 
-            // If user chooses to wait, we keep the prompt until orientation changes; no extra action needed
+            // Keep the prompt until orientation meets requirement or user continues
             function cleanupAndResolve() {
                 try {
                     prompt.classList.add('hidden');
                     prompt.style.display = 'none';
-                    window.removeEventListener('orientationchange', onOrientationChange);
-                    window.removeEventListener('resize', onOrientationChange);
+                    window.removeEventListener('orientationchange', checkOrientationAndCleanup);
+                    window.removeEventListener('resize', checkOrientationAndCleanup);
                     if (continueBtn) continueBtn.removeEventListener('click', onContinue);
                     if (waitBtn) waitBtn.removeEventListener('click', onContinue);
                 } catch (e) {}
@@ -3281,14 +3311,13 @@ function showRotatePromptIfPortrait() {
             }
 
             // Attach listeners
-            window.addEventListener('orientationchange', onOrientationChange, { passive: true });
-            window.addEventListener('resize', onOrientationChange, { passive: true });
+            window.addEventListener('orientationchange', checkOrientationAndCleanup, { passive: true });
+            window.addEventListener('resize', checkOrientationAndCleanup, { passive: true });
 
             if (continueBtn) continueBtn.addEventListener('click', onContinue, { passive: true });
             if (waitBtn) {
-                // also allow wait button to hint user they can rotate; but clicking it will simply focus waiting for orientation change
+                // clicking wait gives a small feedback but otherwise keeps the prompt visible
                 waitBtn.addEventListener('click', () => {
-                    // small visual feedback: briefly pulse the prompt
                     try {
                         waitBtn.classList.add('animate-pulse');
                         setTimeout(() => waitBtn.classList.remove('animate-pulse'), 600);
@@ -3296,16 +3325,14 @@ function showRotatePromptIfPortrait() {
                 }, { passive: true });
             }
 
-            // Safety: also hide automatically after 10s if no rotation and user hasn't acted (tolerant fallback)
+            // Safety: auto-resolve after 10s to avoid blocking (user can still rotate later)
             const autoTimeout = setTimeout(() => { cleanupAndResolve(); }, 10000);
-            // ensure cleanup clears timeout
             const origCleanup = cleanupAndResolve;
             cleanupAndResolve = function() {
                 clearTimeout(autoTimeout);
                 origCleanup();
             };
         } catch (e) {
-            // on any error, just resolve so playback can continue
             resolve();
         }
     });
