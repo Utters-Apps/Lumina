@@ -3275,11 +3275,11 @@ function showRotatePrompt(mode = 'enter-player') {
 
             // set text based on mode
             if (mode === 'enter-player') {
-                // request landscape for better playback
-                desc.textContent = 'Para a melhor experiência de reprodução, por favor gire o celular para o modo horizontal.';
+                // require landscape (horizontal) for playback
+                desc.textContent = 'Para entrar no Reprodutor, gire o celular para HORIZONTAL (paisagem) para melhor experiência.';
             } else {
-                // outside player ask portrait to restore normal browsing
-                desc.textContent = 'Para navegar confortavelmente, por favor gire o celular para o modo vertical.';
+                // outside player request portrait (vertical) for browsing
+                desc.textContent = 'Para navegar confortavelmente, mantenha o celular em VERTICAL (retrato).';
             }
 
             // show prompt
