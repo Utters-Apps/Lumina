@@ -2859,14 +2859,27 @@ async function playMedia(id, season, epIndex, startSeconds = 0) {
     addToHistory(id, title, durationLabel, (item.type === 'serie' ? season : null), (item.type === 'serie' ? epIndex : null));
 }
 
-function closePlayer() {
+async function closePlayer() {
     const playerOverlay = document.getElementById('page-player');
+    const container = document.getElementById('player-container');
+
+    // On mobile, show a rotate-to-portrait prompt before fully closing so the user returns to vertical.
+    const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
+    if (isMobile) {
+        try {
+            // show prompt that requires portrait orientation; no buttons provided
+            await showRotatePrompt('exit-player');
+        } catch (e) {
+            // continue even if prompt failed
+        }
+    }
+
     // If fullscreen, try to exit it first
     if (document.fullscreenElement) {
         document.exitFullscreen?.();
     }
 
-    // On close: restore portrait orientation on mobile and ensure top overlay is visible again
+    // After prompt (or immediately on non-mobile), try to lock back to portrait and hide top overlay
     try { lockToPortrait(); } catch(e){}
     try {
         const topOverlay = document.querySelector('.player-overlay');
@@ -2875,7 +2888,6 @@ function closePlayer() {
 
     // Save final playback position if possible (native video, Video.js, or YouTube API)
     try {
-        const container = document.getElementById('player-container');
         // native video element (most direct)
         const v = container ? container.querySelector('video') : null;
         if (v) {
@@ -2910,8 +2922,6 @@ function closePlayer() {
     } catch (e){ console.warn('Error saving final playback position', e); }
 
     // Remove/stop media playback safely
-    const container = document.getElementById('player-container');
-
     try {
         // Dispose Video.js player if present
         if (playerOverlay._vjsPlayer && typeof playerOverlay._vjsPlayer.dispose === 'function') {
@@ -2931,9 +2941,7 @@ function closePlayer() {
         const iframe = container.querySelector('iframe');
         if (iframe) {
             try {
-                // Try best-effort to stop playback by removing src and sandboxing
                 iframe.src = 'about:blank';
-                // also remove allow attribute to be extra safe
                 iframe.removeAttribute('allow');
             } catch (e) { /* ignore */ }
         }
@@ -2974,17 +2982,14 @@ function closePlayer() {
 
     // trigger close animation then hide after it finishes to free resources
     try {
-        // remove any open class and start close animation
         playerOverlay.classList.remove('player-open');
         playerOverlay.classList.remove('player-close');
         void playerOverlay.offsetWidth;
         playerOverlay.classList.add('player-close');
         setTimeout(() => {
             playerOverlay.classList.add('hidden');
-            // cleanup close class so next open starts fresh
             playerOverlay.classList.remove('player-close');
             updateContinueWatching();
-            // clear current playing marker
             window.__lumina_current_playing = null;
         }, 320);
     } catch (e) {
@@ -3532,87 +3537,88 @@ function lockToPortrait() {
     } catch (e) {}
 }
 
-/* --- Dynamic rotate prompt (mode: 'enter-player' requires landscape; 'outside' requests portrait) --- */
+/* --- Dynamic rotate prompt (mode: 'enter-player' requires landscape; 'outside' requests portrait; 'exit-player' waits for portrait without buttons) --- */
 function showRotatePrompt(mode = 'enter-player') {
     return new Promise((resolve) => {
         try {
             const isMobile = ('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 520;
-            const isPortrait = window.innerHeight >= window.innerWidth;
-            const isLandscape = window.innerWidth > window.innerHeight;
-
-            // If not mobile, nothing to do
             if (!isMobile) return resolve();
 
-            // Determine whether prompt is relevant for this mode
-            if (mode === 'enter-player' && isLandscape) return resolve(); // already landscape, no need
-            if (mode === 'outside' && isPortrait) return resolve(); // already portrait, no need
-
             const prompt = document.getElementById('rotate-prompt');
+            const title = document.getElementById('rotate-prompt-title');
             const desc = document.getElementById('rotate-prompt-desc');
-            const continueBtn = document.getElementById('rotate-continue-btn');
-            const waitBtn = document.getElementById('rotate-wait-btn');
-
             if (!prompt || !desc) return resolve();
 
-            // set text based on mode
+            // set messages per mode
             if (mode === 'enter-player') {
-                // require landscape (horizontal) for playback
-                desc.textContent = 'Para entrar no Reprodutor, gire o celular para HORIZONTAL (paisagem) para melhor experiência.';
-            } else {
-                // outside player request portrait (vertical) for browsing
-                desc.textContent = 'Para navegar confortavelmente, mantenha o celular em VERTICAL (retrato).';
+                title.textContent = 'Gire o celular';
+                desc.textContent = 'Por favor, gire o celular para HORIZONTAL para melhor reprodução.';
+            } else if (mode === 'outside') {
+                title.textContent = 'Gire o celular';
+                desc.textContent = 'Por favor, gire o celular para VERTICAL para continuar navegando.';
+            } else if (mode === 'exit-player') {
+                title.textContent = 'Volte para o modo retrato';
+                desc.textContent = 'Para fechar o player, por favor gire o celular para VERTICAL.';
             }
 
-            // show prompt
+            // show prompt (no buttons shown for exit-player or other modes - prompt is orientation-only)
             prompt.classList.remove('hidden');
             prompt.style.display = 'flex';
+            prompt.setAttribute('aria-hidden', 'false');
 
-            function checkOrientationAndCleanup() {
-                if (mode === 'enter-player') {
-                    if (window.innerWidth > window.innerHeight) cleanupAndResolve();
-                } else {
-                    if (window.innerHeight >= window.innerWidth) cleanupAndResolve();
-                }
+            // check function resolves when orientation matches requested mode
+            function checkMatch() {
+                const isPortrait = window.innerHeight >= window.innerWidth;
+                const isLandscape = window.innerWidth > window.innerHeight;
+
+                if (mode === 'enter-player' && isLandscape) return true;
+                if ((mode === 'outside' || mode === 'exit-player') && isPortrait) return true;
+                return false;
             }
 
-            // If user chooses to continue anyway, resolve immediately
-            function onContinue() { cleanupAndResolve(); }
+            // Immediately resolve if already matching
+            if (checkMatch()) {
+                prompt.classList.add('hidden');
+                prompt.style.display = 'none';
+                prompt.setAttribute('aria-hidden', 'true');
+                return resolve();
+            }
 
-            // Keep the prompt until orientation meets requirement or user continues
-            function cleanupAndResolve() {
+            // Wait for orientation change or resize until condition met. No continue/await buttons present.
+            const onChange = () => {
+                try {
+                    if (checkMatch()) {
+                        cleanup();
+                        resolve();
+                    }
+                } catch (e) {
+                    cleanup();
+                    resolve();
+                }
+            };
+
+            function cleanup() {
                 try {
                     prompt.classList.add('hidden');
                     prompt.style.display = 'none';
-                    window.removeEventListener('orientationchange', checkOrientationAndCleanup);
-                    window.removeEventListener('resize', checkOrientationAndCleanup);
-                    if (continueBtn) continueBtn.removeEventListener('click', onContinue);
-                    if (waitBtn) waitBtn.removeEventListener('click', onContinue);
+                    prompt.setAttribute('aria-hidden', 'true');
+                    window.removeEventListener('orientationchange', onChange);
+                    window.removeEventListener('resize', onChange);
                 } catch (e) {}
+            }
+
+            window.addEventListener('orientationchange', onChange, { passive: true });
+            window.addEventListener('resize', onChange, { passive: true });
+
+            // Safety: auto-resolve after 20s to avoid permanently blocking the flow (user can still rotate later).
+            const timeout = setTimeout(() => {
+                cleanup();
                 resolve();
-            }
+            }, 20000);
 
-            // Attach listeners
-            window.addEventListener('orientationchange', checkOrientationAndCleanup, { passive: true });
-            window.addEventListener('resize', checkOrientationAndCleanup, { passive: true });
-
-            if (continueBtn) continueBtn.addEventListener('click', onContinue, { passive: true });
-            if (waitBtn) {
-                // clicking wait gives a small feedback but otherwise keeps the prompt visible
-                waitBtn.addEventListener('click', () => {
-                    try {
-                        waitBtn.classList.add('animate-pulse');
-                        setTimeout(() => waitBtn.classList.remove('animate-pulse'), 600);
-                    } catch (e) {}
-                }, { passive: true });
-            }
-
-            // Safety: auto-resolve after 10s to avoid blocking (user can still rotate later)
-            const autoTimeout = setTimeout(() => { cleanupAndResolve(); }, 10000);
-            const origCleanup = cleanupAndResolve;
-            cleanupAndResolve = function() {
-                clearTimeout(autoTimeout);
-                origCleanup();
-            };
+            // ensure cleanup clears timeout too
+            const origCleanup = cleanup;
+            cleanup = function() { clearTimeout(timeout); origCleanup(); };
         } catch (e) {
             resolve();
         }
