@@ -87,7 +87,18 @@
         }
 
         /* slightly smoother card transitions */
-        .card-container { transition: transform 0.28s var(--ease-smooth), box-shadow 0.28s, opacity 0.28s; will-change: transform, opacity; }
+        .card-container { 
+            transition: transform 0.28s var(--ease-smooth), box-shadow 0.28s, opacity 0.28s; 
+            will-change: transform, opacity;
+            /* liquid-glass base */
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            box-shadow: 0 12px 34px rgba(10,7,20,0.55), inset 0 1px 0 rgba(255,255,255,0.02);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
+            overflow: hidden;
+        }
         .card-image-wrap img { transition: transform 0.6s var(--ease-liquid), opacity 0.3s var(--ease-smooth); }
 
         /* subtle backdrop transition for modal and player */
@@ -139,7 +150,50 @@
         .liquid-glass:hover { transform: translateY(-6px); box-shadow: 0 20px 60px rgba(120,75,200,0.14); }
 
         .card-container { transition: transform 0.28s var(--ease-smooth), box-shadow 0.28s; border-radius: 14px; }
-        .card-container:hover { transform: translateY(-8px) scale(1.015); box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+        .card-container:hover { 
+            transform: translateY(-10px) scale(1.02); 
+            box-shadow: 0 28px 80px rgba(12,8,28,0.65);
+        }
+        /* Additional liquid-glass interactions for inner image and overlay */
+        .card-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: linear-gradient(120deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+            mix-blend-mode: screen;
+            transition: opacity 220ms ease, transform 320ms ease;
+            opacity: 0.9;
+            transform: translateY(0);
+        }
+        .card-container:hover::before { opacity: 1; transform: translateY(-4px); }
+        .card-image-wrap {
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.015);
+            transition: transform 0.6s var(--ease-liquid), box-shadow 0.28s;
+        }
+        .card-image-wrap img {
+            transition: transform 0.6s var(--ease-liquid), filter 0.32s;
+            will-change: transform, filter;
+            display:block;
+        }
+        .card-container:hover .card-image-wrap img { transform: scale(1.06) translateY(-3px); filter: contrast(1.03) saturate(1.05); }
+        /* subtle top gloss highlight */
+        .card-image-wrap::after {
+            content: '';
+            position: absolute;
+            left: -40%;
+            top: -60%;
+            width: 180%;
+            height: 60%;
+            transform: rotate(-12deg);
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.00));
+            filter: blur(24px);
+            opacity: 0.28;
+            pointer-events: none;
+        }
 
         .card-image-wrap {
             position: relative;
@@ -240,17 +294,40 @@
         }
 
         /* --- Player Styling --- */
-        /* Keep overlay visually interactive but allow clicks to pass through to embedded players.
-           Overlay container is pointer-events:none so it won't block clicks on iframes beneath;
-           individual interactive controls inside the overlay explicitly allow pointer events. */
-        .player-overlay { background: linear-gradient(to bottom, rgba(0,0,0,0.92), transparent 18%); pointer-events: none; }
-        /* allow overlay buttons / controls to receive clicks while the container stays pointer-events:none */
+        /* Keep overlay visually interactive while remaining non-blocking for underlying embeds.
+           The overlay becomes visible and interactive when it has the 'overlay-visible' class
+           or when the document enters fullscreen, ensuring controls remain accessible in fullscreen. */
+        .player-overlay {
+            background: linear-gradient(to bottom, rgba(0,0,0,0.92), transparent 18%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 220ms var(--ease-smooth), backdrop-filter 220ms, box-shadow 220ms;
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+        }
+        /* visible / interactive state */
+        .player-overlay.overlay-visible {
+            pointer-events: auto;
+            opacity: 1;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6), inset 0 2px 12px rgba(255,255,255,0.02);
+        }
+        /* fullscreen: ensure overlay is always visible and elevated in fullscreen contexts */
+        :fullscreen .player-overlay,
+        .player-overlay:-webkit-full-screen {
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            box-shadow: 0 18px 60px rgba(0,0,0,0.7), inset 0 3px 18px rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px) saturate(140%) !important;
+        }
+        /* allow overlay buttons / controls to receive clicks while the container stays pointer-events:none by default */
         .player-overlay button,
         .player-overlay .player-controls,
         .player-overlay .player-title,
         .player-overlay [data-interactive="true"] {
             pointer-events: auto;
         }
+        /* subtle reveal when overlay becomes visible (used by JS) */
+        .player-overlay.showing { opacity: 1; transform: translateY(0); transition: opacity 200ms, transform 200ms; }
 
         /* Player open/close animations */
         @keyframes playerOpen {
@@ -646,6 +723,29 @@
             </div>
             <div id="player-container" class="w-full h-full bg-black flex items-center justify-center"></div>
         </section>
+
+        <!-- Rotate-to-vertical prompt shown when opening player on mobile portrait -->
+        <div id="rotate-prompt" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/80">
+            <div class="w-[86vw] max-w-md p-6 rounded-2xl liquid-glass text-center">
+                <div class="mb-4">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 mx-auto flex items-center justify-center">
+                        <i class="fa-solid fa-rotate-left text-white text-2xl"></i>
+                    </div>
+                </div>
+                <h3 class="text-xl font-extrabold text-white mb-2">Gire o celular</h3>
+                <p class="text-sm text-white/70 mb-4">Para a melhor experiência de reprodução, por favor gire o celular para o modo vertical.</p>
+                <div class="flex gap-3 justify-center">
+                    <button id="rotate-continue-btn" class="btn-liquid py-3 px-4 rounded-2xl text-white font-bold">Continuar mesmo assim</button>
+                    <button id="rotate-wait-btn" class="py-3 px-4 rounded-2xl glass text-white border border-white/8">Aguardar rotação</button>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @media (min-width: 521px) {
+                #rotate-prompt { display: none !important; }
+            }
+        </style>
 
     </main>
 
