@@ -8,6 +8,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/fiveicon.png">
     <link rel="manifest" href="/manifest.json">
+    <!-- Favicons / PWA icons (explicit links to ensure browser uses the provided assets) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/fiveicon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/fiveicon.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/fiveicon-512.png">
+    <link rel="shortcut icon" href="/fiveicon.png">
+    <meta name="msapplication-TileImage" content="/fiveicon-512.png">
+    <meta name="msapplication-TileColor" content="#050212">
     <title>Lumina</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -478,10 +485,10 @@
     <!-- Header -->
     <header class="fixed top-0 left-0 w-full z-50 px-6 py-5 flex justify-between items-center transition-all duration-300" id="mainHeader">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-500 flex items-center justify-center shadow-[0_0_20px_rgba(217,70,239,0.4)] border border-white/10">
-                <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+            <div class="w-9 h-9 rounded-xl overflow-hidden flex items-center justify-center shadow-[0_0_20px_rgba(217,70,239,0.4)] border border-white/10 bg-transparent">
+                <img src="/fiveicon.png" alt="Lumina" class="w-full h-full object-cover" />
             </div>
-            <h1 class="text-2xl font-black tracking-tighter text-white drop-shadow-lg">LUMINA <span class="text-purple-400">.</span></h1>
+            <h1 class="text-2xl font-black tracking-tighter text-white drop-shadow-lg">LUMINA</h1>
         </div>
         <button onclick="navigate('search')" class="w-10 h-10 rounded-full glass flex items-center justify-center active:scale-90 transition-transform hover:bg-white/10">
             <i class="fa-solid fa-magnifying-glass text-white/90"></i>
