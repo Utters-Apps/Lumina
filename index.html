@@ -301,9 +301,10 @@
             background: linear-gradient(to bottom, rgba(0,0,0,0.92), transparent 18%);
             pointer-events: none;
             opacity: 0;
-            transition: opacity 220ms var(--ease-smooth), backdrop-filter 220ms, box-shadow 220ms;
-            backdrop-filter: blur(6px) saturate(120%);
-            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            transition: opacity 220ms var(--ease-smooth), box-shadow 220ms;
+            /* removed blur to keep player area crisp */
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
         }
         /* visible / interactive state */
         .player-overlay.overlay-visible {
@@ -733,7 +734,7 @@
                     </div>
                 </div>
                 <h3 class="text-xl font-extrabold text-white mb-2">Gire o celular</h3>
-                <p class="text-sm text-white/70 mb-4">Para a melhor experiência de reprodução, por favor gire o celular para o modo vertical.</p>
+                <p id="rotate-prompt-desc" class="text-sm text-white/70 mb-4">Para a melhor experiência de reprodução, por favor gire o celular para o modo horizontal.</p>
                 <div class="flex gap-3 justify-center">
                     <button id="rotate-continue-btn" class="btn-liquid py-3 px-4 rounded-2xl text-white font-bold">Continuar mesmo assim</button>
                     <button id="rotate-wait-btn" class="py-3 px-4 rounded-2xl glass text-white border border-white/8">Aguardar rotação</button>
