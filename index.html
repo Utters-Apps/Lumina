@@ -1519,39 +1519,27 @@
         function shareItemById(id, context = {}) {
             const link = buildShareLinkForContext(id, context);
 
-            // Prefer native share dialog when available
+            // If native Web Share is available, try it first. Always fallback to copying the link.
             if (navigator.share) {
-                try {
-                    navigator.share({
-                        title: 'Confira isso no Lumina',
-                        text: 'Veja este título no Lumina',
-                        url: link
-                    }).then(() => {
-                        // update browser URL without reloading so opening the same tab preserves state
-                        try { history.replaceState(null, '', link); } catch(_) {}
-                    }).catch(async (err) => {
-                        // if user cancels or share fails, fallback to copy
-                        const ok = await copyToClipboard(link);
-                        if (ok) {
-                            showShareFeedback(id, link);
-                        } else {
-                            alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
-                        }
-                        try { history.replaceState(null, '', link); } catch(_) {}
-                    });
-                } catch (e) {
-                    // safety fallback to clipboard
+                navigator.share({
+                    title: 'Confira isso no Lumina',
+                    text: 'Veja este título no Lumina',
+                    url: link
+                }).then(() => {
+                    try { history.replaceState(null, '', link); } catch(_) {}
+                }).catch(() => {
+                    // On failure (or user cancel) copy to clipboard
                     copyToClipboard(link).then(ok => {
                         if (ok) showShareFeedback(id, link);
-                        else alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
+                        else alert('Link: ' + link);
                         try { history.replaceState(null, '', link); } catch(_) {}
                     });
-                }
+                });
             } else {
-                // fallback: copy to clipboard and notify user
+                // No Web Share API: copy to clipboard and give feedback
                 copyToClipboard(link).then(ok => {
                     if (ok) showShareFeedback(id, link);
-                    else alert('Não foi possível copiar o link automaticamente. Aqui está: ' + link);
+                    else alert('Link: ' + link);
                     try { history.replaceState(null, '', link); } catch(_) {}
                 });
             }
