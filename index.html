@@ -1518,27 +1518,64 @@
 
         function shareItemById(id, context = {}) {
             const link = buildShareLinkForContext(id, context);
-            copyToClipboard(link).then(ok => {
-                // user feedback: small toast / temporary label (simple alert as fallback)
-                if (ok) {
-                    // small visual temporary indicator near details modal
-                    const modal = document.getElementById('details-modal');
-                    if (modal && !modal.classList.contains('hidden')) {
-                        const btn = document.getElementById(`share-btn-${id}`);
-                        if (btn) {
-                            const prev = btn.innerHTML;
-                            btn.innerText = 'Copiado!';
-                            setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1500);
+
+            // Prefer native share dialog when available
+            if (navigator.share) {
+                try {
+                    navigator.share({
+                        title: 'Confira isso no Lumina',
+                        text: 'Veja este título no Lumina',
+                        url: link
+                    }).then(() => {
+                        // update browser URL without reloading so opening the same tab preserves state
+                        try { history.replaceState(null, '', link); } catch(_) {}
+                    }).catch(async (err) => {
+                        // if user cancels or share fails, fallback to copy
+                        const ok = await copyToClipboard(link);
+                        if (ok) {
+                            showShareFeedback(id, link);
+                        } else {
+                            alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
                         }
-                    } else {
-                        alert('Link copiado: ' + link);
-                    }
-                    // update browser URL without reloading
-                    try { history.replaceState(null, '', link); } catch(_) {}
-                } else {
-                    alert('Não foi possível copiar o link automaticamente. Aqui está: ' + link);
+                        try { history.replaceState(null, '', link); } catch(_) {}
+                    });
+                } catch (e) {
+                    // safety fallback to clipboard
+                    copyToClipboard(link).then(ok => {
+                        if (ok) showShareFeedback(id, link);
+                        else alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
+                        try { history.replaceState(null, '', link); } catch(_) {}
+                    });
                 }
-            });
+            } else {
+                // fallback: copy to clipboard and notify user
+                copyToClipboard(link).then(ok => {
+                    if (ok) showShareFeedback(id, link);
+                    else alert('Não foi possível copiar o link automaticamente. Aqui está: ' + link);
+                    try { history.replaceState(null, '', link); } catch(_) {}
+                });
+            }
+        }
+
+        function showShareFeedback(id, link) {
+            const modal = document.getElementById('details-modal');
+            if (modal && !modal.classList.contains('hidden')) {
+                const btn = document.getElementById(`share-btn-${id}`);
+                if (btn) {
+                    const prev = btn.innerHTML;
+                    btn.innerText = 'Copiado!';
+                    setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1500);
+                } else {
+                    // brief alert if button not found
+                    const t = document.createElement('div');
+                    t.innerText = 'Link copiado!';
+                    document.body.appendChild(t);
+                    setTimeout(() => t.remove(), 1200);
+                }
+            } else {
+                // small non-blocking alert fallback
+                alert('Link copiado: ' + link);
+            }
         }
 
         // on app init, check for share query and open corresponding details (supports s/e for series)
