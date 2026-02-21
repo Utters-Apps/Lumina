@@ -1519,27 +1519,39 @@
         function shareItemById(id, context = {}) {
             const link = buildShareLinkForContext(id, context);
 
-            // If native Web Share is available, try it first. Always fallback to copying the link.
+            // Prefer native share dialog when available
             if (navigator.share) {
-                navigator.share({
-                    title: 'Confira isso no Lumina',
-                    text: 'Veja este título no Lumina',
-                    url: link
-                }).then(() => {
-                    try { history.replaceState(null, '', link); } catch(_) {}
-                }).catch(() => {
-                    // On failure (or user cancel) copy to clipboard
-                    copyToClipboard(link).then(ok => {
-                        if (ok) showShareFeedback(id, link);
-                        else alert('Link: ' + link);
+                try {
+                    navigator.share({
+                        title: 'Confira isso no Lumina',
+                        text: 'Veja este título no Lumina',
+                        url: link
+                    }).then(() => {
+                        // update browser URL without reloading so opening the same tab preserves state
+                        try { history.replaceState(null, '', link); } catch(_) {}
+                    }).catch(async (err) => {
+                        // if user cancels or share fails, fallback to copy
+                        const ok = await copyToClipboard(link);
+                        if (ok) {
+                            showShareFeedback(id, link);
+                        } else {
+                            alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
+                        }
                         try { history.replaceState(null, '', link); } catch(_) {}
                     });
-                });
+                } catch (e) {
+                    // safety fallback to clipboard
+                    copyToClipboard(link).then(ok => {
+                        if (ok) showShareFeedback(id, link);
+                        else alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
+                        try { history.replaceState(null, '', link); } catch(_) {}
+                    });
+                }
             } else {
-                // No Web Share API: copy to clipboard and give feedback
+                // fallback: copy to clipboard and notify user
                 copyToClipboard(link).then(ok => {
                     if (ok) showShareFeedback(id, link);
-                    else alert('Link: ' + link);
+                    else alert('Não foi possível copiar o link automaticamente. Aqui está: ' + link);
                     try { history.replaceState(null, '', link); } catch(_) {}
                 });
             }
@@ -1715,15 +1727,12 @@
                 if (shareBtn) {
                     shareBtn.onclick = (ev) => {
                         ev.stopPropagation();
-                        try {
-                            const hist = state.history['${item.id}'];
-                            if (item.type === 'serie' && hist) {
-                                shareItemById('${item.id}', { season: hist.s, episode: hist.e });
-                            } else {
-                                shareItemById('${item.id}');
-                            }
-                        } catch (e) {
-                            shareItemById('${item.id}');
+                        // use real runtime values (avoid string-template placeholders)
+                        const histLocal = state.history[item.id];
+                        if (item.type === 'serie' && histLocal) {
+                            shareItemById(item.id, { season: histLocal.s, episode: histLocal.e });
+                        } else {
+                            shareItemById(item.id);
                         }
                     };
                 }
