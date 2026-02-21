@@ -1,0 +1,2652 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Lumina | Streaming</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Phosphor Icons (Modern & Clean Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Fonts: Outfit (Headings) & Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        background: '#09090b', // Zinc 950
+                        surface: '#18181b',    // Zinc 900
+                        elevated: '#27272a',   // Zinc 800
+                        accent: '#8b5cf6',     // Violet 500
+                        accentHover: '#7c3aed' // Violet 600
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'scale-in': 'scaleIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        scaleIn: { '0%': { opacity: '0', transform: 'scale(0.95)' }, '100%': { opacity: '1', transform: 'scale(1)' } }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root { color-scheme: dark; }
+        
+        body {
+            background-color: #09090b; color: #fafafa; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent; scroll-behavior: smooth;
+        }
+        
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+        
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(24, 24, 27, 0.65); backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Smooth Images & Hover */
+        img { transition: opacity 0.3s ease-in-out; }
+        img[loading] { opacity: 0; }
+        img.loaded { opacity: 1; }
+
+        .hover-card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease; }
+        .hover-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+
+        /* Favorite button pop animation for feedback */
+        .pop-anim {
+            animation: popAnim 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
+            transform-origin: center center;
+        }
+        @keyframes popAnim {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+            40% { transform: scale(1.18); filter: drop-shadow(0 12px 18px rgba(0,0,0,0.45)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+        }
+
+        /* Minimalist Player Range */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 20px; cursor: pointer; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; transition: height 0.2s;
+        }
+        input[type=range]:hover::-webkit-slider-runnable-track { height: 6px; }
+        input[type=range]::-webkit-slider-thumb {
+            height: 0; width: 0; background: #fff; -webkit-appearance: none; margin-top: 2px; border-radius: 50%; transition: all 0.2s;
+        }
+        input[type=range]:hover::-webkit-slider-thumb { height: 16px; width: 16px; margin-top: -5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+        /* Player Auto-hide */
+        .player-idle { cursor: none !important; }
+        .player-idle .player-ui { opacity: 0; pointer-events: none; transform: translateY(10px); }
+        .player-ui { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* Utilities */
+        .fade-bottom { background: linear-gradient(to top, #09090b 0%, transparent 100%); }
+        .fade-right { background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.8) 50%, transparent 100%); }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* Search Input Animation */
+        .search-input-desktop:focus, .search-input-desktop:not(:placeholder-shown) { width: 180px; padding-left: 8px; }
+
+        /* Prevent scale on hero cover specifically */
+        .hero-cover-no-scale { transition: opacity 0.3s ease-in-out; transform: none !important; }
+
+        /* Desktop refinements */
+        @media (min-width: 768px) {
+            body { font-size: 16px; }
+            nav { transform: translateZ(0); }
+            .hover-card:hover { box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6); }
+            .player-ui { padding-left: 12px; padding-right: 12px; }
+        }
+
+        /* Mobile optimized adjustments */
+        @media (max-width: 767px) {
+            body { font-size: 14px; -webkit-font-smoothing: antialiased; }
+            .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+            .player-ui { padding: 10px; }
+            .hover-card:hover { transform: none; box-shadow: none; }
+            nav, .md\\:hidden { transform: none; }
+
+            /* Mobile: two vertical columns (two stacks) for search and favorites */
+            #search-grid, #fav-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+            /* Ensure session cards span full column width on mobile stacks */
+            #search-grid .session-card, #fav-grid .session-card, .session-wrap .session-card {
+                min-width: unset;
+                width: 100%;
+            }
+            /* Slightly tighter card aspect for stacked mobile lists */
+            #search-grid .aspect-video, #fav-grid .aspect-video { aspect-ratio: 16/9; }
+        }
+
+        /* Tab transition wrapper */
+        #main-content { transition: opacity 300ms cubic-bezier(0.2,0.9,0.2,1), transform 300ms cubic-bezier(0.2,0.9,0.2,1); will-change: opacity, transform; }
+        .tab-exit { opacity: 0; transform: translateY(8px); pointer-events: none; }
+        .tab-enter { opacity: 0; transform: translateY(-8px); }
+        .tab-enter-active { opacity: 1; transform: translateY(0); transition: opacity 300ms cubic-bezier(0.2,0.9,0.2,1), transform 300ms cubic-bezier(0.2,0.9,0.2,1); }
+
+        /* Session horizontal scroller + arrows */
+        .session-row { display: flex; gap: 1rem; align-items: stretch; }
+        .session-scroll { display: flex; gap: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scroll-behavior: smooth; }
+        .session-scroll::-webkit-scrollbar { height: 8px; }
+        .session-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 8px; }
+        .session-card { min-width: 12rem; max-width: 20rem; flex: 0 0 auto; position: relative; overflow: visible; } /* ensures side-by-side cards but constrains size and allows hover overflow */
+
+        .session-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 44px; height: 44px; border-radius: 999px;
+            background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center;
+            color: white; z-index: 30; cursor: pointer; transition: transform 0.18s, background 0.18s, opacity 0.18s;
+            opacity: 0; pointer-events: none;
+        }
+        .session-arrow:hover { transform: translateY(-50%) scale(1.06); background: rgba(255,255,255,0.06); }
+        .session-arrow.left { left: 8px; }
+        .session-arrow.right { right: 8px; }
+
+        /* show arrows on hover in desktop for sessions that support them */
+        .session-wrap:hover .session-arrow { opacity: 1; pointer-events: auto; }
+
+        /* Mobile: show arrows for all sessions and use compact toggles */
+        @media (max-width: 767px) {
+            .session-arrow { opacity: 1; pointer-events: auto; background: rgba(0,0,0,0.6); }
+            .session-card { min-width: 14rem; }
+            /* Collapsible sections on mobile (closed by default except continue)
+               Use max-height transitions and opacity for a subtle open/close animation
+               instead of instantly toggling display. */
+            .session-body {
+                transition: max-height 340ms cubic-bezier(0.2,0.9,0.2,1), opacity 260ms ease, transform 260ms ease;
+                will-change: max-height, opacity, transform;
+                overflow: hidden;
+                max-height: 2000px; /* large default to allow content */
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .mobile-collapsed .session-body {
+                max-height: 0 !important;
+                opacity: 0;
+                transform: translateY(-6px);
+                pointer-events: none;
+            }
+            .mobile-toggle-btn {
+                display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03);
+                padding: 6px 10px; border-radius: 999px; cursor: pointer;
+                transition: background 180ms ease, transform 200ms ease;
+            }
+            .mobile-toggle-btn .caret {
+                transition: transform 260ms cubic-bezier(0.2,0.9,0.2,1);
+                display: inline-block;
+            }
+        }
+
+        /* Small perf: reduce repaint area for hero overlays */
+        .hero-cover-no-scale, .fade-bottom, .fade-right { backface-visibility: hidden; transform-style: preserve-3d; }
+    </style>
+</head>
+<body class="antialiased select-none pb-24 md:pb-0">
+
+    <!-- Desktop Navbar (Floating Pill) -->
+    <nav class="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-40 glass rounded-full px-8 py-3 items-center gap-10 shadow-2xl transition-all duration-300">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('home')">
+            <i class="ph-fill ph-play-circle text-accent text-3xl"></i>
+            <span class="font-display font-bold text-xl tracking-tight text-white">Lumina</span>
+        </div>
+        
+        <div class="flex items-center gap-8">
+            <button onclick="switchTab('home')" id="tab-home-desktop" class="text-white font-medium text-sm transition-colors opacity-100 hover:opacity-100">Início</button>
+            <button onclick="switchTab('favorites')" id="tab-fav-desktop" class="text-white font-medium text-sm transition-colors opacity-50 hover:opacity-100">Minha Lista</button>
+        </div>
+
+        <div class="flex items-center gap-3 pl-4 border-l border-white/10 group">
+            <i class="ph ph-magnifying-glass text-xl text-white/50 group-hover:text-white transition-colors"></i>
+            <input type="text" id="desktop-search" placeholder="Buscar..." class="search-input-desktop bg-transparent border-none text-white text-sm w-0 group-hover:w-[180px] group-hover:pl-2 transition-all duration-300 outline-none placeholder:text-white/30" oninput="handleSearch(this.value)">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-accent to-purple-400 ml-2 shrink-0"></div>
+        </div>
+    </nav>
+
+    <!-- Mobile Bottom Navigation (Floating Pill) -->
+    <div class="md:hidden fixed bottom-6 left-4 right-4 z-40 glass rounded-full px-6 py-3 flex justify-between items-center shadow-2xl pb-safe">
+        <button onclick="switchTab('home')" id="tab-home-mobile" class="flex flex-col items-center gap-1 text-white w-16 transition-all scale-110">
+            <i class="ph-fill ph-house text-2xl mb-0.5"></i>
+            <span class="text-[10px] font-medium">Início</span>
+        </button>
+        <button onclick="switchTab('search')" id="tab-search-mobile" class="flex flex-col items-center gap-1 text-white/40 hover:text-white w-16 transition-all">
+            <i class="ph ph-magnifying-glass text-2xl mb-0.5"></i>
+            <span class="text-[10px] font-medium">Buscar</span>
+        </button>
+        <button onclick="switchTab('favorites')" id="tab-fav-mobile" class="flex flex-col items-center gap-1 text-white/40 hover:text-white w-16 transition-all">
+            <i class="ph ph-bookmark-simple text-2xl mb-0.5"></i>
+            <span class="text-[10px] font-medium">Lista</span>
+        </button>
+    </div>
+
+    <!-- Main Content Area -->
+    <main id="main-content" class="min-h-screen relative"></main>
+
+    <!-- Details Modal (Cinematic Takeover) -->
+    <div id="details-modal" class="fixed inset-0 z-50 bg-background hidden overflow-y-auto overflow-x-hidden opacity-0 transition-opacity duration-500">
+        <div id="details-content" class="w-full min-h-screen relative pb-24"></div>
+    </div>
+
+    <!-- Minimalist Player Pro -->
+    <div id="player-modal" class="fixed inset-0 z-[60] bg-black hidden flex-col transition-opacity duration-500 opacity-0">
+        <div id="custom-player-container" class="relative w-full h-full flex items-center justify-center overflow-hidden bg-black">
+            <!-- video or embed container -->
+            <div id="player-media-wrapper" class="w-full h-full flex items-center justify-center"></div>
+            
+            <div id="player-loading" class="absolute inset-0 flex items-center justify-center bg-black/40 z-10 hidden">
+                <i class="ph ph-spinner-gap text-5xl text-white animate-spin"></i>
+            </div>
+
+            <!-- Next Episode Prompt -->
+            <div id="next-ep-prompt" class="absolute bottom-24 right-6 md:right-10 z-20 glass rounded-2xl p-3 flex items-center gap-4 hidden opacity-0 translate-y-4 transition-all duration-500 shadow-2xl max-w-sm">
+                <div class="w-20 aspect-video rounded-lg bg-elevated overflow-hidden shrink-0 relative">
+                    <img id="next-ep-img" src="" class="w-full h-full object-cover opacity-80" onload="this.classList.add('loaded')">
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                    <span class="text-[10px] text-accent font-semibold uppercase tracking-wider">A seguir</span>
+                    <h4 id="next-ep-title" class="text-white font-medium text-sm truncate">Título</h4>
+                    <span class="text-[11px] text-white/50 mt-0.5">Iniciando em breve...</span>
+                </div>
+                <div class="flex items-center gap-2 border-l border-white/10 pl-3">
+                    <button onclick="playNextEpisode()" class="w-10 h-10 rounded-full bg-white text-black hover:bg-gray-200 flex items-center justify-center transition-colors">
+                        <i class="ph-fill ph-play text-lg"></i>
+                    </button>
+                    <button onclick="dismissNextEp()" class="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-white flex items-center justify-center transition-colors">
+                        <i class="ph ph-x"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Player UI -->
+            <div class="player-ui absolute inset-0 flex flex-col justify-between z-10 pointer-events-none">
+                <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-black/80 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black/90 to-transparent"></div>
+
+                <div class="flex justify-between items-center w-full pt-8 px-8 relative pointer-events-auto">
+                    <button onclick="closePlayer()" class="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white">
+                        <i class="ph ph-arrow-left text-xl"></i>
+                    </button>
+                    <div class="flex flex-col items-center max-w-[60%] text-center">
+                        <h2 id="player-series-title" class="text-white/60 text-xs font-semibold tracking-wide uppercase hidden md:block mb-1">Série</h2>
+                        <h1 id="player-ep-title" class="text-white font-display font-medium text-lg md:text-xl truncate w-full">Episódio</h1>
+                    </div>
+                    <div class="w-10"></div>
+                </div>
+
+                <div class="flex-1 flex items-center justify-center gap-24 relative w-full h-full pointer-events-auto" id="player-center-zone">
+                    <button onclick="skipVideo(-10)" class="text-white/40 hover:text-white transition-colors p-4 hidden md:flex flex-col items-center hover:scale-110">
+                        <i class="ph-fill ph-clock-counter-clockwise text-4xl"></i>
+                    </button>
+                    <button onclick="togglePlay()" id="center-play-btn" class="w-20 h-20 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-3xl transition-all hover:scale-105">
+                        <i class="ph-fill ph-play"></i>
+                    </button>
+                    <button onclick="skipVideo(10)" class="text-white/40 hover:text-white transition-colors p-4 hidden md:flex flex-col items-center hover:scale-110">
+                        <i class="ph-fill ph-clock-clockwise text-4xl"></i>
+                    </button>
+                </div>
+
+                <div class="w-full pb-8 px-6 md:px-10 flex flex-col gap-3 relative pointer-events-auto">
+                    <div class="flex items-center gap-4 w-full group/progress">
+                        <span id="time-current" class="text-xs font-medium text-white/80 w-10 text-right">00:00</span>
+                        <div class="flex-1 relative flex items-center h-4">
+                            <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1" class="absolute inset-0 z-10 w-full opacity-0 hover:opacity-100 cursor-pointer">
+                            <div class="w-full h-1 bg-white/20 rounded-full overflow-hidden pointer-events-none transition-all group-hover/progress:h-1.5">
+                                <div id="progress-fill" class="h-full bg-white w-0 relative"></div>
+                            </div>
+                        </div>
+                        <span id="time-duration" class="text-xs font-medium text-white/50 w-10">00:00</span>
+                    </div>
+
+                    <div class="flex justify-between items-center w-full mt-1">
+                        <div class="flex items-center gap-6">
+                            <button onclick="togglePlay()" id="bottom-play-btn" class="text-white hover:text-accent transition-colors">
+                                <i class="ph-fill ph-play text-2xl"></i>
+                            </button>
+                            <div class="hidden md:flex items-center gap-3 group/vol">
+                                <button onclick="toggleMute()" id="mute-btn" class="text-white hover:text-accent transition-colors">
+                                    <i class="ph-fill ph-speaker-high text-xl"></i>
+                                </button>
+                                <input type="range" id="volume-bar" min="0" max="1" step="0.05" value="1" class="w-0 group-hover/vol:w-20 opacity-0 group-hover/vol:opacity-100 transition-all duration-300 origin-left">
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-6">
+                            <div class="relative group/speed">
+                                <button class="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md transition-colors" id="speed-btn">1x</button>
+                                <div class="absolute bottom-full right-0 mb-2 glass rounded-xl p-1.5 hidden group-hover/speed:flex flex-col w-20">
+                                    <button onclick="setSpeed(0.5)" class="text-xs font-medium text-white hover:bg-white/10 py-2 rounded-lg">0.5x</button>
+                                    <button onclick="setSpeed(1)" class="text-xs font-medium text-accent bg-white/5 py-2 rounded-lg">1x</button>
+                                    <button onclick="setSpeed(1.5)" class="text-xs font-medium text-white hover:bg-white/10 py-2 rounded-lg">1.5x</button>
+                                    <button onclick="setSpeed(2)" class="text-xs font-medium text-white hover:bg-white/10 py-2 rounded-lg">2x</button>
+                                </div>
+                            </div>
+                            <button onclick="toggleFullscreen()" class="text-white hover:text-white/70 transition-colors">
+                                <i class="ph ph-corners-out text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orientation Lock (Mobile) -->
+    <div id="orientation-modal" class="fixed inset-0 z-[70] bg-background/95 backdrop-blur-xl hidden flex-col items-center justify-center px-8 text-center transition-opacity">
+        <div class="w-24 h-24 rounded-3xl glass flex items-center justify-center mb-6">
+            <i class="ph ph-device-mobile-camera text-4xl text-white animate-[spin_2s_infinite_ease-in-out]"></i>
+        </div>
+        <h3 class="font-display text-2xl font-semibold text-white mb-2">Gire seu dispositivo</h3>
+        <p class="text-white/60 text-sm max-w-[250px] mb-8">Assista na horizontal para a melhor experiência.</p>
+        <button onclick="cancelPlay()" class="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors">Cancelar</button>
+    </div>
+
+    <script>
+        // --- DATABASE ---
+        const db = [
+            {
+                id: 'espiritos-na-escola',
+                title: 'Espíritos na Escola',
+                type: 'serie',
+                category: 'Mistério / Sobrenatural',
+                year: '2023',
+                cover: 'https://pbs.twimg.com/media/FzKWtbPWABwDiL0.jpg',
+                description: 'Maddie Nears, uma adolescente que morre misteriosamente e fica presa como fantasma em sua escola, junta-se a outros espíritos para investigar sua morte enquanto tenta se comunicar com os vivos.',
+                ageRating: '16',
+                nextEpisodeTrigger: 30,
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://www.dropbox.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm&raw=1" },
+                        { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://www.dropbox.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os&raw=1" },
+                        { id: 's1-e3', title: "Morta e Confusa", url: "https://www.dropbox.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux&raw=1" },
+                        { id: 's1-e4', title: "Intenções Mórbidas", url: "https://www.dropbox.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc&raw=1" },
+                        { id: 's1-e5', title: "O Passado Entra em Campo", url: "https://www.dropbox.com/scl/fi/eajat75t4zeeq1usv7ifa/S_S_1_5_D.mp4?rlkey=dlaqabp1m3g9o2ankaa7okhsk&raw=1" },
+                        { id: 's1-e6', title: "Os Fantasmas se Divertem no Baile", url: "https://www.dropbox.com/scl/fi/1uk571r9d12h0otsasdnp/S_S_1_6_D.mp4?rlkey=xp4z4l5dv4zj210ohyc53fj58&raw=1" },
+                        { id: 's1-e7', title: "A Última Sessão Mediúnica", url: "https://www.dropbox.com/scl/fi/8h4lqdo5f1daf4zxc6yeh/S_S_1_7_D.mp4?rlkey=0bt8rn6wquag21y7iwpaj06r5&raw=1" },
+                        { id: 's1-e8', title: "O Corpo de Madison", url: "https://www.dropbox.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq&raw=1" }
+                    ],
+                    2: [
+                        { id: 's2-e1', title: "O Que Terá Acontecido a Maddie Nears?", url: "https://www.dropbox.com/scl/fi/erfoa38zyjkll3z252pox/SSPRTS_2_1.mp4?rlkey=96tmhe507k8tsqueakqd6b9oo&raw=1" },
+                        { id: 's2-e2', title: "Campo dos Gritos", url: "https://www.dropbox.com/scl/fi/g50i68mjnp63fky9ww2lq/SSPRTS_2_2.mp4?rlkey=6gy3g6laqgwa3qw6s4un9c5qp&raw=1" },
+                        { id: 's2-e3', title: "Mal Posso Assombrar", url: "https://www.dropbox.com/scl/fi/8gcuxbsr0cmm3u8oqmp5r/SSPRTS_2_3.mp4?rlkey=tlsg1vc089sr3oq5d0rk1z9tt&raw=1" },
+                        { id: 's2-e4', title: "Uma Troca de Corpos Para Recordar", url: "https://www.dropbox.com/scl/fi/cka8c8cjwq77a7cyir9h2/SPRTSNSCL_2_4.mp4?rlkey=to8417he1echsb0yyakq4msrb&raw=1" },
+                        { id: 's2-e5', title: "Adivinhe Quem Vem Para Assombrar", url: "https://www.dropbox.com/scl/fi/bo40mxke2dd0ua5j6i2mz/ESPRTSNESCL_2_5.mp4?rlkey=jn1opprduik1yycb33y8hqf78&raw=1" },
+                        { id: 's2-e6', title: "Assombração em Conflito", url: "https://www.dropbox.com/scl/fi/4ad5lshp9nayiyvpd43h1/SCHLSPRTS_2_6.mp4?rlkey=cilch3l3un75nw0cgg0qyl6t2&raw=1" },
+                        { id: 's2-e7', title: "Anatomia de um Abrigo Nuclear", url: "https://www.dropbox.com/scl/fi/pwu7ta12jqnw9atmzgzha/SCHLSPRTS_2_7.mp4?rlkey=9mpeejrebfa90uayg1wzf7gwn&raw=1" },
+                        { id: 's2-e8', title: "Fogo, Fale Comigo", url: "https://www.dropbox.com/scl/fi/8slbpn2laeflspv59k6i4/SCHLSPRT_2_8.mp4?rlkey=m2f8kzp3crv1q07374qpay2gi&raw=1" }
+                    ],
+                    3: [
+                        { id: 's3-e1', title: "É uma Maravilhosa Vida Após a Morte", url: "https://www.dropbox.com/scl/fi/mfbd64a59ylslnn0az6lz/SCHLSPRTS31D.mp4?rlkey=tq0vwqkeqjzzchlp46z06ts0d&raw=1" },
+                        { id: 's3-e2', title: "Fantasmas Malvados", url: "https://www.dropbox.com/scl/fi/md68ne26zj5l2smw94e1y/SCHLSPRTS32D.mp4?rlkey=b27e35a8ybnad8udf9x0h75rz&raw=1" },
+                        { id: 's3-e3', title: "Olhos nos Corredores", url: "https://www.dropbox.com/scl/fi/wg1s89w8orupcg4rmzyk8/SCHLSPRTS33D.mp4?rlkey=fwjxi5vtvsfgtmkw9q9wad6yu&raw=1" },
+                        { id: 's3-e4', title: "O Clube dos Desamparados", url: "https://www.dropbox.com/scl/fi/y52g4ul1ao26a1shif84x/SCHLSPRTS34D.mp4?rlkey=gvjm36rehhxoooe7jku2kvlfp&raw=1" },
+                        { id: 's3-e5', title: "Em Busca da Cicatriz Perdida", url: "https://www.dropbox.com/scl/fi/km38h1xiy6awc4jhv88jb/SCHLSPRTS35D.mp4?rlkey=zqqorxpvkrt94qvclik28pdmb&raw=1" },
+                        { id: 's3-e6', title: "Filhos do Desprezo", url: "https://www.dropbox.com/scl/fi/j1dbnj5olclc2suow7qng/SCHLSPRTS36D.mp4?rlkey=c4or26clmgkxsq7jbi1l4dmr4&raw=1" },
+                        { id: 's3-e7', title: "Meio do Semestre", url: "" },
+                        { id: 's3-e8', title: "O Amanhecer da Deb", url: "" }
+                    ]
+                }
+            },
+            {
+                id: 'diario-banana-1',
+                title: 'Diário de um Banana',
+                type: 'filme',
+                category: 'Comédia / Família',
+                year: '2010',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/53bd6d9c03d61fecdee73974365e26b3276e3b7e2fb93f9319b28eebc1c0fa26._SX1080_FMjpg_.jpg',
+                description: 'Greg Heffley está destinado a grandes coisas, mas primeiro ele precisa sobreviver à coisa mais assustadora e humilhante de todas: o ensino fundamental.',
+                ageRating: '10',
+                id_ep: 'tos-f1',
+                url: 'https://drive.google.com/file/d/1qBGYMGHOShcyS0_meDv35wG4K5nzU28E/preview'
+            },
+            {
+                id: 'diario-banana-2',
+                title: 'Diário de um Banana 2',
+                type: 'filme',
+                category: 'Comédia / Irmãos',
+                year: '2011',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/12bd2a9871c75d6abfddb48638342629f8190b81c3784e15e468eb3c96d53e31._UR1920,1080_.jpg',
+                description: 'De volta às aulas, Greg e seu irmão mais velho Rodrick lidam com suas tentativas hilárias e desajeitadas de se darem bem (ou não).',
+                ageRating: '10',
+                url: 'https://drive.google.com/file/d/1uXk9Zz13N84yXOq-I-bycbMT4RUPoosP/preview'
+            },
+            {
+                id: 'diario-banana-3',
+                title: 'Diário de um Banana 3',
+                type: 'filme',
+                category: 'Comédia / Verão',
+                year: '2012',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/019b2f32-b4d6-7163-9299-3e0e72111f11/compose?aspectRatio=1.78&format=webp&width=1200',
+                description: 'As férias de verão chegaram e Greg quer passar o tempo jogando videogame, mas seu pai tem outros planos para ele.',
+                ageRating: '10',
+                url: 'https://drive.google.com/file/d/17u9eihi4QzkIwzeGatm1pyAbvh8VC774/preview'
+            },
+            {
+                id: 'stranger-things',
+                title: 'Stranger Things',
+                type: 'serie',
+                category: 'Sci-Fi / Terror',
+                year: '2016',
+                cover: 'https://es.hollywoodreporter.com/wp-content/uploads/2025/10/Esto-es-todo-lo-que-sabemos-sobre-la-ultima-temporada-de-Stranger-Things.jpg',
+                description: 'Uma carta de amor aos clássicos sobrenaturais dos anos 80, Stranger Things é a história de um menino que desaparece e de uma cidade que descobre segredos sombrios.',
+                ageRating: '14',
+                ratings: { imdb: 8.7, rottenTomatoes: 91, metascore: 78 },
+                isHero: true,
+                seasons: {
+                    1: [
+                        { title: "O desaparecimento de Will Byers", url: "https://drive.google.com/file/d/1jA0SUmrcvDJSRxTPWRkCh__yPxGXKs2Q/preview" },
+                        { title: "A estranha da Maple Street", url: "https://drive.google.com/file/d/1pglYy77Xa8o0dYr0frDST_wtceovJKB6/preview" },
+                        { title: "Caramba", url: "https://drive.google.com/file/d/1E9BmsgTCviJGsazvx_q0D_qNng1k2Cop/preview" },
+                        { title: "O corpo", url: "https://drive.google.com/file/d/1APURKFILNPvNGAT5Z18Zs2YtNdpnhwWL/preview" },
+                        { title: "A pulga e o acrobata", url: "https://drive.google.com/file/d/1UIRAu43z4qHuTtWxPDvs03mq61OjWpJh/preview" },
+                        { title: "O monstro", url: "https://drive.google.com/file/d/1QQQfaiAdD7inyyRgjWeAnzxKDtxaQmU6/preview" },
+                        { title: "A banheira", url: "https://drive.google.com/file/d/1Nr7BB5TZMUN8FJQJk5Eu81Nz32Ijj9-M/preview" },
+                        { title: "De ponta-cabeça", url: "https://drive.google.com/file/d/1lt6WZmAHr40_ofQ3YI0Ir0WqONMt3sxp/preview" }
+                    ],
+                    2: [
+                        { title: "Mad Max", url: "https://drive.google.com/file/d/1vWObqz3txFCkAsmlF6rP0hnkLXQdYNTg/preview" },
+                        { title: "Gostosura ou travessura", url: "https://drive.google.com/file/d/15LkiyN-XNsKTsKuIinx1lxGEJ6atqEB3/preview" },
+                        { title: "O girino", url: "https://drive.google.com/file/d/1aOYmRWV7aAiuDm7F-L8d2nWPXsnK3u2N/preview" },
+                        { title: "Will, o sábio", url: "https://drive.google.com/file/d/1EbN2px12MOdlv8t3bG1lzW8CHKX19S3f/preview" },
+                        { title: "Dig Dug", url: "https://drive.google.com/file/d/15RS3bamEfRrHxtUgOPgrPbjWQnGCs9K3/preview" },
+                        { title: "O espião", url: "https://drive.google.com/file/d/1eftQ6iiGIegch1OxNC8g_impKYvdvMsx/preview" },
+                        { title: "A irmã perdida", url: "https://drive.google.com/file/d/14go4_qruYL5gVU5MWzwmeLzNR8rFGRrB/preview" },
+                        { title: "O Devorador de Mentes", url: "https://drive.google.com/file/d/1hsJCe8ryMDaz5iHMxF5i9UvRGRJp51gc/preview" },
+                        { title: "O portal", url: "https://drive.google.com/file/d/1KGNzD6d4sLvhpsT0xGGF9Z8gEesGtPFD/preview" }
+                    ],
+                    3: [
+                        { title: "Está me ouvindo, Suzie?", url: "https://drive.google.com/file/d/1XfzDMa5UUXTEGYI7rRor16xMLqns21-S/preview" },
+                        { title: "O caso dos ratos", url: "https://drive.google.com/file/d/1uDZAS0aOjS-bQipiFiGYG0X2zK1Bc3Jt/preview" },
+                        { title: "A salva-vidas desaparecida", url: "https://drive.google.com/file/d/1VpRDqWLTi4QsU01GcNxJrwmKP5MS6Lo5/preview" },
+                        { title: "A prova da sauna", url: "https://drive.google.com/file/d/1IVZ1hfGl8YIeTfGQO5Jp3DJd4jVQeDmj/preview" },
+                        { title: "Os devorados", url: "https://drive.google.com/file/d/1SVXkvGOx2HMa8iS5WCRY8PuoQSA8J6YK/preview" },
+                        { title: "E pluribus unum", url: "https://drive.google.com/file/d/1uam4RJCEYkFGtyinYJ8Ljo-JkHIpSLc1/preview" },
+                        { title: "A mordida", url: "https://drive.google.com/file/d/1JiRmtEHXa83vleGIBTv-1yg_OCIYZaCW/preview" },
+                        { title: "A batalha de Starcourt", url: "https://drive.google.com/file/d/1_F6_qA9MtI7SR9mr3C4CW-wen5i9yu6u/preview" }
+                    ],
+                    4: [
+                        { title: "O Clube Hellfire", url: "https://drive.google.com/file/d/1ZDiFOud9zBnrsegnKCo1oEoW6iBbzCS2/preview" },
+                        { title: "A maldição de Vecna", url: "https://drive.google.com/file/d/1BLh9YesJz1mWYZxFw-EjVM0BRulY305u/preview" },
+                        { title: "O monstro e a super-heroína", url: "https://drive.google.com/file/d/17d7rivkMsdtf8l500URgQGdvMaggSS1k/preview" },
+                        { title: "Querido Billy", url: "https://drive.google.com/file/d/1z_rVv032G7-UXqb45OCtNLpDkVG8Kpq/preview" },
+                        { title: "Projeto Nina", url: "https://drive.google.com/file/d/1OD2KvUHg_9xWMWkbAdh__w5Dau8JFUTS/preview" },
+                        { title: "Mergulho", url: "https://drive.google.com/file/d/1WegNowrQi1EsSQZO7Uz_A3GowbBfH9FO/preview" },
+                        { title: "O massacre no laboratório", url: "https://drive.google.com/file/d/1ipI0psTtKFSw6OcoQiXvFot2koGJW2W0/preview" },
+                        { title: "Papai", url: "https://drive.google.com/file/d/16NS_DpktJW4a7M9aqflF9m7Iv3Z4z0LJ/preview" },
+                        { title: "E o plano de Onze", url: "https://drive.google.com/file/d/1i_qekb-WZTIkkFlRM36FIjHKPjfTZ3Y6/preview" }
+                    ],
+                    5: [
+                        { title: "Missão de resgate", url: "https://drive.google.com/file/d/1xFrwPesQ0zXWoRsBaL9ZIDTPnvVSkkuF/preview" },
+                        { title: "O desaparecimento de Holly Wheeler", url: "https://drive.google.com/file/d/1f7j3ma94atswrsZV9-uSiqPLNeixHrC/preview" },
+                        { title: "A armadilha", url: "https://drive.google.com/file/d/1Um1zw_iXsah4kh3AzDBSOuMek6kbZxI2/preview" },
+                        { title: "Feiticeiro", url: "https://drive.google.com/file/d/1_dBex9phSWyauWp1eoFoRx9AN9i31dPA/preview" },
+                        { title: "Tratamento de choque", url: "https://drive.google.com/file/d/1wvZIvfHngKO8b7yurLrDsPIzX3ijLZHE/preview" },
+                        { title: "A fuga de Camazotz", url: "https://drive.google.com/file/d/15J4JKrp2BVQQCdoQcHU_JnYHOzdNd3qJ/preview" },
+                        { title: "A ponte", url: "https://drive.google.com/file/d/1OzFsVQtKLWbAiXQgF1iGiTzSGuuPRFX0/preview" },
+                        { title: "O mundo direito", url: "https://drive.google.com/file/d/1XSlN4w9H4jsas08jGrMhthBHspHNm3QS/preview" }
+                    ]
+                }
+            },
+            {
+                id: 'divertida-mente-2',
+                title: 'Divertida Mente 2',
+                type: 'filme',
+                category: 'Animação / Família',
+                year: '2024',
+                cover: 'https://cdn.oantagonista.com/uploads/2024/08/Divertida-Mente-2-entra-top-10-de-bilheterias-da-historia.jpg',
+                description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
+                ageRating: '10',
+                url: 'https://drive.google.com/file/d/1-qpXor4EgfGwNzxNmETa3PriyCwLH7SM/preview'
+            },
+            {
+                id: 'heartstopper',
+                title: 'Heartstopper',
+                type: 'serie',
+                category: 'Romance / Drama',
+                year: '2022',
+                cover: 'https://cinepop.com.br/wp-content/uploads/2022/04/AAAABc9YKEuRmNjwiTyK1lFICaN6OQN9MigeTk7JTOlvftA-9pz2hxqPQLPhxavB66sQeDCtP9NYVgmq1MRj8kkuli1WFVwU.jpg',
+                description: 'Nesta história de amadurecimento, os adolescentes Charlie e Nick descobrem que sua amizade improvável pode ser algo a mais.',
+                ageRating: '12',
+                ratings: { imdb: 8.5, rottenTomatoes: 96, metascore: 82 },
+                seasons: {
+                    1: [
+                        { title: "Encontro", url: "https://www.dropbox.com/scl/fi/hngjcsx55y01xa5qit5yy/Epis‑dio.01.mp4?rlkey=6hl0rxem4io4118fc00wjlgq2&raw=1" },
+                        { title: "Crush", url: "https://www.dropbox.com/scl/fi/dltfolwgk6pptsl1lx4jk/Epis‑dio.02.mp4?rlkey=41lzw3p7p1qbq30rv6oud4eje&raw=1" },
+                        { title: "Beijo", url: "https://www.dropbox.com/scl/fi/hr48fa5bxeynq9p24jjvq/Epis-dio.03.mp4?rlkey=sjqdwjqqyzjmbvwf53g7harhu&raw=1" },
+                        { title: "Segredo", url: "https://www.dropbox.com/scl/fi/lqhi6a4ru2vh2wpl5by6y/Epis-dio.04.mp4?rlkey=1wzhsmlmyrsgk88ic19k0oelc&raw=1" },
+                        { title: "Amizade", url: "https://www.dropbox.com/scl/fi/t5do3ztz0v95ad0pcxqvj/Epis-dio.05.mp4?rlkey=1qtqi4buifhnre62et57eeb5f&raw=1" },
+                        { title: "Garotas", url: "https://www.dropbox.com/scl/fi/idxnh4xvzysany1z260on/Epis-dio.06.mp4?rlkey=03e8notm84gvojmdp5knbivqi&raw=1" },
+                        { title: "Bullying", url: "https://www.dropbox.com/scl/fi/l5abe3fa54ofovs66bx4w/Epis-dio.07.mp4?rlkey=ru9qskk96v2uavprilr0p6z0f&raw=1" },
+                        { title: "Namoro", url: "https://www.dropbox.com/scl/fi/z5slaudy4yd3odi0mc31s/Epis-dio.08.mp4?rlkey=yroyahhemiimiz4fidbb4giym&raw=1" }
+                    ],
+                    2: [
+                        { title: "Revelação", url: "https://www.dropbox.com/scl/fi/z6wxqembvpx5re74txwyl/Epis-dio.01-1.mp4?rlkey=7duwphgvio102s6vlc9sgw609&raw=1" },
+                        { title: "Família", url: "https://www.dropbox.com/scl/fi/m2ebxrdm0u5x2todblboy/Epis-dio.02-1.mp4?rlkey=4db0xj9uxla1an618je1sd95s&raw=1" },
+                        { title: "Promessa", url: "https://www.dropbox.com/scl/fi/ti0m6hhzbb3mm1uo6hg2u/Epis-dio.03-1.mp4?rlkey=wc4hvcrodzsd4ooaj96w8jxkv&raw=1" },
+                        { title: "Desafio", url: "https://drive.google.com/file/d/10B6kAjTiAmvIl1UhVgEaUa9R47IQkrDI/preview" },
+                        { title: "Calor", url: "https://drive.google.com/file/d/10BUmeEr9gJNoerUehzUbY756ogWNmC6s/preview" },
+                        { title: "Verdade ou consequência", url: "https://drive.google.com/file/d/10C-ukTNUr_gXzDf3GeV70yF0Oo5Iizo4/preview" },
+                        { title: "Desculpas e arrependimentos", url: "https://drive.google.com/file/d/10DxmTRS53SIwwFD7s0VZOgrljPmV8cFj/preview" },
+                        { title: "Perfeito", url: "https://drive.google.com/file/d/10XYkW1ohpvtS1oaRJAht_gQMyVjzPem7/preview" }
+                    ],
+                    3: [
+                        { title: "Amor", url: "https://watch.brplayer.cc/watch?v=NLE41OIK" },
+                        { title: "Casa", url: "https://watch.brplayer.cc/watch?v=P9JB65OT" },
+                        { title: "Conversa", url: "https://watch.brplayer.cc/watch?v=ZU71AT9C" },
+                        { title: "Jornada", url: "https://watch.brplayer.cc/watch?v=62RD59WG" },
+                        { title: "Inverno", url: "https://watch.brplayer.cc/watch?v=Y3N046BK" },
+                        { title: "Corpo", url: "https://watch.brplayer.cc/watch?v=UATYPSGH" },
+                        { title: "Juntos", url: "https://watch.brplayer.cc/watch?v=01Y92FWG" },
+                        { title: "Separados", url: "https://watch.brplayer.cc/watch?v=LM24A0Z3" }
+                    ]
+                }
+            },
+            {
+                id: 'luca',
+                title: 'Luca',
+                type: 'filme',
+                category: 'Animação / Aventura',
+                year: '2021',
+                cover: 'https://thepausemenucouk.wordpress.com/wp-content/uploads/2021/06/luca-featured-image.jpg?w=1200',
+                description: 'Na Riviera Italiana, uma amizade improvável, mas forte, cresce entre um ser humano e um monstro marinho disfarçado de humano.',
+                ageRating: 'L',
+                url: 'https://drive.google.com/file/d/1k1zHNwZ91U1_-Hc0aYT8awp5U2t-cdcL/preview'
+            },
+            {
+                id: 'soul',
+                title: 'Soul',
+                type: 'filme',
+                category: 'Animação / Drama',
+                year: '2020',
+                cover: 'https://businessisjammin.ca/wp-content/uploads/2021/02/soul-poster-fi-e1573147724188.jpg',
+                description: 'Joe Gardner é um professor de música que recebe a chance de tocar no melhor clube de jazz da cidade, mas um pequeno passo em falso o leva das ruas de Nova York para o Pré-Vida.',
+                ageRating: '10',
+                url: 'https://drive.google.com/file/d/1wixB2432TFKEhWy_N6b374VRHldoUX0b/preview'
+            },
+            {
+                id: 'divertida-mente-1',
+                title: 'Divertida Mente',
+                type: 'filme',
+                category: 'Animação / Família',
+                year: '2015',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/ca2b5ed3-e242-4a43-bc6a-2e02d024471b/compose?aspectRatio=1.78&format=webp&width=1200',
+                description: 'Crescer pode ser uma estrada esburacada, e não é exceção para Riley, que é desarraigada de sua vida no Meio-Oeste quando seu pai começa um novo emprego em São Francisco.',
+                ageRating: 'L',
+                url: 'https://drive.google.com/file/d/1-50I_wADQMMNwc27F8gIwbffkJiptNHS/preview'
+            },
+            {
+                id: 'jujutsu-execucao',
+                title: 'JUJUTSU KAISEN: Execução',
+                type: 'filme',
+                category: 'Animação / Ação',
+                year: '2024',
+                cover: 'https://ingresso-a.akamaihd.net/b2b/production/uploads/article/image/4261/876d18b9b32b961a5ca7f7afe7250834.jpg',
+                description: 'Jujutsu Kaisen: Execução é um filme compilatório que resume o trágico Incidente em Shibuya, onde um véu aprisiona civis e o poderoso Satoru Gojo, levando Yuji Itadori e outros feiticeiros a uma batalha caótica contra maldições, resultando em um Japão dividido em colônias amaldiçoadas e iniciando o mortal Jogo do Abate (Culling Game), com Yuta Okkotsu encarregado de executar Yuji por seus crimes.',
+                ageRating: '18',
+                url: 'https://playerflixapi.com/filme/tt38121182'
+            },
+            {
+                id: 'fnaf-nightmare',
+                title: "Five Nights At Freddy's: O Pesadelo Sem Fim",
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '2023',
+                cover: 'https://ingresso-a.akamaihd.net/b2b/production/uploads/article/image/1856/46d22a5f31d4977a391b2e1a8e9ebc21.jpg',
+                description: 'Mike Schmidt, um segurança noturno problemático que aceita um emprego na abandonada Pizzaria Freddy Fazbear para cuidar de sua irmã mais nova, Abby.',
+                ageRating: '14',
+                url: 'https://playerflixapi.com/filme/tt4589218'
+            },
+            {
+                id: 'fnaf-2',
+                title: "Five Nights At Freddy's 2",
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '2025',
+                cover: 'https://cinepop.com.br/wp-content/uploads/2025/12/fnaf-2-3.jpg',
+                description: '‘Five Nights At Freddy’s 2‘, sequência do maior sucesso da história da Blumhouse, traz Mike, Abby e Vanessa tentando encontrar uma maneira de sobreviver por mais cinco noites quando um novo grupo de animatrônicos sai da pizzaria e causa o caos na cidade.',
+                ageRating: '14',
+                url: 'https://playerflixapi.com/filme/tt30274401'
+            },
+            {
+                id: 'spider-verse-pt',
+                title: 'Homem-Aranha: Através do Aranhaverso',
+                type: 'filme',
+                category: 'Animação / Aventura',
+                year: '2023',
+                cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABbSgv1dDgUpXTDNz6i2tus0qkwMdlkzEV_AdhUVxxIc4EVKTyy-cxtKoSF3O2LjPhoJchs55PbxsQx1Uninvc4_dMz8PmRru0Q6q.jpg?r=7ea',
+                description: 'Miles Morales volta a viajar pelos multiversos para enfrentar novas ameaças e reencontrar aliados e versões alternativas do Homem-Aranha.',
+                ageRating: '10',
+                url: 'https://drive.google.com/file/d/1-dRGD7aePZvgGVXwP-9LjrNiJ6mRR3-8/view?usp=drive_link'
+            },
+            {
+                id: 'topgun-maverick',
+                title: 'Top Gun - Maverick',
+                type: 'filme',
+                category: 'Ação / Drama',
+                year: '2022',
+                cover: 'https://s2-techtudo.glbimg.com/Azg3GDuzrDvDPWFGXUU_HFwDl48=/0x0:1712x1054/924x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2022/v/d/igpA1vTVC6qIq8FdAcIA/topgun.jpg',
+                description: 'Pete "Maverick" Mitchell volta à ativa para treinar uma nova geração de pilotos numa perigosa missão que exige sacrifício e coragem.',
+                ageRating: '12',
+                url: 'https://drive.google.com/file/d/1aI9DwujVad_E6otgWlg8hYrQdTUch_Kw/view?usp=drive_link'
+            },
+            {
+                id: 'spiderman-far-from-home-pt',
+                title: 'Homem-Aranha: Longe de Casa',
+                type: 'filme',
+                category: 'Ação / Aventura',
+                year: '2019',
+                cover: 'https://s2-techtudo.glbimg.com/6ixSt7jyxXN9ci-oLYls8wbcKk0=/0x0:1080x652/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/w/K/fuKxsITtGc8hv1htCkPw/20190628-spiderman001.webp',
+                description: 'Peter Parker viaja pela Europa com amigos, mas logo enfrenta perigos quando novas ameaças interdimensionais aparecem.',
+                ageRating: '10',
+                url: 'https://drive.google.com/file/d/1W2r4WnajcJR3Vwbz1q2yzwmCgt3WANlu/view?usp=sharing'
+            },
+            {
+                id: 'outer-banks',
+                title: 'Outer Banks',
+                type: 'serie',
+                category: 'Aventura / Mistério',
+                year: '2020',
+                cover: 'https://m.media-amazon.com/images/I/71AGTqm7ARL.jpg',
+                description: 'John B e os Pogues enfrentam mistérios, tesouros e perigos enquanto buscam pistas sobre o pai desaparecido.',
+                ageRating: '16',
+                seasons: {
+                    1: [
+                        { title: "Piloto – John B e os Pogues encontram pistas sobre o desaparecimento do pai.", url: "https://www.tokyvideo.com/br/embed/592667" },
+                        { title: "Bússola da Sorte – Uma bússola misteriosa leva a um grande segredo.", url: "https://www.tokyvideo.com/br/embed/640555" },
+                        { title: "Zona Proibida – Um mapa aponta para um navio cheio de ouro.", url: "https://www.tokyvideo.com/br/embed/640559" },
+                        { title: "Espiões – A história de Denmark Tanny vem à tona.", url: "https://www.tokyvideo.com/br/embed/640560" },
+                        { title: "Festa de Verão – Festa, romance e violência se misturam.", url: "https://www.tokyvideo.com/br/embed/640561" },
+                        { title: "Parcela 9 – Os Pogues descobrem o ouro escondido.", url: "https://www.tokyvideo.com/br/embed/640581" },
+                        { title: "Calmaria – Ward revela seu lado sombrio.", url: "https://www.tokyvideo.com/br/embed/640583" },
+                        { title: "A Pista de Pouso – O ouro é roubado e tudo desmorona.", url: "https://www.tokyvideo.com/br/embed/640584" },
+                        { title: "O Campanário – John B vira fugitivo da justiça.", url: "https://www.tokyvideo.com/br/embed/640586" },
+                        { title: "Phantom – John B e Sarah desaparecem no mar.", url: "https://www.tokyvideo.com/br/embed/640591" }
+                    ],
+                    2: [
+                        { title: "O Ouro – John B e Sarah tentam recuperar o tesouro.", url: "" },
+                        { title: "O Roubo – Um plano arriscado contra Ward.", url: "" },
+                        { title: "As Orações – Sarah luta pela vida; alianças mudam.", url: "" },
+                        { title: "A Volta – O passado de Denmark Tanny ressurge.", url: "" },
+                        { title: "A Pior Hora – John B quase é morto na prisão.", url: "" },
+                        { title: "A Escolha – Ward “morre” e segredos vêm à tona.", url: "" },
+                        { title: "A Fogueira – A Cruz de Santo Domingo entra no jogo.", url: "" },
+                        { title: "A Cruz – O tesouro da família de Pope é revelado.", url: "" },
+                        { title: "O Cais – Os Pogues perdem tudo outra vez.", url: "" },
+                        { title: "O Navio – Eles ficam presos em uma ilha deserta.", url: "" }
+                    ],
+                    3: [
+                        { title: "Poguelândia – Os Pogues sobrevivem isolados; Kiara é sequestrada.", url: "https://drive.google.com/file/d/1SkChMiR3ZCEh25UAWcTx_ID6Mln1y-8s/view?usp=drive_link" },
+                        { title: "Os Sinos – John B segue pistas sobre seu pai.", url: "https://drive.google.com/file/d/1pP0otEwgtqdsyoWzYqg5PRqtUbzCW9_8/view?usp=drive_link" },
+                        { title: "Pais e Filhos – O reencontro com Big John.", url: "https://drive.google.com/file/d/1HYjK7Wz9YoCOvWyuMEpkOuCutsDE-Vi7/view?usp=drive_link" },
+                        { title: "O Diário – A obsessão pelo tesouro divide o grupo.", url: "https://drive.google.com/file/d/1iMbw7SJ4VY7wGyy-T0SrYjALKAC58_I7/view?usp=drive_link" },
+                        { title: "Assaltos – A cruz é perdida definitivamente.", url: "https://drive.google.com/file/d/1pUsI0QD72dCIJ25pR8UczXPxflgdDJxg/view?usp=drive_link" },
+                        { title: "A Floresta Escura – Big John cai nas mãos de Singh.", url: "https://drive.google.com/file/d/1I8Mn-uwlM6w2Zg0rVoPdHU_mzn-qR_j8/view?usp=drive_link" },
+                        { title: "Feliz Aniversário – Traições quebram relações.", url: "https://drive.google.com/file/d/1Rzf5Ru76Cjgy5ad7i5nC4vGPF6phoReI/view?usp=drive_link" },
+                        { title: "Tocando o Leme – A casa de John B é incendiada.", url: "https://drive.google.com/file/d/1-fXKnwXPPTtlpY9MH62GSr7cAw0cCVog/view?usp=drive_link" },
+                        { title: "Bem-vindo a Kitty Hawk – Kiara é levada à força.", url: "https://drive.google.com/file/d/1Qs3g-PEmmsazhkMMvkj2vXmU1HJNKZOA/view?usp=drive_link" },
+                        { title: "Segredo do Gnomon – El Dorado é encontrado, mas a um alto custo.", url: "https://drive.google.com/file/d/17jm0GMa3ZhbyB3Ch-88rOyHoRllmSRXk/view?usp=drive_link" }
+                    ],
+                    4: [
+                        { title: "O Enduro – Os Pogues tentam investir no futuro, mas uma aposta arriscada muda tudo.", url: "https://drive.google.com/file/d/14rYUl651ki8T6qGHANWvH1RVLjKjngdq/view?usp=drive_link" },
+                        { title: "Barba Negra – Uma lenda amaldiçoada leva os Pogues a uma nova busca perigosa.", url: "https://drive.google.com/file/d/1579vsYslRkCcTq8ZVYrtBGnBR3NLD_3t/view?usp=drive_link" },
+                        { title: "Corsários – Segredos, interrogatórios e um artefato misterioso entram em jogo.", url: "https://drive.google.com/file/d/15GY-JX1LFnj4sLFn5kdkKz62BKUFG02qBbNvDy/view?usp=drive_link" },
+                        { title: "O Swell – Tensões aumentam durante o maior swell do ano.", url: "https://drive.google.com/file/d/15KB80PTeWz4jSTC63O_lWRUmGrmQ5Fdh/view?usp=drive_link" },
+                        { title: "Albatross – Uma carta misteriosa aponta o caminho para Charleston.", url: "https://drive.google.com/file/d/15dUHqKkug0nEm1Aj9JHiBU1zBvdgaa9B/view?usp=drive_link" },
+                        { title: "Prefeitura – Revelações do passado e alianças colocam tudo em risco.", url: "https://drive.google.com/file/d/1wzgw58XehxytfaBfsMABc5k0LQcz8Vr9/view?usp=drive_link" },
+                        { title: "Mães e Pais – Conflitos familiares e suspeitas perigosas vêm à tona.", url: "https://drive.google.com/file/d/1xBcaBKd19faed8Uy_VBg_xPpvhwPZKjN/view?usp=drive_link" },
+                        { title: "Trama Familiar – Decisões difíceis, segredos expostos e escolhas sem volta.", url: "https://drive.google.com/file/d/1xCo1znXCOnj9582hvXgZnHx5XCF6oALz/view?usp=drive_link" },
+                        { title: "Tempestade – Fugindo da polícia, os Pogues recebem ajuda inesperada.", url: "https://drive.google.com/file/d/1xEBpYR4Oz7dk1QKVWdxefN6tP9LtXkTE/view?usp=drive_link" },
+                        { title: "A Coroa Azul – Uma corrida final mortal decide o destino de todos.", url: "https://drive.google.com/file/d/1xFkzMpiCMpYPbRCiKVEsf5eLukrKMRyG/view?usp=drive_link" }
+                    ]
+                }
+            },
+            {
+                id: 'south-park-panderverso',
+                title: 'South Park: Entrando no Panderverso',
+                type: 'filme',
+                category: 'Animação / Comédia',
+                year: '2023',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/a8d4b023bc418eaf7583a9336843c8c0b341d4ceec6d341e3308a293ad8baadf._SX1080_FMjpg_.jpg',
+                description: 'Uma aventura alucinante quando a turma de South Park é lançada por acidente em múltiplos universos paralelos.',
+                ageRating: '16',
+                url: 'https://www.tokyvideo.com/br/embed/639806'
+            },
+            {
+                id: 'it-bem-vindos-a-derry',
+                title: 'IT: Bem-Vindos a Derry',
+                type: 'serie',
+                category: 'Horror / Suspense',
+                year: '2025',
+                cover: 'https://rollingstone.com.br/wp-content/uploads/2025/10/Que-horas-estreia-It-Bem-Vindos-a-Derry-serie-preludio-de-It-A-Coisa.jpg',
+                description: 'A chegada de novos moradores a Derry coincide com acontecimentos estranhos que revelam que algo antigo e maligno voltou a despertar.',
+                ageRating: '18',
+                seasons: {
+                    1: [
+                        { title: 'O Piloto', url: 'https://embedplay.icu/player.php?id=5fd00c3d' },
+                        { title: 'A Coisa na Escuridão', url: 'https://embedplay.icu/player.php?id=210503df' },
+                        { title: 'Agora Você O Vê', url: 'https://embedplay.icu/player.php?id=ef5487b6' },
+                        { title: 'O Grande Aparato Giratório do Funcionamento do Nosso Planeta', url: 'https://embedplay.icu/player.php?id=32082266' },
+                        { title: 'Rua Neibolt, 29', url: 'https://embedplay.icu/player.php?id=ea9d07aa' },
+                        { title: 'Em Nome do Pai', url: 'https://embedplay.icu/player.php?id=0508108d' },
+                        { title: 'O Black Spot', url: 'https://embedplay.icu/player.php?id=72b303b8' },
+                        { title: 'Brasas no Inverno', url: 'https://embedplay.icu/player.php?id=ce186551' }
+                    ]
+                }
+            },
+            {
+                id: 'demon-slayer-infinite-castle',
+                title: 'Demon Slayer: Kimetsu no Yaiba – Castelo Infinito',
+                type: 'filme',
+                category: 'Animação / Ação',
+                year: '2025',
+                cover: 'https://images.justwatch.com/backdrop/333384494/s640/demon-slayer-kimetsu-no-yaiba-infinity-castle',
+                description: 'Tanjiro e seus aliados enfrentam a ameaça dos Dez Lendários Lua para salvar Nezuko e acabar com o reinado de terror dos demônios.',
+                ageRating: '18',
+                url: 'https://drive.google.com/file/d/1NveQ-a7JXkArdeHdedqy_DPPYgF2S3en/view?usp=sharing'
+            },
+            {
+                id: 'round-6',
+                title: 'Round 6',
+                type: 'serie',
+                category: 'Drama / Suspense',
+                year: '2021 - 2025',
+                cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABSlCq3x0mzdgFd1PeYqPTxTE1awDh5jYeAayIIjvZjLBHy971DLaTHBAzWwuYygqn_xscoiBxMtf1LncymZJzkqhYw3M-GBNupEZ.jpg?r=90b',
+                description: 'Centenas de pessoas endividadas aceitam participar de jogos infantis com uma recompensa milionária. O que elas não sabem é que perder significa morrer. À medida que os jogos avançam, alianças, traições e dilemas morais revelam até onde o ser humano é capaz de ir para sobreviver.',
+                ageRating: '18',
+                ratings: { imdb: 8.0 },
+                seasons: {
+                    1: [
+                        { title: "Batatinha Frita 1, 2, 3", url: "https://www.tokyvideo.com/br/embed/635210" },
+                        { title: "Inferno", url: "https://www.tokyvideo.com/br/embed/635240" },
+                        { title: "O Homem do Guarda-Chuva", url: "https://www.tokyvideo.com/br/embed/635259" },
+                        { title: "Fiquem Juntos", url: "https://www.tokyvideo.com/br/embed/635277" },
+                        { title: "Um Mundo Justo", url: "https://www.tokyvideo.com/br/embed/762428" },
+                        { title: "Gganbu", url: "https://www.tokyvideo.com/br/embed/638751" },
+                        { title: "VIPs", url: "https://www.tokyvideo.com/br/embed/762465" },
+                        { title: "O Líder", url: "https://www.tokyvideo.com/br/embed/635532" },
+                        { title: "Um Dia de Sorte", url: "https://www.tokyvideo.com/br/embed/635533" }
+                    ],
+                    2: [
+                        { title: "Pão e Loteria", url: "https://www.tokyvideo.com/br/embed/635551" },
+                        { title: "Festa de Halloween", url: "https://www.tokyvideo.com/br/embed/635549" },
+                        { title: "001", url: "https://www.tokyvideo.com/br/embed/635563" },
+                        { title: "Seis Pernas", url: "https://www.tokyvideo.com/br/embed/635559" },
+                        { title: "Mais um Jogo", url: "https://www.tokyvideo.com/br/embed/635565" },
+                        { title: "O X", url: "https://www.tokyvideo.com/br/embed/635569" },
+                        { title: "Amigos ou Inimigos?", url: "https://www.tokyvideo.com/br/embed/635572" }
+                    ],
+                    3: [
+                        { title: "Chaves e Facas", url: "https://www.tokyvideo.com/br/embed/756099" },
+                        { title: "Noite Estrelada", url: "https://www.tokyvideo.com/br/embed/756102" },
+                        { title: "Não é Culpa Sua", url: "https://www.tokyvideo.com/br/embed/756106" },
+                        { title: "222", url: "https://www.tokyvideo.com/br/embed/756109" },
+                        { title: "○△□", url: "https://www.tokyvideo.com/br/embed/756118" },
+                        { title: "Humanos", url: "https://www.tokyvideo.com/br/embed/756126" }
+                    ]
+                }
+            },
+            {
+                id: 'cassandra',
+                title: 'Cassandra',
+                type: 'serie',
+                category: 'Suspense / Ficção Científica / Thriller',
+                year: '2025',
+                cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABYegZ1f9bs8i9F0Iaf_HlCsnFMo4R8q4d9yq2prSTeuAyVyfRH4T-KVbGDmUQww_Ob9yEtTXdz5hAHq5foCnyVzYNc8H5JF0J94G.jpg?r=077',
+                ageRating: '16',
+                description: 'Uma família recomeça em uma casa inteligente dos anos 1970; ao reativar a assistente de IA chamada Cassandra, eles descobrem que a tecnologia fará de tudo para mantê-los ali.',
+                seasons: {
+                    1: [
+                        { title: 'Recomeço', url: 'https://www.tokyvideo.com/br/embed/667082' },
+                        { title: 'Quem sou eu?', url: 'https://www.tokyvideo.com/br/embed/667076' },
+                        { title: 'Último jogo', url: 'https://www.tokyvideo.com/br/embed/667085' },
+                        { title: 'Brincadeira de criança', url: 'https://www.tokyvideo.com/br/embed/667086' },
+                        { title: 'Você não estará sozinho', url: 'https://www.tokyvideo.com/br/embed/667101' },
+                        { title: 'Feliz Natal', url: 'https://www.tokyvideo.com/br/embed/667105' }
+                    ]
+                }
+            },
+            {
+                id: 'wonka',
+                title: 'Wonka',
+                type: 'filme',
+                category: 'Infantil / Fantasia',
+                year: '2023',
+                duration: '1h 56m',
+                ageRating: '10',
+                cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABRHL8-ZgVngYcZCuSxG5TN3rFyCUMb5JwehnM9rKRA2QFo_pNPR0ZT6rL-oFRRNy2UnnQogXXrmHMYr0FcUuknHYubC-ytMHyEzH.jpg?r=63a',
+                description: 'A origem do excêntrico chocolatier Willy Wonka e sua aventura até se tornar o mestre do chocolate.',
+                url: 'https://www.dropbox.com/scl/fi/gx0kl1kqo7gnyo71poid7/WONKA-drivesdublados.mp4?rlkey=no0w57exdacuaowkps9fkpkis&raw=1'
+            },
+            {
+                id: 'cuphead',
+                title: 'Cuphead: A Série',
+                type: 'serie',
+                category: 'Animação / Comédia / Aventura / Infantil/Familiar',
+                year: '2022',
+                ageRating: '10',
+                cover: 'https://i.ytimg.com/vi/vJBYsEim_yU/maxresdefault.jpg',
+                description: 'Acompanhe as desventuras do impulsivo Cuphead e seu irmão cauteloso Mugman pelas surreais Ilhas Inkwell, enfrentando fantasmas, concursos e até o próprio Diabo com humor inspirado nos desenhos dos anos 1930.',
+                seasons: {
+                    1: [
+                        { title: 'Carna-Mal', url: 'https://www.tokyvideo.com/br/embed/832860' },
+                        { title: 'Mamadeira', url: 'https://www.tokyvideo.com/br/embed/833203' },
+                        { title: 'Ribby e Croaks', url: 'https://www.tokyvideo.com/br/embed/834113' },
+                        { title: 'Cuidado: Frágil', url: 'https://www.tokyvideo.com/br/embed/834342' },
+                        { title: 'Jogando os Dados', url: 'https://www.tokyvideo.com/br/embed/834404' },
+                        { title: 'Fantasmas Não Existem', url: 'https://www.tokyvideo.com/br/embed/834697' },
+                        { title: 'Root Pack', url: 'https://www.tokyvideo.com/br/embed/834721' },
+                        { title: 'Melhor de Suéter', url: 'https://www.tokyvideo.com/br/embed/835062' },
+                        { title: 'Mais Suéter da Próxima Vez', url: 'https://www.tokyvideo.com/br/embed/836274' },
+                        { title: 'Caneco Perigoso', url: 'https://www.tokyvideo.com/br/embed/836622' },
+                        { title: 'Sono Profundo', url: 'https://www.tokyvideo.com/br/embed/837013' },
+                        { title: 'Em Perigo', url: 'https://www.tokyvideo.com/br/embed/837357' }
+                    ],
+                    2: [
+                        { title: 'Fuga da Prisão', url: 'https://www.tokyvideo.com/br/embed/838284' },
+                        { title: 'Encantados e Perigosos', url: 'https://www.tokyvideo.com/br/embed/838622' },
+                        { title: 'Uma Aventura em Alto-Mar', url: 'https://www.tokyvideo.com/br/embed/838659' },
+                        { title: 'Outro Irmão', url: 'https://www.tokyvideo.com/br/embed/838716' },
+                        { title: 'Doce Tentação', url: 'https://www.tokyvideo.com/br/embed/839084' },
+                        { title: 'O Cara do Sorvete', url: 'https://www.tokyvideo.com/br/embed/839620' },
+                        { title: 'Aula de Piano', url: 'https://www.tokyvideo.com/br/embed/840103' },
+                        { title: 'Libere os Demônios!', url: 'https://www.tokyvideo.com/br/embed/841185' },
+                        { title: 'Mortalmente Falidos', url: 'https://www.tokyvideo.com/br/embed/841436' },
+                        { title: 'Por Hoje é Só, Ratinho', url: 'https://www.tokyvideo.com/br/embed/841972' },
+                        { title: 'Diga Xis', url: 'https://www.tokyvideo.com/br/embed/842368' },
+                        { title: 'Perdidos na Floresta', url: 'https://www.tokyvideo.com/br/embed/842422' },
+                        { title: 'Tridente do Diabo', url: 'https://www.tokyvideo.com/br/embed/842701' }
+                    ],
+                    3: [
+                        { title: 'Achado Não é Roubado!', url: 'https://www.tokyvideo.com/br/embed/845210' },
+                        { title: 'Não Abram a Porta', url: 'https://www.tokyvideo.com/br/embed/845357' },
+                        { title: 'Ofuscado', url: '' },
+                        { title: 'Atropelamento', url: '' },
+                        { title: 'Árvore de Natal', url: '' },
+                        { title: 'Um Natal do Diabo', url: '' },
+                        { title: 'Entrega Especial', url: '' },
+                        { title: 'Dado', url: '' },
+                        { title: 'Passeio Divertido', url: '' },
+                        { title: 'Brincando com o Perigo', url: '' },
+                        { title: 'O Diabo e Senhorita Cálice', url: '' }
+                    ]
+                }
+            },
+            {
+                id: 'el-camino',
+                title: 'El Camino: Um Filme de Breaking Bad',
+                originalTitle: 'El Camino: A Breaking Bad Movie',
+                type: 'filme',
+                category: 'Crime / Drama',
+                year: '2019',
+                ageRating: '16',
+                duration: 122,
+                cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABaU6IoT_jX47_a6rnhBYqj5x1UYUIPg-RPIErhVtQtk4nMt3yv6Un0Wz-dPf-WbjYdsqkg-8WdsOxxQbn7kn64hQu8s3urQX4Q-_.jpg?r=efe',
+                description: 'Jesse Pinkman fugindo da polícia e de seus traumas após escapar do cativeiro no final de Breaking Bad, buscando liberdade e um novo recomeço enquanto lida com flashbacks do passado e tenta garantir seu futuro.',
+                // prefer embed in a larger iframe — keep as provided src (will render in iframe)
+                url: '//assistir.biz/iframe/el-camino?player=1'
+            },
+            {
+                id: 'scream-1996',
+                title: 'Pânico',
+                originalTitle: 'Scream (1996)',
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '1996',
+                ageRating: '16',
+                cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABccXgqXjgC0o-ud2hGqkysjV8V0ij3sXQxmmqZ99kxjKx94xoigeHgXolIeIiFQCgolwKcektQP-D30bVrHAl3q2PVwLOleXyUwf.jpg?r=f12',
+                description: 'Em uma pacata cidade da Califórnia, um assassino mascarado fanático por filmes de terror assombra estudantes com telefonemas e violência brutal.',
+                ratings: { imdb: 7.4, rottenTomatoes: 77 },
+                url: 'https://drive.google.com/file/d/1LOZ7dLBCqW5aGdd-ZeqnPD9oQlXfCjUC/view?usp=drive_link'
+            },
+            {
+                id: 'scream-2-1997',
+                title: 'Pânico 2',
+                originalTitle: 'Scream 2 (1997)',
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '1997',
+                ageRating: '14',
+                cover: 'https://static.ndmais.com.br/2022/01/panico-2.jpg',
+                description: 'Dois anos após os assassinatos em Woodsboro, Sidney e seus aliados enfrentam um novo Ghostface numa universidade enquanto tentam reconstruir suas vidas.',
+                ratings: { imdb: 6.3, rottenTomatoes: 82 },
+                url: 'https://drive.google.com/file/d/1yEGI2yX8nwZI9K6qyTvwtMvcNWVVAMhQ/view?usp=drive_link'
+            },
+            {
+                id: 'scream-3-2000',
+                title: 'Pânico 3',
+                originalTitle: 'Scream 3 (2000)',
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '2000',
+                ageRating: '18',
+                cover: 'https://cinepop.com.br/wp-content/uploads/2020/05/p%C3%A2nico-3-1.png',
+                description: 'Sidney é atraída para Hollywood quando um novo Ghostface começa a matar o elenco de um filme baseado nos assassinatos de Woodsboro.',
+                ratings: { imdb: 5.6, rottenTomatoes: 44 },
+                url: 'https://drive.google.com/file/d/1lWid2HnPNskekGH5RnRrQNkQGQNm4g40/view?usp=drive_link'
+            },
+            {
+                id: 'scream-4-2011',
+                title: 'Pânico 4',
+                originalTitle: 'Scream 4 (2011)',
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '2011',
+                ageRating: '16',
+                cover: 'https://cinepop.com.br/wp-content/uploads/2021/04/scream4-cinepop1.jpg',
+                description: 'Quinze anos depois, Sidney retorna a Woodsboro e, ao promover seu livro, enfrenta um novo assassino Ghostface que mira jovens fãs dos antigos crimes.',
+                ratings: { imdb: 6.2, rottenTomatoes: 61 },
+                url: 'https://drive.google.com/file/d/1OMVakVXur6eW4l_azw3wK2FzaBIx1bxd/view?usp=drive_link'
+            },
+            {
+                id: 'scream-5-2022',
+                title: 'Pânico (2022)',
+                originalTitle: 'Scream (2022)',
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '2022',
+                ageRating: '16 anos',
+                cover: 'https://tm.ibxk.com.br/2022/01/13/13093300424066.jpg',
+                description: 'Vinte e cinco anos após os crimes originais, um novo Ghostface persegue um grupo de adolescentes em Woodsboro, reacesando segredos do passado mortal da cidade.',
+                ratings: { imdb: 6.3, rottenTomatoes: 76 },
+                url: 'https://drive.google.com/file/d/1ne_SKq9wJWYfjnYCpM9v7K-q4UodlaDa/view?usp=drive_link'
+            },
+            {
+                id: 'scream-6-2023',
+                title: 'Pânico 6',
+                originalTitle: 'Scream VI (2023)',
+                type: 'filme',
+                category: 'Terror / Suspense',
+                year: '2023',
+                ageRating: '18 anos',
+                cover: 'https://s2-techtudo.glbimg.com/hhNztmkaLms4ZRgVaaFqGgIwzpQ=/0x0:1440x750/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/C/I/XXlufbQK6zXbAijdbRNw/scream-6.webp',
+                description: 'Os sobreviventes deixam Woodsboro e recomeçam em Nova York, mas um novo e mais brutal Ghostface os persegue pela metrópole.',
+                ratings: { imdb: 7.6, rottenTomatoes: 77 },
+                url: 'https://drive.google.com/file/d/1gWY53IfGAnNsIi4p8yvqyHcZGVPrlSVD/view?usp=drive_link'
+            },
+            {
+                id: 'amazing-digital-circus',
+                title: 'O Incrível Circo Digital',
+                originalTitle: 'The Amazing Digital Circus',
+                type: 'serie',
+                category: 'Animação / Humor sombrio / Drama psicológico',
+                year: '2024',
+                cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABeSnycpEtbW-kf4BTjZdqNGjL39YFig-xRNfgSrG9Su1ayXXOhvMLgPsX3V6M-yQItQfqG1oqC-Shaq2_0Ll2OeOEGFaAiWw1OSP.jpg?r=988',
+                description: 'O Incrível Circo Digital acompanha Pomni, uma mulher que, ao usar um headset de realidade virtual, fica presa dentro de um universo digital com temática de circo; a série mistura humor sombrio, surrealismo e drama psicológico enquanto explora identidade e memórias.',
+                ageRating: '12',
+                isYouTubeSeries: true,
+                seasons: {
+                    1: [
+                        { id: 'yt-s1-e1-HwAPLk_sQ3w', title: 'Piloto', duration: 1514, url: 'https://www.youtube.com/embed/HwAPLk_sQ3w' },
+                        { id: 'yt-s1-e2-4ofJpOEXrZs', title: 'Desespero no Desfiladeiro Doce!', duration: 1483, url: 'https://www.youtube.com/embed/4ofJpOEXrZs' },
+                        { id: 'yt-s1-e3-bKjfw77cxeQ', title: 'O Mistério da Mansão Mildenhall', duration: 1400, url: 'https://www.youtube.com/embed/bKjfw77cxeQ' },
+                        { id: 'yt-s1-e4-Q9KWcWKo2T8', title: 'Um Dia a Máscara Cai', duration: 1533, url: 'https://www.youtube.com/embed/Q9KWcWKo2T8' },
+                        { id: 'yt-s1-e5-mOvhHim78YA', title: 'Sem Título', duration: 1533, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
+                        { id: 'yt-s1-e6-mOvhHim78YA-2', title: 'Todos Ganham Armas', duration: 2034, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
+                        { id: 'yt-s1-e7-oaOG1xOk7XY', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' }
+                    ]
+                }
+            }
+        ];
+
+        // --- STATE & LOCAL STORAGE ---
+        let state = {
+            favorites: JSON.parse(localStorage.getItem('lumina_v2_favs')) || [],
+            progress: JSON.parse(localStorage.getItem('lumina_v2_prog')) || {}, 
+            history: JSON.parse(localStorage.getItem('lumina_v2_hist')) || {}, 
+            tab: 'home',
+            searchQuery: '',
+            pendingVideo: null
+        };
+
+        // Small safe DOM utility (named 'doom' per request) to avoid crashes when querying elements
+        const doom = (sel, root = document) => {
+            try { return root.querySelector(sel); } catch (e) { return null; }
+        };
+        const doomAll = (sel, root = document) => {
+            try { return Array.from(root.querySelectorAll(sel)); } catch (e) { return []; }
+        };
+
+        // Debounced + capped localStorage writer to avoid flooding storage and crashing the page.
+        let __saveProgressTimer = null;
+        function saveProgressData() {
+            // debounce frequent writes
+            if (__saveProgressTimer) clearTimeout(__saveProgressTimer);
+            __saveProgressTimer = setTimeout(() => {
+                try {
+                    // Cap stored progress entries to most recent 200 items to prevent unbounded growth
+                    const entries = Object.entries(state.progress || {});
+                    if (entries.length > 200) {
+                        entries.sort((a, b) => {
+                            const ta = (a[1] && a[1].timestamp) || 0;
+                            const tb = (b[1] && b[1].timestamp) || 0;
+                            return tb - ta;
+                        });
+                        const kept = Object.fromEntries(entries.slice(0, 200));
+                        localStorage.setItem('lumina_v2_prog', JSON.stringify(kept));
+                        state.progress = kept;
+                    } else {
+                        localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress));
+                    }
+                    localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history));
+                } catch (e) {
+                    // if storage is full or throws, silently remove oldest keys and try once
+                    try {
+                        const keys = Object.keys(localStorage);
+                        if (keys.length > 0) {
+                            // remove a few less-important keys if present (best-effort)
+                            ['lumina_v2_old_cache', 'lumina_v2_temp'].forEach(k => localStorage.removeItem(k));
+                        }
+                    } catch(_) {}
+                }
+                __saveProgressTimer = null;
+            }, 600);
+        }
+
+        // helper: detect if URL is direct video file (or youtube embed)
+        let __youtubeApiLoaded = false;
+        let __youtubeApiLoading = false;
+        function loadYouTubeAPIIfNeeded() {
+            if(__youtubeApiLoaded || __youtubeApiLoading) return;
+            __youtubeApiLoading = true;
+            var tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            tag.async = true;
+            document.head.appendChild(tag);
+            // The API sets window.onYouTubeIframeAPIReady; we'll mark loaded when available
+            window.onYouTubeIframeAPIReady = function() {
+                __youtubeApiLoaded = true;
+                __youtubeApiLoading = false;
+            };
+        }
+        function isDirectVideo(url) {
+            if(!url) return false;
+            try {
+                const u = url.split('?')[0].toLowerCase();
+                if (/\.(mp4|webm|m3u8|mov|ogg)$/i.test(u)) return true;
+                // treat raw youtube embed links as non-direct (handled specially via YT API elsewhere)
+                return false;
+            } catch (e) { return false; }
+        }
+        function isYouTubeEmbed(url) {
+            if(!url) return false;
+            try {
+                return /youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=/.test(url);
+            } catch(e) { return false; }
+        }
+
+        // --- CORE UI ---
+        // rotating hero index to cycle top highlight periodically
+        let heroIndex = 0;
+        let __heroRotateTimer = null;
+        function init() { 
+            renderView();
+            // handle incoming share links via query string
+            try { handleSharedQuery(); } catch(e) {}
+            // start rotation: change hero every 10s
+            __heroRotateTimer = setInterval(() => {
+                try {
+                    heroIndex = (heroIndex + 1) % db.length;
+                    // if current tab is home, update only hero area for performance
+                    if (state.tab === 'home') updateHeroCard();
+                } catch (e) { /* safe guard */ }
+            }, 10000);
+        }
+
+        // Smooth tab switching with light fade/slide and render debounce to avoid layout thrash
+        let __switchTabTimer = null;
+        function switchTab(tab, clearSearch = true) {
+            if (state.tab === tab && clearSearch) return; // no-op if same tab
+            state.tab = tab;
+
+            if (clearSearch) {
+                state.searchQuery = '';
+                const dSearch = document.getElementById('desktop-search');
+                if (dSearch) dSearch.value = '';
+            }
+
+            // Update Desktop Nav
+            const dTabs = {
+                'home': document.getElementById('tab-home-desktop'),
+                'favorites': document.getElementById('tab-fav-desktop')
+            };
+            Object.keys(dTabs).forEach(k => {
+                if (dTabs[k]) dTabs[k].className = k === tab ? 'text-white font-medium text-sm transition-all' : 'text-white/50 hover:text-white font-medium text-sm transition-all';
+            });
+
+            // Update Mobile Nav
+            const mTabs = {
+                'home': { el: document.getElementById('tab-home-mobile'), icon: 'ph-house' },
+                'search': { el: document.getElementById('tab-search-mobile'), icon: 'ph-magnifying-glass' },
+                'favorites': { el: document.getElementById('tab-fav-mobile'), icon: 'ph-bookmark-simple' }
+            };
+            Object.keys(mTabs).forEach(k => {
+                if (mTabs[k].el) {
+                    const isActive = k === tab;
+                    mTabs[k].el.className = `flex flex-col items-center gap-1 w-16 transition-all ${isActive ? 'text-white scale-110' : 'text-white/40 hover:text-white'}`;
+                    mTabs[k].el.querySelector('i').className = `${isActive ? 'ph-fill' : 'ph'} ${mTabs[k].icon} text-2xl mb-0.5`;
+                }
+            });
+
+            // Animate container out, then render new view and animate in
+            const container = document.getElementById('main-content');
+            if (!container) return;
+
+            // If a previous timer exists, clear it to avoid race conditions
+            if (__switchTabTimer) clearTimeout(__switchTabTimer);
+
+            // start exit animation
+            container.classList.add('tab-exit');
+
+            // after CSS transition, render and animate enter
+            __switchTabTimer = setTimeout(() => {
+                container.classList.remove('tab-exit');
+                container.classList.add('tab-enter');
+                renderView();
+                // force reflow so transition picks up
+                container.getBoundingClientRect();
+                container.classList.add('tab-enter-active');
+
+                // cleanup enter classes after transition
+                setTimeout(() => {
+                    container.classList.remove('tab-enter', 'tab-enter-active');
+                }, 350);
+                if (clearSearch) window.scrollTo({ top: 0, behavior: 'smooth' });
+                __switchTabTimer = null;
+            }, 180);
+        }
+
+        // Debounced search to avoid excessive renders while typing
+        let __searchDebounce = null;
+        function handleSearch(query) {
+            state.searchQuery = query;
+            if (__searchDebounce) clearTimeout(__searchDebounce);
+            __searchDebounce = setTimeout(() => {
+                if (query.trim().length > 0) {
+                    if (state.tab !== 'search') switchTab('search', false);
+                    else renderView();
+                } else {
+                    switchTab('home');
+                }
+                __searchDebounce = null;
+            }, 220);
+        }
+
+        function renderView() {
+            const container = document.getElementById('main-content');
+            container.innerHTML = ''; 
+            try { container.scrollTo({ top: 0, behavior: 'auto' }); } catch(e) { container.scrollTop = 0; }
+            
+            if (state.tab === 'search') {
+                const query = state.searchQuery.toLowerCase();
+                const results = db.filter(item => item.title.toLowerCase().includes(query) || item.category.toLowerCase().includes(query));
+                
+                container.innerHTML = `
+                    <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
+                        
+                        <!-- Mobile Search Input (Visible only on mobile) -->
+                        <div class="relative w-full mb-8 md:hidden">
+                            <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl"></i>
+                            <input type="text" id="mobile-search" placeholder="Buscar filmes e séries..." class="w-full bg-surface border border-white/10 rounded-full py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-accent transition-colors placeholder:text-white/30 text-sm" oninput="handleSearch(this.value)" value="${state.searchQuery}" autofocus>
+                        </div>
+
+                        <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">Busca</h1>
+                        <p class="text-white/50 text-sm mb-8">Resultados para "${state.searchQuery}"</p>
+                        
+                        ${results.length === 0 ? `
+                            <div class="flex flex-col items-center justify-center py-20 text-center">
+                                <i class="ph ph-magnifying-glass text-4xl text-white/20 mb-4"></i>
+                                <h2 class="text-lg font-medium text-white mb-1">Nenhum resultado</h2>
+                                <p class="text-white/50 text-sm">Tente buscar por outro título ou gênero.</p>
+                            </div>
+                        ` : `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" id="search-grid"></div>
+                        `}
+                    </div>
+                `;
+                
+                if(results.length > 0) render16by9CatalogCards(results, document.getElementById('search-grid'));
+                
+                // Focus mobile input if it's rendered
+                const mInput = document.getElementById('mobile-search');
+                if (mInput && window.innerWidth < 768 && !state.searchQuery) mInput.focus();
+
+            } else if (state.tab === 'home') {
+                const continueItems = getContinueWatching();
+                const heroItem = db[heroIndex] || db[0]; 
+                
+                let html = `
+                    <div class="relative w-full h-[75vh] md:h-[85vh] flex items-end pb-12 md:pb-24 pt-32 px-6 md:px-16 animate-fade-in group cursor-pointer" onclick="openDetails('${heroItem.id}')">
+                        <div class="absolute inset-0 bg-surface">
+                            <img src="${heroItem.cover}" class="w-full h-full object-cover opacity-50 hero-cover-no-scale" onload="this.classList.add('loaded')">
+                            <div class="absolute inset-0 fade-right"></div>
+                            <div class="absolute inset-0 fade-bottom"></div>
+                        </div>
+                        
+                        <div class="relative z-10 w-full max-w-2xl">
+                            <span class="inline-block px-3 py-1 mb-4 text-[10px] font-bold tracking-widest uppercase text-black bg-white rounded-sm">${heroItem.type === 'serie' ? 'Série' : 'Filme'}</span>
+                            <h1 class="font-display text-4xl md:text-6xl font-bold text-white mb-4 leading-tight">${heroItem.title}</h1>
+                            <p class="text-white/70 text-sm md:text-base mb-8 line-clamp-3 md:line-clamp-none max-w-xl">${heroItem.description}</p>
+                            
+                            <div class="flex items-center gap-3">
+                                <button onclick="event.stopPropagation(); openDetails('${heroItem.id}')" class="bg-white text-black px-8 py-3.5 rounded-full font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
+                                    <i class="ph-fill ph-play text-lg"></i> Detalhes
+                                </button>
+                                <button onclick="toggleFav(event, '${heroItem.id}')" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                                    <i class="${state.favorites.includes(heroItem.id) ? 'ph-fill ph-check text-accent' : 'ph ph-plus'} text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                if(continueItems.length > 0) {
+                    html += `
+                        <div class="px-6 md:px-16 -mt-10 relative z-20 mb-12 animate-slide-up session-wrap" style="animation-delay: 0.1s">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-display font-medium text-white">Continuar Assistindo</h2>
+                                <!-- mobile toggle omitted for continue (always open on mobile) -->
+                            </div>
+
+                            <div class="relative">
+                                <button class="session-arrow left md:hidden" aria-label="scroll-left" onclick="scrollCards('continue-grid', -1)">
+                                    <i class="ph ph-caret-left text-2xl"></i>
+                                </button>
+                                <div id="continue-grid" class="session-scroll hide-scroll session-body"></div>
+                                <button class="session-arrow right md:hidden" aria-label="scroll-right" onclick="scrollCards('continue-grid', 1)">
+                                    <i class="ph ph-caret-right text-2xl"></i>
+                                </button>
+                            </div>
+
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="px-6 md:px-16 relative z-20 mb-20 animate-slide-up session-wrap ${window.innerWidth <= 767 ? 'mobile-collapsed' : ''}" style="animation-delay: 0.2s" id="section-trends">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-display font-medium text-white">Tendências</h2>
+                            <!-- mobile toggle button -->
+                            <button class="mobile-toggle-btn md:hidden" onclick="toggleSectionMobile('section-trends')">
+                                <i class="ph ph-caret-down text-white/60"></i>
+                                <span class="text-white/70 text-sm">Abrir</span>
+                            </button>
+                        </div>
+
+                        <div class="relative session-body">
+                            <button class="session-arrow left" aria-label="trends-left" onclick="scrollCards('catalog-grid', -1)">
+                                <i class="ph ph-caret-left text-2xl"></i>
+                            </button>
+                            <div id="catalog-grid" class="session-scroll grid-auto-fit"></div>
+                            <button class="session-arrow right" aria-label="trends-right" onclick="scrollCards('catalog-grid', 1)">
+                                <i class="ph ph-caret-right text-2xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML = html;
+
+                if(continueItems.length > 0) renderContinueCards(continueItems, document.getElementById('continue-grid'));
+                render16by9CatalogCards(db, document.getElementById('catalog-grid'));
+
+                // Inject additional curated sessions below Trends (Novidades, Comédias, Recomendados)
+                insertAdditionalSections();
+
+            } else if (state.tab === 'favorites') {
+                const favData = db.filter(item => state.favorites.includes(item.id));
+                container.innerHTML = `
+                    <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
+                        <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-8">Minha Lista</h1>
+                        ${favData.length === 0 ? `
+                            <div class="flex flex-col items-center justify-center py-20 text-center">
+                                <div class="w-20 h-20 rounded-full glass flex items-center justify-center mb-6">
+                                    <i class="ph ph-bookmark-simple text-3xl text-white/30"></i>
+                                </div>
+                                <h2 class="text-xl font-medium text-white mb-2">Sua lista está vazia</h2>
+                                <p class="text-white/50 text-sm">Adicione filmes e séries para assistir mais tarde.</p>
+                            </div>
+                        ` : `
+                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" id="fav-grid"></div>
+                        `}
+                    </div>
+                `;
+                if(favData.length > 0) render16by9CatalogCards(favData, document.getElementById('fav-grid'));
+            }
+        }
+
+        function getContinueWatching() {
+            let items = [];
+            // Films: include direct-video progress (with time) OR embed markers (embed: true) so embeds appear in Continue Watching without durations
+            db.filter(i => i.type === 'filme').forEach(f => {
+                // support both f.id_ep and f.id as keys (use id_ep if present, else id)
+                const filmKey = f.id_ep || f.id;
+                const prog = state.progress[filmKey];
+                if (!prog) return;
+                // If it's an embed marker, include it (no duration/time checks)
+                if (prog.embed) {
+                    items.push({...f, _prog: prog});
+                } else if (prog.time && prog.duration && prog.time > 5 && prog.time < prog.duration - 10) {
+                    items.push({...f, _prog: prog});
+                }
+            });
+            // Series: rely on history for last watched episode; include only if there is a recorded progress or history (for embed we saved history)
+            db.filter(i => i.type === 'serie').forEach(s => {
+                const hist = state.history[s.id];
+                if(hist) {
+                    const epProg = state.progress[hist.epId];
+                    // For embeds, history is enough (we saved history for series embed), but prefer showing progress if available
+                    items.push({...s, _prog: epProg || { timestamp: hist.timestamp }, _hist: hist});
+                }
+            });
+            return items.sort((a,b) => (b._prog.timestamp || 0) - (a._prog.timestamp || 0)).slice(0, 5);
+        }
+
+        function getAgeBadge(rating) {
+            let color = 'bg-surface text-white border border-white/10';
+            if(rating === 'L') color = 'bg-green-600/20 text-green-400 border border-green-600/30';
+            if(rating === '10') color = 'bg-blue-600/20 text-blue-400 border border-blue-600/30';
+            if(rating === '12') color = 'bg-yellow-600/20 text-yellow-400 border border-yellow-600/30';
+            if(rating === '14') color = 'bg-orange-600/20 text-orange-400 border border-orange-600/30';
+            if(['16','18'].includes(rating)) color = 'bg-red-600/20 text-red-400 border border-red-600/30';
+            return `<span class="${color} text-[10px] font-bold px-1.5 py-0.5 rounded-sm">${rating}</span>`;
+        }
+
+        // Horizontal Scroll Cards for "Continue Watching"
+        function renderContinueCards(data, container) {
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'w-64 md:w-80 shrink-0 hover-card cursor-pointer group';
+                card.onclick = () => openDetails(item.id);
+                
+                const pct = Math.min(100, (item._prog.time / item._prog.duration) * 100);
+                const subtitle = item._hist ? `T${item._hist.s} : E${item._hist.e+1}` : 'Continuar filme';
+
+                card.innerHTML = `
+                    <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
+                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-white shadow-lg transform scale-75 group-hover:scale-100 transition-all duration-300">
+                                <i class="ph-fill ph-play text-xl ml-0.5"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10 z-20">
+                            <div class="h-full bg-accent" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
+                        <p class="text-white/50 text-[11px] mt-0.5">${subtitle}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Grid 16:9 Cards for Catalog & Search
+        function render16by9CatalogCards(data, container) {
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'hover-card cursor-pointer group relative';
+                card.onclick = () => openDetails(item.id);
+                
+                card.innerHTML = `
+                    <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
+                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <!-- Play Icon Hover -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-white shadow-lg transform scale-75 group-hover:scale-100 transition-all duration-300">
+                                <i class="ph-fill ph-play text-xl ml-0.5"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            ${getAgeBadge(item.ageRating)}
+                            <p class="text-white/40 text-[11px] truncate">${item.category}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function toggleFav(event, id) {
+            event.stopPropagation();
+            const index = state.favorites.indexOf(id);
+            const becameRemoved = index > -1;
+            if (becameRemoved) state.favorites.splice(index, 1);
+            else state.favorites.push(id);
+            
+            // persist safely and debounce handled elsewhere
+            try { localStorage.setItem('lumina_v2_favs', JSON.stringify(state.favorites)); } catch(e) {}
+            
+            // Visual feedback: animate the button(s)
+            const animateButton = (btn) => {
+                if(!btn) return;
+                btn.classList.remove('pop-anim');
+                // force reflow to restart animation
+                void btn.offsetWidth;
+                btn.classList.add('pop-anim');
+                setTimeout(() => btn.classList.remove('pop-anim'), 420);
+            };
+
+            // Update any fav button inside details modal if open
+            const modal = document.getElementById('details-modal');
+            const isFavNow = state.favorites.includes(id);
+            if (!modal.classList.contains('hidden')) {
+                const favBtn = document.getElementById(`fav-btn-${id}`);
+                if (favBtn) {
+                    favBtn.innerHTML = `<i class="${isFavNow ? 'ph-fill ph-check text-accent' : 'ph ph-plus'} text-xl"></i>`;
+                    animateButton(favBtn);
+                }
+            }
+
+            // Also update global UI (e.g., the nav or lists) by re-rendering smaller part
+            // quick attempt: flip icons where present (cards will re-render on next view, but update visible quick-controls)
+            // find any top-level card buttons with matching id and update
+            const existBtns = document.querySelectorAll(`#fav-btn-${id}`);
+            existBtns.forEach(b => {
+                b.innerHTML = `<i class="${isFavNow ? 'ph-fill ph-check text-accent' : 'ph ph-plus'} text-xl"></i>`;
+                animateButton(b);
+            });
+
+            // if modal is not open, rerender view to update lists
+            if (modal.classList.contains('hidden')) {
+                renderView();
+            }
+        }
+
+        // --- SHARE VIA QUERY STRING ---
+        function buildShareLinkForContext(itemId, context = {}) {
+            // base page url without existing share param
+            const url = new URL(window.location.href);
+            url.searchParams.set('share', itemId);
+            // optionally include season & episode for series context
+            if (context.season != null) url.searchParams.set('s', String(context.season));
+            if (context.episode != null) url.searchParams.set('e', String(context.episode));
+            return url.toString();
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(text);
+                    return true;
+                } else {
+                    // fallback
+                    const ta = document.createElement('textarea');
+                    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                    document.body.appendChild(ta); ta.select();
+                    document.execCommand('copy'); ta.remove();
+                    return true;
+                }
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function shareItemById(id, context = {}) {
+            const link = buildShareLinkForContext(id, context);
+            copyToClipboard(link).then(ok => {
+                // user feedback: small toast / temporary label (simple alert as fallback)
+                if (ok) {
+                    // small visual temporary indicator near details modal
+                    const modal = document.getElementById('details-modal');
+                    if (modal && !modal.classList.contains('hidden')) {
+                        const btn = document.getElementById(`share-btn-${id}`);
+                        if (btn) {
+                            const prev = btn.innerHTML;
+                            btn.innerText = 'Copiado!';
+                            setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1500);
+                        }
+                    } else {
+                        alert('Link copiado: ' + link);
+                    }
+                    // update browser URL without reloading
+                    try { history.replaceState(null, '', link); } catch(_) {}
+                } else {
+                    alert('Não foi possível copiar o link automaticamente. Aqui está: ' + link);
+                }
+            });
+        }
+
+        // on app init, check for share query and open corresponding details (supports s/e for series)
+        function handleSharedQuery() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const shareId = params.get('share');
+                if (!shareId) return;
+                // find matching item by id (or by original id if prefix used)
+                const item = db.find(i => i.id === shareId);
+                if (!item) return;
+                // if there are s/e params, try to set history so "Continuar" points there
+                const s = params.get('s'), e = params.get('e');
+                if (item.type === 'serie' && s != null && e != null) {
+                    // store as history so modal shows appropriate continuation label
+                    state.history[item.id] = { s: parseInt(s,10), e: parseInt(e,10), epId: (item.seasons && item.seasons[s] && item.seasons[s][parseInt(e,10)] && (item.seasons[s][parseInt(e,10)].id || ('url:' + encodeURIComponent(item.seasons[s][parseInt(e,10)].url)))) || null, timestamp: Date.now() };
+                }
+                // open details for item
+                // slight delay to ensure UI is ready
+                setTimeout(() => { openDetails(item.id); }, 260);
+            } catch (e) { /* fail silently */ }
+        }
+
+        // --- DETAILS MODAL ---
+        function openDetails(id) {
+            const item = db.find(i => i.id === id);
+            if (!item) return;
+
+            const modal = document.getElementById('details-modal');
+            const content = document.getElementById('details-content');
+            const isFav = state.favorites.includes(id);
+
+            let playBtnLogic = '';
+            let playBtnText = 'Assistir';
+            let progressPct = 0;
+            
+            // prepare play parameters as real variables (avoid executing string-built code)
+            let urlToPlay = '';
+            let titleToPlay = '';
+            let ctxObj = null;
+
+            if (item.type === 'filme') {
+                // some films use id_ep while others use id — use id_ep if present, otherwise fallback to item.id
+                const filmKey = item.id_ep || item.id;
+                const prog = state.progress[filmKey];
+                if(prog && prog.time > 5 && prog.time < prog.duration - 5) {
+                    playBtnText = 'Continuar';
+                    progressPct = (prog.time / prog.duration) * 100;
+                }
+                // For films adapt: if link is not direct video then pass it as embed
+                urlToPlay = item.url;
+                titleToPlay = item.title;
+                // ensure the context uses the same key that saveProgressData and player use
+                // ensure we always have a stable id for progress storage: prefer filmKey, otherwise derive from URL
+                ctxObj = { type: 'filme', id: filmKey || ('url:' + encodeURIComponent(item.url || '')), trigger: 0, url: item.url };
+            } else {
+                const hist = state.history[item.id];
+                let sToPlay = hist ? hist.s : '1';
+                let eToPlay = hist ? hist.e : 0;
+                // ensure season and episode exist safely
+                const seasonArr = item.seasons && item.seasons[sToPlay] ? item.seasons[sToPlay] : [];
+                const ep = seasonArr[eToPlay] || seasonArr[0] || { id: '', title: '', url: '' };
+
+                const prog = state.progress[ep.id];
+                if(prog && prog.time > 5 && prog.time < prog.duration - 5) progressPct = (prog.time / prog.duration) * 100;
+                if(hist) playBtnText = `Continuar T${sToPlay}:E${eToPlay+1}`;
+
+                const nextE = (seasonArr && eToPlay + 1 < seasonArr.length) ? seasonArr[eToPlay+1] : null;
+                const nextContext = nextE && nextE.url ? { url: nextE.url, title: `T${sToPlay}:E${eToPlay+2} - ${nextE.title}`, s: sToPlay, e: eToPlay+1 } : null;
+                urlToPlay = ep.url;
+                titleToPlay = `T${sToPlay}:E${eToPlay+1} - ${ep.title}`;
+                // if episode lacks an explicit id (some entries are empty), fall back to a URL-derived key so progress is tracked
+                ctxObj = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: sToPlay, episode: eToPlay, id: (ep.id || ('url:' + encodeURIComponent(ep.url || ''))), trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url };
+            }
+
+            content.innerHTML = `
+                <button id="close-details-btn" class="fixed top-6 right-6 z-[100] w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                    <i class="ph ph-x text-lg"></i>
+                </button>
+
+                <div class="relative w-full h-[60vh] bg-surface">
+                    <img src="${item.cover}" class="absolute inset-0 w-full h-full object-cover opacity-50 hero-cover-no-scale" onload="this.classList.add('loaded')">
+                    <div class="absolute inset-0 fade-bottom"></div>
+                </div>
+
+                <!-- Info block: on desktop keep it in-flow (relative) to avoid overlay clipping/position bugs; mobile still stacks -->
+                <div class="md:relative md:bottom-auto md:left-auto md:w-full md:p-16 p-6 relative z-10">
+                    <div class="max-w-3xl md:mx-16 animate-slide-up bg-transparent">
+                        <h1 class="font-display text-4xl md:text-5xl font-bold text-white mb-3">${item.title}</h1>
+                        
+                        <div class="flex items-center gap-3 text-sm font-medium text-white/60 mb-6">
+                            ${getAgeBadge(item.ageRating)}
+                            <span>${item.year}</span>
+                            <span>•</span>
+                            <span>${item.category}</span>
+                        </div>
+
+                        <p class="text-white/80 text-sm md:text-base leading-relaxed mb-8 font-light">${item.description}</p>
+                        
+                        <div class="flex items-center gap-4">
+                            ${item.type === 'filme' || (item.type === 'serie' && item.seasons && item.seasons['1'] && item.seasons['1'][0] && item.seasons['1'][0].url) ? `
+                                <button id="play-btn-${item.id}" class="bg-white text-black px-8 py-3 rounded-full font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center gap-2 relative overflow-hidden group">
+                                    <i class="ph-fill ph-play text-lg"></i> ${playBtnText}
+                                    ${progressPct > 0 ? `
+                                        <div class="absolute bottom-0 left-0 h-1 bg-black/20 w-full">
+                                            <div class="h-full bg-accent" style="width: ${progressPct}%"></div>
+                                        </div>
+                                    ` : ''}
+                                </button>
+                            ` : ''}
+                            <button id="fav-btn-${item.id}" onclick="toggleFav(event, '${item.id}')" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                                <i class="${isFav ? 'ph-fill ph-check text-accent' : 'ph ph-plus'} text-xl"></i>
+                            </button>
+                            <button id="share-btn-${item.id}" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors" title="Compartilhar">
+                                <i class="ph ph-share-network text-xl"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 md:px-16 pt-8 max-w-5xl mx-auto">
+                    ${item.type === 'serie' ? generateSeasonsHTML(item) : '<div class="h-20"></div>'}
+                </div>
+            `;
+
+            // ensure details content scrolls to top when opened
+            try { const detailsEl = document.getElementById('details-content'); if (detailsEl) detailsEl.scrollTo({ top: 0, behavior: 'auto' }); } catch(e) { if (detailsEl) detailsEl.scrollTop = 0; }
+            // attach close handler safely using doom
+            const closeBtn = doom(`#close-details-btn`);
+            if (closeBtn) closeBtn.onclick = closeDetails;
+
+            // attach play handler lazily (only exposing the url when user clicks)
+            const playBtn = doom(`#play-btn-${item.id}`);
+            if (playBtn) {
+                playBtn.addEventListener('click', (ev) => {
+                    ev.stopPropagation();
+                    try {
+                        // call requestPlay using the prepared variables (closure) to avoid string-eval issues
+                        if (typeof urlToPlay === 'string' && urlToPlay.trim() !== '') {
+                            requestPlay(urlToPlay, titleToPlay || item.title, ctxObj);
+                        }
+                    } catch (e) { /* safe guard */ }
+                });
+            }
+
+            // attach share handler programmatically to avoid inline JS referencing local "item" in global scope
+            try {
+                const shareBtn = doom(`#share-btn-${item.id}`);
+                if (shareBtn) {
+                    shareBtn.onclick = (ev) => {
+                        ev.stopPropagation();
+                        try {
+                            const hist = state.history['${item.id}'];
+                            if (item.type === 'serie' && hist) {
+                                shareItemById('${item.id}', { season: hist.s, episode: hist.e });
+                            } else {
+                                shareItemById('${item.id}');
+                            }
+                        } catch (e) {
+                            shareItemById('${item.id}');
+                        }
+                    };
+                }
+            } catch(e) { /* silent */ }
+
+            document.body.style.overflow = 'hidden';
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+        }
+
+        function generateSeasonsHTML(item) {
+            // Render minimal season UI, do NOT preload episodes. Episodes are loaded on demand when user selects a season.
+            const seasonsList = Object.keys(item.seasons);
+            const hist = state.history[item.id];
+            const activeSeason = hist ? hist.s.toString() : seasonsList[0];
+
+            // Each option triggers loadSeason which will populate episodes only when requested.
+            let html = `
+                <div class="animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-display text-xl font-medium text-white">Episódios</h3>
+                        <div class="relative">
+                            <select id="season-select-${item.id}" class="bg-elevated text-white text-sm font-medium rounded-lg px-4 py-2 pr-10 outline-none appearance-none cursor-pointer border border-white/5 hover:border-white/10 transition-colors">
+                                ${seasonsList.map(s => `<option value="${s}" ${s === activeSeason ? 'selected' : ''}>Temporada ${s}</option>`).join('')}
+                            </select>
+                            <i class="ph ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-white/50 pointer-events-none"></i>
+                        </div>
+                    </div>
+                    <div id="episodes-container-${item.id}" class="flex flex-col gap-3 pb-12"></div>
+                </div>
+            `;
+
+            // Attach a tiny deferred listener to load the active season only when the modal is visible and stable
+            setTimeout(() => {
+                const select = doom(`#season-select-${item.id}`);
+                if (!select) return;
+                // load the currently active season once
+                loadSeason(item.id, activeSeason);
+                select.onchange = (e) => loadSeason(item.id, e.target.value);
+            }, 80);
+
+            return html;
+        }
+
+        // Load episodes for a specific season on-demand; this reduces DB and memory pressure.
+        function loadSeason(itemId, seasonNum) {
+            const item = db.find(i => i.id === itemId);
+            if (!item) return;
+            const episodes = item.seasons[seasonNum] || [];
+            const container = doom(`#episodes-container-${itemId}`);
+            if(!container) return;
+
+            // Build episode list lazily (images set with loading=lazy)
+            container.innerHTML = episodes.map((ep, index) => {
+                const isAvailable = ep.url && ep.url.trim() !== '';
+                const prog = state.progress[ep.id];
+                const pct = prog ? Math.min(100, (prog.time / prog.duration) * 100) : 0;
+                
+                const nextE = index + 1 < episodes.length ? episodes[index+1] : null;
+                const nextContext = nextE && nextE.url ? { url: nextE.url, title: `T${seasonNum}:E${index+2} - ${nextE.title}`, s: seasonNum, e: index+1 } : null;
+                const ctx = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: seasonNum, episode: index, id: ep.id, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url };
+                const ctxStr = JSON.stringify(ctx).replace(/"/g, '&quot;');
+                const titleStr = `T${seasonNum}:E${index+1} - ${ep.title.replace(/'/g, "\\'")}`;
+
+                return `
+                    <div onclick="${isAvailable ? `requestPlay('${ep.url}', '${titleStr}', ${ctxStr})` : ''}" 
+                         class="group flex gap-4 p-3 rounded-2xl transition-colors duration-300 ${isAvailable ? 'cursor-pointer hover:bg-elevated' : 'opacity-50'}">
+                        
+                        <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-surface shrink-0 border border-white/5">
+                            <img loading="lazy" decoding="async" src="${item.cover}" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                ${isAvailable ? `
+                                    <div class="w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity scale-90 group-hover:scale-100 shadow-md">
+                                        <i class="ph-fill ph-play text-white"></i>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            ${pct > 0 ? `
+                                <div class="absolute bottom-0 left-0 w-full h-1 bg-black/40">
+                                    <div class="h-full bg-accent" style="width: ${pct}%"></div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="text-white font-medium text-sm md:text-base truncate pr-4">${index+1}. ${ep.title}</h4>
+                                ${pct > 90 ? '<i class="ph-fill ph-check-circle text-white/30 text-lg"></i>' : ''}
+                            </div>
+                            <span class="text-xs text-white/40">Episódio ${index+1}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function changeSeason(itemId, seasonNum) {
+            const item = db.find(i => i.id === itemId);
+            const episodes = item.seasons[seasonNum];
+            const container = document.getElementById('episodes-container');
+            if(!container) return;
+
+            container.innerHTML = episodes.map((ep, index) => {
+                const isAvailable = ep.url && ep.url.trim() !== '';
+                const prog = state.progress[ep.id];
+                const pct = prog ? Math.min(100, (prog.time / prog.duration) * 100) : 0;
+                
+                const nextE = index + 1 < episodes.length ? episodes[index+1] : null;
+                const nextContext = nextE && nextE.url ? { url: nextE.url, title: `T${seasonNum}:E${index+2} - ${nextE.title}`, s: seasonNum, e: index+1 } : null;
+                const ctx = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: seasonNum, episode: index, id: ep.id, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url };
+                const ctxStr = JSON.stringify(ctx).replace(/"/g, '&quot;');
+                const titleStr = `T${seasonNum}:E${index+1} - ${ep.title.replace(/'/g, "\\'")}`;
+
+                return `
+                    <div onclick="${isAvailable ? `requestPlay('${ep.url}', '${titleStr}', ${ctxStr})` : ''}" 
+                         class="group flex gap-4 p-3 rounded-2xl transition-colors duration-300 ${isAvailable ? 'cursor-pointer hover:bg-elevated' : 'opacity-50'}">
+                        
+                        <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-surface shrink-0 border border-white/5">
+                            <img src="${item.cover}" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                ${isAvailable ? `
+                                    <div class="w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity scale-90 group-hover:scale-100 shadow-md">
+                                        <i class="ph-fill ph-play text-white"></i>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            ${pct > 0 ? `
+                                <div class="absolute bottom-0 left-0 w-full h-1 bg-black/40">
+                                    <div class="h-full bg-accent" style="width: ${pct}%"></div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-1">
+                                <h4 class="text-white font-medium text-sm md:text-base truncate pr-4">${index+1}. ${ep.title}</h4>
+                                ${pct > 90 ? '<i class="ph-fill ph-check-circle text-white/30 text-lg"></i>' : ''}
+                            </div>
+                            <span class="text-xs text-white/40">Episódio ${index+1}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function closeDetails() {
+            const modal = document.getElementById('details-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Unload details content and any attached listeners to free memory
+                const content = document.getElementById('details-content');
+                if (content) {
+                    // Remove season select listeners if any
+                    doomAll('select[id^="season-select-"]', content).forEach(s => { s.onchange = null; });
+                    content.innerHTML = '';
+                }
+                // Remove any pending references
+                state.pendingVideo = null;
+                document.body.style.overflow = '';
+                renderView(); 
+            }, 500);
+        }
+
+        // --- PLAYER LOGIC (supports direct video files and embed URLs) ---
+        function requestPlay(url, title, context) {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (window.innerWidth <= 768 && isPortrait) {
+                state.pendingVideo = { url, title, context };
+                const modal = document.getElementById('orientation-modal');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                window.addEventListener('resize', handleOrientation);
+            } else {
+                openPlayer(url, title, context);
+            }
+        }
+
+        function handleOrientation() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (!isPortrait && state.pendingVideo) {
+                cancelPlay(false); 
+                openPlayer(state.pendingVideo.url, state.pendingVideo.title, state.pendingVideo.context);
+                state.pendingVideo = null;
+            }
+        }
+
+        function cancelPlay(clear = true) {
+            if(clear) state.pendingVideo = null;
+            const modal = document.getElementById('orientation-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+            window.removeEventListener('resize', handleOrientation);
+        }
+
+        const player = {
+            vid: null, iframe: null, uiTimeout: null, saveInterval: null, context: null, nextPromptShown: false, isSeeking: false, isEmbed: false, preferredRate: 1,
+            
+            init: function(url, title, context) {
+                this.context = context; this.nextPromptShown = false; this.isSeeking = false;
+                const modal = document.getElementById('player-modal');
+                modal.classList.remove('hidden'); modal.classList.add('flex');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                document.body.style.overflow = 'hidden';
+
+                const wrapper = document.getElementById('player-media-wrapper');
+                wrapper.innerHTML = ''; // clear previous
+
+                this.isEmbed = !isDirectVideo(url);
+
+                // If it's an embed, attempt to detect YouTube and use the YT IFrame API to integrate with our custom UI.
+                if(this.isEmbed) {
+                    // prefer YouTube API for youtube embeds to allow custom controls and progress tracking
+                    if (isYouTubeEmbed(url)) {
+                        loadYouTubeAPIIfNeeded();
+                        // prepare container for YT player
+                        const ytDiv = document.createElement('div');
+                        ytDiv.id = 'yt-player';
+                        ytDiv.className = 'w-full h-full';
+                        wrapper.appendChild(ytDiv);
+
+                        // show UI (we will wire controls to YT player)
+                        const ui = document.querySelector('.player-ui');
+                        if(ui) ui.style.display = '';
+
+                        document.getElementById('player-loading').classList.remove('hidden');
+                        dismissNextEp(true);
+
+                        // create a small YT wrapper object; actual player created when API ready
+                        this.isYouTube = true;
+                        this.ytPlayer = null;
+                        this.ytSaveInterval = null;
+
+                        const createYT = () => {
+                            // extract video id from several possible formats
+                            const extractId = (u) => {
+                                try {
+                                    // handle embed form
+                                    const mEmbed = u.match(/youtube\.com\/embed\/([a-zA-Z0-9_\-]+)/);
+                                    if (mEmbed && mEmbed[1]) return mEmbed[1];
+                                    const mWatch = u.match(/[?&]v=([a-zA-Z0-9_\-]+)/);
+                                    if (mWatch && mWatch[1]) return mWatch[1];
+                                    const mShort = u.match(/youtu\.be\/([a-zA-Z0-9_\-]+)/);
+                                    if (mShort && mShort[1]) return mShort[1];
+                                    return null;
+                                } catch(e) { return null; }
+                            };
+                            const vidId = extractId(url);
+                            if (!vidId) {
+                                // fallback: iframe embed if extraction fails
+                                const iframe = document.createElement('iframe');
+                                iframe.src = url;
+                                iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+                                iframe.allowFullscreen = true;
+                                iframe.className = 'w-full h-full';
+                                wrapper.innerHTML = '';
+                                wrapper.appendChild(iframe);
+                                document.getElementById('player-loading').classList.add('hidden');
+                                return;
+                            }
+
+                            // create YT Player
+                            this.ytPlayer = new YT.Player('yt-player', {
+                                videoId: vidId,
+                                playerVars: {
+                                    autoplay: 1,
+                                    controls: 0,
+                                    disablekb: 1,
+                                    modestbranding: 1,
+                                    rel: 0,
+                                    fs: 0,
+                                    iv_load_policy: 3,
+                                    playsinline: 1,
+                                    enablejsapi: 1
+                                },
+                                events: {
+                                    onReady: (e) => {
+                                        document.getElementById('player-loading').classList.add('hidden');
+                                        // try autoplay
+                                        try { e.target.playVideo(); } catch(_) {}
+                                        // ensure preferred playback rate applied when YT player is ready
+                                        try { if (player && typeof player.preferredRate === 'number' && e.target.setPlaybackRate) e.target.setPlaybackRate(player.preferredRate); } catch(_) {}
+                                        updatePlayBtns(false);
+                                        // restore saved progress if present
+                                        if (this.context && this.context.id) {
+                                            const prog = state.progress[this.context.id];
+                                            if (prog && prog.time && prog.duration) {
+                                                try { e.target.seekTo(prog.time, true); } catch(_) {}
+                                            }
+                                        }
+                                        // start interval to update UI and save progress
+                                        this.ytSaveInterval = setInterval(() => {
+                                            if (!this.ytPlayer || typeof this.ytPlayer.getCurrentTime !== 'function') return;
+                                            const cur = this.ytPlayer.getCurrentTime();
+                                            const dur = this.ytPlayer.getDuration() || 0;
+                                            // update timeline UI
+                                            if (!isNaN(dur) && dur > 0) {
+                                                const pct = (cur / dur) * 100;
+                                                const progBar = document.getElementById('progress-bar');
+                                                const fill = document.getElementById('progress-fill');
+                                                if (progBar) try { progBar.value = pct; } catch(e) {}
+                                                if (fill) try { fill.style.width = pct + '%'; } catch(e) {}
+                                                const tc = document.getElementById('time-current');
+                                                const td = document.getElementById('time-duration');
+                                                if (tc) tc.innerText = formatTime(cur);
+                                                if (td) td.innerText = formatTime(dur);
+                                            }
+                                            // persist progress periodically
+                                            if (this.context && this.context.id && typeof cur === 'number' && !isNaN(cur)) {
+                                                state.progress[this.context.id] = { time: cur, duration: this.ytPlayer.getDuration() || 0, timestamp: Date.now() };
+                                                if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
+                                                saveProgressData();
+                                            }
+                                        }, 3000);
+                                    },
+                                    onStateChange: (e) => {
+                                        // map YT states: 1 playing, 2 paused, 0 ended
+                                        if (e.data === YT.PlayerState.PLAYING) updatePlayBtns(false);
+                                        if (e.data === YT.PlayerState.PAUSED) updatePlayBtns(true);
+                                        if (e.data === YT.PlayerState.ENDED) {
+                                            updatePlayBtns(true);
+                                            if (this.context && this.context.nextEp) playNextEpisode();
+                                        }
+                                    }
+                                }
+                            });
+                        };
+
+                        // if API already ready, create immediately, else poll until ready
+                        if (typeof YT !== 'undefined' && YT && YT.Player) createYT();
+                        else {
+                            const waitForYT = setInterval(() => {
+                                if (typeof YT !== 'undefined' && YT && YT.Player) {
+                                    clearInterval(waitForYT);
+                                    createYT();
+                                }
+                            }, 150);
+                        }
+
+                        // wire existing UI controls to YT player actions (center play button, bottom play, progress bar, volume)
+                        const wireYTControls = () => {
+                            const center = document.getElementById('center-play-btn');
+                            const bottom = document.getElementById('bottom-play-btn');
+                            const progBar = document.getElementById('progress-bar');
+                            const volEl = document.getElementById('volume-bar');
+                            if (center) center.onclick = () => {
+                                if (!this.ytPlayer) return;
+                                const stateYT = this.ytPlayer.getPlayerState();
+                                if (stateYT === YT.PlayerState.PLAYING) this.ytPlayer.pauseVideo();
+                                else this.ytPlayer.playVideo();
+                            };
+                            if (bottom) bottom.onclick = () => {
+                                if (!this.ytPlayer) return;
+                                const stateYT = this.ytPlayer.getPlayerState();
+                                if (stateYT === YT.PlayerState.PLAYING) this.ytPlayer.pauseVideo();
+                                else this.ytPlayer.playVideo();
+                            };
+                            if (progBar) {
+                                progBar.oninput = (e) => {
+                                    const dur = this.ytPlayer && this.ytPlayer.getDuration ? this.ytPlayer.getDuration() : 0;
+                                    if (!dur) return;
+                                    const targetTime = (e.target.value / 100) * dur;
+                                    if (this.ytPlayer && this.ytPlayer.seekTo) {
+                                        this.ytPlayer.seekTo(targetTime, true);
+                                    }
+                                };
+                            }
+                            if (volEl) {
+                                volEl.oninput = (e) => {
+                                    try {
+                                        const v = parseFloat(e.target.value);
+                                        if (this.ytPlayer && this.ytPlayer.setVolume) {
+                                            this.ytPlayer.setVolume(Math.round((v||1) * 100));
+                                        }
+                                    } catch(_) {}
+                                    updateVolIcon();
+                                };
+                            }
+                        };
+                        // call wiring now (functions will guard if ytPlayer is not yet ready)
+                        wireYTControls();
+                    } else {
+                        // Non-YouTube embed: show a plain iframe and hide the custom player chrome
+                        this.iframe = document.createElement('iframe');
+                        this.iframe.src = url;
+                        // Restrict Tokyvideo embeds from opening external links/popups.
+                        // Tokyvideo sometimes injects navigations; sandbox without allow-top-navigation/allow-popups prevents that.
+                        if (/tokyvideo\.com/i.test(url)) {
+                            // allow-scripts and allow-same-origin so the player can function, but do NOT allow popups or top navigation.
+                            this.iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+                            // tighter permissions: allow autoplay and fullscreen but not picture-in-picture (reduces extra navigation surfaces)
+                            this.iframe.setAttribute('allow', 'autoplay; fullscreen');
+                            // reduce referrer exposure
+                            this.iframe.setAttribute('referrerpolicy', 'no-referrer');
+                        } else {
+                            // default for other embeds: keep more permissive but still avoid popups by not granting allow-popups/top-navigation
+                            this.iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+                            this.iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+                            this.iframe.setAttribute('referrerpolicy', 'no-referrer');
+                        }
+                        this.iframe.allowFullscreen = true;
+                        this.iframe.className = 'w-full h-full';
+                        wrapper.appendChild(this.iframe);
+
+                        const exitBtn = document.createElement('button');
+                        exitBtn.id = 'embed-exit-btn';
+                        exitBtn.className = 'absolute top-4 left-4 z-30 w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors';
+                        exitBtn.innerHTML = '<i class="ph ph-arrow-left text-lg"></i>';
+                        exitBtn.onclick = () => { player.close(); };
+                        wrapper.appendChild(exitBtn);
+
+                        const ui = document.querySelector('.player-ui');
+                        if(ui) ui.style.display = 'none';
+                        const prompt = document.getElementById('next-ep-prompt');
+                        if(prompt) prompt.classList.add('hidden');
+
+                        document.getElementById('player-loading').classList.add('hidden');
+
+                        try {
+                            if (context && context.type === 'filme' && context.id) {
+                                state.progress[context.id] = { embed: true, timestamp: Date.now() };
+                                saveProgressData();
+                            } else if (context && context.type === 'serie' && context.seriesId) {
+                                state.history[context.seriesId] = { s: context.season, e: context.episode, epId: context.id, timestamp: Date.now() };
+                                saveProgressData();
+                            }
+                        } catch (e) { /* ignore storage errors */ }
+                    }
+                } else {
+                    // use native video
+                    this.vid = document.createElement('video');
+                    this.vid.id = 'main-video';
+                    this.vid.className = 'w-full h-full object-contain';
+                    this.vid.playsInline = true;
+                    this.vid.preload = 'metadata';
+                    this.vid.src = url;
+                    wrapper.appendChild(this.vid);
+
+                    // ensure UI visible and functional
+                    const ui = document.querySelector('.player-ui');
+                    if(ui) ui.style.display = '';
+                    document.getElementById('progress-bar').style.display = '';
+                    document.getElementById('center-play-btn').style.display = '';
+                    document.getElementById('bottom-play-btn').style.display = '';
+
+                    document.getElementById('player-loading').classList.remove('hidden');
+                    dismissNextEp(true);
+                    this.setupEvents(); this.restoreProgress();
+
+                    // autoplay attempt
+                    this.vid.play().catch(e => {});
+                }
+
+                document.getElementById('player-ep-title').innerText = title;
+                const sTitle = document.getElementById('player-series-title');
+                if(context && context.seriesTitle) { sTitle.innerText = context.seriesTitle; sTitle.classList.remove('hidden'); }
+                else sTitle.classList.add('hidden');
+
+                if(window.innerWidth <= 768 && document.documentElement.requestFullscreen) modal.requestFullscreen().catch(e=>e);
+
+                // Only set save interval for native video
+                if(!this.isEmbed) this.saveInterval = setInterval(() => this.saveProgress(), 5000);
+            },
+            
+            restoreProgress: function() {
+                if(this.isEmbed) return;
+                if(!this.context || !this.context.id) return;
+                const prog = state.progress[this.context.id];
+                if(prog && prog.time > 0 && prog.time < prog.duration - 5) {
+                    const seekToSaved = () => {
+                        this.vid.currentTime = prog.time;
+                        this.vid.removeEventListener('loadedmetadata', seekToSaved);
+                    };
+                    this.vid.addEventListener('loadedmetadata', seekToSaved);
+                }
+            },
+
+            saveProgress: function() {
+                if(this.isEmbed) return;
+                if(!this.vid || !this.context || !this.context.id || isNaN(this.vid.duration)) return;
+                state.progress[this.context.id] = { time: this.vid.currentTime, duration: this.vid.duration, timestamp: Date.now() };
+                if(this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id };
+                saveProgressData();
+            },
+
+            close: function() {
+                // common cleanup
+                clearInterval(this.saveInterval); clearTimeout(this.uiTimeout);
+                this.saveInterval = null;
+
+                if(this.vid) {
+                    this.saveProgress();
+                    this.vid.pause(); this.vid.removeAttribute('src'); this.vid.load();
+                    this.vid = null;
+                }
+                if(this.iframe) {
+                    // nothing to save for embed
+                    this.iframe.remove();
+                    this.iframe = null;
+                    // remove embed exit button if present
+                    const eb = document.getElementById('embed-exit-btn');
+                    if(eb) eb.remove();
+                }
+
+                // cleanup global handlers
+                window.onkeydown = null;
+
+                const wrapper = document.getElementById('player-media-wrapper');
+                wrapper.innerHTML = '';
+
+                // restore UI elements
+                const ui = document.querySelector('.player-ui');
+                if(ui) ui.style.display = '';
+                const pb = document.getElementById('progress-bar');
+                if(pb) pb.style.display = '';
+                const cp = document.getElementById('center-play-btn');
+                if(cp) cp.style.display = '';
+                const bp = document.getElementById('bottom-play-btn');
+                if(bp) bp.style.display = '';
+
+                const modal = document.getElementById('player-modal');
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden'); modal.classList.remove('flex');
+                    if(document.getElementById('details-modal').classList.contains('hidden')) {
+                        document.body.style.overflow = ''; renderView();
+                    }
+                    if(document.fullscreenElement) document.exitFullscreen().catch(e=>e);
+                }, 500);
+            },
+
+            setupEvents: function() {
+                if(this.isEmbed || !this.vid) return;
+                const container = document.getElementById('custom-player-container');
+                const progBar = document.getElementById('progress-bar');
+                const fill = document.getElementById('progress-fill');
+                
+                // defensive guards: ensure DOM nodes exist before touching them
+                try { if (progBar) progBar.value = 0; } catch(e) {}
+                try { if (fill) fill.style.width = '0%'; } catch(e) {}
+                updatePlayBtns(true);
+
+                const resetControls = () => {
+                    if (container) container.classList.remove('player-idle');
+                    clearTimeout(this.uiTimeout);
+                    this.uiTimeout = setTimeout(() => { if (this.vid && !this.vid.paused && container) container.classList.add('player-idle'); }, 3500);
+                };
+
+                if (container) { container.onmousemove = resetControls; container.ontouchstart = resetControls; }
+                
+                window.onkeydown = (e) => {
+                    const pm = document.getElementById('player-modal');
+                    if(!pm || pm.classList.contains('hidden')) return;
+                    resetControls();
+                    if(e.code === 'Space') { e.preventDefault(); togglePlay(); }
+                    if(e.code === 'ArrowRight') skipVideo(10);
+                    if(e.code === 'ArrowLeft') skipVideo(-10);
+                };
+
+                this.vid.onplaying = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.add('hidden'); updatePlayBtns(false); };
+                this.vid.onwaiting = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.remove('hidden'); };
+                this.vid.onpause = () => { updatePlayBtns(true); if (container) container.classList.remove('player-idle'); };
+                
+                this.vid.ontimeupdate = () => {
+                    // guard against race conditions where the video element has been removed
+                    if (!this.vid) return;
+                    // ensure we have metadata before using duration/currentTime
+                    if (this.vid.readyState < 1) {
+                        const tc = document.getElementById('time-current');
+                        if (tc) tc.innerText = formatTime(0);
+                        return;
+                    }
+
+                    if (!this.isSeeking && !isNaN(this.vid.duration) && this.vid.duration > 0) {
+                        const pct = (this.vid.currentTime / this.vid.duration) * 100;
+                        if (progBar) try { progBar.value = pct || 0; } catch(e) {}
+                        if (fill) try { fill.style.width = `${pct}%`; } catch(e) {}
+                    }
+
+                    const tc = document.getElementById('time-current');
+                    if (tc) tc.innerText = formatTime(this.vid.currentTime || 0);
+
+                    // protect next-episode check from throwing if context/state changed
+                    try { this.checkNextTrigger(); } catch (e) { /* swallow safe */ }
+                };
+
+                this.vid.onloadedmetadata = () => { const td = document.getElementById('time-duration'); if(td) td.innerText = formatTime(this.vid.duration); };
+                this.vid.onended = () => { if(this.context && this.context.nextEp) playNextEpisode(); };
+
+                if (progBar) {
+                    progBar.oninput = (e) => { this.isSeeking = true; if (fill) try { fill.style.width = `${e.target.value}%`; } catch(e) {} };
+                    progBar.onchange = (e) => { if (this.vid && !isNaN(this.vid.duration)) { this.vid.currentTime = (e.target.value / 100) * this.vid.duration; this.isSeeking = false; } };
+                }
+
+                const volEl = document.getElementById('volume-bar');
+                if (volEl) {
+                    volEl.oninput = (e) => {
+                        if (!this.vid) return;
+                        this.vid.volume = e.target.value; this.vid.muted = (e.target.value == 0); updateVolIcon();
+                    };
+                }
+            },
+
+            checkNextTrigger: function() {
+                if(this.isEmbed) return;
+                if(!this.context || !this.context.nextEp || !this.context.trigger || this.nextPromptShown || isNaN(this.vid.duration)) return;
+                if(this.vid.duration - this.vid.currentTime <= this.context.trigger) {
+                    this.nextPromptShown = true;
+                    const prompt = document.getElementById('next-ep-prompt');
+                    document.getElementById('next-ep-title').innerText = this.context.nextEp.title.split(' - ')[1] || this.context.nextEp.title;
+                    const seriesData = db.find(i => i.id === this.context.seriesId);
+                    if(seriesData) document.getElementById('next-ep-img').src = seriesData.cover;
+                    
+                    prompt.classList.remove('hidden');
+                    requestAnimationFrame(() => prompt.classList.remove('opacity-0', 'translate-y-4'));
+                }
+            }
+        };
+
+        function openPlayer(url, title, context) { player.init(url, title, context); }
+        function closePlayer() { player.close(); window.onkeydown = null; }
+        function togglePlay() {
+            // unified play/pause for native video and YouTube iframe player
+            try {
+                if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') {
+                    const st = player.ytPlayer.getPlayerState();
+                    // YT states: 1 playing, 2 paused, 0 ended
+                    if (st === YT.PlayerState.PLAYING) {
+                        try { player.ytPlayer.pauseVideo(); } catch(_) {}
+                        updatePlayBtns(true);
+                    } else {
+                        try { player.ytPlayer.playVideo(); } catch(_) {}
+                        updatePlayBtns(false);
+                    }
+                    return;
+                }
+            } catch (e) { /* failover to native */ }
+
+            if (player.vid) {
+                if (player.vid.paused) player.vid.play();
+                else player.vid.pause();
+            }
+        }
+
+        function skipVideo(s) {
+            // skip for native video
+            try {
+                if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getCurrentTime === 'function') {
+                    const cur = (player.ytPlayer.getCurrentTime && !isNaN(player.ytPlayer.getCurrentTime())) ? player.ytPlayer.getCurrentTime() : 0;
+                    const dur = (player.ytPlayer.getDuration && !isNaN(player.ytPlayer.getDuration())) ? player.ytPlayer.getDuration() : 0;
+                    let target = cur + s;
+                    if (target < 0) target = 0;
+                    if (dur > 0 && target > dur) target = dur;
+                    try { player.ytPlayer.seekTo(target, true); } catch(_) {}
+                    // update UI immediately
+                    const tc = document.getElementById('time-current'); if (tc) tc.innerText = formatTime(target);
+                    return;
+                }
+            } catch (e) { /* fallback */ }
+
+            if (player.vid) {
+                player.vid.currentTime = Math.max(0, (player.vid.currentTime || 0) + s);
+            }
+        }
+
+        function setSpeed(r) {
+            // persist chosen rate and apply to both native video and YouTube player
+            try { player.preferredRate = Number(r) || 1; } catch(_) { player.preferredRate = 1; }
+            const btn = document.getElementById('speed-btn');
+            if (btn) btn.innerText = (player.preferredRate || 1) + 'x';
+
+            // apply to YouTube player if present
+            try {
+                if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.setPlaybackRate === 'function') {
+                    try { player.ytPlayer.setPlaybackRate(player.preferredRate); } catch(_) {}
+                }
+            } catch (e) { /* ignore */ }
+
+            // apply to native video if present
+            try {
+                if (player.vid) {
+                    player.vid.playbackRate = player.preferredRate;
+                }
+            } catch (e) { /* ignore */ }
+        }
+        function toggleMute() { 
+            if(player.vid) { 
+                player.vid.muted = !player.vid.muted; 
+                document.getElementById('volume-bar').value = player.vid.muted ? 0 : player.vid.volume || 1;
+                updateVolIcon(); 
+            } 
+        }
+        function toggleFullscreen() {
+            const m = document.getElementById('player-modal');
+            !document.fullscreenElement ? m.requestFullscreen().catch(e=>e) : document.exitFullscreen();
+        }
+        function updatePlayBtns(p) {
+            const i = p ? 'ph-play' : 'ph-pause';
+            const center = document.getElementById('center-play-btn');
+            const bottom = document.getElementById('bottom-play-btn');
+            if(center) center.innerHTML = `<i class="ph-fill ${i}"></i>`;
+            if(bottom) bottom.innerHTML = `<i class="ph-fill ${i} text-2xl"></i>`;
+        }
+        function updateVolIcon() {
+            const b = document.getElementById('mute-btn');
+            const v = player.vid;
+            if(!v) { b.innerHTML = '<i class="ph-fill ph-speaker-high text-xl"></i>'; return; }
+            if(v.muted || v.volume === 0) b.innerHTML = '<i class="ph-fill ph-speaker-x text-xl text-white/50"></i>';
+            else if(v.volume < 0.5) b.innerHTML = '<i class="ph-fill ph-speaker-low text-xl"></i>';
+            else b.innerHTML = '<i class="ph-fill ph-speaker-high text-xl"></i>';
+        }
+        function formatTime(s) {
+            if (isNaN(s)) return "00:00";
+            const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
+            return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}` : `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        function dismissNextEp(instant = false) {
+            const prompt = document.getElementById('next-ep-prompt');
+            prompt.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => prompt.classList.add('hidden'), instant ? 0 : 500);
+        }
+
+        function playNextEpisode() {
+            if(!player.context || !player.context.nextEp) return;
+            if(!player.isEmbed) player.saveProgress();
+            
+            const nextCtx = player.context.nextEp;
+            const seriesData = db.find(i => i.id === player.context.seriesId);
+            const epData = seriesData.seasons[nextCtx.s][nextCtx.e];
+            
+            const nNextE = nextCtx.e + 1 < seriesData.seasons[nextCtx.s].length ? seriesData.seasons[nextCtx.s][nextCtx.e+1] : null;
+            const newNextCtx = nNextE && nNextE.url ? { url: nNextE.url, title: `T${nextCtx.s}:E${nextCtx.e+2} - ${nNextE.title}`, s: nextCtx.s, e: nextCtx.e+1 } : null;
+            
+            const fullContext = {
+                type: 'serie', seriesId: seriesData.id, seriesTitle: seriesData.title,
+                season: nextCtx.s, episode: nextCtx.e, id: epData.id,
+                trigger: seriesData.nextEpisodeTrigger || 0, nextEp: newNextCtx, url: epData.url
+            };
+
+            dismissNextEp(true); if(player.vid) player.vid.pause();
+            player.init(epData.url, nextCtx.title, fullContext);
+            changeSeason(seriesData.id, nextCtx.s);
+        }
+
+        // helper: scroll a session horizontally
+        function scrollCards(containerId, dir = 1) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            const w = el.clientWidth || (window.innerWidth * 0.8);
+            el.scrollBy({ left: dir * (w * 0.8), behavior: 'smooth' });
+        }
+
+        // mobile: toggle collapse sections with smooth max-height + caret rotation animation
+        function toggleSectionMobile(sectionId) {
+            const sec = document.getElementById(sectionId);
+            if (!sec) return;
+            const body = sec.querySelector('.session-body');
+            const btn = sec.querySelector('.mobile-toggle-btn');
+            const isCollapsed = sec.classList.contains('mobile-collapsed');
+
+            // Prepare button content and rotated caret element
+            if (btn) {
+                // ensure structure: <i class="caret ..."></i><span>...</span>
+                const open = isCollapsed; // we're about to open when collapsed
+                btn.innerHTML = `<i class="ph caret ${open ? 'ph-caret-up' : 'ph-caret-down'} text-white/60"></i><span class="text-white/70 text-sm">${open ? 'Fechar' : 'Abrir'}</span>`;
+            }
+
+            // Animate max-height for smooth collapse/expand
+            if (!body) {
+                sec.classList.toggle('mobile-collapsed');
+                return;
+            }
+
+            if (isCollapsed) {
+                // OPEN: remove collapsed class so CSS allows big max-height; set explicit max-height from scrollHeight for transition
+                sec.classList.remove('mobile-collapsed');
+                const fullH = body.scrollHeight;
+                body.style.maxHeight = fullH + 'px';
+                // after transition ends, clear inline max-height to be flexible
+                setTimeout(() => { body.style.maxHeight = ''; }, 400);
+            } else {
+                // CLOSE: set current height then animate to 0
+                const curH = body.scrollHeight;
+                body.style.maxHeight = curH + 'px';
+                // next frame collapse
+                requestAnimationFrame(() => {
+                    body.style.maxHeight = '0px';
+                    // after transition complete, mark as collapsed to apply final styles
+                    setTimeout(() => {
+                        sec.classList.add('mobile-collapsed');
+                    }, 360);
+                });
+            }
+        }
+
+        // When rendering card lists, ensure items are wrapped as session-card to keep side-by-side layout
+        const origRender16by9 = render16by9CatalogCards;
+        render16by9CatalogCards = function(data, container) {
+            if (!container) return;
+            // Always render cards as session-card so trends match Continue Watching sizing
+            const useSessionCard = true;
+            
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = useSessionCard ? 'hover-card cursor-pointer group relative session-card' : 'hover-card cursor-pointer group relative';
+                card.onclick = () => openDetails(item.id);
+                
+                card.innerHTML = `
+                    <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
+                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        
+                        <!-- Play Icon Hover -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-white shadow-lg transform scale-75 group-hover:scale-100 transition-all duration-300">
+                                <i class="ph-fill ph-play text-xl ml-0.5"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
+                        <div class="flex items-center gap-2 mt-0.5">
+                            ${getAgeBadge(item.ageRating)}
+                            <p class="text-white/40 text-[11px] truncate">${item.category}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        // ensure continue items render as session-card too
+        const origRenderContinue = renderContinueCards;
+        renderContinueCards = function(data, container) {
+            if(!container) return;
+            data.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'w-64 md:w-80 shrink-0 hover-card cursor-pointer group session-card';
+                card.onclick = () => openDetails(item.id);
+                
+                const pct = Math.min(100, ((item._prog && item._prog.time) ? (item._prog.time / item._prog.duration) * 100 : 0));
+                const subtitle = item._hist ? `T${item._hist.s} : E${item._hist.e+1}` : 'Continuar filme';
+
+                card.innerHTML = `
+                    <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
+                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-white shadow-lg transform scale-75 group-hover:scale-100 transition-all duration-300">
+                                <i class="ph-fill ph-play text-xl ml-0.5"></i>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10 z-20">
+                            <div class="h-full bg-accent" style="width: ${pct}%"></div>
+                        </div>
+                    </div>
+                    <div class="px-1">
+                        <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
+                        <p class="text-white/50 text-[11px] mt-0.5">${subtitle}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        // Add extra Home sessions (lazy: use small filters). Appends sections after trends.
+        function insertAdditionalSections() {
+            try {
+                const container = document.getElementById('main-content');
+                if(!container || state.tab !== 'home') return;
+
+                // Build a set of IDs to avoid repeating hero + continue items
+                const heroId = db[0] ? db[0].id : null;
+                const continueIds = getContinueWatching().map(i => i.id);
+                const exclude = new Set([heroId, ...continueIds].filter(Boolean));
+
+                // helper to pick items excluding those in exclude set
+                const pick = (source, count = 8) => {
+                    const out = [];
+                    for (let i = 0; i < source.length && out.length < count; i++) {
+                        if (!exclude.has(source[i].id)) {
+                            out.push(source[i]);
+                            exclude.add(source[i].id); // ensure we don't repeat between new sections
+                        }
+                    }
+                    return out;
+                };
+
+                const wrap = document.createElement('div');
+                wrap.className = 'px-6 md:px-16 relative z-20 mb-20 animate-slide-up';
+
+                // Novidades: pick starting a bit later to reduce duplication with top of catalog
+                const novidades = pick(db.slice(4).concat(db.slice(0,4)), 8);
+                // Comédias: filter by category then pick excluding already used
+                const comediasPool = db.filter(i => (i.category || '').toLowerCase().includes('comédia'));
+                const comedias = pick(comediasPool, 8);
+                // Recomendados: high-rated first, then pick excluding used
+                const recomendadosPool = db.filter(i => i.ratings && i.ratings.imdb).sort((a,b)=> (b.ratings.imdb||0)-(a.ratings.imdb||0));
+                const recomendados = pick(recomendadosPool.length ? recomendadosPool : db, 8);
+
+                const isMobile = window.innerWidth <= 767;
+
+                const buildSection = (title, id, items) => {
+                    const sec = document.createElement('div');
+                    // start collapsed on mobile for smoother one-screen UX
+                    sec.className = 'mb-10 session-wrap relative' + (isMobile ? ' mobile-collapsed' : '');
+                    // assign an explicit id to the outer section so the mobile toggle targets the wrapper (fixes mobile toggles)
+                    sec.id = `${id}-wrap`;
+                    sec.innerHTML = `
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-display font-medium text-white">${title}</h2>
+                            <!-- mobile toggle button -->
+                            <button class="mobile-toggle-btn md:hidden" onclick="toggleSectionMobile('${id}-wrap')">
+                                <i class="ph ph-caret-down text-white/60"></i>
+                                <span class="text-white/70 text-sm">Abrir</span>
+                            </button>
+                        </div>
+                        <div class="relative session-body">
+                            <button class="session-arrow left" aria-label="${id}-left" onclick="scrollCards('${id}', -1)">
+                                <i class="ph ph-caret-left text-2xl"></i>
+                            </button>
+                            <div id="${id}" class="session-scroll grid-auto-fit"></div>
+                            <button class="session-arrow right" aria-label="${id}-right" onclick="scrollCards('${id}', 1)">
+                                <i class="ph ph-caret-right text-2xl"></i>
+                            </button>
+                        </div>
+                    `;
+                    wrap.appendChild(sec);
+                    render16by9CatalogCards(items, sec.querySelector(`#${id}`));
+                };
+
+                buildSection('Novidades', 'section-new-grid', novidades);
+                buildSection('Comédias', 'section-comedy-grid', comedias);
+                buildSection('Recomendados para você', 'section-reco-grid', recomendados);
+
+                // append after the trends section if present, otherwise at end
+                const trends = document.getElementById('section-trends');
+                if(trends && trends.parentNode) trends.parentNode.insertBefore(wrap, trends.nextSibling);
+                else container.appendChild(wrap);
+            } catch(e) { /* fail silently */ }
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
