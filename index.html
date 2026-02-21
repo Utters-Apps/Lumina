@@ -1489,13 +1489,45 @@
 
         // --- SHARE VIA QUERY STRING ---
         function buildShareLinkForContext(itemId, context = {}) {
-            // base page url without existing share param
-            const url = new URL(window.location.href);
-            url.searchParams.set('share', itemId);
-            // optionally include season & episode for series context
-            if (context.season != null) url.searchParams.set('s', String(context.season));
-            if (context.episode != null) url.searchParams.set('e', String(context.episode));
-            return url.toString();
+            // create a human-friendly slug for sharing (prefer explicit id; fall back to normalized title)
+            const normalize = (s) => {
+                if (!s) return '';
+                return String(s).toLowerCase()
+                    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '') // remove diacritics
+                    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            };
+
+            try {
+                const base = window.location.origin + window.location.pathname;
+                const url = new URL(base);
+
+                // prefer original id (if looks like a good slug), otherwise normalize title-like strings
+                const raw = String(itemId || '');
+                const candidate = raw.length > 0 && /^[a-z0-9\-\_]+$/i.test(raw) ? raw : normalize(raw);
+                // if itemId equals a DB id, use it; otherwise attempt to map to DB title
+                let finalSlug = candidate;
+                try {
+                    const found = db.find(i => i.id === raw || normalize(i.id) === normalize(raw) || normalize(i.title) === normalize(raw) || normalize(i.originalTitle) === normalize(raw));
+                    if (found && found.id) finalSlug = found.id;
+                } catch(_) {}
+
+                url.searchParams.set('share', finalSlug);
+
+                if (context && typeof context.season !== 'undefined' && context.season !== null) url.searchParams.set('s', String(context.season));
+                if (context && typeof context.episode !== 'undefined' && context.episode !== null) url.searchParams.set('e', String(context.episode));
+                // Friendly URL - do not encode unnecessary characters in the slug
+                return url.toString();
+            } catch (e) {
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('share', String(itemId));
+                    if (context.season != null) url.searchParams.set('s', String(context.season));
+                    if (context.episode != null) url.searchParams.set('e', String(context.episode));
+                    return url.toString();
+                } catch (_) {
+                    return window.location.href;
+                }
+            }
         }
 
         async function copyToClipboard(text) {
@@ -1558,44 +1590,91 @@
         }
 
         function showShareFeedback(id, link) {
-            const modal = document.getElementById('details-modal');
-            if (modal && !modal.classList.contains('hidden')) {
+            // non-blocking toast in top-right corner, prefer subtle UI over alerts
+            try {
+                // prefer updating the share button text if visible
                 const btn = document.getElementById(`share-btn-${id}`);
                 if (btn) {
                     const prev = btn.innerHTML;
                     btn.innerText = 'Copiado!';
                     setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1500);
-                } else {
-                    // brief alert if button not found
-                    const t = document.createElement('div');
-                    t.innerText = 'Link copiado!';
-                    document.body.appendChild(t);
-                    setTimeout(() => t.remove(), 1200);
                 }
-            } else {
-                // small non-blocking alert fallback
-                alert('Link copiado: ' + link);
+
+                // toast
+                let toast = document.getElementById('lumina-share-toast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'lumina-share-toast';
+                    toast.style.position = 'fixed';
+                    toast.style.top = '18px';
+                    toast.style.right = '18px';
+                    toast.style.zIndex = 99999;
+                    toast.style.background = 'rgba(0,0,0,0.7)';
+                    toast.style.color = '#fff';
+                    toast.style.padding = '10px 14px';
+                    toast.style.borderRadius = '12px';
+                    toast.style.fontSize = '13px';
+                    toast.style.backdropFilter = 'blur(6px)';
+                    toast.style.boxShadow = '0 6px 18px rgba(0,0,0,0.5)';
+                    document.body.appendChild(toast);
+                }
+                toast.innerText = 'Link copiado para a área de transferência';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+                // auto-hide
+                clearTimeout(toast._hideTimer);
+                toast._hideTimer = setTimeout(() => {
+                    try { toast.style.opacity = '0'; toast.style.transform = 'translateY(-8px)'; } catch(_) {}
+                }, 1400);
+            } catch (e) {
+                // final fallback to alert if anything fails
+                try { alert('Link copiado: ' + link); } catch(_) {}
             }
         }
 
         // on app init, check for share query and open corresponding details (supports s/e for series)
         function handleSharedQuery() {
             try {
-                const params = new URLSearchParams(window.location.search);
-                const shareId = params.get('share');
-                if (!shareId) return;
-                // find matching item by id (or by original id if prefix used)
-                const item = db.find(i => i.id === shareId);
-                if (!item) return;
-                // if there are s/e params, try to set history so "Continuar" points there
-                const s = params.get('s'), e = params.get('e');
-                if (item.type === 'serie' && s != null && e != null) {
-                    // store as history so modal shows appropriate continuation label
-                    state.history[item.id] = { s: parseInt(s,10), e: parseInt(e,10), epId: (item.seasons && item.seasons[s] && item.seasons[s][parseInt(e,10)] && (item.seasons[s][parseInt(e,10)].id || ('url:' + encodeURIComponent(item.seasons[s][parseInt(e,10)].url)))) || null, timestamp: Date.now() };
+                const params = new URLSearchParams(window.location.search || window.location.hash.replace('#','?'));
+                const shareRaw = params.get('share');
+                if (!shareRaw) return;
+
+                const shareId = decodeURIComponent(String(shareRaw)).trim();
+
+                // Normalization helper to compare slugs/titles
+                const normalize = (s) => {
+                    if (!s) return '';
+                    return String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+                };
+
+                // Try direct id match first (most common)
+                let item = db.find(i => i.id === shareId);
+
+                // If not found, try normalized-id (in case user passed title or slight variant)
+                if (!item) {
+                    const normTarget = normalize(shareId);
+                    item = db.find(i => normalize(i.id) === normTarget || normalize(i.title) === normTarget || normalize(i.originalTitle) === normTarget);
                 }
-                // open details for item
-                // slight delay to ensure UI is ready
-                setTimeout(() => { openDetails(item.id); }, 260);
+
+                if (!item) return;
+
+                // If season/episode query present, apply to history so details modal shows correct "continuar" and selection
+                const sRaw = params.get('s'), eRaw = params.get('e');
+                const s = sRaw != null ? parseInt(sRaw, 10) : null;
+                const e = eRaw != null ? parseInt(eRaw, 10) : null;
+
+                if (item.type === 'serie' && s !== null && !isNaN(s) && e !== null && !isNaN(e)) {
+                    const seasonArr = item.seasons && item.seasons[s] ? item.seasons[s] : [];
+                    const ep = seasonArr[e] || seasonArr[0] || null;
+                    const epId = ep && ep.id ? ep.id : (ep && ep.url ? 'url:' + encodeURIComponent(ep.url) : null);
+                    state.history[item.id] = { s: s, e: e, epId: epId, timestamp: Date.now() };
+                }
+
+                // Ensure UI is ready: open home and then details; small delay to let initial render finish
+                switchTab('home', false);
+                setTimeout(() => {
+                    try { openDetails(item.id); } catch (err) { /* silent */ }
+                }, 250);
             } catch (e) { /* fail silently */ }
         }
 
