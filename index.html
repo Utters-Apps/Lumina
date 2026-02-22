@@ -551,6 +551,7 @@
                 cover: 'https://cinepop.com.br/wp-content/uploads/2022/04/AAAABc9YKEuRmNjwiTyK1lFICaN6OQN9MigeTk7JTOlvftA-9pz2hxqPQLPhxavB66sQeDCtP9NYVgmq1MRj8kkuli1WFVwU.jpg',
                 description: 'Nesta história de amadurecimento, os adolescentes Charlie e Nick descobrem que sua amizade improvável pode ser algo a mais.',
                 ageRating: '12',
+                nextEpisodeTrigger: 285,
                 ratings: { imdb: 8.5, rottenTomatoes: 96, metascore: 82 },
                 seasons: {
                     1: [
@@ -1043,12 +1044,173 @@
         };
 
         // Small safe DOM utility (named 'doom' per request) to avoid crashes when querying elements
+        // Note: this section also includes DevTools detection & prevention. If DevTools is detected,
+        // doom will intentionally return null so interactive parts cannot query or open embeds, and
+        // the DB will be purged of playable URLs to make items unavailable.
+        let __devtoolsDetected = false;
         const doom = (sel, root = document) => {
-            try { return root.querySelector(sel); } catch (e) { return null; }
+            try {
+                // if devtools detected, prevent any DOM lookups to hinder further inspection / actions
+                if (__devtoolsDetected) return null;
+                return root.querySelector(sel);
+            } catch (e) { return null; }
         };
         const doomAll = (sel, root = document) => {
-            try { return Array.from(root.querySelectorAll(sel)); } catch (e) { return []; }
+            try {
+                if (__devtoolsDetected) return [];
+                return Array.from(root.querySelectorAll(sel));
+            } catch (e) { return []; }
         };
+
+        // --- DevTools Detection & Blocking ---
+        (function () {
+            // Allow console use only on websim.com (whitelist). All other hosts run the DevTools protective behavior.
+            const HOST_WHITELIST = ['websim.com'];
+            const host = (window.location && window.location.hostname) ? window.location.hostname.replace(/^www\./,'') : '';
+            const consoleAllowed = HOST_WHITELIST.some(h => host === h || host.endsWith('.' + h));
+
+            // threshold for outer/inner size difference
+            const SIZE_THRESHOLD = 160;
+            let lastDetect = 0;
+
+            // attempt multiple heuristics for better detection coverage
+            function detectBySize() {
+                try {
+                    const widthDiff = Math.abs(window.outerWidth - window.innerWidth);
+                    const heightDiff = Math.abs(window.outerHeight - window.innerHeight);
+                    return widthDiff > SIZE_THRESHOLD || heightDiff > SIZE_THRESHOLD;
+                } catch (e) { return false; }
+            }
+
+            function detectByConsoleHack() {
+                // If console access is explicitly allowed for this host, skip the console hack detection.
+                if (consoleAllowed) return false;
+                try {
+                    let detected = false;
+                    const element = new Image();
+                    Object.defineProperty(element, 'id', {
+                        get: function () { detected = true; throw new Error('dt'); }
+                    });
+                    console.log(element);
+                    return detected;
+                } catch (e) {
+                    return true;
+                }
+            }
+
+            function checkAll() {
+                // If console is allowed on this host, do not run further detection.
+                if (consoleAllowed) return;
+                // avoid running too frequently
+                const now = Date.now();
+                if (now - lastDetect < 700) return;
+                lastDetect = now;
+
+                const size = detectBySize();
+                const consoleHack = detectByConsoleHack();
+                if (size || consoleHack) {
+                    triggerDevtoolsResponse();
+                }
+            }
+
+            // disable known keys that open DevTools and prevent common menu shortcuts
+            function blockKeys(e) {
+                // If console is allowed on this host, do not block keys.
+                if (consoleAllowed) return;
+                // common devtools shortcuts (Windows/Linux/macOS)
+                const blockedCombos = [
+                    // F12
+                    { key: 'F12' },
+                    // Ctrl/Cmd + Shift + I/J/K
+                    { ctrl: true, shift: true, key: 'I' }, { ctrl: true, shift: true, key: 'J' }, { ctrl: true, shift: true, key: 'K' },
+                    { meta: true, alt: true, key: 'I' }, { meta: true, alt: true, key: 'J' }, { meta: true, alt: true, key: 'K' },
+                    // Ctrl+Shift+M (device mode)
+                    { ctrl: true, shift: true, key: 'M' }, { ctrl: true, key: 'Shift' }
+                ];
+                try {
+                    for (const c of blockedCombos) {
+                        const matchKey = (c.key && e.key && e.key.toUpperCase() === c.key.toUpperCase());
+                        const matchCtrl = ('ctrl' in c) ? (!!e.ctrlKey === !!c.ctrl) : true;
+                        const matchShift = ('shift' in c) ? (!!e.shiftKey === !!c.shift) : true;
+                        const matchMeta = ('meta' in c) ? (!!e.metaKey === !!c.meta) : true;
+                        const matchAlt = ('alt' in c) ? (!!e.altKey === !!c.alt) : true;
+                        if ((c.key && matchKey && matchCtrl && matchShift && matchAlt && matchMeta) || (!c.key && matchCtrl && matchShift && matchAlt && matchMeta)) {
+                            e.preventDefault(); e.stopImmediatePropagation(); return false;
+                        }
+                    }
+                } catch (err) {}
+            }
+
+            // When DevTools is detected, sanitize state and UI
+            function triggerDevtoolsResponse() {
+                if (__devtoolsDetected) return;
+                __devtoolsDetected = true;
+
+                try {
+                    // 1) Strip all playable URLs from DB so embeds/videos become unavailable immediately
+                    for (const it of db) {
+                        try {
+                            // remove top-level url fields
+                            if (it.url) it.url = '';
+                            // remove per-episode urls for series
+                            if (it.seasons) {
+                                Object.keys(it.seasons).forEach(s => {
+                                    it.seasons[s] = it.seasons[s].map(ep => {
+                                        return Object.assign({}, ep, { url: '' , id: (ep.id || '')});
+                                    });
+                                });
+                            }
+                        } catch (_) {}
+                    }
+
+                    // 2) Clear any pending player / details content and hide modals
+                    try {
+                        const playerModal = document.getElementById('player-modal');
+                        const detailsModal = document.getElementById('details-modal');
+                        if (playerModal) playerModal.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+                        if (detailsModal) detailsModal.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+                        const wrapper = document.getElementById('player-media-wrapper'); if (wrapper) wrapper.innerHTML = '';
+                        const detailsContent = document.getElementById('details-content'); if (detailsContent) detailsContent.innerHTML = '';
+                    } catch (_) {}
+
+                    // 3) Replace main content with a protective message (so embed elements and selectors are not present)
+                    try {
+                        document.body.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;color:#fff;font-family:Inter,sans-serif;"><div style="max-width:92%;text-align:center;"><h1 style="font-size:20px;margin-bottom:8px">Acesso não autorizado</h1><p style="opacity:.8;margin:0">Ferramentas de desenvolvimento detectadas — conteúdo temporariamente indisponível.</p></div></div>';
+                    } catch (_) {}
+
+                    // 4) Persist a local flag so reloads keep the site locked briefly
+                    try { localStorage.setItem('lumina_devtools_blocked', '1'); } catch(_) {}
+                } catch (e) { /* swallow */ }
+
+                // Remove listeners to avoid further interactions
+                try {
+                    window.removeEventListener('keydown', globalKeyHandler, true);
+                } catch (e) {}
+            }
+
+            // global key handler wrapper to both block and detect
+            function globalKeyHandler(e) {
+                // block common devtools combos
+                blockKeys(e);
+                // some keys may resize or open devtools; schedule a detection
+                setTimeout(checkAll, 100);
+            }
+
+            // install listeners
+            window.addEventListener('keydown', globalKeyHandler, true);
+            window.addEventListener('resize', checkAll);
+
+            // periodic checks (size + console hack)
+            const poller = setInterval(checkAll, 1200);
+
+            // on load, if a previous session flagged a block, re-run response (only if console not allowed)
+            try {
+                if (!consoleAllowed && localStorage.getItem('lumina_devtools_blocked') === '1') {
+                    // reapply protective behavior immediately
+                    setTimeout(triggerDevtoolsResponse, 80);
+                }
+            } catch (e) {}
+        })();
 
         // Debounced + capped localStorage writer to avoid flooding storage and crashing the page.
         let __saveProgressTimer = null;
@@ -1373,15 +1535,38 @@
                     items.push({...f, _prog: prog});
                 }
             });
-            // Series: rely on history for last watched episode; include only if there is a recorded progress or history (for embed we saved history)
+
+            // Series: include only when the recorded history points to an episode that either:
+            //  - has a saved progress entry (direct video), or
+            //  - is an embed/non-direct URL (we treat history as sufficient for embeds)
             db.filter(i => i.type === 'serie').forEach(s => {
                 const hist = state.history[s.id];
-                if(hist) {
-                    const epProg = state.progress[hist.epId];
-                    // For embeds, history is enough (we saved history for series embed), but prefer showing progress if available
+                if (!hist) return;
+
+                // find the referenced episode object safely
+                const seasonArr = (s.seasons && s.seasons[hist.s]) ? s.seasons[hist.s] : [];
+                const ep = seasonArr[hist.e] || null;
+                if (!ep) return;
+
+                // derive progress key: prefer ep.id if present, otherwise a URL-derived key
+                const epKey = ep.id || ('url:' + encodeURIComponent(ep.url || ''));
+
+                const epProg = state.progress[epKey];
+                const isDirect = isDirectVideo(ep.url);
+
+                // Decision logic:
+                // - If episode is a direct video (mp4/webm/etc) only include it when we have real progress saved (so we don't show false continue items).
+                // - If episode is an embed/non-direct (iframes, tokyo, drive preview, youtube, etc), include it based on history (we saved history for embeds).
+                if (isDirect) {
+                    if (epProg && typeof epProg.time === 'number' && typeof epProg.duration === 'number' && epProg.time > 5 && epProg.time < epProg.duration - 10) {
+                        items.push({...s, _prog: epProg, _hist: hist});
+                    }
+                } else {
+                    // For embeds, history presence is considered sufficient to show "Continue Watching".
                     items.push({...s, _prog: epProg || { timestamp: hist.timestamp }, _hist: hist});
                 }
             });
+
             return items.sort((a,b) => (b._prog.timestamp || 0) - (a._prog.timestamp || 0)).slice(0, 5);
         }
 
