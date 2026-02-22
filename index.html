@@ -957,7 +957,7 @@
                 title: 'Subway Surfers: A Série Animada',
                 type: 'serie',
                 category: 'Animação / Aventura',
-                year: '2024',
+                year: '2018',
                 cover: 'https://i.ytimg.com/vi/xHY-DQYtQGw/maxresdefault.jpg',
                 description: 'Esses adolescentes desajustados têm aventuras de patinação em sua pequena cidade e às vezes são parados pela polícia, mas o pouso de certa tecnologia alienígena muda a vida desses garotos.',
                 ageRating: '14',
@@ -3304,8 +3304,118 @@
         })();
     </script>
 
-    <!-- Disable right-click context menu -->
+    <!-- ONE-TIME GENRE PREFERENCES MODAL & ADAPTIVE RECOMMENDER -->
+    <div id="prefs-modal" class="fixed inset-0 z-[200] hidden items-center justify-center px-6">
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="relative max-w-3xl w-full p-6 rounded-2xl glass-panel">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <h2 class="font-display text-2xl text-white font-bold mb-1">Escolha seus gêneros</h2>
+                    <p class="text-white/70 text-sm mb-4">Isso aparece apenas uma vez — suas escolhas personalizam "Recomendados para você".</p>
+                </div>
+                <button id="prefs-close-x" class="text-white/60 hover:text-white">
+                    <i class="ph ph-x text-2xl"></i>
+                </button>
+            </div>
+            <div id="prefs-genre-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mb-4"></div>
+            <div class="flex items-center justify-between gap-4 mt-2">
+                <div class="text-white/60 text-sm"><span id="prefs-count">0</span> selecionados</div>
+                <div class="flex gap-3">
+                    <button id="prefs-skip" class="px-4 py-2 rounded-full bg-white/6 text-white text-sm hover:bg-white/10">Pular</button>
+                    <button id="prefs-save" class="px-4 py-2 rounded-full btn-primary text-sm" disabled>Salvar e Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // small preference UI reusing existing genre list (fallback if not defined earlier)
+        const PREF_GENRES = (typeof genres !== 'undefined' && Array.isArray(genres)) ? genres : [
+            { id: 'action', name: 'Ação' },{ id: 'comedy', name: 'Comédia' },{ id: 'drama', name: 'Drama' },
+            { id: 'scifi', name: 'Ficção' },{ id: 'horror', name: 'Terror' },{ id: 'romance', name: 'Romance' },
+            { id: 'thriller', name: 'Suspense' },{ id: 'documentary', name: 'Doc' },{ id: 'animation', name: 'Animação' },
+            { id: 'fantasy', name: 'Fantasia' },{ id: 'crime', name: 'Crime' },{ id: 'adventure', name: 'Aventura' }
+        ];
+
+        // show modal only once if localStorage key missing
+        function shouldShowPrefs() {
+            try { return !localStorage.getItem('lumina_has_prefs'); } catch (e) { return false; }
+        }
+
+        function showPrefsModal() {
+            const modal = document.getElementById('prefs-modal');
+            const grid = document.getElementById('prefs-genre-grid');
+            const saveBtn = document.getElementById('prefs-save');
+            const skipBtn = document.getElementById('prefs-skip');
+            const closeX = document.getElementById('prefs-close-x');
+            const countEl = document.getElementById('prefs-count');
+
+            grid.innerHTML = '';
+            const chosen = new Set();
+
+            PREF_GENRES.forEach(g => {
+                const el = document.createElement('button');
+                el.className = 'genre-card flex items-center gap-3 p-3 rounded-xl text-sm text-white w-full';
+                el.innerHTML = `<span class="font-semibold">${g.name}</span>`;
+                el.onclick = () => {
+                    if (chosen.has(g.id)) {
+                        chosen.delete(g.id); el.classList.remove('selected');
+                    } else {
+                        chosen.add(g.id); el.classList.add('selected');
+                    }
+                    countEl.innerText = chosen.size;
+                    saveBtn.disabled = chosen.size < 1;
+                };
+                grid.appendChild(el);
+            });
+
+            saveBtn.onclick = () => {
+                try {
+                    const arr = Array.from(chosen);
+                    localStorage.setItem('lumina_genres', JSON.stringify(arr));
+                    localStorage.setItem('lumina_has_prefs', '1');
+                } catch (e) {}
+                closePrefs();
+                // re-render home to apply preferences immediately
+                try { renderView(); } catch(_) {}
+            };
+            skipBtn.onclick = () => {
+                try { localStorage.setItem('lumina_has_prefs', '1'); } catch(e){}
+                closePrefs();
+                try { renderView(); } catch(_) {}
+            };
+            closeX.onclick = skipBtn.onclick;
+
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.classList.remove('opacity-0'), 20);
+        }
+
+        function closePrefs() {
+            const modal = document.getElementById('prefs-modal');
+            if (!modal) return;
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.style.display = '';
+            }, 220);
+        }
+
+        // Ensure modal shows as soon as app initializes (but after initial render to avoid jank)
+        const origInit = window.init;
+        window.init = function() {
+            try { origInit && origInit(); } catch(e) {}
+            try {
+                if (shouldShowPrefs()) {
+                    // small delay so the main UI settles
+                    setTimeout(showPrefsModal, 380);
+                } else {
+                    // preferences present, ensure recommended section uses them by re-rendering home
+                    setTimeout(() => { if (state.tab === 'home') insertAdditionalSections(); }, 260);
+                }
+            } catch(e) {}
+        };
+
         // Prevent the default context menu from appearing on right-click
         document.addEventListener('contextmenu', function(e) {
             try { e.preventDefault(); } catch (err) { /* silent */ }
