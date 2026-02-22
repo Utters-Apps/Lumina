@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="format-detection" content="telephone=no">
     <title>Lumina</title>
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
@@ -50,6 +51,9 @@
     </script>
     <style>
         :root { color-scheme: dark; }
+
+        /* Treat touch interactions like native apps: prevent browser double-tap/pinch zooming side-effects */
+        html, body { touch-action: manipulation; -ms-touch-action: manipulation; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
         
         body {
             background-color: #09090b; color: #fafafa; overflow-x: hidden;
@@ -991,7 +995,7 @@
                 originalTitle: 'The Maid',
                 type: 'filme',
                 category: 'Suspense psicológico',
-                year: '2024',
+                year: '2026',
                 cover: 'https://longahistoria.com.br/wp-content/uploads/2025/12/a-empregada-meio-amargo-capa.jpg',
                 description: 'Millie, uma jovem com um passado difícil, aceita trabalhar como empregada doméstica para o casal milionário Winchester. O emprego, que parecia uma chance de recomeçar, logo revela segredos obscuros e manipulações perigosas por trás da fachada de uma vida perfeita.',
                 ageRating: '16',
@@ -1008,7 +1012,7 @@
                 originalTitle: 'Primate',
                 type: 'filme',
                 category: 'Terror / Suspense',
-                year: '2025',
+                year: '2025/2026',
                 cover: 'https://cinepop.com.br/wp-content/uploads/2025/10/o-primata-696x391.jpg',
                 description: 'A universitária Lucy retorna para umas férias em casa no Havaí e se reúne com a família e o chimpanzé de estimação, Ben. Quando Ben é mordido por um animal silvestre e contrai raiva, ele se torna extremamente agressivo, forçando Lucy, amigos e parentes a lutarem pela sobrevivência enquanto tentam escapar do perigo.',
                 shortSynopsis: 'Lucy volta da faculdade para passar alguns dias com a família; após o chimpanzé Ben contrair raiva, o fim de semana se transforma em uma luta pela sobrevivência.',
@@ -3330,14 +3334,52 @@
         // store beforeinstallprompt event for optional use by UI
         window.deferredInstallPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
-            // prevent automatic mini-infobar, we'll show a beautiful Android-only modal once
-            e.preventDefault();
+            // prevent automatic mini-infobar; keep event for manual prompt
+            try { e.preventDefault(); } catch (_) {}
             window.deferredInstallPrompt = e;
-            // do not prompt immediately; UI can call window.deferredInstallPrompt.prompt() when desired
+            // If a global installer helper exists, notify it so the Android modal can appear immediately
+            try { if (typeof window.tryShowInstallModal === 'function') window.tryShowInstallModal(); } catch(_) {}
         });
     </script>
 
     <!-- Android-only "Install Lumina" liquid modal (shows once) -->
+    <script>
+        // Disable double-tap zoom and pinch/gesture zoom fallbacks for a more app-like experience.
+        (function(){
+            let lastTouch = 0;
+            document.addEventListener('touchend', function(e){
+                const now = Date.now();
+                if (now - lastTouch <= 300) {
+                    // prevent double-tap zoom
+                    e.preventDefault && e.preventDefault();
+                }
+                lastTouch = now;
+            }, { passive: false });
+
+            // prevent pinch-to-zoom on some browsers
+            document.addEventListener('gesturestart', function(e){ e.preventDefault && e.preventDefault(); }, { passive: false });
+            document.addEventListener('gesturechange', function(e){ e.preventDefault && e.preventDefault(); }, { passive: false });
+            document.addEventListener('gestureend', function(e){ e.preventDefault && e.preventDefault(); }, { passive: false });
+
+            // expose a safe global hook for the install modal logic to call (used by beforeinstallprompt handler)
+            window.tryShowInstallModal = window.tryShowInstallModal || function(){
+                try {
+                    // show only once per device (localStorage key)
+                    const KEY = 'lumina_android_prompt_shown_v1';
+                    if (localStorage.getItem(KEY)) return;
+                    // show modal if Android UA OR if we have the deferred install prompt available
+                    const ua = navigator.userAgent || navigator.vendor || '';
+                    const isAndroid = /android/i.test(ua) && !/windows phone/i.test(ua);
+                    if (!isAndroid && !window.deferredInstallPrompt) return;
+                    const modal = document.getElementById('android-install-modal');
+                    if (!modal) return;
+                    modal.classList.add('show');
+                    modal.setAttribute('aria-hidden', 'false');
+                } catch(e){}
+            };
+        })();
+    </script>
+
     <style>
         /* Liquid, soft modal for Android install prompt */
         #android-install-modal { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
