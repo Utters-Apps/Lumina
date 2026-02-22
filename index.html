@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Lumina</title>
+    <link rel="icon" href="fiveicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="fiveicon-512.png">
+    <link rel="manifest" href="/manifest.json">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3310,6 +3313,27 @@
         document.addEventListener('contextmenu', function(e) {
             try { e.preventDefault(); } catch (err) { /* silent */ }
         }, { passive: false });
+    </script>
+
+    <!-- PWA: register service worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('SW registered:', reg.scope);
+                }).catch(err => {
+                    console.warn('SW registration failed:', err);
+                });
+            });
+        }
+
+        // store beforeinstallprompt event for optional use by UI
+        window.deferredInstallPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.deferredInstallPrompt = e;
+            // do not prompt immediately; UI can call window.deferredInstallPrompt.prompt() when desired
+        });
     </script>
 </body>
 </html>
