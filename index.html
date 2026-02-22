@@ -346,15 +346,26 @@
                         </div>
                         
                         <div class="flex items-center gap-6">
-                            <div class="relative group/speed">
-                                <button class="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md transition-colors" id="speed-btn">1x</button>
-                                <div class="absolute bottom-full right-0 mb-2 glass rounded-xl p-1.5 hidden group-hover/speed:flex flex-col w-20">
-                                    <button onclick="setSpeed(0.5)" class="text-xs font-medium text-white hover:bg-white/10 py-2 rounded-lg">0.5x</button>
-                                    <button onclick="setSpeed(1)" class="text-xs font-medium text-accent bg-white/5 py-2 rounded-lg">1x</button>
-                                    <button onclick="setSpeed(1.5)" class="text-xs font-medium text-white hover:bg-white/10 py-2 rounded-lg">1.5x</button>
-                                    <button onclick="setSpeed(2)" class="text-xs font-medium text-white hover:bg-white/10 py-2 rounded-lg">2x</button>
+                            <div class="relative" id="speed-control-wrapper">
+                                <button class="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md transition-colors" id="speed-btn" aria-expanded="false" aria-haspopup="true">1x</button>
+                                <div id="speed-menu" class="absolute bottom-full right-0 mb-2 glass rounded-xl p-1.5 hidden flex-col w-24 shadow-lg" role="menu" aria-label="Velocidade de reprodução">
+                                    <button role="menuitem" data-speed="0.5" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">0.5x</button>
+                                    <button role="menuitem" data-speed="1" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md text-accent font-semibold">1x</button>
+                                    <button role="menuitem" data-speed="1.5" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">1.5x</button>
+                                    <button role="menuitem" data-speed="2" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">2x</button>
                                 </div>
                             </div>
+
+                            <!-- Picture-in-Picture (improved icon) -->
+                            <button id="pip-btn" onclick="togglePiP()" class="text-white hover:text-white/70 transition-colors" title="Picture-in-Picture">
+                                <i class="ph-fill ph-intersect text-2xl" aria-hidden="true"></i>
+                            </button>
+
+                            <!-- Cast / Presentation API (fallback opens player URL in new window) -->
+                            <button id="cast-btn" onclick="startCast()" class="text-white hover:text-white/70 transition-colors" title="Assistir na TV">
+                                <i class="ph ph-tv text-2xl"></i>
+                            </button>
+
                             <button onclick="toggleFullscreen()" class="text-white hover:text-white/70 transition-colors">
                                 <i class="ph ph-corners-out text-2xl"></i>
                             </button>
@@ -2382,6 +2393,11 @@
                             this.vid.playsInline = true;
                             this.vid.preload = 'metadata';
                             this.vid.src = url;
+                            // apply preferred rate immediately so setSpeed updates persist when video is created later
+                            try { 
+                                this.vid.playbackRate = (typeof player !== 'undefined' && typeof player.preferredRate === 'number') ? player.preferredRate : 1;
+                                this.vid.defaultPlaybackRate = this.vid.playbackRate;
+                            } catch(_) {}
                             wrapper.appendChild(this.vid);
 
                             // ensure UI visible and functional
@@ -2455,6 +2471,11 @@
                     this.vid.playsInline = true;
                     this.vid.preload = 'metadata';
                     this.vid.src = url;
+                    // ensure playback rate reflects user's chosen speed immediately
+                    try {
+                        this.vid.playbackRate = (typeof player !== 'undefined' && typeof player.preferredRate === 'number') ? player.preferredRate : 1;
+                        this.vid.defaultPlaybackRate = this.vid.playbackRate;
+                    } catch(_) {}
                     wrapper.appendChild(this.vid);
 
                     // ensure UI visible and functional
@@ -2733,12 +2754,25 @@
         }
 
         function setSpeed(r) {
-            // persist chosen rate and apply to both native video and YouTube player
-            try { player.preferredRate = Number(r) || 1; } catch(_) { player.preferredRate = 1; }
+            // normalize input and persist chosen rate
+            const rate = Number(r) || 1;
+            player.preferredRate = rate;
             const btn = document.getElementById('speed-btn');
-            if (btn) btn.innerText = (player.preferredRate || 1) + 'x';
+            if (btn) btn.innerText = rate + 'x';
 
-            // apply to YouTube player if present
+            // update menu visual selection
+            const menu = document.getElementById('speed-menu');
+            if (menu) {
+                Array.from(menu.querySelectorAll('button[data-speed]')).forEach(b => {
+                    if (Number(b.getAttribute('data-speed')) === rate) {
+                        b.classList.add('text-accent', 'font-semibold');
+                    } else {
+                        b.classList.remove('text-accent', 'font-semibold');
+                    }
+                });
+            }
+
+            // apply to YouTube player if present (guarded)
             try {
                 if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.setPlaybackRate === 'function') {
                     try { player.ytPlayer.setPlaybackRate(player.preferredRate); } catch(_) {}
@@ -2752,6 +2786,47 @@
                 }
             } catch (e) { /* ignore */ }
         }
+
+        // Speed menu: open/close behavior so mouse clicks don't close it immediately.
+        (function(){
+            const wrapper = document.getElementById('speed-control-wrapper');
+            const btn = document.getElementById('speed-btn');
+            const menu = document.getElementById('speed-menu');
+
+            if (!btn || !menu) return;
+
+            // Toggle menu on button click
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = !menu.classList.contains('hidden');
+                if (isOpen) {
+                    menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false');
+                } else {
+                    menu.classList.remove('hidden'); btn.setAttribute('aria-expanded', 'true');
+                }
+            }, { passive: true });
+
+            // Delegate clicks inside menu to setSpeed and keep menu open briefly for feedback then close
+            menu.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const target = e.target.closest('button[data-speed]');
+                if (!target) return;
+                const s = Number(target.getAttribute('data-speed')) || 1;
+                setSpeed(s);
+                // keep menu visible very briefly then close to show feedback
+                setTimeout(() => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); }, 220);
+            });
+
+            // Close menu when clicking outside or pressing Escape
+            document.addEventListener('click', () => { if (!menu.classList.contains('hidden')) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); } }, { passive: true });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.classList.contains('hidden')) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); } });
+
+            // initialize label from stored preferredRate if available
+            try {
+                if (player && typeof player.preferredRate === 'number') setSpeed(player.preferredRate);
+                else setSpeed(1);
+            } catch(_) { setSpeed(1); }
+        })();
         function toggleMute() { 
             if(player.vid) { 
                 player.vid.muted = !player.vid.muted; 
@@ -2762,6 +2837,86 @@
         function toggleFullscreen() {
             const m = document.getElementById('player-modal');
             !document.fullscreenElement ? m.requestFullscreen().catch(e=>e) : document.exitFullscreen();
+        }
+
+        // Picture-in-Picture toggle for native video (graceful no-op for embeds)
+        async function togglePiP() {
+            try {
+                // if a native video element exists use requestPictureInPicture
+                if (player && player.vid && 'requestPictureInPicture' in player.vid) {
+                    // leave PiP if already active for this document
+                    if (document.pictureInPictureElement) {
+                        await document.exitPictureInPicture();
+                        return;
+                    }
+                    // request PiP
+                    await player.vid.requestPictureInPicture();
+                    return;
+                }
+
+                // For browsers that support document.pictureInPictureEnabled but requires an <video> element, try to find one
+                const vid = document.querySelector('#main-video');
+                if (vid && 'requestPictureInPicture' in vid) {
+                    if (document.pictureInPictureElement) {
+                        await document.exitPictureInPicture();
+                    } else {
+                        await vid.requestPictureInPicture();
+                    }
+                    return;
+                }
+
+                // If we reach here PiP not supported or embed; show a subtle fallback (quick hint via small legal modal)
+                openLegal2();
+            } catch (e) {
+                // ignore or optionally surface a tiny UI change; fallback to open instructions modal
+                openLegal2();
+            }
+        }
+
+        // "Assistir na TV" using Presentation API when available; fallback opens the current media URL in a new window for manual cast
+        async function startCast() {
+            try {
+                // prefer Presentation API
+                const presentationSupported = !!(navigator && navigator.presentation && navigator.presentation.requestSession);
+                let mediaUrl = null;
+
+                // Determine a sensible URL to present: prefer current context's url, else player src
+                if (player && player.context && player.context.url) mediaUrl = player.context.url;
+                else {
+                    const vid = player && player.vid ? player.vid : document.querySelector('#main-video');
+                    if (vid && vid.currentSrc) mediaUrl = vid.currentSrc || vid.src;
+                }
+
+                // If URL looks like an embeddable iframe (tokyvideo / player links), prefer showing a minimal instructions modal (openLegal2)
+                if (!mediaUrl) {
+                    openLegal2();
+                    return;
+                }
+
+                // If Presentation API is available, request a session with the media URL
+                if (presentationSupported) {
+                    try {
+                        const session = await navigator.presentation.requestSession(mediaUrl);
+                        // session started — optionally close local player to avoid duplicate playback
+                        // we don't forcibly stop local playback, but we can show a small instruction (reuse legal modal)
+                        openLegal2();
+                        // store or observe session if desired (not necessary for basic flow)
+                        return;
+                    } catch (err) {
+                        // fallthrough to fallback open
+                    }
+                }
+
+                // Fallback: open a minimal player window/tab with the media URL so user can use browser's Cast UI (Chrome's toolbar cast)
+                // This doesn't directly cast but enables easier manual sending to devices.
+                const w = window.open(mediaUrl, '_blank', 'noopener,noreferrer');
+                if (!w) {
+                    // popup blocked: show instructions modal instead
+                    openLegal2();
+                }
+            } catch (e) {
+                openLegal2();
+            }
         }
         function updatePlayBtns(p) {
             const i = p ? 'ph-play' : 'ph-pause';
