@@ -1108,7 +1108,8 @@
 
                 const size = detectBySize();
                 const consoleHack = detectByConsoleHack();
-                if (size || consoleHack) {
+                // require both heuristics to agree to avoid false positives (both size and console-hack)
+                if (size && consoleHack) {
                     triggerDevtoolsResponse();
                 }
             }
