@@ -2839,38 +2839,68 @@
             !document.fullscreenElement ? m.requestFullscreen().catch(e=>e) : document.exitFullscreen();
         }
 
-        // Picture-in-Picture toggle for native video (graceful no-op for embeds)
+        // Picture-in-Picture toggle for native video (graceful non-blocking fallback)
         async function togglePiP() {
             try {
-                // if a native video element exists use requestPictureInPicture
-                if (player && player.vid && 'requestPictureInPicture' in player.vid) {
-                    // leave PiP if already active for this document
-                    if (document.pictureInPictureElement) {
-                        await document.exitPictureInPicture();
-                        return;
-                    }
-                    // request PiP
-                    await player.vid.requestPictureInPicture();
-                    return;
-                }
+                // Prefer native video element from player object
+                const vidEl = (player && player.vid) ? player.vid : document.querySelector('#main-video');
 
-                // For browsers that support document.pictureInPictureEnabled but requires an <video> element, try to find one
-                const vid = document.querySelector('#main-video');
-                if (vid && 'requestPictureInPicture' in vid) {
-                    if (document.pictureInPictureElement) {
-                        await document.exitPictureInPicture();
+                if (!vidEl || typeof vidEl.requestPictureInPicture !== 'function') {
+                    // If the document-level PiP capability exists but no video element is present, notify user.
+                    if (document.pictureInPictureEnabled) {
+                        showToast('Nenhum vídeo compatível encontrado para PiP.');
                     } else {
-                        await vid.requestPictureInPicture();
+                        showToast('Picture-in-Picture não suportado neste navegador.');
                     }
                     return;
                 }
 
-                // If we reach here PiP not supported or embed; show a subtle fallback (quick hint via small legal modal)
-                openLegal2();
+                // If already in PiP, exit; otherwise request PiP
+                if (document.pictureInPictureElement === vidEl) {
+                    await document.exitPictureInPicture();
+                } else {
+                    await vidEl.requestPictureInPicture();
+                }
             } catch (e) {
-                // ignore or optionally surface a tiny UI change; fallback to open instructions modal
-                openLegal2();
+                // Non-blocking feedback instead of opening any modal
+                console.warn('PiP falhou:', e);
+                showToast('Não foi possível ativar PiP.');
             }
+        }
+
+        // small ephemeral toast helper (non-blocking feedback for PiP/fallbacks)
+        function showToast(msg, duration = 2200) {
+            try {
+                let t = document.getElementById('lumina-toast');
+                if (!t) {
+                    t = document.createElement('div');
+                    t.id = 'lumina-toast';
+                    t.style.position = 'fixed';
+                    t.style.left = '50%';
+                    t.style.transform = 'translateX(-50%)';
+                    t.style.bottom = '18px';
+                    t.style.zIndex = '99999';
+                    t.style.padding = '10px 14px';
+                    t.style.background = 'rgba(0,0,0,0.7)';
+                    t.style.color = 'white';
+                    t.style.borderRadius = '12px';
+                    t.style.fontSize = '13px';
+                    t.style.backdropFilter = 'blur(6px)';
+                    t.style.boxShadow = '0 8px 30px rgba(0,0,0,0.55)';
+                    document.body.appendChild(t);
+                }
+                t.innerText = msg;
+                t.style.opacity = '1';
+                // reset hide timer
+                if (t._hideTimer) clearTimeout(t._hideTimer);
+                t._hideTimer = setTimeout(() => {
+                    t.style.transition = 'opacity 260ms ease';
+                    t.style.opacity = '0';
+                    setTimeout(() => {
+                        try { t.remove(); } catch(_) {}
+                    }, 300);
+                }, duration);
+            } catch (e) { /* ignore */ }
         }
 
         // "Assistir na TV" using Presentation API when available; fallback opens the current media URL in a new window for manual cast
