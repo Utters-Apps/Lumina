@@ -3330,10 +3330,177 @@
         // store beforeinstallprompt event for optional use by UI
         window.deferredInstallPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
+            // prevent automatic mini-infobar, we'll show a beautiful Android-only modal once
             e.preventDefault();
             window.deferredInstallPrompt = e;
             // do not prompt immediately; UI can call window.deferredInstallPrompt.prompt() when desired
         });
+    </script>
+
+    <!-- Android-only "Install Lumina" liquid modal (shows once) -->
+    <style>
+        /* Liquid, soft modal for Android install prompt */
+        #android-install-modal { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        #android-install-modal.show { display: flex; }
+        #android-install-card {
+            width: min(660px, calc(100% - 36px));
+            border-radius: 22px;
+            padding: 18px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 20px 60px rgba(4,4,6,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+            backdrop-filter: blur(14px) saturate(120%);
+            -webkit-backdrop-filter: blur(14px) saturate(120%);
+            color: #fff;
+            transform: translateY(8px) scale(0.99);
+            opacity: 0;
+            transition: transform 420ms cubic-bezier(0.16,1,0.3,1), opacity 320ms ease;
+            overflow: hidden;
+        }
+        #android-install-modal.show #android-install-card { transform: translateY(0) scale(1); opacity: 1; }
+
+        .liquid-hero {
+            display: flex; gap: 14px; align-items: center;
+        }
+        .liquid-icon {
+            width: 72px; height: 72px; border-radius: 18px; flex: 0 0 72px;
+            background: linear-gradient(135deg,#111827,#0b1220);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.5), inset 0 2px 8px rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .liquid-icon img { width: 56px; height: 56px; border-radius: 12px; object-fit: cover; }
+
+        .liquid-title { font-family: 'Outfit', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; font-weight: 700; font-size: 18px; letter-spacing: -0.2px; }
+        .liquid-desc { color: rgba(255,255,255,0.78); font-size: 13px; margin-top: 6px; line-height: 1.35; }
+
+        .liquid-actions { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
+        .btn-install {
+            background: linear-gradient(90deg,#8b5cf6,#7c3aed);
+            color: black; padding: 10px 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer;
+            box-shadow: 0 8px 30px rgba(124,58,237,0.22);
+            min-width: 140px; text-align: center;
+        }
+        .btn-later {
+            background: transparent; color: rgba(255,255,255,0.9); padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer;
+        }
+
+        .liquid-subtle {
+            margin-top: 10px; font-size: 12px; color: rgba(255,255,255,0.55);
+        }
+
+        @media (max-width: 520px) {
+            #android-install-card { border-radius: 18px; padding: 14px; }
+            .liquid-icon { width: 60px; height: 60px; flex: 0 0 60px; }
+            .liquid-title { font-size: 16px; }
+            .btn-install { min-width: 120px; padding: 10px 12px; }
+        }
+    </style>
+
+    <div id="android-install-modal" aria-hidden="true" role="dialog" aria-label="Instalar Lumina">
+        <div id="android-install-card" class="glass" role="document">
+            <div class="liquid-hero">
+                <div class="liquid-icon">
+                    <img src="fiveicon-512.png" alt="Lumina">
+                </div>
+                <div style="flex:1;min-width:0">
+                    <div class="liquid-title">Baixar Lumina</div>
+                    <div class="liquid-desc">Instale o app Lumina no seu dispositivo Android para uma experiência mais rápida, offline e com atalho na tela inicial.</div>
+                    <div class="liquid-subtle">Toque em "Baixar" para instalar o PWA. Você pode remover a notificação a qualquer momento.</div>
+                </div>
+                <button id="android-install-close" class="btn-later" style="margin-left:12px;align-self:flex-start">Fechar</button>
+            </div>
+
+            <div class="liquid-actions" style="justify-content:flex-end">
+                <button id="android-install-action" class="btn-install">Baixar Lumina</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function(){
+            const KEY = 'lumina_android_prompt_shown_v1';
+            // Simple Android detection: prefer UA check for Android and exclude iOS/ChromeOS desktop-like UA
+            function isAndroid() {
+                try {
+                    const ua = navigator.userAgent || navigator.vendor || '';
+                    return /android/i.test(ua) && !/windows phone/i.test(ua);
+                } catch(e) { return false; }
+            }
+
+            // Show modal only once and only for Android devices when beforeinstallprompt has fired (deferredInstallPrompt stored)
+            function tryShowInstallModal() {
+                try {
+                    if (!isAndroid()) return;
+                    if (localStorage.getItem(KEY)) return;
+                    // if we already have the saved beforeinstallprompt event, show; otherwise wait a short time for it
+                    const showIfReady = () => {
+                        const e = window.deferredInstallPrompt;
+                        if (!e) return; // don't auto show if no event
+                        // show modal
+                        const modal = document.getElementById('android-install-modal');
+                        if (!modal) return;
+                        modal.classList.add('show');
+                        modal.setAttribute('aria-hidden', 'false');
+                    };
+
+                    // attempt to show after a short idle to avoid fighting page load
+                    setTimeout(showIfReady, 900);
+                } catch (e) { /* silent */ }
+            }
+
+            // Wire actions
+            document.addEventListener('click', (ev) => {
+                // close button
+                if (ev.target && ev.target.id === 'android-install-close') {
+                    const modal = document.getElementById('android-install-modal');
+                    if (modal) modal.classList.remove('show');
+                    // mark as shown so it won't reappear
+                    try { localStorage.setItem(KEY, '1'); } catch(_) {}
+                }
+                // install action button
+                if (ev.target && ev.target.id === 'android-install-action') {
+                    ev.preventDefault();
+                    const modal = document.getElementById('android-install-modal');
+                    const promptEvent = window.deferredInstallPrompt;
+                    // prefer calling the stored beforeinstallprompt to trigger native install UI
+                    if (promptEvent && typeof promptEvent.prompt === 'function') {
+                        // record shown so it won't show again (we'll still respect the user's choice)
+                        try { localStorage.setItem(KEY, '1'); } catch(_) {}
+                        promptEvent.prompt();
+                        promptEvent.userChoice.then(choice => {
+                            // hide modal regardless of choice
+                            if (modal) modal.classList.remove('show');
+                            // clear stored prompt (best-effort)
+                            try { window.deferredInstallPrompt = null; } catch(_) {}
+                        }).catch(() => {
+                            if (modal) modal.classList.remove('show');
+                            try { window.deferredInstallPrompt = null; } catch(_) {}
+                        });
+                    } else {
+                        // fallback: give the user a simple hint to add to home screen manually
+                        try { localStorage.setItem(KEY, '1'); } catch(_) {}
+                        if (modal) modal.classList.remove('show');
+                        // show a subtle toast-like fallback (no modal) — use navigator.share as a gentle nudge to copy link if supported
+                        try {
+                            // attempt to prompt user to bookmark by opening the manifest start_url
+                            const p = window.location.origin + (window.location.pathname || '/');
+                            // open a small info modal (reuse existing legal2) as fallback instructions
+                            openLegal2();
+                        } catch(e) {}
+                    }
+                }
+            }, { passive: true });
+
+            // show when app ready and on load
+            window.addEventListener('load', () => {
+                tryShowInstallModal();
+                // also attempt after beforeinstallprompt event if it fires later
+                window.addEventListener('beforeinstallprompt', () => {
+                    tryShowInstallModal();
+                });
+            });
+        })();
     </script>
 </body>
 </html>
