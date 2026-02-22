@@ -368,6 +368,19 @@
         <button onclick="cancelPlay()" class="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors">Cancelar</button>
     </div>
 
+    <!-- Rotate To Vertical Prompt (shown when user closes player on mobile) -->
+    <div id="rotate-vertical-modal" class="fixed inset-0 z-[75] bg-background/95 backdrop-blur-xl hidden flex-col items-center justify-center px-8 text-center transition-opacity">
+        <div class="w-24 h-24 rounded-3xl glass flex items-center justify-center mb-6">
+            <i class="ph ph-device-mobile-signal text-4xl text-white animate-[pulse_1.6s_infinite]"></i>
+        </div>
+        <h3 class="font-display text-2xl font-semibold text-white mb-2">Gire seu dispositivo</h3>
+        <p class="text-white/60 text-sm max-w-[260px] mb-6">Para continuar navegando no app em modo vertical, por favor gire seu aparelho para a orientação vertical.</p>
+        <div class="flex gap-3">
+            <button onclick="dismissRotateVertical()" class="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors">Fechar</button>
+            <button onclick="acknowledgeRotate()" class="px-5 py-2.5 rounded-full bg-accent hover:bg-accentHover text-black font-medium text-sm transition-colors">Entendi</button>
+        </div>
+    </div>
+
     <script>
         // --- DATABASE ---
         const db = [
@@ -1141,6 +1154,24 @@
             try { return Array.from(root.querySelectorAll(sel)); } catch (e) { return []; }
         };
 
+        // Convenience wrappers to make code clearer and slightly faster (fewer lookups and safer calls)
+        // byId / bySel reduce repeated string building and centralize null-safety.
+        const byId = (id) => doom('#' + id);
+        const bySel = (sel, root) => doom(sel, root);
+        const allSel = (sel, root) => doomAll(sel, root);
+
+        // Small helper to safely set innerHTML without throwing when node missing
+        const safeSetHTML = (id, html) => {
+            const el = byId(id);
+            if (el) el.innerHTML = html;
+        };
+
+        // Safe event attach (no-op when element missing)
+        const safeOn = (id, evt, fn) => {
+            const el = byId(id);
+            if (el && typeof fn === 'function') el.addEventListener(evt, fn);
+        };
+
         // Debounced + capped localStorage writer to avoid flooding storage and crashing the page.
         let __saveProgressTimer = null;
         function saveProgressData() {
@@ -1661,86 +1692,49 @@
         function shareItemById(id, context = {}) {
             const link = buildShareLinkForContext(id, context);
 
-            // Prefer native share dialog when available
+            // Prefer native share dialog when available; share only the URL (no title/text)
             if (navigator.share) {
                 try {
-                    navigator.share({
-                        title: 'Confira isso no Lumina',
-                        text: 'Veja este título no Lumina',
-                        url: link
-                    }).then(() => {
-                        // update browser URL without reloading so opening the same tab preserves state
+                    navigator.share({ url: link }).then(() => {
                         try { history.replaceState(null, '', link); } catch(_) {}
-                    }).catch(async (err) => {
-                        // if user cancels or share fails, fallback to copy
+                    }).catch(async () => {
+                        // on failure or cancel, silently copy the link to clipboard and give minimal button feedback
                         const ok = await copyToClipboard(link);
-                        if (ok) {
-                            showShareFeedback(id, link);
-                        } else {
-                            alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
+                        const btn = document.getElementById(`share-btn-${id}`);
+                        if (ok && btn) {
+                            const prev = btn.innerHTML;
+                            btn.innerText = 'Copiado!';
+                            setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1400);
                         }
                         try { history.replaceState(null, '', link); } catch(_) {}
                     });
                 } catch (e) {
-                    // safety fallback to clipboard
+                    // fallback: attempt to copy the link to clipboard (no alerts or modals)
                     copyToClipboard(link).then(ok => {
-                        if (ok) showShareFeedback(id, link);
-                        else alert('Não foi possível compartilhar automaticamente. Aqui está o link: ' + link);
+                        const btn = document.getElementById(`share-btn-${id}`);
+                        if (ok && btn) {
+                            const prev = btn.innerHTML;
+                            btn.innerText = 'Copiado!';
+                            setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1400);
+                        }
                         try { history.replaceState(null, '', link); } catch(_) {}
                     });
                 }
             } else {
-                // fallback: copy to clipboard and notify user
+                // If Web Share API not available, just copy link to clipboard silently and show minimal button feedback
                 copyToClipboard(link).then(ok => {
-                    if (ok) showShareFeedback(id, link);
-                    else alert('Não foi possível copiar o link automaticamente. Aqui está: ' + link);
+                    const btn = document.getElementById(`share-btn-${id}`);
+                    if (ok && btn) {
+                        const prev = btn.innerHTML;
+                        btn.innerText = 'Copiado!';
+                        setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1400);
+                    }
                     try { history.replaceState(null, '', link); } catch(_) {}
                 });
             }
         }
 
-        function showShareFeedback(id, link) {
-            // non-blocking toast in top-right corner, prefer subtle UI over alerts
-            try {
-                // prefer updating the share button text if visible
-                const btn = document.getElementById(`share-btn-${id}`);
-                if (btn) {
-                    const prev = btn.innerHTML;
-                    btn.innerText = 'Copiado!';
-                    setTimeout(() => { if (btn) btn.innerHTML = prev; }, 1500);
-                }
 
-                // toast
-                let toast = document.getElementById('lumina-share-toast');
-                if (!toast) {
-                    toast = document.createElement('div');
-                    toast.id = 'lumina-share-toast';
-                    toast.style.position = 'fixed';
-                    toast.style.top = '18px';
-                    toast.style.right = '18px';
-                    toast.style.zIndex = 99999;
-                    toast.style.background = 'rgba(0,0,0,0.7)';
-                    toast.style.color = '#fff';
-                    toast.style.padding = '10px 14px';
-                    toast.style.borderRadius = '12px';
-                    toast.style.fontSize = '13px';
-                    toast.style.backdropFilter = 'blur(6px)';
-                    toast.style.boxShadow = '0 6px 18px rgba(0,0,0,0.5)';
-                    document.body.appendChild(toast);
-                }
-                toast.innerText = 'Link copiado para a área de transferência';
-                toast.style.opacity = '1';
-                toast.style.transform = 'translateY(0)';
-                // auto-hide
-                clearTimeout(toast._hideTimer);
-                toast._hideTimer = setTimeout(() => {
-                    try { toast.style.opacity = '0'; toast.style.transform = 'translateY(-8px)'; } catch(_) {}
-                }, 1400);
-            } catch (e) {
-                // final fallback to alert if anything fails
-                try { alert('Link copiado: ' + link); } catch(_) {}
-            }
-        }
 
         // on app init, check for share query and open corresponding details (supports s/e for series)
         function handleSharedQuery() {
@@ -2618,7 +2612,47 @@
         };
 
         function openPlayer(url, title, context) { player.init(url, title, context); }
-        function closePlayer() { player.close(); window.onkeydown = null; }
+        function closePlayer() {
+            // Close the player and on mobile show a "rotate to vertical" prompt so user knows to return to portrait.
+            try {
+                player.close();
+            } catch (e) { /* ignore */ }
+            window.onkeydown = null;
+
+            // If on a small/mobile viewport, show rotate-to-vertical modal after closing the player
+            try {
+                if (window.innerWidth <= 768) {
+                    const modal = document.getElementById('rotate-vertical-modal');
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                        // quick fade-in
+                        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                        // prevent background scroll while prompt visible
+                        document.body.style.overflow = 'hidden';
+                    }
+                }
+            } catch (e) { /* silent */ }
+        }
+
+        // Dismiss the rotate-to-vertical prompt and restore normal scrolling
+        function dismissRotateVertical() {
+            try {
+                const modal = document.getElementById('rotate-vertical-modal');
+                if (!modal) return;
+                modal.classList.add('opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }, 240);
+            } catch (e) {}
+        }
+
+        // Acknowledge button: simply dismiss the modal and restore scrolling
+        function acknowledgeRotate() {
+            dismissRotateVertical();
+        }
         function togglePlay() {
             // unified play/pause for native video and YouTube iframe player
             try {
@@ -3161,6 +3195,16 @@
                 padding: 16px;
                 margin: 0 6px;
             }
+        }
+
+        /* Move the details modal close "X" slightly lower on mobile for easier touch reach */
+        @media (max-width: 767px) {
+            #close-details-btn {
+                top: 72px !important;
+                right: 14px !important;
+            }
+            /* Slightly enlarge the tap target on mobile to ensure comfortable interaction */
+            #close-details-btn { width: 44px; height: 44px; }
         }
     </style>
 
