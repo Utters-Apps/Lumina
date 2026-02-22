@@ -4,6 +4,8 @@ const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
   '/manifest.json',
+  '/fiveicon.png',
+  '/fiveicon-512.png',
   // fonts & external assets are best-effort; keep minimal to avoid large cache
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap'
 ];
