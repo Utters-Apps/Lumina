@@ -1069,9 +1069,19 @@
             const host = (window.location && window.location.hostname) ? window.location.hostname.replace(/^www\./,'') : '';
             const consoleAllowed = HOST_WHITELIST.some(h => host === h || host.endsWith('.' + h));
 
-            // threshold for outer/inner size difference
+            // threshold for outer/inner size difference (base)
             const SIZE_THRESHOLD = 160;
             let lastDetect = 0;
+            const PAGE_LOAD = Date.now(); // record when the page initialized so we can allow an initial grace period
+
+            // Baseline snapshot captured during the initial grace period to compare "suspicious" later.
+            const baseline = {
+                outerWidth: (typeof window.outerWidth === 'number') ? window.outerWidth : 0,
+                innerWidth: (typeof window.innerWidth === 'number') ? window.innerWidth : 0,
+                outerHeight: (typeof window.outerHeight === 'number') ? window.outerHeight : 0,
+                innerHeight: (typeof window.innerHeight === 'number') ? window.innerHeight : 0,
+                consoleHack: false // record if console hack triggers during first 5s
+            };
 
             // attempt multiple heuristics for better detection coverage
             function detectBySize() {
@@ -1098,18 +1108,57 @@
                 }
             }
 
+            // Compare current heuristics against baseline and only treat as suspicious when deviations are
+            // substantially different from what occurred during the initial 5-second window.
             function checkAll() {
                 // If console is allowed on this host, do not run further detection.
                 if (consoleAllowed) return;
-                // avoid running too frequently
-                const now = Date.now();
-                if (now - lastDetect < 700) return;
-                lastDetect = now;
 
-                const size = detectBySize();
-                const consoleHack = detectByConsoleHack();
-                // require both heuristics to agree to avoid false positives (both size and console-hack)
-                if (size && consoleHack) {
+                const nowTime = Date.now();
+                const sinceLoad = nowTime - PAGE_LOAD;
+
+                // During the initial grace period we capture a conservative baseline instead of triggering.
+                try {
+                    if (sinceLoad < 5000) {
+                        // update baseline measurements to reflect normal early activity
+                        baseline.outerWidth = (typeof window.outerWidth === 'number') ? window.outerWidth : baseline.outerWidth;
+                        baseline.innerWidth = (typeof window.innerWidth === 'number') ? window.innerWidth : baseline.innerWidth;
+                        baseline.outerHeight = (typeof window.outerHeight === 'number') ? window.outerHeight : baseline.outerHeight;
+                        baseline.innerHeight = (typeof window.innerHeight === 'number') ? window.innerHeight : baseline.innerHeight;
+
+                        // attempt console hack once during baseline; record result so later "detections" must differ significantly
+                        try { baseline.consoleHack = baseline.consoleHack || detectByConsoleHack(); } catch(_) {}
+                        return;
+                    }
+                } catch (_) {}
+
+                // avoid running too frequently
+                if (nowTime - lastDetect < 700) return;
+                lastDetect = nowTime;
+
+                // current heuristic values
+                const currWidthDiff = Math.abs(window.outerWidth - window.innerWidth);
+                const currHeightDiff = Math.abs(window.outerHeight - window.innerHeight);
+                const currSizeFlag = currWidthDiff > SIZE_THRESHOLD || currHeightDiff > SIZE_THRESHOLD;
+
+                // compute baseline diffs captured earlier
+                const baseWidthDiff = Math.abs((baseline.outerWidth || 0) - (baseline.innerWidth || 0));
+                const baseHeightDiff = Math.abs((baseline.outerHeight || 0) - (baseline.innerHeight || 0));
+                const baseSizeFlag = baseWidthDiff > SIZE_THRESHOLD || baseHeightDiff > SIZE_THRESHOLD;
+
+                // require a sizeable change from baseline: current diffs must exceed baseline by a multiplier
+                const SIZE_MULTIPLIER = 1.6; // "muito diferente" multiplier
+                const sizeDeviation = (currWidthDiff > baseWidthDiff * SIZE_MULTIPLIER) || (currHeightDiff > baseHeightDiff * SIZE_MULTIPLIER);
+
+                // console hack detection compared to baseline: only treat as new if baseline didn't already show it
+                const consoleHackNow = detectByConsoleHack();
+                const consoleNew = consoleHackNow && !baseline.consoleHack;
+
+                // Final decision: require both "significant size deviation" and a console-hack newly observed,
+                // or size deviation alone if baseline was very quiet (defensive fallback).
+                const suspicious = (sizeDeviation && consoleNew) || (sizeDeviation && !baseSizeFlag);
+
+                if (suspicious) {
                     triggerDevtoolsResponse();
                 }
             }
