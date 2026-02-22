@@ -1692,6 +1692,18 @@
                 setTimeout(() => {
                     try { openDetails(item.id); } catch (err) { /* silent */ }
                 }, 250);
+
+                // Remove share query parameters after a short delay so the URL becomes normal (user asked for 2s)
+                setTimeout(() => {
+                    try {
+                        const cur = new URL(window.location.href);
+                        cur.searchParams.delete('share');
+                        cur.searchParams.delete('s');
+                        cur.searchParams.delete('e');
+                        const newPath = cur.pathname + (cur.search && cur.search !== '?' ? cur.search : '');
+                        history.replaceState(null, '', newPath);
+                    } catch (e) { /* silent */ }
+                }, 2000);
             } catch (e) { /* fail silently */ }
         }
 
