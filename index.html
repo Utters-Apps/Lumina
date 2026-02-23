@@ -1214,6 +1214,35 @@
                 url: 'https://youtu.be/tVCfNHIOTgQ?feature=shared'
             },
             {
+                id: 'alvin-2007',
+                title: 'Alvin e os Esquilos',
+                originalTitle: 'Alvin and the Chipmunks',
+                type: 'filme',
+                category: 'Animação/Live‑action, Aventura, Comédia, Família, Musical',
+                year: '2007',
+                cover: 'https://ntvb.tmsimg.com/assets/p170967_v_h10_aa.jpg?w=1280&h=720',
+                description: 'Três esquilos cantores falantes — Alvin, Simon e Theodore — acabam indo morar com o compositor Dave Seville. Quando ele descobre o talento musical deles, transforma‑os em um sucesso pop, mas a fama começa a testar a lealdade e a amizade entre eles.',
+                ageRating: 'L',
+                distributor: '20th Century Fox',
+                // classification note kept as an informal field for reference
+                classificationNote: 'Livre / PG (recomendado a partir de ~10 anos) – classificação familiar com humor leve e música; em algumas regiões é considerada adequada para crianças (~10+).',
+                url: 'https://www.dropbox.com/scl/fi/twppv3ogoz1f3pwdqws4f/Alvin-e-os-Esquilos-2007-Dublado-720p-1.mp4?rlkey=nz47x3pzt37t1g0frxg2t5bct&st=pl7cqnty&raw=1'
+            },
+            {
+                id: 'guerreiras-kpop',
+                title: 'Guerreiras do K‑Pop',
+                originalTitle: 'K‑Pop Hunters',
+                type: 'filme',
+                category: 'Animação, Ação, Aventura, Música, Fantasia',
+                year: '2025',
+                cover: 'https://assets.b9.com.br/wp-content/uploads/2025/09/kpop-hunter-theme-park-1280x720.jpg',
+                description: 'Três integrantes do grupo de K‑pop Huntr/x — Rumi, Mira e Zoey — além de serem estrelas da música, assumem a missão secreta de combater demônios que ameaçam o mundo, enfrentando também uma boyband rival enquanto equilibram fama e dever.',
+                ageRating: '10',
+                distributor: 'Netflix / Sony Pictures Animation',
+                releaseNote: 'Estreiou em 20 de junho de 2025',
+                url: 'https://player.odycdn.com/v6/streams/a9d4f8c1c041f9cd0a7c6057984aa42230fbf179/ad8bab.mp4'
+            },
+            {
                 id: 'coraline',
                 title: 'Coraline e o Mundo Secreto',
                 originalTitle: 'Coraline',
@@ -2691,50 +2720,61 @@
         const player = {
             vid: null, iframe: null, uiTimeout: null, saveInterval: null, context: null, nextPromptShown: false, isSeeking: false, isEmbed: false, preferredRate: 1,
             
-            // Reset any leftover media state from a previous playback to avoid cross-content glitches.
-            resetContext: function() {
+            _cleanupBeforeInit: function() {
+                // fully tear down any previous player instance/state to avoid mixing metadata between plays
                 try {
-                    // clear intervals/timeouts and flags
-                    if (this.saveInterval) { clearInterval(this.saveInterval); this.saveInterval = null; }
-                    if (this.uiTimeout) { clearTimeout(this.uiTimeout); this.uiTimeout = null; }
                     if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
-                    // clear YouTube specific interval
+                    if (this.saveInterval) { clearInterval(this.saveInterval); this.saveInterval = null; }
                     if (this.ytSaveInterval) { clearInterval(this.ytSaveInterval); this.ytSaveInterval = null; }
-                    // destroy YT player cleanly if present
+
+                    if (this.ytPlayer && typeof this.ytPlayer.destroy === 'function') {
+                        try { this.ytPlayer.destroy(); } catch(_) {}
+                        this.ytPlayer = null;
+                    }
+
+                    if (this.vid) {
+                        try {
+                            this.vid.pause();
+                            this.vid.removeAttribute && this.vid.removeAttribute('src');
+                            this.vid.load && this.vid.load();
+                        } catch (_) {}
+                        try { this.vid.src = ''; } catch(_) {}
+                        this.vid = null;
+                    }
+
+                    if (this.iframe) {
+                        try { this.iframe.src = 'about:blank'; } catch(_) {}
+                        this.iframe = null;
+                    }
+
+                    // clear any leftover DOM controls bound handlers that might reference old player
                     try {
-                        if (this.ytPlayer && typeof this.ytPlayer.destroy === 'function') {
-                            this.ytPlayer.destroy();
-                        }
+                        const progBar = document.getElementById('progress-bar');
+                        const fill = document.getElementById('progress-fill');
+                        if (progBar) { progBar.oninput = null; progBar.onchange = null; progBar.value = 0; }
+                        if (fill) fill.style.width = '0%';
+                        const tc = document.getElementById('time-current');
+                        const td = document.getElementById('time-duration');
+                        if (tc) tc.innerText = '00:00';
+                        if (td) td.innerText = '00:00';
                     } catch(_) {}
-                    this.ytPlayer = null;
-                    this.isYouTube = false;
-                    // pause and remove native video
-                    try {
-                        if (this.vid) {
-                            try { this.vid.pause(); } catch(_) {}
-                            try { this.vid.removeAttribute('src'); this.vid.load && this.vid.load(); } catch(_) {}
-                        }
-                    } catch(_) {}
-                    this.vid = null;
-                    // remove iframe if present
-                    try {
-                        if (this.iframe && this.iframe.parentNode) this.iframe.parentNode.removeChild(this.iframe);
-                    } catch(_) {}
-                    this.iframe = null;
-                    // reset flags
+
+                    // reset state flags
                     this.context = null;
                     this.nextPromptShown = false;
                     this.isSeeking = false;
                     this.isEmbed = false;
-                } catch (e) {
-                    console.warn('player.resetContext failed', e);
-                }
+                    this.isYouTube = false;
+                    this.preferredRate = this.preferredRate || 1;
+
+                    // ensure UI shows default paused state
+                    try { updatePlayBtns(true); updateVolIcon(); } catch(_) {}
+                } catch (_) {}
             },
 
             init: function(url, title, context) {
-                // Ensure a clean slate before starting new playback to avoid residual listeners/intervals from prior media.
-                this.resetContext();
-
+                // defensively tear down any previous playback artifacts before initializing a new one
+                try { this._cleanupBeforeInit(); } catch(_) {}
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
                 const modal = document.getElementById('player-modal');
                 modal.classList.remove('hidden'); modal.classList.add('flex');
@@ -2746,10 +2786,19 @@
 
                 this.isEmbed = !isDirectVideo(url);
 
-                // Setup a 7s "load watchdog" to close player if no playable media starts (YouTube/embed/native)
+                // Setup a load watchdog to close player if no playable media starts (YouTube/embed/native).
+                // Dropbox-hosted sources can be slower; allow up to 11s for Dropbox URLs, otherwise default to 7s.
                 try {
                     // clear any previous load timeout
                     if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+
+                    // Determine appropriate timeout: longer for Dropbox links (11s), otherwise 7s
+                    let watchdogDelay = 7000;
+                    try {
+                        const lower = String(url || '').toLowerCase();
+                        if (lower.includes('dropbox.com')) watchdogDelay = 11000;
+                    } catch (e) { /* ignore and use default */ }
+
                     this.loadTimeout = setTimeout(() => {
                         try {
                             // Determine if playback has started for different types
@@ -2771,7 +2820,7 @@
                                 try { this.close(); } catch(_) { player.close && player.close(); }
                             }
                         } catch (_) {}
-                    }, 7000);
+                    }, watchdogDelay);
                 } catch (_) {}
 
                 // If it's an embed, attempt to detect YouTube and use the YT IFrame API to integrate with our custom UI.
@@ -4787,6 +4836,25 @@
                 const modal = document.getElementById('android-install-modal');
                 if (modal) modal.classList.remove('show');
             } catch(e) {}
+        });
+
+        // Suppress noisy "The play() request was interrupted by a call to pause()" unhandled promise rejections
+        // We catch unhandledrejection events and ignore the specific DOMException message while still letting other rejections surface
+        window.addEventListener('unhandledrejection', (ev) => {
+            try {
+                const reason = ev && ev.reason;
+                const msg = (reason && reason.message) ? String(reason.message) : String(reason);
+                // match common browser message (be permissive)
+                if (msg && /play\(\) request was interrupted by a call to pause/i.test(msg)) {
+                    // prevent default logging and mark handled; stop immediate propagation to avoid other listeners re-raising it
+                    try { ev.preventDefault && ev.preventDefault(); } catch(_) {}
+                    try { ev.stopImmediatePropagation && ev.stopImmediatePropagation(); } catch(_) {}
+                    return;
+                }
+            } catch (e) {
+                // fallthrough to allow default handling if our matcher fails
+            }
+            // allow other unhandled rejections to behave normally
         });
     </script>
 
