@@ -1906,6 +1906,22 @@
             } catch (e) { /* fail silently */ }
         }
 
+        // --- Orientation toggle persistence (global) ---
+        // Saved key: 'lumina_disable_orientation_v1' (boolean string '1' = disabled)
+        function getOrientationDisabled() {
+            try {
+                return localStorage.getItem('lumina_disable_orientation_v1') === '1';
+            } catch (e) {
+                return false;
+            }
+        }
+        function setOrientationDisabled(val) {
+            try {
+                if (val) localStorage.setItem('lumina_disable_orientation_v1', '1');
+                else localStorage.removeItem('lumina_disable_orientation_v1');
+            } catch (e) {}
+        }
+
         // --- DETAILS MODAL ---
         function openDetails(id) {
             const item = db.find(i => i.id === id);
@@ -2050,6 +2066,10 @@
                             <button id="share-btn-${item.id}" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors" title="Compartilhar">
                                 <i class="ph ph-share-network text-xl"></i>
                             </button>
+                            <!-- Mobile-only: toggle global orientation prompt on/off (saves to localStorage; applies to all items) -->
+                            <button id="orient-toggle-${item.id}" onclick="event.stopPropagation();" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors md:hidden" title="Alternar ajuste de orientação">
+                                <i class="ph ph-device-mobile text-white text-lg"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -2092,6 +2112,34 @@
                         } else {
                             shareItemById(item.id);
                         }
+                    };
+                }
+            } catch(e) { /* silent */ }
+
+            // Orientation toggle (mobile-only) - global setting persisted and applied to all items
+            try {
+                const orientBtn = doom(`#orient-toggle-${item.id}`);
+                if (orientBtn) {
+                    const renderState = () => {
+                        const disabled = getOrientationDisabled();
+                        orientBtn.innerHTML = disabled
+                            ? `<i class="ph-fill ph-device-mobile text-accent text-lg"></i>`
+                            : `<i class="ph ph-device-mobile text-white text-lg"></i>`;
+                        // Clarify that the toggle disables both horizontal (landscape prompt) and vertical (return-to-portrait prompt)
+                        orientBtn.title = disabled ? 'Ajuste de orientação desativado (horizontal + vertical)' : 'Ajuste de orientação ativado (horizontal + vertical)';
+                    };
+                    renderState();
+                    orientBtn.onclick = (ev) => {
+                        ev.stopPropagation();
+                        const now = !getOrientationDisabled();
+                        setOrientationDisabled(now);
+                        renderState();
+                        // small visual feedback
+                        orientBtn.classList.remove('pop-anim');
+                        void orientBtn.offsetWidth;
+                        orientBtn.classList.add('pop-anim');
+                        // re-render views so other UI updates reflect change
+                        renderView();
                     };
                 }
             } catch(e) { /* silent */ }
@@ -2258,7 +2306,8 @@
         // --- PLAYER LOGIC (supports direct video files and embed URLs) ---
         function requestPlay(url, title, context) {
             const isPortrait = window.innerHeight > window.innerWidth;
-            if (window.innerWidth <= 768 && isPortrait) {
+            // respect global mobile orientation toggle (if user disabled orientation prompt, skip it)
+            if (window.innerWidth <= 768 && isPortrait && !getOrientationDisabled()) {
                 state.pendingVideo = { url, title, context };
                 const modal = document.getElementById('orientation-modal');
                 modal.classList.remove('hidden');
@@ -2810,8 +2859,17 @@
             } catch (e) { /* ignore */ }
             window.onkeydown = null;
 
-            // Always show rotate-to-vertical modal after closing the player (improved UX)
+            // Show rotate-to-vertical modal after closing the player unless the user disabled orientation prompts
             try {
+                // Respect global orientation-disable toggle: if disabled, skip showing this prompt
+                if (getOrientationDisabled && getOrientationDisabled()) {
+                    // restore body overflow and exit early
+                    if (document.getElementById('player-modal').classList.contains('hidden') && document.getElementById('details-modal').classList.contains('hidden')) {
+                        document.body.style.overflow = '';
+                    }
+                    return;
+                }
+
                 const modal = document.getElementById('rotate-vertical-modal');
                 if (!modal) return;
 
