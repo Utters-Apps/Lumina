@@ -300,9 +300,16 @@
                 <div class="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-black/90 to-transparent"></div>
 
                 <div class="flex justify-between items-center w-full pt-8 px-8 relative pointer-events-auto">
-                    <button onclick="closePlayer()" class="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white">
-                        <i class="ph ph-arrow-left text-xl"></i>
-                    </button>
+                    <div class="flex items-center gap-3">
+                        <button onclick="closePlayer()" class="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white" title="Fechar player">
+                            <i class="ph ph-arrow-left text-xl"></i>
+                        </button>
+                        <!-- Cast button placed next to close for quick access (custom TV icon image) -->
+                        <button id="cast-top-btn" onclick="playOnTV()" class="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white" title="Transmitir na TV">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGKfnYZj4qHzTSj5JJo2-rOSsltvx4QaVDxA&s" alt="TV" class="w-5 h-5 object-contain">
+                        </button>
+                    </div>
+
                     <div class="flex flex-col items-center max-w-[60%] text-center">
                         <h2 id="player-series-title" class="text-white/60 text-xs font-semibold tracking-wide uppercase hidden md:block mb-1">Série</h2>
                         <h1 id="player-ep-title" class="text-white font-display font-medium text-lg md:text-xl truncate w-full">Episódio</h1>
@@ -364,8 +371,10 @@
                             </button>
 
                             <!-- Cast / Presentation API (fallback opens player URL in new window) -->
-                            <button id="cast-btn" onclick="startCast()" class="text-white hover:text-white/70 transition-colors" title="Assistir na TV">
-                                <i class="ph ph-tv text-2xl"></i>
+                            <!-- Google Cast launcher + unified cast button -->
+                            <google-cast-launcher style="display:none;"></google-cast-launcher>
+                            <button id="cast-btn" onclick="openCast()" class="text-white hover:text-white/70 transition-colors" title="Assistir na TV">
+                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGKfnYZj4qHzTSj5JJo2-rOSsltvx4QaVDxA&s" alt="TV" class="w-6 h-6 object-contain">
                             </button>
 
                             <button onclick="toggleFullscreen()" class="text-white hover:text-white/70 transition-colors">
@@ -554,6 +563,21 @@
                 description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
                 ageRating: '10',
                 url: 'https://drive.google.com/file/d/1-qpXor4EgfGwNzxNmETa3PriyCwLH7SM/preview'
+            },
+            {
+                id: 'zombies-4',
+                title: 'Zombies 4: A Era dos Vampiros',
+                type: 'filme',
+                category: 'Musical / Aventura / Comédia / Família / Romance',
+                year: '2025',
+                cover: 'https://cadernopop.com.br/wp-content/uploads/2025/07/Zombies-4-A-Era-dos-Vampiros-1024x575.webp',
+                description: 'Zed e Addison embarcam em uma viagem de verão que os leva a um acampamento onde surge um conflito entre Daywalkers e Vampiros. Para evitar uma nova guerra, eles precisam unir os grupos e manter a paz.',
+                ageRating: 'L',
+                distributor: 'Disney Channel',
+                production: 'Disney Branded Television',
+                productionNote: 'Distribuidora / Publicadora: Disney Branded Television / Disney Channel',
+                cast: ['Zed','Addison'],
+                url: 'https://www.tokyvideo.com/br/embed/765869'
             },
             {
                 id: 'super-mario-2023',
@@ -1447,7 +1471,7 @@
                     switchTab('home');
                 }
                 __searchDebounce = null;
-            }, 220);
+            }, 1000);
         }
 
         function renderView() {
@@ -1527,11 +1551,11 @@
                             </div>
 
                             <div class="relative">
-                                <button class="session-arrow left md:hidden" aria-label="scroll-left" onclick="scrollCards('continue-grid', -1)">
+                                <button class="session-arrow left" aria-label="scroll-left" onclick="scrollCards('continue-grid', -1)">
                                     <i class="ph ph-caret-left text-2xl"></i>
                                 </button>
                                 <div id="continue-grid" class="session-scroll hide-scroll session-body"></div>
-                                <button class="session-arrow right md:hidden" aria-label="scroll-right" onclick="scrollCards('continue-grid', 1)">
+                                <button class="session-arrow right" aria-label="scroll-right" onclick="scrollCards('continue-grid', 1)">
                                     <i class="ph ph-caret-right text-2xl"></i>
                                 </button>
                             </div>
@@ -2032,7 +2056,39 @@
                 return lines.join('');
             };
 
-            const metaHtml = buildMetaHtml();
+            // Build meta HTML: include known metaMap entries AND any credits/production fields present on the item itself
+            const metaHtml = (() => {
+                const lines = [];
+                // include mapped meta first (keeps curated info)
+                if (meta.original) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Original:</strong> ${meta.original}</div>`);
+                if (meta.production) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Produção:</strong> ${meta.production}</div>`);
+                if (meta.productionAndRights) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Produção/Direitos:</strong> ${meta.productionAndRights}</div>`);
+                if (meta.distribution) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Distribuição:</strong> ${meta.distribution}</div>`);
+                if (meta.studio) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Estúdio responsável:</strong> ${meta.studio}</div>`);
+                if (meta.brandRights) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Direitos da marca:</strong> ${meta.brandRights}</div>`);
+                if (meta.franchiseRights) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Direitos da franquia:</strong> ${meta.franchiseRights}</div>`);
+                if (meta.creator) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Obra criada por:</strong> ${meta.creator}</div>`);
+                if (meta.linkedTo) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Ligado a:</strong> ${meta.linkedTo}</div>`);
+                if (meta.productionAndDistribution) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Produção/Distribuição:</strong> ${meta.productionAndDistribution}</div>`);
+                if (meta.source) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Fonte:</strong> ${meta.source}</div>`);
+                if (meta.mangaPublisher) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Mangá publicado por:</strong> ${meta.mangaPublisher}</div>`);
+                if (meta.animeStudio) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Anime produzido por:</strong> ${meta.animeStudio}</div>`);
+                if (meta.franchiseCreator) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Franquia criada por:</strong> ${meta.franchiseCreator}</div>`);
+                if (meta.property) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Propriedade:</strong> ${meta.property}</div>`);
+                if (meta.characterOwner) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Personagem pertence a:</strong> ${meta.characterOwner}</div>`);
+
+                // Now include any explicit fields present on the item (credits/producer/distributor/cast/director)
+                if (item.production) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Produção:</strong> ${item.production}</div>`);
+                if (item.producer) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Produtor(es):</strong> ${Array.isArray(item.producer) ? item.producer.join(', ') : item.producer}</div>`);
+                if (item.distributor) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Distribuidora:</strong> ${item.distributor}</div>`);
+                if (item.productionNote) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Nota de produção:</strong> ${item.productionNote}</div>`);
+                if (item.director) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Direção:</strong> ${Array.isArray(item.director) ? item.director.join(', ') : item.director}</div>`);
+                if (item.writer) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Roteiro:</strong> ${Array.isArray(item.writer) ? item.writer.join(', ') : item.writer}</div>`);
+                if (item.cast && Array.isArray(item.cast) && item.cast.length) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Elenco:</strong> ${item.cast.join(', ')}</div>`);
+                if (item.rights) lines.push(`<div class="text-xs text-white/50 mb-1"><strong>Direitos:</strong> ${item.rights}</div>`);
+
+                return lines.join('');
+            })();
 
             content.innerHTML = `
                 <button id="close-details-btn" class="fixed top-6 right-6 z-[100] w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
@@ -3139,51 +3195,145 @@
             } catch (e) { /* ignore */ }
         }
 
-        // "Assistir na TV" using Presentation API when available; fallback opens the current media URL in a new window for manual cast
-        async function startCast() {
-            try {
-                // prefer Presentation API
-                const presentationSupported = !!(navigator && navigator.presentation && navigator.presentation.requestSession);
-                let mediaUrl = null;
-
-                // Determine a sensible URL to present: prefer current context's url, else player src
-                if (player && player.context && player.context.url) mediaUrl = player.context.url;
-                else {
-                    const vid = player && player.vid ? player.vid : document.querySelector('#main-video');
-                    if (vid && vid.currentSrc) mediaUrl = vid.currentSrc || vid.src;
-                }
-
-                // If URL looks like an embeddable iframe (tokyvideo / player links), prefer showing a minimal instructions modal (openLegal2)
-                if (!mediaUrl) {
-                    openLegal2();
-                    return;
-                }
-
-                // If Presentation API is available, request a session with the media URL
-                if (presentationSupported) {
-                    try {
-                        const session = await navigator.presentation.requestSession(mediaUrl);
-                        // session started — optionally close local player to avoid duplicate playback
-                        // we don't forcibly stop local playback, but we can show a small instruction (reuse legal modal)
-                        openLegal2();
-                        // store or observe session if desired (not necessary for basic flow)
-                        return;
-                    } catch (err) {
-                        // fallthrough to fallback open
-                    }
-                }
-
-                // Fallback: open a minimal player window/tab with the media URL so user can use browser's Cast UI (Chrome's toolbar cast)
-                // This doesn't directly cast but enables easier manual sending to devices.
-                const w = window.open(mediaUrl, '_blank', 'noopener,noreferrer');
-                if (!w) {
-                    // popup blocked: show instructions modal instead
-                    openLegal2();
-                }
-            } catch (e) {
-                openLegal2();
+        // Google Cast integration: load sender SDK and provide openCast / playOnTV helpers
+        (function(){
+            // Insert Cast SDK script tag (non-blocking)
+            const castScriptUrl = "https://www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1";
+            if (!document.querySelector(`script[src="${castScriptUrl}"]`)) {
+                const s = document.createElement('script');
+                s.src = castScriptUrl;
+                s.async = true;
+                document.head.appendChild(s);
             }
-        }
+
+            // Exposed helper to open Cast chooser and then load current media
+            window.openCast = function() {
+                try {
+                    // If Cast SDK not yet available, try to initialize later and notify user minimally
+                    if (!window.cast || !window.cast.framework) {
+                        // graceful fallback: show instructions modal if cast unavailable
+                        openLegal2();
+                        return;
+                    }
+                    // ensure SDK initialized
+                    initializeCast();
+                    // request a session (this will show the native picker)
+                    const ctx = cast.framework.CastContext.getInstance();
+                    ctx.requestSession().then(() => {
+                        // after session is created, attempt to play current media on TV
+                        playOnTV();
+                    }).catch(() => {
+                        // user cancelled or session failed; no-op
+                    });
+                } catch (e) {
+                    // fallback UX
+                    openLegal2();
+                }
+            };
+
+            // safe initializer called by the SDK callback or on demand
+            window.initializeCast = function() {
+                try {
+                    if (!window.cast || !window.cast.framework) return;
+                    const ctx = cast.framework.CastContext.getInstance();
+                    // avoid re-setting options repeatedly
+                    if (!ctx._lumina_cast_initialized) {
+                        ctx.setOptions({
+                            receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
+                            autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
+                        });
+                        ctx._lumina_cast_initialized = true;
+                    }
+                } catch (e) { /* ignore init errors */ }
+            };
+
+            // The SDK calls this when available
+            window['__onGCastApiAvailable'] = function(isAvailable) {
+                if (isAvailable) {
+                    try { initializeCast(); } catch (e) {}
+                }
+            };
+
+            // Play current player media on TV (uses player.context.url or native video src)
+            window.playOnTV = async function() {
+                try {
+                    if (!window.cast || !window.cast.framework) {
+                        openLegal2();
+                        return;
+                    }
+                    const ctx = cast.framework.CastContext.getInstance();
+                    const session = ctx.getCurrentSession();
+                    if (!session) {
+                        // no session: open chooser first
+                        try {
+                            await ctx.requestSession();
+                        } catch (e) {
+                            // user cancelled
+                            return;
+                        }
+                    }
+
+                    const finalSession = ctx.getCurrentSession();
+                    if (!finalSession) {
+                        openLegal2();
+                        return;
+                    }
+
+                    // determine a usable media URL and MIME type
+                    let mediaUrl = null;
+                    let mime = 'video/mp4';
+
+                    if (player && player.context && player.context.url) mediaUrl = player.context.url;
+                    else {
+                        const vid = player && player.vid ? player.vid : document.querySelector('#main-video');
+                        if (vid && (vid.currentSrc || vid.src)) {
+                            mediaUrl = vid.currentSrc || vid.src;
+                            // attempt to infer mime from extension
+                            const ext = (mediaUrl.split('?')[0].split('.').pop() || '').toLowerCase();
+                            if (ext === 'webm') mime = 'video/webm';
+                            if (ext === 'm3u8') mime = 'application/x-mpegURL';
+                        }
+                    }
+
+                    if (!mediaUrl) {
+                        openLegal2();
+                        return;
+                    }
+
+                    // build MediaInfo and LoadRequest
+                    const mediaInfo = new chrome.cast.media.MediaInfo(mediaUrl, mime);
+                    // optional metadata
+                    if (player && player.context) {
+                        mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
+                        mediaInfo.metadata.title = (player && player.context && (player.context.seriesTitle || player.context.title)) || document.getElementById('player-ep-title')?.innerText || '';
+                        mediaInfo.metadata.subtitle = (player && player.context && (player.context.seriesTitle || '')) || '';
+                        // poster
+                        let poster = null;
+                        if (player && player.context && player.context.seriesId) {
+                            const seriesData = db.find(i => i.id === player.context.seriesId);
+                            poster = seriesData ? seriesData.cover : null;
+                        }
+                        if (!poster && db && db.length) {
+                            // fallback to hero or first in DB
+                            poster = (db.find(i => i.id === (player && player.context && player.context.seriesId)) || db[0]).cover;
+                        }
+                        if (poster) mediaInfo.metadata.images = [{ url: poster }];
+                    }
+
+                    const request = new chrome.cast.media.LoadRequest(mediaInfo);
+                    finalSession.loadMedia(request).then(() => {
+                        // optional: notify user briefly
+                        showToast('Reproduzindo na TV');
+                    }).catch((err) => {
+                        console.warn('Cast load failed', err);
+                        showToast('Não foi possível reproduzir na TV.');
+                    });
+                } catch (e) {
+                    console.warn('playOnTV failed', e);
+                    openLegal2();
+                }
+            };
+        })();
         function updatePlayBtns(p) {
             const i = p ? 'ph-play' : 'ph-pause';
             const center = document.getElementById('center-play-btn');
