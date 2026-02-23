@@ -2654,7 +2654,9 @@
 
             const isPortrait = window.innerHeight > window.innerWidth;
             // respect global mobile orientation toggle (if user disabled orientation prompt, skip it)
-            if (window.innerWidth <= 768 && isPortrait && !getOrientationDisabled()) {
+            // Only show orientation prompt on real mobile devices (never on desktop or desktop windows),
+            // even if the window is small — use isMobileOS() for a stricter platform check.
+            if (isMobileOS() && isPortrait && !getOrientationDisabled()) {
                 state.pendingVideo = { url, title, context };
                 const modal = document.getElementById('orientation-modal');
                 modal.classList.remove('hidden');
