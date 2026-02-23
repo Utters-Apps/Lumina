@@ -370,12 +370,8 @@
                                 <i class="ph-fill ph-intersect text-2xl" aria-hidden="true"></i>
                             </button>
 
-                            <!-- Cast / Presentation API (fallback opens player URL in new window) -->
-                            <!-- Google Cast launcher + unified cast button -->
+                            <!-- Cast / Presentation API launcher removed from bottom controls (use top-cast button next to Close) -->
                             <google-cast-launcher style="display:none;"></google-cast-launcher>
-                            <button id="cast-btn" onclick="openCast()" class="text-white hover:text-white/70 transition-colors" title="Assistir na TV">
-                                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGKfnYZj4qHzTSj5JJo2-rOSsltvx4QaVDxA&s" alt="TV" class="w-6 h-6 object-contain">
-                            </button>
 
                             <button onclick="toggleFullscreen()" class="text-white hover:text-white/70 transition-colors">
                                 <i class="ph ph-corners-out text-2xl"></i>
@@ -2651,7 +2647,7 @@
                             exitBtn.id = 'embed-exit-btn';
                             exitBtn.className = 'absolute top-4 left-4 z-30 w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors';
                             exitBtn.innerHTML = '<i class="ph ph-arrow-left text-lg"></i>';
-                            exitBtn.onclick = () => { player.close(); };
+                            exitBtn.onclick = () => { closePlayer(); };
                             wrapper.appendChild(exitBtn);
 
                             const ui = document.querySelector('.player-ui');
@@ -2785,6 +2781,8 @@
                         document.body.style.overflow = ''; renderView();
                     }
                     if(document.fullscreenElement) document.exitFullscreen().catch(e=>e);
+                    // Ensure rotate prompt shows if player was closed via player.close() path
+                    try { showRotateAfterClose(); } catch (e) {}
                 }, 500);
             },
 
@@ -2994,6 +2992,52 @@
                         document.body.style.overflow = '';
                     }
                 }, 260);
+            } catch (e) { /* silent */ }
+        }
+
+        // Show rotate-to-vertical modal after any programmatic close (used by player.close paths)
+        function showRotateAfterClose() {
+            try {
+                // Respect global orientation-disable toggle: if disabled, skip showing this prompt
+                if (getOrientationDisabled && getOrientationDisabled()) {
+                    if (document.getElementById('player-modal').classList.contains('hidden') && document.getElementById('details-modal').classList.contains('hidden')) {
+                        document.body.style.overflow = '';
+                    }
+                    return;
+                }
+
+                if (!isMobileOS()) {
+                    if (document.getElementById('player-modal').classList.contains('hidden') && document.getElementById('details-modal').classList.contains('hidden')) {
+                        document.body.style.overflow = '';
+                    }
+                    return;
+                }
+
+                const modal = document.getElementById('rotate-vertical-modal');
+                if (!modal) return;
+
+                const hint = modal.querySelector('.rotate-hint');
+                if (hint) {
+                    const isPortrait = window.innerHeight > window.innerWidth;
+                    hint.innerText = isPortrait ? 'Você está em modo retrato — gire para assistir em tela cheia.' : 'Fechou o player — gire seu dispositivo para voltar à navegação vertical.';
+                }
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.classList.add('scale-100');
+                }, 12);
+
+                document.body.style.overflow = 'hidden';
+
+                const onRotateBack = () => {
+                    if (window.innerHeight > window.innerWidth) {
+                        dismissRotateVertical();
+                        window.removeEventListener('resize', onRotateBack);
+                    }
+                };
+                window.addEventListener('resize', onRotateBack);
             } catch (e) { /* silent */ }
         }
 
@@ -3209,10 +3253,9 @@
             // Exposed helper to open Cast chooser and then load current media
             window.openCast = function() {
                 try {
-                    // If Cast SDK not yet available, try to initialize later and notify user minimally
+                    // If Cast SDK not yet available, show a non-blocking toast instead of opening legal modal
                     if (!window.cast || !window.cast.framework) {
-                        // graceful fallback: show instructions modal if cast unavailable
-                        openLegal2();
+                        showToast('Cast SDK indisponível neste dispositivo.');
                         return;
                     }
                     // ensure SDK initialized
@@ -3223,11 +3266,12 @@
                         // after session is created, attempt to play current media on TV
                         playOnTV();
                     }).catch(() => {
-                        // user cancelled or session failed; no-op
+                        // user cancelled or session failed; notify lightly
+                        showToast('Sessão Cast não iniciada.');
                     });
                 } catch (e) {
-                    // fallback UX
-                    openLegal2();
+                    // fallback UX: show toast
+                    showToast('Não foi possível iniciar o Cast.');
                 }
             };
 
