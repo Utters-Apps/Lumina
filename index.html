@@ -4231,5 +4231,42 @@
             });
         })();
     </script>
+    <script>
+        // Hide Cast UI on iOS devices so only AirPlay is shown
+        (function() {
+            function isIOS() {
+                try {
+                    const ua = navigator.userAgent || '';
+                    // iPadOS 13+ reports MacIntel; use touch-points heuristic
+                    const isIp = /iPad|iPhone|iPod/.test(ua);
+                    const isIpadOS13 = (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                    return isIp || isIpadOS13;
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            if (isIOS()) {
+                // hide top cast button if present
+                const castBtn = document.getElementById('cast-top-btn');
+                if (castBtn) {
+                    castBtn.style.display = 'none';
+                    castBtn.setAttribute('aria-hidden', 'true');
+                }
+                // hide any embedded / custom cast launcher elements
+                const castLauncher = document.querySelector('google-cast-launcher');
+                if (castLauncher) {
+                    castLauncher.style.display = 'none';
+                    castLauncher.setAttribute('aria-hidden', 'true');
+                }
+                // hide any other cast UI elements added elsewhere by id or class (best-effort)
+                const castEls = document.querySelectorAll('[data-lumina-cast]');
+                castEls.forEach(el => {
+                    el.style.display = 'none';
+                    el.setAttribute('aria-hidden', 'true');
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
