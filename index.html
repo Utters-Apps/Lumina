@@ -1922,6 +1922,17 @@
             } catch (e) {}
         }
 
+        // Helper to detect mobile OS (Android or iOS). Returns true only for phones/tablets.
+        function isMobileOS() {
+            try {
+                const ua = navigator.userAgent || navigator.vendor || '';
+                // Android or iOS (iPhone/iPad/iPod). Exclude Windows Phone.
+                return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
+            } catch (e) {
+                return false;
+            }
+        }
+
         // --- DETAILS MODAL ---
         function openDetails(id) {
             const item = db.find(i => i.id === id);
