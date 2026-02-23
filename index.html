@@ -3998,6 +3998,91 @@
         })();
     </script>
 
+    <script>
+        // Lightweight runtime obfuscation helper
+        // Provides: obf.encode(str, key) -> base64(xor), obf.decode(encoded, key) -> original, obf.run(encoded, key) -> eval(decoded)
+        (function () {
+            const toUtf8 = (s) => new TextEncoder().encode(s);
+            const fromUtf8 = (u8) => new TextDecoder().decode(u8);
+            const xorBytes = (u8, key) => {
+                const k = toUtf8(key || 'lumina_default_key');
+                const out = new Uint8Array(u8.length);
+                for (let i = 0; i < u8.length; i++) out[i] = u8[i] ^ k[i % k.length];
+                return out;
+            };
+            const base64FromU8 = (u8) => {
+                // browser-friendly base64 from Uint8Array
+                let binary = '';
+                const chunkSize = 0x8000;
+                for (let i = 0; i < u8.length; i += chunkSize) {
+                    binary += String.fromCharCode.apply(null, Array.from(u8.subarray(i, i + chunkSize)));
+                }
+                return btoa(binary);
+            };
+            const u8FromBase64 = (b64) => {
+                const bin = atob(b64);
+                const u8 = new Uint8Array(bin.length);
+                for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+                return u8;
+            };
+
+            window.obf = {
+                encode: (plain, key) => {
+                    try {
+                        const u8 = toUtf8(String(plain));
+                        const x = xorBytes(u8, String(key || 'lumina_default_key'));
+                        return base64FromU8(x);
+                    } catch (e) { console.warn('obf.encode failed', e); return ''; }
+                },
+                decode: (encoded, key) => {
+                    try {
+                        const x = u8FromBase64(String(encoded));
+                        const orig = xorBytes(x, String(key || 'lumina_default_key'));
+                        return fromUtf8(orig);
+                    } catch (e) { console.warn('obf.decode failed', e); return ''; }
+                },
+                run: (encoded, key) => {
+                    try {
+                        const src = window.obf.decode(encoded, key);
+                        if (!src) return false;
+                        // safer evaluation: use Function constructor instead of eval for slightly better scoping
+                        const fn = new Function(src);
+                        return fn();
+                    } catch (e) { console.warn('obf.run failed', e); return false; }
+                },
+                // convenience: scan for <script type="text/plain" data-obf="true" data-key="..."> and execute them
+                runAllInline: (selector = 'script[type="text/plain"][data-obf]') => {
+                    try {
+                        const nodes = Array.from(document.querySelectorAll(selector));
+                        nodes.forEach(n => {
+                            try {
+                                const key = n.getAttribute('data-key') || undefined;
+                                const payload = n.textContent.trim();
+                                if (!payload) return;
+                                // if payload looks like raw base64 (A-Z a-z 0-9 +/ =) then treat as encoded, otherwise treat as already plain code and encode-run fallback
+                                const looksBase64 = /^[A-Za-z0-9+/=\\s]+$/.test(payload) && payload.length > 16;
+                                if (looksBase64) {
+                                    window.obf.run(payload, key);
+                                } else {
+                                    // developer convenience: allow placing plain code; encode it and run immediately
+                                    const enc = window.obf.encode(payload, key);
+                                    window.obf.run(enc, key);
+                                }
+                            } catch (inner) { console.warn('obf.runAllInline node failed', inner); }
+                        });
+                    } catch (e) { console.warn('obf.runAllInline failed', e); }
+                }
+            };
+
+            // Auto-run any obfuscated inline scripts shortly after DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(() => window.obf.runAllInline(), 50));
+            } else {
+                setTimeout(() => window.obf.runAllInline(), 50);
+            }
+        })();
+    </script>
+
     <!-- Protection: detect DevTools key combos or repeated right-clicks while media playing and sanitize media/URLs -->
     <script>
         (function(){
@@ -4473,77 +4558,5 @@
             }
         })();
     </script>
-<script>
-(function() {
-
-    function blockEvent(e) {
-        try { e.preventDefault(); } catch (_) {}
-        try { e.stopPropagation(); } catch (_) {}
-        return false;
-    }
-
-    // block context menu globally
-    try { document.addEventListener('contextmenu', blockEvent, { passive: false }); } catch(_) {}
-
-    // block common key combos used to open devtools / view source / inspect
-    try {
-        document.addEventListener('keydown', function(e) {
-            try {
-                // F12
-                if (e.key === 'F12' || e.keyCode === 123) return blockEvent(e);
-
-                // Windows/Linux: Ctrl+Shift+I / C / J
-                if ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','C','J'].includes(String(e.key || '').toUpperCase()))
-                    return blockEvent(e);
-
-                // Ctrl+U / Cmd+U (view source)
-                if ((e.ctrlKey || e.metaKey) && String(e.key || '').toUpperCase() === 'U')
-                    return blockEvent(e);
-
-                // macOS: Cmd + Option + I/C/J
-                if (e.metaKey && e.altKey && ['I','C','J'].includes(String(e.key || '').toUpperCase()))
-                    return blockEvent(e);
-            } catch(_) { /* silent */ }
-        }, { passive: false });
-    } catch(_) {}
-
-    // Detect DevTools by comparing outer vs inner window size — if detected, wipe page contents
-    function detectDevTools() {
-        try {
-            const threshold = 160;
-            if (Math.abs(window.outerWidth - window.innerWidth) > threshold ||
-                Math.abs(window.outerHeight - window.innerHeight) > threshold) {
-                try {
-                    document.documentElement.innerHTML = '';
-                    document.documentElement.style.background = 'black';
-                } catch(_) {}
-            }
-        } catch(_) {}
-    }
-
-    // Detect debugger pause by measuring time taken to pass a debugger statement
-    function detectDebuggerPause() {
-        try {
-            const start = performance.now();
-            // place a debugger statement inside a try so it doesn't throw in strict environments
-            try { debugger; } catch(_) {}
-            const end = performance.now();
-            if (end - start > 100) {
-                try {
-                    document.documentElement.innerHTML = '';
-                    document.documentElement.style.background = 'black';
-                } catch(_) {}
-            }
-        } catch(_) {}
-    }
-
-    // Run both checks at intervals
-    try {
-        setInterval(detectDevTools, 1000);
-        setInterval(detectDebuggerPause, 1000);
-    } catch(_) {}
-
-})();
-</script>
 </body>
 </html>
