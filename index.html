@@ -2691,7 +2691,50 @@
         const player = {
             vid: null, iframe: null, uiTimeout: null, saveInterval: null, context: null, nextPromptShown: false, isSeeking: false, isEmbed: false, preferredRate: 1,
             
+            // Reset any leftover media state from a previous playback to avoid cross-content glitches.
+            resetContext: function() {
+                try {
+                    // clear intervals/timeouts and flags
+                    if (this.saveInterval) { clearInterval(this.saveInterval); this.saveInterval = null; }
+                    if (this.uiTimeout) { clearTimeout(this.uiTimeout); this.uiTimeout = null; }
+                    if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+                    // clear YouTube specific interval
+                    if (this.ytSaveInterval) { clearInterval(this.ytSaveInterval); this.ytSaveInterval = null; }
+                    // destroy YT player cleanly if present
+                    try {
+                        if (this.ytPlayer && typeof this.ytPlayer.destroy === 'function') {
+                            this.ytPlayer.destroy();
+                        }
+                    } catch(_) {}
+                    this.ytPlayer = null;
+                    this.isYouTube = false;
+                    // pause and remove native video
+                    try {
+                        if (this.vid) {
+                            try { this.vid.pause(); } catch(_) {}
+                            try { this.vid.removeAttribute('src'); this.vid.load && this.vid.load(); } catch(_) {}
+                        }
+                    } catch(_) {}
+                    this.vid = null;
+                    // remove iframe if present
+                    try {
+                        if (this.iframe && this.iframe.parentNode) this.iframe.parentNode.removeChild(this.iframe);
+                    } catch(_) {}
+                    this.iframe = null;
+                    // reset flags
+                    this.context = null;
+                    this.nextPromptShown = false;
+                    this.isSeeking = false;
+                    this.isEmbed = false;
+                } catch (e) {
+                    console.warn('player.resetContext failed', e);
+                }
+            },
+
             init: function(url, title, context) {
+                // Ensure a clean slate before starting new playback to avoid residual listeners/intervals from prior media.
+                this.resetContext();
+
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
                 const modal = document.getElementById('player-modal');
                 modal.classList.remove('hidden'); modal.classList.add('flex');
