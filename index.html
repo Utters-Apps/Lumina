@@ -108,6 +108,14 @@
         }
         input[type=range]:hover::-webkit-slider-thumb { height: 16px; width: 16px; margin-top: -5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
+        /* WebKit / AirPlay tweaks: ensure native controls panel visible and hide native play button (we use custom controls) */
+        video::-webkit-media-controls-panel {
+            display: block;
+        }
+        video::-webkit-media-controls-play-button {
+            display: none;
+        }
+
         /* Player Auto-hide */
         .player-idle { cursor: none !important; }
         .player-idle .player-ui { opacity: 0; pointer-events: none; transform: translateY(10px); }
@@ -307,6 +315,10 @@
                         <!-- Cast button placed next to close for quick access (custom TV icon image) -->
                         <button id="cast-top-btn" onclick="playOnTV()" class="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white" title="Transmitir na TV">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGKfnYZj4qHzTSj5JJo2-rOSsltvx4QaVDxA&s" alt="TV" class="w-5 h-5 object-contain">
+                        </button>
+                        <!-- AirPlay button for iOS: opens native AirPlay picker using webkitShowPlaybackTargetPicker on the video element -->
+                        <button id="airplay-btn" onclick="playOnAirPlay()" class="ml-2 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white" title="AirPlay">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22h12v-2H6v2z"/><path d="M21 3H3v12h4l2 3h6l2-3h4V3z"/></svg>
                         </button>
                     </div>
 
@@ -3302,7 +3314,8 @@
             window.playOnTV = async function() {
                 try {
                     if (!window.cast || !window.cast.framework) {
-                        openLegal2();
+                        // Cast SDK not available — do not open legal modal; provide non-blocking feedback
+                        showToast('Cast não disponível neste dispositivo.');
                         return;
                     }
                     const ctx = cast.framework.CastContext.getInstance();
@@ -3312,14 +3325,15 @@
                         try {
                             await ctx.requestSession();
                         } catch (e) {
-                            // user cancelled
+                            // user cancelled or session failed — just notify
+                            showToast('Sessão Cast não iniciada.');
                             return;
                         }
                     }
 
                     const finalSession = ctx.getCurrentSession();
                     if (!finalSession) {
-                        openLegal2();
+                        showToast('Nenhuma sessão Cast ativa.');
                         return;
                     }
 
@@ -3340,7 +3354,7 @@
                     }
 
                     if (!mediaUrl) {
-                        openLegal2();
+                        showToast('Nenhuma mídia disponível para transmitir.');
                         return;
                     }
 
@@ -3374,10 +3388,32 @@
                     });
                 } catch (e) {
                     console.warn('playOnTV failed', e);
-                    openLegal2();
+                    // always avoid opening legal modal from the Cast flow; show a gentle toast instead
+                    showToast('Erro ao tentar transmitir na TV.');
                 }
             };
         })();
+        // AirPlay helper: on iOS/Safari call webkitShowPlaybackTargetPicker on the currently playing video element
+        window.playOnAirPlay = function() {
+            try {
+                // find the active native video element used by the player
+                const vid = (player && player.vid) ? player.vid : document.querySelector('#main-video');
+                if (!vid) {
+                    showToast('Nenhum vídeo ativo para AirPlay.');
+                    return;
+                }
+                // webkitShowPlaybackTargetPicker triggers the native AirPlay target picker in Safari/iOS
+                if (typeof vid.webkitShowPlaybackTargetPicker === 'function') {
+                    vid.webkitShowPlaybackTargetPicker();
+                } else {
+                    showToast('AirPlay não disponível neste dispositivo.');
+                }
+            } catch (e) {
+                console.warn('AirPlay failed', e);
+                showToast('Não foi possível abrir o AirPlay.');
+            }
+        };
+
         function updatePlayBtns(p) {
             const i = p ? 'ph-play' : 'ph-pause';
             const center = document.getElementById('center-play-btn');
