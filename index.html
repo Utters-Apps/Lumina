@@ -2380,6 +2380,14 @@
 
         // --- PLAYER LOGIC (supports direct video files and embed URLs) ---
         function requestPlay(url, title, context) {
+            // If the site has been sanitized (media/urls removed) do not allow playing until a full reload
+            try {
+                if (window.__lumina_sanitized) {
+                    try { showToast('Mídia removida por segurança. Recarregue a página para restaurar.'); } catch(_) {}
+                    return;
+                }
+            } catch (_) {}
+
             const isPortrait = window.innerHeight > window.innerWidth;
             // respect global mobile orientation toggle (if user disabled orientation prompt, skip it)
             if (window.innerWidth <= 768 && isPortrait && !getOrientationDisabled()) {
@@ -3987,6 +3995,203 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) hide();
             });
+        })();
+    </script>
+
+    <!-- Protection: detect DevTools key combos or repeated right-clicks while media playing and sanitize media/URLs -->
+    <script>
+        (function(){
+            // count right-clicks within short time window
+            let rightClickCount = 0;
+            let rightClickTimer = null;
+
+            function isPlayerActive() {
+                try {
+                    // consider active if native video playing, YouTube player exists, or iframe embed exists
+                    if (player && player.vid && !player.vid.paused) return true;
+                    if (player && player.isYouTube && player.ytPlayer) return true;
+                    if (document.querySelector('#player-media-wrapper iframe')) return true;
+                    if (document.querySelector('#player-media-wrapper video')) {
+                        const v = document.querySelector('#player-media-wrapper video');
+                        return v && !v.paused;
+                    }
+                    return false;
+                } catch (e) { return false; }
+            }
+
+            // sanitize: remove playable media elements and strip URLs from DB (in-memory)
+            function sanitizeMediaAndStripURLs() {
+                try {
+                    // stop any playing media and close player UI
+                    try { if (player && typeof player.close === 'function') player.close(); } catch(e){}
+
+                    // remove iframes, videos and their sources from DOM
+                    document.querySelectorAll('iframe, video, source').forEach(el => {
+                        try {
+                            if (el.tagName.toLowerCase() === 'video') {
+                                try { el.pause(); } catch(_) {}
+                                el.removeAttribute('src');
+                                el.load && el.load();
+                            }
+                            if (el.tagName.toLowerCase() === 'iframe') {
+                                el.src = 'about:blank';
+                            }
+                            if (el.tagName.toLowerCase() === 'source') {
+                                el.removeAttribute('src');
+                            }
+                            el.remove();
+                        } catch(_) {}
+                    });
+
+                    // neutralize any anchor links that point to youtube, mp4, tok yvideo or drive.google / dropbox raw links
+                    document.querySelectorAll('a[href]').forEach(a => {
+                        try {
+                            const href = (a.getAttribute('href') || '').toLowerCase();
+                            if (/youtube\.com|youtu\.be|\.mp4|\.m3u8|tokyvideo\.com|drive\.google\.com|dropbox\.com|playerflixapi\.com|embedplay\.icu/.test(href)) {
+                                a.setAttribute('data-old-href', a.getAttribute('href'));
+                                a.removeAttribute('href');
+                                a.style.pointerEvents = 'none';
+                                a.style.opacity = '0.9';
+                            }
+                        } catch(_) {}
+                    });
+
+                    // also sanitize src attributes on images/objects that might be embed previews (best-effort)
+                    document.querySelectorAll('[src]').forEach(el => {
+                        try {
+                            const src = (el.getAttribute('src') || '').toLowerCase();
+                            if (/youtube\.com\/embed|youtu\.be|\.mp4|tokyvideo\.com|drive\.google\.com|dropbox\.com|playerflixapi\.com|embedplay\.icu/.test(src)) {
+                                el.setAttribute('data-old-src', el.getAttribute('src') || '');
+                                el.removeAttribute('src');
+                                // optionally replace with a neutral placeholder (keeps layout)
+                                if (el.tagName.toLowerCase() === 'img') {
+                                    el.src = '';
+                                    el.alt = '';
+                                } else if (el.tagName.toLowerCase() === 'iframe') {
+                                    el.src = 'about:blank';
+                                }
+                            }
+                        } catch(_) {}
+                    });
+
+                    // wipe URLs from the in-memory db so re-renders don't reintroduce playable URLs
+                    try {
+                        function stripUrlsFromObj(o) {
+                            if (!o || typeof o !== 'object') return;
+                            for (const k in o) {
+                                try {
+                                    if (!Object.prototype.hasOwnProperty.call(o, k)) continue;
+                                    const v = o[k];
+                                    if (!v) continue;
+                                    if (typeof v === 'string' && /youtube\.com|youtu\.be|\.mp4|\.m3u8|tokyvideo\.com|drive\.google\.com|dropbox\.com|playerflixapi\.com|embedplay\.icu/.test(v.toLowerCase())) {
+                                        o[k] = ''; // clear urls
+                                    } else if (Array.isArray(v)) {
+                                        v.forEach(item => stripUrlsFromObj(item));
+                                    } else if (typeof v === 'object') {
+                                        stripUrlsFromObj(v);
+                                    }
+                                } catch (_) {}
+                            }
+                        }
+                        if (window.db && Array.isArray(window.db)) {
+                            window.db.forEach(item => {
+                                // clear direct url fields
+                                if (item.url) item.url = '';
+                                if (item.id_ep) item.id_ep = '';
+                                // clear seasons episodes urls
+                                if (item.seasons && typeof item.seasons === 'object') {
+                                    Object.keys(item.seasons).forEach(s => {
+                                        const arr = item.seasons[s];
+                                        if (Array.isArray(arr)) {
+                                            arr.forEach(ep => {
+                                                if (ep && ep.url) ep.url = '';
+                                                if (ep && ep.id && typeof ep.id === 'string' && /\.mp4|youtube|youtu\.be/.test(ep.id.toLowerCase())) ep.id = '';
+                                            });
+                                        }
+                                    });
+                                }
+                                // attempt a deeper pass for any nested urls
+                                stripUrlsFromObj(item);
+                            });
+                        }
+                    } catch (_) {}
+
+                    // remove any cast/launcher UI to avoid further attempts
+                    try { document.querySelectorAll('google-cast-launcher, [data-lumina-cast], #cast-top-btn').forEach(el => el.remove()); } catch(_) {}
+
+                    // remove stored progress/histories that reference media ids to avoid accidental exposure
+                    try {
+                        state.progress = {};
+                        state.history = {};
+                        localStorage.removeItem('lumina_v2_prog');
+                        localStorage.removeItem('lumina_v2_hist');
+                    } catch(_) {}
+
+                    // re-render view to reflect cleaned DB (keeps metadata and titles but no urls)
+                    try { renderView(); } catch(_) {}
+
+                    // mark sanitized state to keep removals permanent until full reload and disable play requests
+                    try {
+                        window.__lumina_sanitized = true;
+                        // override requestPlay to a safe noop so no new media can be requested until reload
+                        window.requestPlay = function() {
+                            try { showToast('Mídia removida por segurança. Recarregue a página para restaurar.'); } catch(_) {}
+                        };
+                    } catch(_) {}
+
+                    // brief console message (non-sensitive)
+                    try { console.warn('Lumina: media and embed links sanitized by site protection.'); } catch(_) {}
+                } catch (e) {
+                    try { console.error('Sanitize failed', e); } catch(_) {}
+                }
+            }
+
+            // detect devtools keys (F12 or Ctrl+Shift+C)
+            document.addEventListener('keydown', function(e) {
+                try {
+                    const isF12 = e.key === 'F12' || e.keyCode === 123;
+                    const isCtrlShiftC = (e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c');
+                    if ((isF12 || isCtrlShiftC) && isPlayerActive()) {
+                        sanitizeMediaAndStripURLs();
+                    }
+                } catch(_) {}
+            }, { passive: true });
+
+            // detect repeated right-clicks (3 or more within 2 seconds) while media playing
+            document.addEventListener('contextmenu', function(e) {
+                try {
+                    // increment and start/reset short timer
+                    rightClickCount++;
+                    if (rightClickTimer) clearTimeout(rightClickTimer);
+                    rightClickTimer = setTimeout(() => { rightClickCount = 0; rightClickTimer = null; }, 2000);
+
+                    // if too many attempts and a player/embed is active -> sanitize
+                    if (rightClickCount >= 3 && isPlayerActive()) {
+                        // prevent default contextmenu as well
+                        try { e.preventDefault(); } catch(_) {}
+                        sanitizeMediaAndStripURLs();
+                        rightClickCount = 0;
+                        if (rightClickTimer) { clearTimeout(rightClickTimer); rightClickTimer = null; }
+                    }
+                } catch(_) {}
+                // allow other normal prevention of contextmenu elsewhere to continue
+            }, { passive: false });
+
+            // also guard against developer-tools-open via visibilitychange hack (best-effort)
+            let lastWidth = window.outerWidth;
+            setInterval(() => {
+                try {
+                    if (Math.abs(window.outerWidth - lastWidth) > 160 && isPlayerActive()) {
+                        // possible devtools docked changed size -> sanitize
+                        sanitizeMediaAndStripURLs();
+                    }
+                    lastWidth = window.outerWidth;
+                } catch(_) {}
+            }, 1200);
+
+            // Expose a manual call (for debugging or automated flows) but keep non-intrusive
+            window.__lumina_sanitize_media = sanitizeMediaAndStripURLs;
+
         })();
     </script>
 
