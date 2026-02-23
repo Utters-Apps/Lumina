@@ -1907,18 +1907,18 @@
         }
 
         // --- Orientation toggle persistence (global) ---
-        // Saved key: 'lumina_disable_orientation_v1' (boolean string '1' = disabled)
+        // Saved key: 'lumina_disable_orientation_both_v1' (boolean string '1' = disabled for both horizontal & vertical prompts)
         function getOrientationDisabled() {
             try {
-                return localStorage.getItem('lumina_disable_orientation_v1') === '1';
+                return localStorage.getItem('lumina_disable_orientation_both_v1') === '1';
             } catch (e) {
                 return false;
             }
         }
         function setOrientationDisabled(val) {
             try {
-                if (val) localStorage.setItem('lumina_disable_orientation_v1', '1');
-                else localStorage.removeItem('lumina_disable_orientation_v1');
+                if (val) localStorage.setItem('lumina_disable_orientation_both_v1', '1');
+                else localStorage.removeItem('lumina_disable_orientation_both_v1');
             } catch (e) {}
         }
 
@@ -2125,8 +2125,8 @@
                         orientBtn.innerHTML = disabled
                             ? `<i class="ph-fill ph-device-mobile text-accent text-lg"></i>`
                             : `<i class="ph ph-device-mobile text-white text-lg"></i>`;
-                        // Clarify that the toggle disables both horizontal (landscape prompt) and vertical (return-to-portrait prompt)
-                        orientBtn.title = disabled ? 'Ajuste de orientação desativado (horizontal + vertical)' : 'Ajuste de orientação ativado (horizontal + vertical)';
+                        // Clarify that the toggle disables BOTH orientation prompts (landscape and portrait)
+                        orientBtn.title = disabled ? 'Ajustes de orientação desativados (paisagem + retrato)' : 'Ajustes de orientação ativados (paisagem + retrato)';
                     };
                     renderState();
                     orientBtn.onclick = (ev) => {
@@ -2864,6 +2864,15 @@
                 // Respect global orientation-disable toggle: if disabled, skip showing this prompt
                 if (getOrientationDisabled && getOrientationDisabled()) {
                     // restore body overflow and exit early
+                    if (document.getElementById('player-modal').classList.contains('hidden') && document.getElementById('details-modal').classList.contains('hidden')) {
+                        document.body.style.overflow = '';
+                    }
+                    return;
+                }
+
+                // Only show rotate/vertical prompt on Android or iOS mobile OS (avoid showing on desktop)
+                if (!isMobileOS()) {
+                    // ensure body overflow restored for non-mobile environments
                     if (document.getElementById('player-modal').classList.contains('hidden') && document.getElementById('details-modal').classList.contains('hidden')) {
                         document.body.style.overflow = '';
                     }
