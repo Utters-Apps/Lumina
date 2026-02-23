@@ -4173,12 +4173,17 @@
         })();
     </script>
 
-    <!-- Protection: detect DevTools key combos or repeated right-clicks while media playing and sanitize media/URLs -->
+    <!-- Protection: detect DevTools key combos or repeated right-clicks while media playing and sanitize media/URLs (desktop-only) -->
     <script>
         (function(){
             // count right-clicks within short time window
             let rightClickCount = 0;
             let rightClickTimer = null;
+
+            // Use existing mobile detection helper defined earlier
+            function isMobile() {
+                try { return isMobileOS && typeof isMobileOS === 'function' ? isMobileOS() : false; } catch (e) { return false; }
+            }
 
             function isPlayerActive() {
                 try {
@@ -4218,7 +4223,7 @@
                         } catch(_) {}
                     });
 
-                    // neutralize any anchor links that point to youtube, mp4, tok yvideo or drive.google / dropbox raw links
+                    // neutralize any anchor links that point to youtube, mp4, tokyvideo or drive.google / dropbox raw links
                     document.querySelectorAll('a[href]').forEach(a => {
                         try {
                             const href = (a.getAttribute('href') || '').toLowerCase();
@@ -4321,9 +4326,10 @@
                 }
             }
 
-            // detect devtools keys (F12 or Ctrl+Shift+C)
+            // detect devtools keys (F12 or Ctrl+Shift+C) - desktop only
             document.addEventListener('keydown', function(e) {
                 try {
+                    if (isMobile()) return; // do not trigger on mobile
                     const isF12 = e.key === 'F12' || e.keyCode === 123;
                     const isCtrlShiftC = (e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'C' || e.key === 'c');
                     if ((isF12 || isCtrlShiftC) && isPlayerActive()) {
@@ -4332,9 +4338,10 @@
                 } catch(_) {}
             }, { passive: true });
 
-            // detect repeated right-clicks (3 or more within 2 seconds) while media playing
+            // detect repeated right-clicks (3 or more within 2 seconds) while media playing - desktop only
             document.addEventListener('contextmenu', function(e) {
                 try {
+                    if (isMobile()) return; // mobile contextmenu should not trigger sanitization
                     // increment and start/reset short timer
                     rightClickCount++;
                     if (rightClickTimer) clearTimeout(rightClickTimer);
@@ -4352,10 +4359,14 @@
                 // allow other normal prevention of contextmenu elsewhere to continue
             }, { passive: false });
 
-            // also guard against developer-tools-open via visibilitychange hack (best-effort)
+            // also guard against developer-tools-open via outerWidth change detection (best-effort) - desktop only
             let lastWidth = window.outerWidth;
             setInterval(() => {
                 try {
+                    if (isMobile()) {
+                        lastWidth = window.outerWidth;
+                        return; // skip desktop heuristics on mobile
+                    }
                     if (Math.abs(window.outerWidth - lastWidth) > 160 && isPlayerActive()) {
                         // possible devtools docked changed size -> sanitize
                         sanitizeMediaAndStripURLs();
