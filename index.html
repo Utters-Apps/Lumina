@@ -573,6 +573,64 @@
                 url: 'https://drive.google.com/file/d/1-qpXor4EgfGwNzxNmETa3PriyCwLH7SM/preview'
             },
             {
+                id: 'miraculous-ladybug',
+                title: 'Miraculous: As Aventuras de Ladybug',
+                originalTitle: 'Miraculous: Tales of Ladybug & Cat Noir',
+                type: 'serie',
+                category: 'Animação, Ação, Aventura, Romance, Super-herói, Fantasia',
+                year: '2015',
+                cover: 'https://variety.com/wp-content/uploads/2026/01/Ladybug-and-Cat-Noir.jpg',
+                description: 'Em Paris, dois adolescentes levam vidas aparentemente comuns; quando o perigo surge, eles se transformam em Ladybug e Chat Noir para proteger a cidade do vilão Hawk Moth.',
+                ageRating: 'L',
+                producer: 'Miraculous Corp.',
+                creator: 'Thomas Astruc',
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'Ladybug & Chat Noir (Origens – Parte 1)', url: 'https://youtu.be/wJRoIWMqFzk' },
+                        { id: 's1-e2', title: 'Coração de Pedra (Origens – Parte 2)', url: 'https://youtu.be/InghZwLBmtM' },
+                        { id: 's1-e3', title: 'Faraó', url: 'https://youtu.be/LFrToaQq8wE' },
+                        { id: 's1-e4', title: 'Tormenta', url: 'https://youtu.be/-fnCpi_hvbY' },
+                        { id: 's1-e5', title: 'Homem-Bolha', url: 'https://youtu.be/6svrrMKxFCA' },
+                        { id: 's1-e6', title: 'Lady Wifi', url: 'https://youtu.be/dstJldFauxM' },
+                        { id: 's1-e7', title: 'O Mímico', url: 'https://youtu.be/6QCST9L11ik' },
+                        { id: 's1-e8', title: 'O Ilustrador do Mal', url: 'https://youtu.be/YFrXGsdXNjM' },
+                        { id: 's1-e9', title: 'Sr. Pombo', url: 'https://youtu.be/rikfWmYC13w' },
+                        { id: 's1-e10', title: 'Rogercop', url: 'https://youtu.be/9vq5R6HbLoE' },
+                        { id: 's1-e11', title: 'A Marionetista', url: 'https://youtu.be/6sDNTaJOhPY' },
+                        { id: 's1-e12', title: 'Animan', url: 'https://youtu.be/svmISovrbt4' },
+                        { id: 's1-e13', title: 'Reflekta', url: 'https://youtu.be/RlPxWCH-mhM' },
+                        { id: 's1-e14', title: 'Copycat', url: 'https://youtu.be/xW-V6akY5-I' },
+                        { id: 's1-e15', title: 'Cupido Negro', url: 'https://youtu.be/asIGy1F6oYc' },
+                        { id: 's1-e16', title: 'Pixelador', url: 'https://youtu.be/Rqj3yUIqnX4' },
+                        { id: 's1-e17', title: 'Lâmina Negra', url: 'https://youtu.be/UPtRLc8Oy5k' },
+                        { id: 's1-e18', title: 'Guitarrista Malvado', url: 'https://youtu.be/eob6ibvIExc' },
+                        { id: 's1-e19', title: 'Temporizadora', url: 'https://youtu.be/bHgFWp4x_Ws' },
+                        { id: 's1-e20', title: 'Antibug', url: 'https://youtu.be/ItPsHq4I5mQ' },
+                        { id: 's1-e21', title: 'Jogador', url: 'https://youtu.be/cgZwRXyVqFM' },
+                        { id: 's1-e22', title: 'Horrificador', url: 'https://atto.videonest.co/901bacc5-dc80-4434-a971-3f239e555775_video_v2.mp4' },
+                        { id: 's1-e23', title: 'Kung Food', url: 'https://youtu.be/uoGPBey14t0' },
+                        { id: 's1-e24', title: 'Princesa Perfume', url: 'https://youtu.be/WYez7EkJuZI' },
+                        { id: 's1-e25', title: 'Simon Mandou', url: 'https://youtu.be/0FBBdEYoA-Q' },
+                        { id: 's1-e26', title: 'Volpina', url: 'https://youtu.be/lgIdSYbDF-E' }
+                    ]
+                }
+            },
+            {
+                id: 'miraculous-world-ny',
+                title: 'Miraculous World: Nova Iorque, Heróis Unidos',
+                originalTitle: 'Miraculous World: New York, United Heroes',
+                type: 'filme',
+                category: 'Animação, Aventura, Ação, Família, Fantasia',
+                year: '2020',
+                cover: 'https://is1-ssl.mzstatic.com/image/thumb/XiUWuYx6x9I7r91sqitGfA/1200x675.jpg',
+                description: 'Marinette e sua turma viajam para Nova York durante a Semana da Amizade Franco-Americana. Quando um poderoso colar está na mira do vilão Falcão-Traça, Ladybug e Cat Noir precisam unir forças com super-heróis americanos para proteger a cidade que nunca dorme.',
+                ageRating: 'L',
+                distributor: 'ZAG Inc. / Method Animation',
+                producer: 'ZAG Inc.',
+                creator: 'Thomas Astruc',
+                url: 'https://youtu.be/SYtfrnK8BJ0'
+            },
+            {
                 id: 'zombies-4',
                 title: 'Zombies 4: A Era dos Vampiros',
                 type: 'filme',
@@ -3198,24 +3256,56 @@
         // Picture-in-Picture toggle for native video (graceful non-blocking fallback)
         async function togglePiP() {
             try {
-                // Prefer native video element from player object
+                // 1) If there's a native video element, prefer it for PiP
                 const vidEl = (player && player.vid) ? player.vid : document.querySelector('#main-video');
-
-                if (!vidEl || typeof vidEl.requestPictureInPicture !== 'function') {
-                    // If the document-level PiP capability exists but no video element is present, notify user.
-                    if (document.pictureInPictureEnabled) {
-                        showToast('Nenhum vídeo compatível encontrado para PiP.');
+                if (vidEl && typeof vidEl.requestPictureInPicture === 'function') {
+                    // If already in PiP, exit; otherwise request PiP on the video element
+                    if (document.pictureInPictureElement === vidEl) {
+                        await document.exitPictureInPicture();
                     } else {
-                        showToast('Picture-in-Picture não suportado neste navegador.');
+                        await vidEl.requestPictureInPicture();
                     }
                     return;
                 }
 
-                // If already in PiP, exit; otherwise request PiP
-                if (document.pictureInPictureElement === vidEl) {
-                    await document.exitPictureInPicture();
+                // 2) If the current playback is a YouTube iframe (YT IFrame API), try PiP on the iframe
+                try {
+                    if (player && player.isYouTube) {
+                        // YT API renders an iframe inside the #yt-player container
+                        const ytIframe = document.querySelector('#yt-player iframe');
+                        if (ytIframe) {
+                            // Some browsers allow requestPictureInPicture on iframes when the iframe has the proper allow attribute.
+                            // Try calling requestPictureInPicture() on the iframe as a best-effort; modern Chrome may support it.
+                            if (typeof ytIframe.requestPictureInPicture === 'function') {
+                                if (document.pictureInPictureElement === ytIframe) {
+                                    await document.exitPictureInPicture();
+                                } else {
+                                    await ytIframe.requestPictureInPicture();
+                                }
+                                return;
+                            } else {
+                                // As a fallback, attempt to set the allow attribute (best-effort) and retry once
+                                try { ytIframe.setAttribute('allow', (ytIframe.getAttribute('allow') || '') + '; picture-in-picture'); } catch(_) {}
+                                if (typeof ytIframe.requestPictureInPicture === 'function') {
+                                    if (document.pictureInPictureElement === ytIframe) {
+                                        await document.exitPictureInPicture();
+                                    } else {
+                                        await ytIframe.requestPictureInPicture();
+                                    }
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                } catch (ytErr) {
+                    console.warn('YT PiP attempt failed', ytErr);
+                }
+
+                // 3) Generic fallback: inform the user PiP isn't available
+                if (document.pictureInPictureEnabled) {
+                    showToast('Nenhum vídeo compatível encontrado para PiP.');
                 } else {
-                    await vidEl.requestPictureInPicture();
+                    showToast('Picture-in-Picture não suportado neste navegador.');
                 }
             } catch (e) {
                 // Non-blocking feedback instead of opening any modal
