@@ -388,17 +388,14 @@
         <button onclick="cancelPlay()" class="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors">Cancelar</button>
     </div>
 
-    <!-- Rotate To Vertical Prompt (shown when user closes player on mobile) -->
-    <div id="rotate-vertical-modal" class="fixed inset-0 z-[75] bg-background/95 backdrop-blur-xl hidden flex-col items-center justify-center px-8 text-center transition-opacity">
-        <div class="w-24 h-24 rounded-3xl glass flex items-center justify-center mb-6">
-            <i class="ph ph-device-mobile-signal text-4xl text-white animate-[pulse_1.6s_infinite]"></i>
+    <!-- Rotate To Vertical Prompt (minimal text; hides automatically on correct orientation) -->
+    <div id="rotate-vertical-modal" class="fixed inset-0 z-[75] bg-background/95 backdrop-blur-xl hidden flex-col items-center justify-center px-6 text-center transition-all duration-220 opacity-0">
+        <div class="w-24 h-24 rounded-3xl glass flex items-center justify-center mb-4 shadow-lg">
+            <i class="ph ph-device-mobile text-4xl text-white animate-[pulse_1.6s_infinite]"></i>
         </div>
-        <h3 class="font-display text-2xl font-semibold text-white mb-2">Gire seu dispositivo</h3>
-        <p class="text-white/60 text-sm max-w-[260px] mb-6">Para continuar navegando no app em modo vertical, por favor gire seu aparelho para a orientação vertical.</p>
-        <div class="flex gap-3">
-            <button onclick="dismissRotateVertical()" class="px-5 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors">Fechar</button>
-            <button onclick="acknowledgeRotate()" class="px-5 py-2.5 rounded-full bg-accent hover:bg-accentHover text-black font-medium text-sm transition-colors">Entendi</button>
-        </div>
+
+        <h3 id="rotate-vertical-title" class="font-display text-lg font-semibold text-white mb-1">Gire o aparelho</h3>
+        <p id="rotate-vertical-sub" class="text-white/60 text-sm max-w-[260px]">Volte para a orientação vertical.</p>
     </div>
 
     <script>
@@ -907,6 +904,38 @@
                 ageRating: 'L',
                 distributor: 'Paramount Pictures',
                 url: 'https://www.dropbox.com/scl/fi/wsmnw6ioob6ib1uk1bijd/The.SpongeBob.Movie.Search.for.SquarePants.2025-HD.mp4?rlkey=37c2tx1ia2mokj3suygahyyos&st=ojho138l&raw=1'
+            },
+            {
+                id: 'alvin-na-estrada',
+                title: 'Alvin e os Esquilos: Na Estrada',
+                originalTitle: 'Alvin and the Chipmunks: The Road Chip',
+                type: 'filme',
+                category: 'Comédia / Família',
+                year: '2015',
+                cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABRJvCa7pgjHPK5od-_e1QvA4o7CYcJUm5Wc2wjy1nLPt7S9L8TKDLB16koUcyo4lTDX7jnPiyGQGPrl0xFNIxw8tdofIRyRCuzT7.jpg?r=7ba',
+                description: 'Alvin, Simon e Theodore embarcam numa aventura para impedir que Dave se case e perca a guarda de um possível novo integrante da família.',
+                director: 'Walt Becker',
+                studio: 'Fox 2000 Pictures',
+                distributor: '20th Century Fox',
+                rights: '20th Century Studios',
+                ageRating: 'L',
+                url: 'https://youtu.be/tVCfNHIOTgQ?feature=shared'
+            },
+            {
+                id: 'coraline',
+                title: 'Coraline e o Mundo Secreto',
+                originalTitle: 'Coraline',
+                type: 'filme',
+                category: 'Animação / Fantasia',
+                year: '2009',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/ae3ce4e04beae38473fa51fd111a778760943d48032d72587e3477c29442bb01._SX1080_FMpng_.png',
+                description: 'Uma menina chamada Coraline descobre uma porta secreta que a leva para uma versão alternativa de sua vida — um Mundo Secreto que parece perfeito, mas esconde perigos sinistros.',
+                director: 'Henry Selick',
+                studio: 'Laika',
+                distributor: 'Focus Features',
+                rights: 'Laika',
+                ageRating: '10',
+                url: 'https://youtu.be/2x8hJffRqDk?si=SixjTna0tcnpuMmg'
             },
             {
                 id: 'homem-aranha-sem-volta',
@@ -2654,13 +2683,55 @@
                 try { if (fill) fill.style.width = '0%'; } catch(e) {}
                 updatePlayBtns(true);
 
+                // Toggle visibility of the player UI quicker on tap/click:
+                // - single tap when controls visible hides them instantly
+                // - single tap when hidden shows them and resets auto-hide timer
+                const toggleControlsVisibility = () => {
+                    const ui = document.querySelector('.player-ui');
+                    if (!ui || !container) return;
+                    const isHidden = ui.style.opacity === '0' || container.classList.contains('player-idle');
+                    if (isHidden) {
+                        // show controls
+                        container.classList.remove('player-idle');
+                        ui.style.opacity = '';
+                        ui.style.pointerEvents = '';
+                        resetControls(); // restart auto-hide timer
+                    } else {
+                        // hide controls immediately
+                        container.classList.add('player-idle');
+                        // make UI non-interactive quickly
+                        ui.style.pointerEvents = 'none';
+                        ui.style.opacity = '0';
+                    }
+                };
+
                 const resetControls = () => {
                     if (container) container.classList.remove('player-idle');
                     clearTimeout(this.uiTimeout);
                     this.uiTimeout = setTimeout(() => { if (this.vid && !this.vid.paused && container) container.classList.add('player-idle'); }, 3500);
                 };
 
-                if (container) { container.onmousemove = resetControls; container.ontouchstart = resetControls; }
+                // Mouse/touch movement resets auto-hide
+                if (container) { 
+                    container.onmousemove = resetControls; 
+                    container.ontouchstart = resetControls;
+                    // Single tap/click toggles controls visibility (mobile-friendly)
+                    // Attach tap/click handler to the media area so tapping the screen toggles controls.
+                    // Use the media wrapper so clicks on UI elements (buttons/inputs) are ignored.
+                    const mediaWrap = document.getElementById('player-media-wrapper') || container;
+                    const isUiClick = (el) => {
+                        try {
+                            return el && (el.closest('.player-ui, .player-ui *') || el.closest('button, a, input, select, textarea'));
+                        } catch (e) { return false; }
+                    };
+                    // Use pointerup to better handle touch interactions across devices
+                    mediaWrap.addEventListener('pointerup', (ev) => {
+                        // If the user actually interacted with a control element, do nothing
+                        if (isUiClick(ev.target)) return;
+                        // Toggle visibility of controls
+                        toggleControlsVisibility();
+                    }, { passive: true });
+                }
                 
                 window.onkeydown = (e) => {
                     const pm = document.getElementById('player-modal');
@@ -2733,45 +2804,68 @@
 
         function openPlayer(url, title, context) { player.init(url, title, context); }
         function closePlayer() {
-            // Close the player and on mobile show a "rotate to vertical" prompt so user knows to return to portrait.
+            // Close player cleanup
             try {
                 player.close();
             } catch (e) { /* ignore */ }
             window.onkeydown = null;
 
-            // If on a small/mobile viewport, show rotate-to-vertical modal after closing the player
+            // Always show rotate-to-vertical modal after closing the player (improved UX)
             try {
-                if (window.innerWidth <= 768) {
-                    const modal = document.getElementById('rotate-vertical-modal');
-                    if (modal) {
-                        modal.classList.remove('hidden');
-                        modal.classList.add('flex');
-                        // quick fade-in
-                        setTimeout(() => modal.classList.remove('opacity-0'), 10);
-                        // prevent background scroll while prompt visible
-                        document.body.style.overflow = 'hidden';
-                    }
+                const modal = document.getElementById('rotate-vertical-modal');
+                if (!modal) return;
+
+                // populate dynamic hint based on current orientation
+                const hint = modal.querySelector('.rotate-hint');
+                if (hint) {
+                    const isPortrait = window.innerHeight > window.innerWidth;
+                    hint.innerText = isPortrait ? 'Você está em modo retrato — gire para assistir em tela cheia.' : 'Fechou o player — gire seu dispositivo para voltar à navegação vertical.';
                 }
+
+                // make it visible with entrance animation
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                // small delay to trigger transition
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.classList.add('scale-100');
+                }, 12);
+
+                // prevent background scroll while prompt visible
+                document.body.style.overflow = 'hidden';
+
+                // attach a one-time resize listener: if user rotates back to portrait, hide prompt
+                const onRotateBack = () => {
+                    if (window.innerHeight > window.innerWidth) {
+                        dismissRotateVertical();
+                        window.removeEventListener('resize', onRotateBack);
+                    }
+                };
+                window.addEventListener('resize', onRotateBack);
             } catch (e) { /* silent */ }
         }
 
-        // Dismiss the rotate-to-vertical prompt and restore normal scrolling
+        // Dismiss the rotate-to-vertical prompt (will hide when device is back in portrait)
         function dismissRotateVertical() {
             try {
                 const modal = document.getElementById('rotate-vertical-modal');
                 if (!modal) return;
                 modal.classList.add('opacity-0');
+                // small timeout to allow CSS transition
                 setTimeout(() => {
                     modal.classList.add('hidden');
                     modal.classList.remove('flex');
-                    document.body.style.overflow = '';
-                }, 240);
-            } catch (e) {}
+                    // restore body scroll if nothing else is blocking it
+                    if (document.getElementById('player-modal').classList.contains('hidden') && document.getElementById('details-modal').classList.contains('hidden')) {
+                        document.body.style.overflow = '';
+                    }
+                }, 260);
+            } catch (e) { /* silent */ }
         }
 
-        // Acknowledge button: simply dismiss the modal and restore scrolling
+        // Acknowledge button handler (disabled — non-dismissible)
         function acknowledgeRotate() {
-            dismissRotateVertical();
+            // intentionally left blank; acknowledgement does not close the modal
         }
         function togglePlay() {
             // unified play/pause for native video and YouTube iframe player
