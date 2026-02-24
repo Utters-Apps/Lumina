@@ -385,7 +385,7 @@
                             <!-- Cast / Presentation API launcher removed from bottom controls (use top-cast button next to Close) -->
                             <google-cast-launcher style="display:none;"></google-cast-launcher>
 
-                            <button onclick="toggleFullscreen()" class="text-white hover:text-white/70 transition-colors">
+                            <button id="fullscreen-btn" onclick="toggleFullscreen()" class="text-white hover:text-white/70 transition-colors" aria-hidden="false" title="Tela cheia">
                                 <i class="ph ph-corners-out text-2xl"></i>
                             </button>
                         </div>
@@ -5189,6 +5189,32 @@
                 // non-blocking: ignore any DOM errors
                 console.warn('UI visibility script error', e);
             }
+        })();
+
+        // Hide fullscreen button in PWA standalone on mobile devices
+        (function(){
+            try {
+                const isPWAStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) 
+                    || (window.navigator && window.navigator.standalone === true) 
+                    || (location.search && location.search.indexOf('source=pwa') !== -1);
+
+                // reuse existing mobile OS detector used elsewhere
+                const isMobile = (function(){
+                    try {
+                        const ua = navigator.userAgent || navigator.vendor || '';
+                        return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
+                    } catch (e) { return false; }
+                })();
+
+                if (isPWAStandalone && isMobile) {
+                    const fs = document.getElementById('fullscreen-btn');
+                    if (fs) {
+                        fs.style.display = 'none';
+                        fs.setAttribute('aria-hidden', 'true');
+                        fs.tabIndex = -1;
+                    }
+                }
+            } catch (e) { /* silent */ }
         })();
     </script>
 </body>
