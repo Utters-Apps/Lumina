@@ -2954,19 +2954,40 @@
                                 },
                                 events: {
                                     onReady: (e) => {
-                                        document.getElementById('player-loading').classList.add('hidden');
-                                        // try autoplay
+                                        // Hide loading ui first
+                                        const loadingEl = document.getElementById('player-loading');
+                                        if (loadingEl) loadingEl.classList.add('hidden');
+
+                                        // Many browsers block autoplay with sound; mute first to allow autoplay to start reliably,
+                                        // then attempt to play and unmute later if user interacts.
+                                        try {
+                                            if (e && e.target && typeof e.target.mute === 'function') {
+                                                e.target.mute();
+                                            }
+                                        } catch(_) {}
+
+                                        // Attempt to play (best-effort). If autoplay still blocked, the user can tap to start.
                                         try { e.target.playVideo(); } catch(_) {}
-                                        // ensure preferred playback rate applied when YT player is ready
-                                        try { if (player && typeof player.preferredRate === 'number' && e.target.setPlaybackRate) e.target.setPlaybackRate(player.preferredRate); } catch(_) {}
+
+                                        // apply preferred playback rate when available (defer small amount to ensure player ready)
+                                        try {
+                                            if (player && typeof player.preferredRate === 'number' && e.target.setPlaybackRate) {
+                                                setTimeout(() => {
+                                                    try { e.target.setPlaybackRate(player.preferredRate); } catch(_) {}
+                                                }, 120);
+                                            }
+                                        } catch(_) {}
+
                                         updatePlayBtns(false);
-                                        // restore saved progress if present
+
+                                        // restore saved progress if present (seek after ready)
                                         if (this.context && this.context.id) {
                                             const prog = state.progress[this.context.id];
                                             if (prog && prog.time && prog.duration) {
                                                 try { e.target.seekTo(prog.time, true); } catch(_) {}
                                             }
                                         }
+
                                         // start interval to update UI and save progress
                                         this.ytSaveInterval = setInterval(() => {
                                             if (!this.ytPlayer || typeof this.ytPlayer.getCurrentTime !== 'function') return;
@@ -2994,7 +3015,10 @@
                                     },
                                     onStateChange: (e) => {
                                         // map YT states: 1 playing, 2 paused, 0 ended
-                                        if (e.data === YT.PlayerState.PLAYING) updatePlayBtns(false);
+                                        if (e.data === YT.PlayerState.PLAYING) {
+                                            // If the player started muted for autoplay, restore volume icon state.
+                                            updatePlayBtns(false);
+                                        }
                                         if (e.data === YT.PlayerState.PAUSED) updatePlayBtns(true);
                                         if (e.data === YT.PlayerState.ENDED) {
                                             updatePlayBtns(true);
