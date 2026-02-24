@@ -3320,6 +3320,15 @@
                     this.uiTimeout = setTimeout(() => { if (this.vid && !this.vid.paused && container) container.classList.add('player-idle'); }, 3500);
                 };
 
+                // Ensure primary play/pause buttons always trigger the unified togglePlay handler.
+                // This guards against cases where buttons exist in DOM but weren't wired (race conditions).
+                try {
+                    const centerBtn = document.getElementById('center-play-btn');
+                    if (centerBtn) centerBtn.onclick = () => togglePlay();
+                    const bottomBtn = document.getElementById('bottom-play-btn');
+                    if (bottomBtn) bottomBtn.onclick = () => togglePlay();
+                } catch (e) { /* non-fatal */ }
+
                 // Mouse/touch movement resets auto-hide
                 if (container) { 
                     container.onmousemove = resetControls; 
