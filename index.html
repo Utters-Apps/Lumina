@@ -156,6 +156,38 @@
             justify-content: center;
         }
 
+        /* Card tag/badge styles: single colorful badge positioned top-left of the cover image */
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #0b0b0b;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+            pointer-events: none;
+            transform-origin: left top;
+            white-space: nowrap;
+        }
+        .card-badge.small { padding: 4px 8px; font-size: 10px; }
+        .badge-purple { background: linear-gradient(90deg,#8b5cf6,#7c3aed); color:#fff; }
+        .badge-red    { background: linear-gradient(90deg,#ef4444,#dc2626); color:#fff; }
+        .badge-green  { background: linear-gradient(90deg,#34d399,#10b981); color:#042912; }
+        .badge-yellow { background: linear-gradient(90deg,#facc15,#f59e0b); color:#081004; }
+        .badge-blue   { background: linear-gradient(90deg,#60a5fa,#3b82f6); color:#04112a; }
+        .badge-pink   { background: linear-gradient(90deg,#fb7185,#f43f5e); color:#23010b; }
+        .badge-gray   { background: linear-gradient(90deg,#e5e7eb,#d1d5db); color:#081018; }
+
+        /* ensure badge scales nicely on hover and doesn't break layout */
+        .aspect-video .card-badge { transform: translateZ(0); transition: transform 220ms cubic-bezier(0.16,1,0.3,1), opacity 180ms; }
+        .hover-card:hover .card-badge { transform: translateY(-2px) scale(1.02); opacity: 0.98; }
+
         /* Slightly shift for narrow viewports so the button doesn't overflow off-screen */
         @media (max-width: 767px) {
             #skip-intro-btn {
@@ -809,6 +841,22 @@
                 }
             },
             {
+                id: 'miraculous-movie-2023',
+                title: 'Miraculous: O Filme',
+                originalTitle: 'Miraculous: Ladybug & Cat Noir – O Filme',
+                type: 'filme',
+                category: 'Animação, Aventura, Fantasia, Romance, Musical',
+                year: '2023',
+                cover: 'https://s2-techtudo.glbimg.com/DQjuP86D9Vfv-3xbQWWxYTgo9NY=/1200x/smart/filters:cover():strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/8/8/RVYTZeQ12d1q6fTA5X1A/lb.jpg',
+                description: 'Marinette descobre seus poderes como Ladybug e, ao lado de Cat Noir, precisa enfrentar Hawk Moth para salvar Paris, enquanto lida com sentimentos, inseguranças e sua vida dupla como heroína.',
+                ageRating: 'L',
+                distributor: 'Netflix (BR)',
+                producer: 'ZAG / ON Animation Studios',
+                yearBR: '2023',
+                tags: ['Lançamento','Popular'],
+                url: 'https://player.odycdn.com/v6/streams/dc5cefe67d37355a86a67c2a718b29ae697a0097/23dc2c.mp4'
+            },
+            {
                 id: 'miraculous-world-ny',
                 title: 'Miraculous World: Nova Iorque, Heróis Unidos',
                 originalTitle: 'Miraculous World: New York, United Heroes',
@@ -1358,6 +1406,18 @@
                         { id: 'gm-s1-e20', title: 'Mulheres Adoram um Brunch', date: '2025-05-07', duration: 20, rating: '12+', url: 'https://www.dropbox.com/scl/fi/7cxk7sbmd0dwne25ns1ib/GRGMND_1_20.mp4?rlkey=59orapkzi200d05m5xdvptx7o&st=yvcv2mhn&raw=1', synopsis: 'Georgie tenta equilibrar as expectativas de sua mãe, sua sogra e Mandy no Dia das Mães, enquanto Audrey insiste em conhecer a namorada de Connor.' },
                         { id: 'gm-s1-e21', title: 'Botas de Culpa', date: '2025-05-14', duration: 19, rating: '12+', url: 'https://www.dropbox.com/scl/fi/4qlmxojwjjn9s2fsvo0ay/GRGM_1_21.mp4?rlkey=o80ji752l27mrnr3hzhkinhzq&st=jkbr7ajh', synopsis: 'Georgie entra em pânico ao descobrir que Jim pretende vender a loja de pneus para seu rival, iniciando a primeira parte do final da temporada.' },
                         { id: 'gm-s1-e22', title: 'Grandes Decisões', date: '2025-05-21', duration: 20, rating: '12+', url: 'https://www.dropbox.com/scl/fi/2pdg1cf24vet5yqe5ui80/GRGM_1_22.mp4?rlkey=v3h2ha8pfjlmh703vpxlp685j&st=mvur70wo&raw=1', synopsis: 'Georgie descobre a verdade sobre o chefe de Mandy e faz de tudo para comprar a loja de pneus antes que Jim finalize a venda.' }
+                    ],
+                                      2: [
+{ id: 's2-e1', title: "Um Desempate e um Grande Erro", url: "https://www.dropbox.com/scl/fi/dp0yc8qp5v5xqp62g3gac/GRGMFM21.mp4?rlkey=op12o8f696rktb6i42jkzzr36&st=8tmn24et&raw=1" },
+{ id: 's2-e2', title: "Cartas de Fãs e Música de Órgão Antiga", url: "https://www.dropbox.com/scl/fi/d3ssmqmix2xzc9xrb771g/GRGMFM22.mp4?rlkey=ummxf80u4qzd087jnlm23wssi&st=w6y3hkao&raw=1" },
+{ id: 's2-e3', title: "Um Testamento e a Esposa de um Homem Morto", url: "https://www.dropbox.com/scl/fi/9qd8ldwaoe5znmfcie395/GAMFM23.mp4?rlkey=nov1zx3babxcibeszr8viqo72&st=7dlxs0jg&raw=1" },
+{ id: 's2-e4', title: "Mãos Sujas e uma Cerca de Arame Farpado", url: "https://www.dropbox.com/scl/fi/gcsqum96g7hq7ks7ld000/GAMND24.mp4?rlkey=0023ozifxtjkrkwl2ayo9rxo8&st=tmq0eri9&raw=1" },
+{ id: 's2-e5', title: "Um Teste de Gravidez e a Bexiga de um Velho", url: "https://www.dropbox.com/scl/fi/gl3995w1x0p52n2vr42f1/GRGEMNDSPC25.mp4?rlkey=nody908rr0z0t5a69s8zm23t1&st=g5m20zda&raw=1" },
+{ id: 's2-e6', title: "Coração Partido e o Refúgio dos Oprimidos", url: "https://www.dropbox.com/scl/fi/9xtdn5ao1269cg0dntsyv/GRGEMNDSPC26.mp4?rlkey=fgkrygeur7yjklksvosseina8&st=hrayf5ha&raw=1" },
+{ id: 's2-e7', title: "Um Banco de Ônibus e Fé em Abundância", url: "https://www.dropbox.com/scl/fi/df2h22svpgylpkze6zqse/GRGEMNDSPC27.mp4?rlkey=7tafj83cd03ned9sbocmxb4u8&st=10f3mh9a&raw=1" },
+{ id: 's2-e8', title: "Mordidas, Palmadas e um Monte de Baboseira Psicológica Ianque", url: "https://www.dropbox.com/scl/fi/nha1tsycgyeluzsb2ifzt/GRGEMNDSPC28.mp4?rlkey=wt5mbrqfxlvk5qx0frhw09fpw&st=gbqucl46&raw=1" },
+{ id: 's2-e9', title: "A Vingança e uma Festa Parcial", url: "https://www.dropbox.com/scl/fi/0ufr01oqecs5dhj40s7si/GRGMND29.mp4?rlkey=9lxtwycalekn2qdaiha8pnya3&st=e1luwkla&raw=1" },
+{ id: 's2-e10', title: "Miami Beach e um Natal Mágico em Família", url: "https://www.dropbox.com/scl/fi/wjqs7691hey32ntg804up/GRGMND210.mp4?rlkey=4j8b3ymzh8vc12ygw2u60ps90&st=1o7dkwed&raw=1" }
                     ]
                 }
             },
@@ -1639,29 +1699,6 @@
                 description: 'Os sobreviventes deixam Woodsboro e recomeçam em Nova York, mas um novo e mais brutal Ghostface os persegue pela metrópole.',
                 ratings: { imdb: 7.6, rottenTomatoes: 77 },
                 url: 'https://drive.google.com/file/d/1gWY53IfGAnNsIi4p8yvqyHcZGVPrlSVD/view?usp=drive_link'
-            },
-            {
-                id: 'amazing-digital-circus',
-                title: 'O Incrível Circo Digital',
-                originalTitle: 'The Amazing Digital Circus',
-                type: 'serie',
-                category: 'Animação / Humor sombrio / Drama psicológico',
-                year: '2024',
-                cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABeSnycpEtbW-kf4BTjZdqNGjL39YFig-xRNfgSrG9Su1ayXXOhvMLgPsX3V6M-yQItQfqG1oqC-Shaq2_0Ll2OeOEGFaAiWw1OSP.jpg?r=988',
-                description: 'O Incrível Circo Digital acompanha Pomni, uma mulher que, ao usar um headset de realidade virtual, fica presa dentro de um universo digital com temática de circo; a série mistura humor sombrio, surrealismo e drama psicológico enquanto explora identidade e memórias.',
-                ageRating: '12',
-                isYouTubeSeries: true,
-                seasons: {
-                    1: [
-                        { id: 'yt-s1-e1-HwAPLk_sQ3w', title: 'Piloto', duration: 1514, url: 'https://www.youtube.com/embed/HwAPLk_sQ3w' },
-                        { id: 'yt-s1-e2-4ofJpOEXrZs', title: 'Desespero no Desfiladeiro Doce!', duration: 1483, url: 'https://www.youtube.com/embed/4ofJpOEXrZs' },
-                        { id: 'yt-s1-e3-bKjfw77cxeQ', title: 'O Mistério da Mansão Mildenhall', duration: 1400, url: 'https://www.youtube.com/embed/bKjfw77cxeQ' },
-                        { id: 'yt-s1-e4-Q9KWcWKo2T8', title: 'Um Dia a Máscara Cai', duration: 1533, url: 'https://www.youtube.com/embed/Q9KWcWKo2T8' },
-                        { id: 'yt-s1-e5-mOvhHim78YA', title: 'Sem Título', duration: 1533, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
-                        { id: 'yt-s1-e6-mOvhHim78YA-2', title: 'Todos Ganham Armas', duration: 2034, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
-                        { id: 'yt-s1-e7-oaOG1xOk7XY', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' }
-                    ]
-                }
             },
             {
                 id: 'descendentes-1',
@@ -3098,6 +3135,9 @@
                                         const loadingEl = document.getElementById('player-loading');
                                         if (loadingEl) loadingEl.classList.add('hidden');
 
+                                        // If the load watchdog is active, cancel it because playback started successfully.
+                                        try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
+
                                         // To guarantee autoplay across browsers, start muted then play; unmute later on interaction.
                                         try {
                                             if (e && e.target) {
@@ -3163,6 +3203,8 @@
                                         if (e.data === YT.PlayerState.PLAYING) {
                                             // If the player started muted for autoplay, restore volume icon state.
                                             updatePlayBtns(false);
+                                            // playback confirmed — cancel load watchdog if active
+                                            try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
                                         }
                                         if (e.data === YT.PlayerState.PAUSED) updatePlayBtns(true);
                                         if (e.data === YT.PlayerState.ENDED) {
@@ -3300,6 +3342,17 @@
                             this.iframe.allowFullscreen = true;
                             this.iframe.className = 'w-full h-full';
                             wrapper.appendChild(this.iframe);
+
+                            // If the iframe finishes loading, treat it as successful start and cancel the watchdog so the player won't be auto-closed.
+                            try {
+                                this.iframe.addEventListener('load', () => {
+                                    try { 
+                                        const pl = document.getElementById('player-loading'); 
+                                        if (pl) pl.classList.add('hidden');
+                                        if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; }
+                                    } catch(_) {}
+                                }, { once: true });
+                            } catch(_) {}
 
                             const exitBtn = document.createElement('button');
                             exitBtn.id = 'embed-exit-btn';
@@ -3539,7 +3592,13 @@
                     if(e.code === 'ArrowLeft') skipVideo(-10);
                 };
 
-                this.vid.onplaying = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.add('hidden'); updatePlayBtns(false); };
+                this.vid.onplaying = () => { 
+                    const pl = document.getElementById('player-loading'); 
+                    if(pl) pl.classList.add('hidden'); 
+                    updatePlayBtns(false); 
+                    // cancel watchdog once native video actually starts playing
+                    try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
+                };
                 this.vid.onwaiting = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.remove('hidden'); };
                 this.vid.onpause = () => { 
                     updatePlayBtns(true); 
@@ -4394,9 +4453,20 @@
                 card.onclick = () => openDetails(item.id);
 
                 // build tags badges HTML if present
-                const tagsHtml = (item.tags && Array.isArray(item.tags) && item.tags.length) 
-                    ? `<div class="flex gap-2 mt-2">${item.tags.slice(0,3).map(t => `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/6 text-white/90">${t}</span>`).join('')}</div>`
-                    : '';
+                // Only show a single badge per item (use first tag when present) and map it to a colorful class.
+                const tag = (item.tags && Array.isArray(item.tags) && item.tags.length) ? item.tags[0] : null;
+                const tagToClass = (t) => {
+                    if (!t) return 'badge-gray';
+                    const key = String(t).toLowerCase();
+                    if (/lan(ç|c)amento|lançamento|lancamento|novo/i.test(key)) return 'badge-purple';
+                    if (/popular|em alta|destaque/i.test(key)) return 'badge-red';
+                    if (/nova temporada|temporada/i.test(key)) return 'badge-yellow';
+                    if (/novo episodio|novo episódio|episodio|episódio/i.test(key)) return 'badge-blue';
+                    if (/exclusivo/i.test(key)) return 'badge-pink';
+                    if (/comédia|comedia|família|aventura/i.test(key)) return 'badge-green';
+                    return 'badge-gray';
+                };
+                const tagsHtml = tag ? `<div class="card-badge ${tagToClass(tag)}">${String(tag)}</div>` : '';
 
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
