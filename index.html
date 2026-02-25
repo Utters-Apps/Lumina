@@ -377,9 +377,9 @@
                                 </div>
                             </div>
 
-                            <!-- Picture-in-Picture (improved icon) -->
-                            <button id="pip-btn" onclick="togglePiP()" class="text-white hover:text-white/70 transition-colors" title="Picture-in-Picture">
-                                <i class="ph-fill ph-intersect text-2xl" aria-hidden="true"></i>
+                            <!-- Picture-in-Picture (custom icon) -->
+                            <button id="pip-btn" onclick="togglePiP()" class="text-white hover:text-white/70 transition-colors" title="Picture-in-Picture" aria-label="Picture-in-Picture">
+                                <img src="PiPicon.png" alt="PiP" class="w-5 h-5 object-contain">
                             </button>
 
                             <!-- Cast / Presentation API launcher removed from bottom controls (use top-cast button next to Close) -->
@@ -1228,6 +1228,49 @@
                 classificationNote: 'Livre / PG (recomendado a partir de ~10 anos) – classificação familiar com humor leve e música; em algumas regiões é considerada adequada para crianças (~10+).',
                 url: 'https://www.dropbox.com/scl/fi/twppv3ogoz1f3pwdqws4f/Alvin-e-os-Esquilos-2007-Dublado-720p-1.mp4?rlkey=nz47x3pzt37t1g0frxg2t5bct&st=pl7cqnty&raw=1'
             },
+
+            {
+                id: 'alvin-2009',
+                title: 'Alvin e os Esquilos 2',
+                originalTitle: 'Alvin and the Chipmunks: The Squeakquel',
+                type: 'filme',
+                category: 'Comédia, Família, Musical, Live-action/Animação',
+                year: '2009',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/19071ba2-96ea-4eff-b064-f917dc1f3fc1/compose?format=webp&width=2560',
+                description: 'Enquanto Dave está ausente, Alvin, Simon e Theodore precisam se adaptar à escola e enfrentam a concorrência das Esquiletes, um trio feminino talentoso que ameaça seu sucesso musical.',
+                ageRating: 'L',
+                distributor: '20th Century Fox',
+                url: 'https://www.dropbox.com/scl/fi/ildgavhpsoasihs4iql8y/Alvin-e-os-Esquilos-2-2009.mp4?rlkey=5glv0s1nqglzw9crj4qg243f3&st=tdn2nkg5&raw=1'
+            },
+
+            {
+                id: 'alvin-2011',
+                title: 'Alvin e os Esquilos 3',
+                originalTitle: 'Alvin and the Chipmunks: Chipwrecked',
+                type: 'filme',
+                category: 'Comédia, Aventura, Família, Musical',
+                year: '2011',
+                cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABWAoFjAV2XyNlEGN2K4FtAeBTXv1e5abBTgGdvQQYEfdqT082MhK1e9x7atOQlvIel3C1fTjWe5nerVE04jZUwmEcHCMdyMb53Ui.jpg?r=caa',
+                description: 'Durante um cruzeiro, os Esquilos e as Esquiletes acabam presos em uma ilha deserta. Enquanto tentam encontrar um caminho de volta para casa, vivem aventuras e descobertas inesperadas.',
+                ageRating: 'L',
+                distributor: '20th Century Fox',
+                url: 'https://www.dropbox.com/scl/fi/b57dkm3q3te66wivgnvgp/Alvin-e-os-Esquilos-3-2011.mp4?rlkey=8b50rfiot0fk7byebocl3l1v9&st=3jygpycr&raw=1'
+            },
+
+            {
+                id: 'os-vingadores-2012',
+                title: 'Os Vingadores',
+                originalTitle: 'The Avengers',
+                type: 'filme',
+                category: 'Ação, Aventura, Ficção Científica, Super-herói',
+                year: '2012',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/e685a382-fc8d-4474-9fe3-54575a2c7c8d/compose?aspectRatio=1.78&format=webp&width=1200',
+                description: 'Quando Loki ameaça a Terra com o poder do Tesseract, Nick Fury reúne Homem de Ferro, Capitão América, Thor, Hulk, Viúva Negra e Gavião Arqueiro para formar uma equipe capaz de salvar o mundo.',
+                ageRating: '12',
+                distributor: 'Walt Disney Studios Motion Pictures / Marvel Studios',
+                url: 'https://www.dropbox.com/scl/fi/ejwfdj4pcdjocxbht7kqi/Os-Vingadores-2012-GeekDriveBR.mp4?rlkey=1y8afrusfp8ijwkauq3kpjmrl&st=1uql4dh6&raw=1'
+            },
+
             {
                 id: 'georgie-mandy-primeiro-casamento',
                 title: 'Georgie e Mandy: Seu Primeiro Casamento',
@@ -1320,18 +1363,18 @@
                 description: 'Acompanhe as desventuras do impulsivo Cuphead e seu irmão cauteloso Mugman pelas surreais Ilhas Inkwell, enfrentando fantasmas, concursos e até o próprio Diabo com humor inspirado nos desenhos dos anos 1930.',
                 seasons: {
                     1: [
-                        { title: 'Carna-Mal', url: 'https://www.tokyvideo.com/br/embed/832860' },
-                        { title: 'Mamadeira', url: 'https://www.tokyvideo.com/br/embed/833203' },
-                        { title: 'Ribby e Croaks', url: 'https://www.tokyvideo.com/br/embed/834113' },
-                        { title: 'Cuidado: Frágil', url: 'https://www.tokyvideo.com/br/embed/834342' },
-                        { title: 'Jogando os Dados', url: 'https://www.tokyvideo.com/br/embed/834404' },
-                        { title: 'Fantasmas Não Existem', url: 'https://www.tokyvideo.com/br/embed/834697' },
-                        { title: 'Root Pack', url: 'https://www.tokyvideo.com/br/embed/834721' },
-                        { title: 'Melhor de Suéter', url: 'https://www.tokyvideo.com/br/embed/835062' },
-                        { title: 'Mais Suéter da Próxima Vez', url: 'https://www.tokyvideo.com/br/embed/836274' },
-                        { title: 'Caneco Perigoso', url: 'https://www.tokyvideo.com/br/embed/836622' },
-                        { title: 'Sono Profundo', url: 'https://www.tokyvideo.com/br/embed/837013' },
-                        { title: 'Em Perigo', url: 'https://www.tokyvideo.com/br/embed/837357' }
+                        { title: 'Carna-Mal', url: 'https://www.dropbox.com/scl/fi/e6e2cavvizk2g69urk8nj/1-1-32.mp4?rlkey=anwg5iglw8hnz51e020mzjzus&st=xhtn5a5k&raw=1' },
+                        { title: 'Mamadeira', url: 'https://www.dropbox.com/scl/fi/4yacfmolhak2rxuw2q629/1-2-24.mp4?rlkey=p3wca6u21l4gy93mnd7d49hrk&st=wwue0uez&raw=1' },
+                        { title: 'Ribby e Croaks', url: 'https://www.dropbox.com/scl/fi/aqp9pl4itzhtqwia0pv7t/1-3-29.mp4?rlkey=iw91b4q79f8cadvzmdl0vf5yw&st=sdghbcoz&raw=1' },
+                        { title: 'Cuidado: Frágil', url: 'https://www.dropbox.com/scl/fi/38dbfwly0a9pthmkh4dj4/1-4-19.mp4?rlkey=sjzdr9yoplgi84tp78qcudrfo&st=c26smany&raw=1' },
+                        { title: 'Jogando os Dados', url: 'https://www.dropbox.com/scl/fi/ki2acjttebdujliz1boea/1-5-25.mp4?rlkey=pvw972hu7osblx47f7qj02fmz&st=r3yd6sj3&raw=1' },
+                        { title: 'Fantasmas Não Existem', url: 'https://www.dropbox.com/scl/fi/m9a97dsaws5ezyygiya8j/1-6-22.mp4?rlkey=hx4qj5ep3mandp6j1z1iw255n&st=j3394yd1&raw=1' },
+                        { title: 'Root Pack', url: 'https://www.dropbox.com/scl/fi/m12z3vpfiiwwdselusisq/1-7-17.mp4?rlkey=2v0j60xal7fap8spjsi2fxy9y&st=gy8c5iw1&raw=1' },
+                        { title: 'Melhor de Suéter', url: 'https://www.dropbox.com/scl/fi/rljo6bevtp9w0sojkyaqb/1-8-19.mp4?rlkey=04stj6qc55duummrz414k62gm&st=k7i9vtrh&raw=1' },
+                        { title: 'Mais Suéter da Próxima Vez', url: 'https://www.dropbox.com/scl/fi/8js1fxc7s9v43ix1e120d/1-9-10.mp4?rlkey=zpfyhg7f5wsd7faj05gaicliz&st=xhebcn21&raw=1' },
+                        { title: 'Caneco Perigoso', url: 'https://www.dropbox.com/scl/fi/97woybbhq01xosm5xyffr/1-10-14.mp4?rlkey=ywtmfnv7bdvj6k29znnzoq200&st=qc03n4a9&raw=1' },
+                        { title: 'Sono Profundo', url: 'https://www.dropbox.com/scl/fi/m1gslpmjxpqh1riwfd6jb/1-11-4.mp4?rlkey=ehyu5rv0xiq2rkvcbk4jxbq6u&st=8i8ocy3z&raw=1' },
+                        { title: 'Em Perigo', url: 'https://www.dropbox.com/scl/fi/68cs5yta1ospjqydaoyz6/1-12-3.mp4?rlkey=x316333bpk07w9ua65wff4vag&st=hotya37e&raw=1' }
                     ],
                     2: [
                         { title: 'Fuga da Prisão', url: 'https://www.tokyvideo.com/br/embed/838284' },
@@ -2867,11 +2910,11 @@
                     // clear any previous load timeout
                     if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
 
-                    // Determine appropriate timeout: longer for Dropbox links (11s), otherwise 7s
+                    // Determine appropriate timeout: longer for Dropbox links (16s), otherwise 7s
                     let watchdogDelay = 7000;
                     try {
                         const lower = String(url || '').toLowerCase();
-                        if (lower.includes('dropbox.com')) watchdogDelay = 11000;
+                        if (lower.includes('dropbox.com')) watchdogDelay = 16000;
                     } catch (e) { /* ignore and use default */ }
 
                     this.loadTimeout = setTimeout(() => {
@@ -3615,23 +3658,83 @@
         }
 
         function skipVideo(s) {
-            // skip for native video
+            // Unified, robust skip handler for YouTube iframe and native <video>
             try {
+                // Prefer YouTube API when available and ready
                 if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getCurrentTime === 'function') {
-                    const cur = (player.ytPlayer.getCurrentTime && !isNaN(player.ytPlayer.getCurrentTime())) ? player.ytPlayer.getCurrentTime() : 0;
-                    const dur = (player.ytPlayer.getDuration && !isNaN(player.ytPlayer.getDuration())) ? player.ytPlayer.getDuration() : 0;
-                    let target = cur + s;
+                    let cur = 0, dur = 0;
+                    try { cur = Number(player.ytPlayer.getCurrentTime()) || 0; } catch(_) { cur = 0; }
+                    try { dur = Number(player.ytPlayer.getDuration()) || 0; } catch(_) { dur = 0; }
+
+                    let target = Number(cur) + Number(s || 0);
+                    if (isNaN(target)) target = cur;
+                    // clamp
                     if (target < 0) target = 0;
                     if (dur > 0 && target > dur) target = dur;
-                    try { player.ytPlayer.seekTo(target, true); } catch(_) {}
-                    // update UI immediately
-                    const tc = document.getElementById('time-current'); if (tc) tc.innerText = formatTime(target);
+
+                    try {
+                        // seekTo(target, allowSeekAhead)
+                        if (typeof player.ytPlayer.seekTo === 'function') player.ytPlayer.seekTo(target, true);
+                    } catch (_) {}
+
+                    // Immediate UI update (time + progress)
+                    try {
+                        const tc = document.getElementById('time-current');
+                        const td = document.getElementById('time-duration');
+                        const progBar = document.getElementById('progress-bar');
+                        const fill = document.getElementById('progress-fill');
+                        if (tc) tc.innerText = formatTime(target);
+                        if (td && dur) td.innerText = formatTime(dur);
+                        if (progBar && dur > 0) progBar.value = (target / dur) * 100;
+                        if (fill && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
+                    } catch (_) {}
+
                     return;
                 }
-            } catch (e) { /* fallback */ }
+            } catch (e) {
+                // swallow and fall through to native handling
+            }
 
-            if (player.vid) {
-                player.vid.currentTime = Math.max(0, (player.vid.currentTime || 0) + s);
+            // Native <video> fallback
+            try {
+                if (player.vid) {
+                    const vid = player.vid;
+                    const cur = Number(vid.currentTime) || 0;
+                    const dur = Number(vid.duration) || NaN;
+                    let target = cur + Number(s || 0);
+                    if (isNaN(target)) target = cur;
+                    // clamp using duration only when valid
+                    if (target < 0) target = 0;
+                    if (!isNaN(dur) && dur > 0 && target > dur) target = dur;
+
+                    // perform the seek (guard against exceptions)
+                    try { vid.currentTime = target; } catch (_) {}
+
+                    // update UI immediately
+                    try {
+                        const tc = document.getElementById('time-current');
+                        const td = document.getElementById('time-duration');
+                        const progBar = document.getElementById('progress-bar');
+                        const fill = document.getElementById('progress-fill');
+                        if (tc) tc.innerText = formatTime(target);
+                        if (td && !isNaN(dur)) td.innerText = formatTime(dur);
+                        if (progBar && !isNaN(dur) && dur > 0) progBar.value = (target / dur) * 100;
+                        if (fill && !isNaN(dur) && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
+                    } catch (_) {}
+
+                    // save a progress snapshot (best-effort)
+                    try {
+                        if (player.context && player.context.id) {
+                            state.progress[player.context.id] = { time: target, duration: (!isNaN(dur) && dur > 0) ? dur : (state.progress[player.context.id] && state.progress[player.context.id].duration) || 0, timestamp: Date.now() };
+                            if (player.context.type === 'serie' && player.context.seriesId) {
+                                state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
+                            }
+                            saveProgressData();
+                        }
+                    } catch (_) {}
+                }
+            } catch (e) {
+                // final fallback: no-op silently
             }
         }
 
