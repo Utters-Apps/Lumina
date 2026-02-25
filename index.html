@@ -2430,7 +2430,20 @@
                 // if episode lacks an explicit id (some entries are empty), fall back to a URL-derived key so progress is tracked
                 // prefer explicit id; if missing create stable generated id so embedded/mp4 episodes use consistent keys
                 const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : (ep && ep.url ? `${item.id}-s${sToPlay}-e${eToPlay}` : null);
-                ctxObj = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: sToPlay, episode: eToPlay, id: stableEpId, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url };
+                ctxObj = { 
+                    type: 'serie',
+                    seriesId: item.id,
+                    seriesTitle: item.title,
+                    season: sToPlay,
+                    episode: eToPlay,
+                    id: stableEpId,
+                    trigger: item.nextEpisodeTrigger || 0,
+                    nextEp: nextContext,
+                    url: ep.url,
+                    // pass intro metadata (if present) so the player can show skip button for the full intro window
+                    introStart: (ep && typeof ep.introStart !== 'undefined') ? Number(ep.introStart) : 0,
+                    introDuration: (ep && typeof ep.introDuration !== 'undefined') ? Number(ep.introDuration) : 0
+                };
             }
 
             // Build metadata mapping for details pages (keeps db untouched; adds production/distribution/studio/rights where provided)
