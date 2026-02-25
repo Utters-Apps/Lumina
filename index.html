@@ -10,6 +10,16 @@
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
     <link rel="manifest" href="/manifest.json">
+    <!-- PWA / iOS integration: prefer app-like behavior and explicit touch icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lumina">
+    <meta name="msapplication-TileColor" content="#09090b">
+    <meta name="msapplication-TileImage" content="/fiveicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/fiveicon-512.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/fiveicon.png">
+    <link rel="icon" href="/fiveicon.png" sizes="32x32">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -3197,6 +3207,20 @@
                                                 saveProgressData();
                                             }
                                         }, 1000);
+
+                                        // Ensure the iframe created by YT has PiP allow attributes (some browsers require it)
+                                        setTimeout(() => {
+                                            try {
+                                                const iframeNode = document.querySelector('#yt-player iframe');
+                                                if (iframeNode) {
+                                                    const allow = (iframeNode.getAttribute('allow') || '');
+                                                    if (!/picture-in-picture/i.test(allow)) {
+                                                        iframeNode.setAttribute('allow', (allow + '; autoplay; picture-in-picture; fullscreen').replace(/;;+/g,';'));
+                                                    }
+                                                    iframeNode.setAttribute('allowfullscreen', '');
+                                                }
+                                            } catch(_) {}
+                                        }, 500);
                                     },
                                     onStateChange: (e) => {
                                         // map YT states: 1 playing, 2 paused, 0 ended
@@ -3883,9 +3907,11 @@
         }
 
         function skipVideo(s) {
-            // Unified, robust skip handler for YouTube iframe and native <video>
+            // Optimized unified skip handler: minimal blocking work, immediate UI frame updates, and throttled progress save.
             try {
-                // Prefer YouTube API when available and ready
+                // Helper to clamp a value safely
+                const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+                // Prefer YouTube API when available
                 if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getCurrentTime === 'function') {
                     let cur = 0, dur = 0;
                     try { cur = Number(player.ytPlayer.getCurrentTime()) || 0; } catch(_) { cur = 0; }
@@ -3893,49 +3919,67 @@
 
                     let target = Number(cur) + Number(s || 0);
                     if (isNaN(target)) target = cur;
-                    // clamp
-                    if (target < 0) target = 0;
-                    if (dur > 0 && target > dur) target = dur;
+                    target = clamp(target, 0, (dur > 0 ? dur : Number.POSITIVE_INFINITY));
 
+                    // perform seek quickly and non-blocking
                     try {
-                        // seekTo(target, allowSeekAhead)
                         if (typeof player.ytPlayer.seekTo === 'function') player.ytPlayer.seekTo(target, true);
                     } catch (_) {}
 
-                    // Immediate UI update (time + progress)
+                    // update UI immediately on next animation frame for smooth sync
+                    requestAnimationFrame(() => {
+                        try {
+                            const tc = document.getElementById('time-current');
+                            const td = document.getElementById('time-duration');
+                            const progBar = document.getElementById('progress-bar');
+                            const fill = document.getElementById('progress-fill');
+                            if (tc) tc.innerText = formatTime(target);
+                            if (td && dur) td.innerText = formatTime(dur);
+                            if (progBar && dur > 0) progBar.value = (target / dur) * 100;
+                            if (fill && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
+                        } catch (_) {}
+                    });
+
+                    // persist a lightweight progress snapshot asynchronously (debounced inside saveProgressData)
                     try {
-                        const tc = document.getElementById('time-current');
-                        const td = document.getElementById('time-duration');
-                        const progBar = document.getElementById('progress-bar');
-                        const fill = document.getElementById('progress-fill');
-                        if (tc) tc.innerText = formatTime(target);
-                        if (td && dur) td.innerText = formatTime(dur);
-                        if (progBar && dur > 0) progBar.value = (target / dur) * 100;
-                        if (fill && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
+                        if (player.context && player.context.id) {
+                            // avoid heavy localStorage calls here; update in-memory and schedule save
+                            state.progress[player.context.id] = state.progress[player.context.id] || {};
+                            state.progress[player.context.id].time = target;
+                            state.progress[player.context.id].duration = dur || (state.progress[player.context.id].duration || 0);
+                            state.progress[player.context.id].timestamp = Date.now();
+                            if (player.context.type === 'serie' && player.context.seriesId) {
+                                state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
+                            }
+                            saveProgressData();
+                        }
                     } catch (_) {}
 
                     return;
                 }
             } catch (e) {
-                // swallow and fall through to native handling
+                // continue to native fallback
             }
 
-            // Native <video> fallback
+            // Native HTMLVideoElement path (fast and defensive)
             try {
-                if (player.vid) {
-                    const vid = player.vid;
-                    const cur = Number(vid.currentTime) || 0;
-                    const dur = Number(vid.duration) || NaN;
-                    let target = cur + Number(s || 0);
-                    if (isNaN(target)) target = cur;
-                    // clamp using duration only when valid
-                    if (target < 0) target = 0;
-                    if (!isNaN(dur) && dur > 0 && target > dur) target = dur;
+                const vid = player.vid;
+                if (!vid) return;
+                const cur = Number(vid.currentTime) || 0;
+                const dur = Number(vid.duration) || NaN;
+                let target = cur + Number(s || 0);
+                if (isNaN(target)) target = cur;
+                if (target < 0) target = 0;
+                if (!isNaN(dur) && dur > 0 && target > dur) target = dur;
 
-                    // perform the seek (guard against exceptions)
-                    try { vid.currentTime = target; } catch (_) {}
+                // set currentTime inside try/catch; browsers may throw if seeking during certain states
+                try { vid.currentTime = target; } catch (err) {
+                    // fallback: attempt a small delayed seek if immediate seek fails
+                    try { setTimeout(() => { try { if (player.vid) player.vid.currentTime = target; } catch(_) {} }, 80); } catch(_) {}
+                }
 
-                    // update UI immediately
+                // schedule UI update on next frame for smoothness and to avoid layout thrash
+                requestAnimationFrame(() => {
                     try {
                         const tc = document.getElementById('time-current');
                         const td = document.getElementById('time-duration');
@@ -3946,20 +3990,25 @@
                         if (progBar && !isNaN(dur) && dur > 0) progBar.value = (target / dur) * 100;
                         if (fill && !isNaN(dur) && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
                     } catch (_) {}
+                });
 
-                    // save a progress snapshot (best-effort)
-                    try {
-                        if (player.context && player.context.id) {
-                            state.progress[player.context.id] = { time: target, duration: (!isNaN(dur) && dur > 0) ? dur : (state.progress[player.context.id] && state.progress[player.context.id].duration) || 0, timestamp: Date.now() };
-                            if (player.context.type === 'serie' && player.context.seriesId) {
-                                state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
-                            }
-                            saveProgressData();
+                // update in-memory progress and schedule a debounced persistent save for performance
+                try {
+                    if (player.context && player.context.id) {
+                        state.progress[player.context.id] = state.progress[player.context.id] || {};
+                        state.progress[player.context.id].time = target;
+                        state.progress[player.context.id].duration = (!isNaN(dur) && dur > 0) ? dur : (state.progress[player.context.id].duration || 0);
+                        state.progress[player.context.id].timestamp = Date.now();
+                        if (player.context.type === 'serie' && player.context.seriesId) {
+                            state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
                         }
-                    } catch (_) {}
-                }
+                        // defer writes via the shared saveProgressData debounce
+                        saveProgressData();
+                    }
+                } catch (_) {}
+
             } catch (e) {
-                // final fallback: no-op silently
+                // silent fallback
             }
         }
 
@@ -4084,26 +4133,58 @@
         // Picture-in-Picture toggle for native video (graceful non-blocking fallback)
         async function togglePiP() {
             try {
-                // 1) If there's a native video element, prefer it for PiP
+                // 1) Prefer native HTMLVideoElement for PiP when available
                 const vidEl = (player && player.vid) ? player.vid : document.querySelector('#main-video');
                 if (vidEl && typeof vidEl.requestPictureInPicture === 'function') {
-                    // If already in PiP, exit; otherwise request PiP on the video element
-                    if (document.pictureInPictureElement === vidEl) {
-                        await document.exitPictureInPicture();
-                    } else {
-                        await vidEl.requestPictureInPicture();
+                    try {
+                        if (document.pictureInPictureElement === vidEl) {
+                            await document.exitPictureInPicture();
+                        } else {
+                            await vidEl.requestPictureInPicture();
+                        }
+                        return;
+                    } catch (err) {
+                        // continue to other fallbacks if native PiP fails
+                        console.warn('Native PiP failed, falling back to iframe attempts', err);
                     }
-                    return;
                 }
 
-                // 2) If the current playback is a YouTube iframe (YT IFrame API), try PiP on the iframe
+                // 2) Try iframe-based PiP (works for many embed providers and some YouTube cases)
+                // Look for known iframe containers rendered by the player (YouTube container or generic iframe)
+                const possibleIframes = Array.from(document.querySelectorAll('#player-media-wrapper iframe, #yt-player iframe'));
+                for (const ifr of possibleIframes) {
+                    try {
+                        if (!ifr) continue;
+                        // Ensure allow attribute includes picture-in-picture for best compatibility
+                        const curAllow = (ifr.getAttribute('allow') || '');
+                        if (!/picture-in-picture/i.test(curAllow)) {
+                            try { ifr.setAttribute('allow', (curAllow + '; picture-in-picture').replace(/;;+/g,';')); } catch(_) {}
+                        }
+                        // Some browsers support requestPictureInPicture on iframe elements
+                        if (typeof ifr.requestPictureInPicture === 'function') {
+                            if (document.pictureInPictureElement === ifr) {
+                                await document.exitPictureInPicture();
+                            } else {
+                                await ifr.requestPictureInPicture();
+                            }
+                            return;
+                        }
+                    } catch (inner) {
+                        // try next iframe
+                        console.warn('iframe PiP attempt failed for one iframe, trying next', inner);
+                    }
+                }
+
+                // 3) If we have a YouTube player via API we can try to access its internal iframe (best-effort)
                 try {
                     if (player && player.isYouTube) {
-                        // YT API renders an iframe inside the #yt-player container
                         const ytIframe = document.querySelector('#yt-player iframe');
                         if (ytIframe) {
-                            // Some browsers allow requestPictureInPicture on iframes when the iframe has the proper allow attribute.
-                            // Try calling requestPictureInPicture() on the iframe as a best-effort; modern Chrome may support it.
+                            // ensure allow attribute is present
+                            const cur = (ytIframe.getAttribute('allow') || '');
+                            if (!/picture-in-picture/i.test(cur)) {
+                                try { ytIframe.setAttribute('allow', (cur + '; autoplay; picture-in-picture; fullscreen').replace(/;;+/g,';')); } catch(_) {}
+                            }
                             if (typeof ytIframe.requestPictureInPicture === 'function') {
                                 if (document.pictureInPictureElement === ytIframe) {
                                     await document.exitPictureInPicture();
@@ -4111,33 +4192,21 @@
                                     await ytIframe.requestPictureInPicture();
                                 }
                                 return;
-                            } else {
-                                // As a fallback, attempt to set the allow attribute (best-effort) and retry once
-                                try { ytIframe.setAttribute('allow', (ytIframe.getAttribute('allow') || '') + '; picture-in-picture'); } catch(_) {}
-                                if (typeof ytIframe.requestPictureInPicture === 'function') {
-                                    if (document.pictureInPictureElement === ytIframe) {
-                                        await document.exitPictureInPicture();
-                                    } else {
-                                        await ytIframe.requestPictureInPicture();
-                                    }
-                                    return;
-                                }
                             }
                         }
                     }
                 } catch (ytErr) {
-                    console.warn('YT PiP attempt failed', ytErr);
+                    console.warn('YT iframe PiP attempt failed', ytErr);
                 }
 
-                // 3) Generic fallback: inform the user PiP isn't available
+                // 4) Generic fallback: inform the user PiP isn't available
                 if (document.pictureInPictureEnabled) {
                     showToast('Nenhum vídeo compatível encontrado para PiP.');
                 } else {
                     showToast('Picture-in-Picture não suportado neste navegador.');
                 }
             } catch (e) {
-                // Non-blocking feedback instead of opening any modal
-                console.warn('PiP falhou:', e);
+                console.warn('togglePiP overall failed', e);
                 showToast('Não foi possível ativar PiP.');
             }
         }
