@@ -330,13 +330,13 @@
                 </div>
 
                 <div class="flex-1 flex items-center justify-center gap-24 relative w-full h-full pointer-events-auto" id="player-center-zone">
-                    <button onclick="skipVideo(-10)" class="text-white/40 hover:text-white transition-colors p-4 hidden md:flex flex-col items-center hover:scale-110">
+                    <button onclick="skipVideo(-10)" class="text-white/40 hover:text-white transition-colors p-4 flex flex-col items-center hover:scale-110" title="Voltar 10s" aria-label="Voltar 10 segundos">
                         <i class="ph-fill ph-clock-counter-clockwise text-4xl"></i>
                     </button>
-                    <button onclick="togglePlay()" id="center-play-btn" class="w-20 h-20 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-3xl transition-all hover:scale-105">
+                    <button onclick="togglePlay()" id="center-play-btn" class="w-20 h-20 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-3xl transition-all hover:scale-105" title="Reproduzir / Pausar" aria-label="Reproduzir ou pausar">
                         <i class="ph-fill ph-play"></i>
                     </button>
-                    <button onclick="skipVideo(10)" class="text-white/40 hover:text-white transition-colors p-4 hidden md:flex flex-col items-center hover:scale-110">
+                    <button onclick="skipVideo(10)" class="text-white/40 hover:text-white transition-colors p-4 flex flex-col items-center hover:scale-110" title="Avançar 10s" aria-label="Avançar 10 segundos">
                         <i class="ph-fill ph-clock-clockwise text-4xl"></i>
                     </button>
                 </div>
@@ -378,7 +378,7 @@
                             </div>
 
                             <!-- Picture-in-Picture (custom icon) -->
-                            <button id="skip-intro-btn" onclick="skipIntro()" class="text-white hover:text-accent transition-colors" title="Pular abertura" aria-label="Pular abertura" style="display:none;">
+                            <button id="skip-intro-btn" onclick="skipIntro()" class="text-white hover:text-accent transition-colors" title="Pular abertura" aria-label="Pular abertura">
                                 <i class="ph ph-forward text-lg"></i>
                             </button>
                             <button id="pip-btn" onclick="togglePiP()" class="text-white hover:text-white/70 transition-colors" title="Picture-in-Picture" aria-label="Picture-in-Picture">
@@ -2888,6 +2888,12 @@
                     this.isYouTube = false;
                     this.preferredRate = this.preferredRate || 1;
 
+                    // ensure skip-intro UI hidden between plays (guarded)
+                    try {
+                        const skipBtn = document.getElementById('skip-intro-btn');
+                        if (skipBtn) skipBtn.style.display = 'none';
+                    } catch (e) {}
+
                     // ensure UI shows default paused state
                     try { updatePlayBtns(true); updateVolIcon(); } catch(_) {}
                 } catch (_) {}
@@ -2901,6 +2907,18 @@
                 modal.classList.remove('hidden'); modal.classList.add('flex');
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
                 document.body.style.overflow = 'hidden';
+
+                // show/hide skip-intro button when context provides intro metadata
+                try {
+                    const skipBtn = document.getElementById('skip-intro-btn');
+                    if (skipBtn) {
+                        if (context && (Number(context.introStart) > 0 || Number(context.introDuration) > 0)) {
+                            skipBtn.style.display = '';
+                        } else {
+                            skipBtn.style.display = 'none';
+                        }
+                    }
+                } catch (e) {}
 
                 const wrapper = document.getElementById('player-media-wrapper');
                 wrapper.innerHTML = ''; // clear previous
