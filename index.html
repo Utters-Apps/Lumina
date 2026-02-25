@@ -136,6 +136,34 @@
         }
         .player-ui .top-center * { pointer-events: auto; } /* allow text selection / focus if needed */
 
+        /* Position the skip-intro button just above the progress bar on the right side.
+           Hidden by default and shown by JS when needed. Adjusts for mobile widths. */
+        #skip-intro-btn {
+            position: absolute;
+            right: 96px;              /* sit to the right of center controls, above progress */
+            bottom: 110px;           /* a bit above the bottom progress bar area */
+            z-index: 70;
+            pointer-events: auto;
+            display: none;           /* visibility controlled by player logic */
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: white;
+            padding: 8px 10px;
+            border-radius: 10px;
+            min-width: 44px;
+            height: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Slightly shift for narrow viewports so the button doesn't overflow off-screen */
+        @media (max-width: 767px) {
+            #skip-intro-btn {
+                right: 20px;
+                bottom: 120px;
+            }
+        }
+
         /* Utilities */
         .fade-bottom { background: linear-gradient(to top, #09090b 0%, transparent 100%); }
         .fade-right { background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.8) 50%, transparent 100%); }
@@ -2940,16 +2968,10 @@
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
                 document.body.style.overflow = 'hidden';
 
-                // show/hide skip-intro button when context provides intro metadata
+                // start hidden — visibility will be managed dynamically while playing (shown only during intro window)
                 try {
                     const skipBtn = document.getElementById('skip-intro-btn');
-                    if (skipBtn) {
-                        if (context && (Number(context.introStart) > 0 || Number(context.introDuration) > 0)) {
-                            skipBtn.style.display = '';
-                        } else {
-                            skipBtn.style.display = 'none';
-                        }
-                    }
+                    if (skipBtn) skipBtn.style.display = 'none';
                 } catch (e) {}
 
                 const wrapper = document.getElementById('player-media-wrapper');
@@ -3100,7 +3122,7 @@
                                             }
                                         }
 
-                                        // start interval to update UI and save progress
+                                        // start interval to update UI, manage skip-intro visibility and save progress
                                         this.ytSaveInterval = setInterval(() => {
                                             if (!this.ytPlayer || typeof this.ytPlayer.getCurrentTime !== 'function') return;
                                             const cur = this.ytPlayer.getCurrentTime();
@@ -3117,6 +3139,8 @@
                                                 if (tc) tc.innerText = formatTime(cur);
                                                 if (td) td.innerText = formatTime(dur);
                                             }
+                                            // manage skip-intro visibility while playing YouTube
+                                            try { if (typeof player.updateSkipIntroVisibility === 'function') player.updateSkipIntroVisibility(cur); } catch(_) {}
                                             // persist progress periodically (less frequent to reduce CPU / storage churn)
                                             if (this.context && this.context.id && typeof cur === 'number' && !isNaN(cur)) {
                                                 state.progress[this.context.id] = { time: cur, duration: this.ytPlayer.getDuration() || 0, timestamp: Date.now() };
@@ -3325,8 +3349,8 @@
 
                 if(window.innerWidth <= 768 && document.documentElement.requestFullscreen) modal.requestFullscreen().catch(e=>e);
 
-                // Only set save interval for native video
-                if(!this.isEmbed) this.saveInterval = setInterval(() => this.saveProgress(), 5000);
+                // Only set save interval for native video (increase frequency to improve sync)
+                if(!this.isEmbed) this.saveInterval = setInterval(() => this.saveProgress(), 2000);
             },
             
             restoreProgress: function() {
@@ -3480,7 +3504,11 @@
 
                 this.vid.onplaying = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.add('hidden'); updatePlayBtns(false); };
                 this.vid.onwaiting = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.remove('hidden'); };
-                this.vid.onpause = () => { updatePlayBtns(true); if (container) container.classList.remove('player-idle'); };
+                this.vid.onpause = () => { 
+                    updatePlayBtns(true); 
+                    if (container) container.classList.remove('player-idle'); 
+                    try { this.saveProgress(); } catch(_) {} /* ensure progress saved immediately on pause */
+                };
                 
                 this.vid.ontimeupdate = () => {
                     // guard against race conditions where the video element has been removed
@@ -3500,6 +3528,9 @@
 
                     const tc = document.getElementById('time-current');
                     if (tc) tc.innerText = formatTime(this.vid.currentTime || 0);
+
+                    // manage skip-intro visibility for native <video>
+                    try { if (typeof player.updateSkipIntroVisibility === 'function') player.updateSkipIntroVisibility(this.vid.currentTime); } catch(_) {}
 
                     // protect next-episode check from throwing if context/state changed
                     try { this.checkNextTrigger(); } catch (e) { /* swallow safe */ }
@@ -3554,6 +3585,51 @@
 
                     prompt.classList.remove('hidden');
                     requestAnimationFrame(() => prompt.classList.remove('opacity-0', 'translate-y-4'));
+                }
+            },
+
+            // Show/hide the skip-intro button based on current playback time and the intro window in context.
+            // Accepts an optional currentTime param (seconds). If not provided, it will query the active player.
+            updateSkipIntroVisibility: function(currentTime) {
+                try {
+                    const skipBtn = document.getElementById('skip-intro-btn');
+                    if (!skipBtn) return;
+
+                    // Must have context with intro metadata
+                    if (!this.context || (typeof this.context.introStart === 'undefined' && typeof this.context.introDuration === 'undefined')) {
+                        skipBtn.style.display = 'none';
+                        return;
+                    }
+
+                    const introStart = Number(this.context.introStart || 0);
+                    const introDur = Number(this.context.introDuration || 0);
+                    if (introStart <= 0 || introDur <= 0) {
+                        skipBtn.style.display = 'none';
+                        return;
+                    }
+
+                    // Determine current time if not supplied
+                    let cur = typeof currentTime === 'number' ? currentTime : 0;
+                    if (typeof currentTime !== 'number') {
+                        try {
+                            if (this.isYouTube && this.ytPlayer && typeof this.ytPlayer.getCurrentTime === 'function') {
+                                cur = Number(this.ytPlayer.getCurrentTime()) || 0;
+                            } else if (this.vid) {
+                                cur = Number(this.vid.currentTime) || 0;
+                            }
+                        } catch (_) { cur = 0; }
+                    }
+
+                    // Show the button during the full intro interval and hide outside it.
+                    const introEnd = introStart + introDur;
+                    if (cur >= introStart && cur <= introEnd) {
+                        skipBtn.style.display = '';
+                    } else {
+                        skipBtn.style.display = 'none';
+                    }
+                } catch (e) {
+                    // fail-safe: hide on errors
+                    try { document.getElementById('skip-intro-btn').style.display = 'none'; } catch(_) {}
                 }
             }
         };
@@ -4445,6 +4521,22 @@
 
         // expose init on load
         window.onload = init;
+
+        // Ensure progress is flushed when the user navigates away or the page is hidden
+        window.addEventListener('beforeunload', () => {
+            try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+        }, { passive: true });
+
+        // Also handle pagehide/visibilitychange to better capture mobile cases (background / tab switches)
+        window.addEventListener('pagehide', () => {
+            try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+        }, { passive: true });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden') {
+                try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+            }
+        }, { passive: true });
 
         // --- LEGAL / DISCLAIMER HANDLERS ---
         // Robust modal open/close that queries DOM at call time (avoids init-order failures)
