@@ -476,6 +476,7 @@
                 year: '2023',
                 cover: 'https://pbs.twimg.com/media/FzKWtbPWABwDiL0.jpg',
                 description: 'Maddie Nears, uma adolescente que morre misteriosamente e fica presa como fantasma em sua escola, junta-se a outros espíritos para investigar sua morte enquanto tenta se comunicar com os vivos.',
+                tags: ['Popular','Nova Temporada'],
                 ageRating: '16',
                 nextEpisodeTrigger: 30,
                 seasons: {
@@ -906,6 +907,7 @@
                 year: '2023',
                 cover: 'https://img.odcdn.com.br/wp-content/uploads/2023/04/Super-Mario-Po%CC%81s-cre%CC%81ditos-1920x1080.jpeg',
                 description: 'Dois irmãos encanadores do Brooklyn são sugados por um cano misterioso e acabam em um reino mágico; para salvar o novo mundo e reencontrar seu irmão, Mario precisa aprender que coragem é insistir mesmo tremendo.',
+                tags: ['Lançamento','Popular'],
                 duration: '92 minutos',
                 director: 'Aaron Horvath e Michael Jelenic',
                 studio: 'Illumination em parceria com Nintendo',
@@ -2126,7 +2128,10 @@
                 card.className = 'w-64 md:w-80 shrink-0 hover-card cursor-pointer group';
                 card.onclick = () => openDetails(item.id);
                 
-                const pct = Math.min(100, (item._prog.time / item._prog.duration) * 100);
+                // defensive: handle missing _prog or duration to avoid NaN and ensure visible fraction is correct
+                const progTime = item._prog && typeof item._prog.time === 'number' ? item._prog.time : 0;
+                const progDur = item._prog && typeof item._prog.duration === 'number' ? item._prog.duration : 0;
+                const pct = progDur > 0 ? Math.min(100, (progTime / progDur) * 100) : (progTime > 0 ? 2 : 0);
                 const subtitle = item._hist ? `T${item._hist.s} : E${item._hist.e+1}` : 'Continuar filme';
 
                 card.innerHTML = `
@@ -2743,14 +2748,16 @@
             // Build episode list lazily (images set with loading=lazy)
             container.innerHTML = episodes.map((ep, index) => {
                 const isAvailable = ep.url && ep.url.trim() !== '';
-                const prog = state.progress[ep.id];
-                const pct = prog ? Math.min(100, (prog.time / prog.duration) * 100) : 0;
+                // use a stable episode id fallback when ep.id is missing so progress and history persist correctly
+                const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : (ep && ep.url ? `${item.id}-s${seasonNum}-e${index}` : `${item.id}-s${seasonNum}-e${index}`);
+                const prog = state.progress[stableEpId];
+                const pct = (prog && prog.duration) ? Math.min(100, (prog.time / prog.duration) * 100) : (prog && prog.time ? Math.min(100, (prog.time / (prog.time + 60)) * 100) : 0);
                 
                 const nextE = index + 1 < episodes.length ? episodes[index+1] : null;
                 const nextContext = nextE && nextE.url ? { url: nextE.url, title: `T${seasonNum}:E${index+2} - ${nextE.title}`, s: seasonNum, e: index+1 } : null;
-                const ctx = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: seasonNum, episode: index, id: ep.id, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url };
+                const ctx = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: seasonNum, episode: index, id: stableEpId, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url, introStart: ep.introStart || 0, introDuration: ep.introDuration || 0 };
                 const ctxStr = JSON.stringify(ctx).replace(/"/g, '&quot;');
-                const titleStr = `T${seasonNum}:E${index+1} - ${ep.title.replace(/'/g, "\\'")}`;
+                const titleStr = `T${seasonNum}:E${index+1} - ${String(ep.title || '').replace(/'/g, "\\'")}`;
 
                 return `
                     <div onclick="${isAvailable ? `requestPlay('${ep.url}', '${titleStr}', ${ctxStr})` : ''}" 
@@ -2792,14 +2799,16 @@
 
             container.innerHTML = episodes.map((ep, index) => {
                 const isAvailable = ep.url && ep.url.trim() !== '';
-                const prog = state.progress[ep.id];
-                const pct = prog ? Math.min(100, (prog.time / prog.duration) * 100) : 0;
+                // stable id fallback so progress mapping works even when ep.id missing
+                const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : (ep && ep.url ? `${item.id}-s${seasonNum}-e${index}` : `${item.id}-s${seasonNum}-e${index}`);
+                const prog = state.progress[stableEpId];
+                const pct = (prog && prog.duration) ? Math.min(100, (prog.time / prog.duration) * 100) : (prog && prog.time ? Math.min(100, (prog.time / (prog.time + 60)) * 100) : 0);
                 
                 const nextE = index + 1 < episodes.length ? episodes[index+1] : null;
                 const nextContext = nextE && nextE.url ? { url: nextE.url, title: `T${seasonNum}:E${index+2} - ${nextE.title}`, s: seasonNum, e: index+1 } : null;
-                const ctx = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: seasonNum, episode: index, id: ep.id, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url };
+                const ctx = { type: 'serie', seriesId: item.id, seriesTitle: item.title, season: seasonNum, episode: index, id: stableEpId, trigger: item.nextEpisodeTrigger || 0, nextEp: nextContext, url: ep.url, introStart: ep.introStart || 0, introDuration: ep.introDuration || 0 };
                 const ctxStr = JSON.stringify(ctx).replace(/"/g, '&quot;');
-                const titleStr = `T${seasonNum}:E${index+1} - ${ep.title.replace(/'/g, "\\'")}`;
+                const titleStr = `T${seasonNum}:E${index+1} - ${String(ep.title || '').replace(/'/g, "\\'")}`;
 
                 return `
                     <div onclick="${isAvailable ? `requestPlay('${ep.url}', '${titleStr}', ${ctxStr})` : ''}" 
@@ -3229,8 +3238,23 @@
                             this.vid.preload = 'metadata';
                             // set autoplay & muted to satisfy modern autoplay policies
                             this.vid.autoplay = true;
-                            this.vid.muted = false;
+                            // Start muted to satisfy mobile autoplay policies, then restore audio on first user gesture.
+                            this.vid.muted = true;
+                            this.vid.volume = 0;
                             this.vid.src = url;
+
+                            // Unmute on first user interaction (pointer/touch) to restore expected audio behavior.
+                            const _unmuteOnce = () => {
+                                try {
+                                    // prefer a reasonable default volume when unmuting
+                                    this.vid.muted = false;
+                                    this.vid.volume = Math.max(0.5, this.vid.volume || 1);
+                                } catch(_) {}
+                                document.removeEventListener('pointerdown', _unmuteOnce);
+                                document.removeEventListener('touchstart', _unmuteOnce);
+                            };
+                            document.addEventListener('pointerdown', _unmuteOnce, { once: true, passive: true });
+                            document.addEventListener('touchstart', _unmuteOnce, { once: true, passive: true });
                             // apply preferred rate immediately so setSpeed updates persist when video is created later
                             try { 
                                 this.vid.playbackRate = (typeof player !== 'undefined' && typeof player.preferredRate === 'number') ? player.preferredRate : 1;
@@ -3310,8 +3334,21 @@
                     this.vid.playsInline = true;
                     this.vid.preload = 'metadata';
                     this.vid.autoplay = true;
-                    this.vid.muted = false;
+                    // Start muted so autoplay works reliably on mobile; unmute on first user gesture.
+                    this.vid.muted = true;
+                    this.vid.volume = 0;
                     this.vid.src = url;
+
+                    const _unmuteOnce = () => {
+                        try {
+                            this.vid.muted = false;
+                            this.vid.volume = Math.max(0.5, this.vid.volume || 1);
+                        } catch(_) {}
+                        document.removeEventListener('pointerdown', _unmuteOnce);
+                        document.removeEventListener('touchstart', _unmuteOnce);
+                    };
+                    document.addEventListener('pointerdown', _unmuteOnce, { once: true, passive: true });
+                    document.addEventListener('touchstart', _unmuteOnce, { once: true, passive: true });
                     // ensure playback rate reflects user's chosen speed immediately
                     try {
                         this.vid.playbackRate = (typeof player !== 'undefined' && typeof player.preferredRate === 'number') ? player.preferredRate : 1;
@@ -4355,7 +4392,12 @@
                 const card = document.createElement('div');
                 card.className = useSessionCard ? 'hover-card cursor-pointer group relative session-card' : 'hover-card cursor-pointer group relative';
                 card.onclick = () => openDetails(item.id);
-                
+
+                // build tags badges HTML if present
+                const tagsHtml = (item.tags && Array.isArray(item.tags) && item.tags.length) 
+                    ? `<div class="flex gap-2 mt-2">${item.tags.slice(0,3).map(t => `<span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/6 text-white/90">${t}</span>`).join('')}</div>`
+                    : '';
+
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
                         <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
@@ -4370,7 +4412,8 @@
                     </div>
                     <div class="px-1">
                         <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
-                        <div class="flex items-center gap-2 mt-0.5">
+                        ${tagsHtml}
+                        <div class="flex items-center gap-2 mt-1">
                             ${getAgeBadge(item.ageRating)}
                             <p class="text-white/40 text-[11px] truncate">${item.category}</p>
                         </div>
@@ -5517,6 +5560,169 @@
                     }
                 }
             } catch (e) { /* silent */ }
+        })();
+    </script>
+    <script>
+        // Dynamic badges & notifications module
+        (function(){
+            // Config
+            const BADGE_POOL = ['Lançamento','Novo Episódio','Nova Temporada','Popular','Destaque','Exclusivo','Em Alta'];
+            const BADGE_ROTATE_INTERVAL = 8000; // ms
+            const NOTIFY_ON_CHANGE = true; // toggle system notification when a badge is applied
+            const MAX_BADGES_PER_ITEM = 3;
+
+            // Utility: pick random elements from array
+            const sample = (arr, n=1) => {
+                const out = []; const copy = arr.slice();
+                for(let i=0;i<n && copy.length;i++){
+                    const idx = Math.floor(Math.random()*copy.length);
+                    out.push(copy.splice(idx,1)[0]);
+                }
+                return out;
+            };
+
+            // Update tags for a random subset of DB items periodically
+            function rotateTagsTick() {
+                try {
+                    if (!Array.isArray(window.db)) return;
+                    // choose 4 items to update (or fewer if db small)
+                    const pickCount = Math.min(4, Math.max(1, Math.floor(window.db.length * 0.06)));
+                    const dbCopy = window.db.slice();
+                    for (let i=0;i<pickCount;i++) {
+                        const idx = Math.floor(Math.random()*dbCopy.length);
+                        const item = dbCopy.splice(idx,1)[0];
+                        if (!item) continue;
+                        // randomly decide to add, remove or replace tags
+                        const mode = Math.random();
+                        if (!Array.isArray(item.tags)) item.tags = [];
+                        if (mode < 0.35 && item.tags.length > 0) {
+                            // remove one random tag
+                            const removeIdx = Math.floor(Math.random()*item.tags.length);
+                            const removed = item.tags.splice(removeIdx,1)[0];
+                            if (NOTIFY_ON_CHANGE) notifyChange(`${item.title} perdeu a tag "${removed}"`);
+                        } else {
+                            // add or replace
+                            const n = 1 + Math.floor(Math.random() * Math.min(MAX_BADGES_PER_ITEM, 2));
+                            const picks = sample(BADGE_POOL, n);
+                            // merge unique
+                            const merged = Array.from(new Set([...(item.tags||[]), ...picks])).slice(0, MAX_BADGES_PER_ITEM);
+                            item.tags = merged;
+                            if (NOTIFY_ON_CHANGE) notifyChange(`${item.title} agora tem: ${merged.join(', ')}`);
+                        }
+                    }
+                    // Re-render active lists to reflect tag changes without full reload
+                    try {
+                        if (state.tab === 'home') {
+                            // re-render catalog grids and continue cards only to avoid heavy reflow
+                            const catalog = document.getElementById('catalog-grid');
+                            const continueGrid = document.getElementById('continue-grid');
+                            if (catalog) { catalog.innerHTML = ''; render16by9CatalogCards(window.db, catalog); }
+                            if (continueGrid) {
+                                const cont = getContinueWatching();
+                                continueGrid.innerHTML = '';
+                                renderContinueCards(cont, continueGrid);
+                            }
+                        } else if (state.tab === 'search') {
+                            const grid = document.getElementById('search-grid');
+                            if (grid) {
+                                grid.innerHTML = '';
+                                const q = (state.searchQuery || '').toLowerCase();
+                                const results = window.db.filter(item => item.title.toLowerCase().includes(q) || (item.category||'').toLowerCase().includes(q));
+                                render16by9CatalogCards(results, grid);
+                            }
+                        } else if (state.tab === 'favorites') {
+                            const favGrid = document.getElementById('fav-grid');
+                            if (favGrid) {
+                                favGrid.innerHTML = '';
+                                const favData = window.db.filter(item => state.favorites.includes(item.id));
+                                render16by9CatalogCards(favData, favGrid);
+                            }
+                        }
+                    } catch(e) {
+                        // fallback: light full view render
+                        try { renderView(); } catch(_) {}
+                    }
+                } catch (e) {
+                    console.warn('rotateTagsTick failed', e);
+                }
+            }
+
+            // In-app and system notifications
+            async function requestNotificationPermission() {
+                try {
+                    if (!('Notification' in window)) return false;
+                    if (Notification.permission === 'granted') return true;
+                    if (Notification.permission === 'denied') return false;
+                    const p = await Notification.requestPermission();
+                    return p === 'granted';
+                } catch (e) { return false; }
+            }
+
+            function showSystemNotification(title, body, icon) {
+                try {
+                    if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+                    const n = new Notification(title, { body: body || '', icon: icon || '/fiveicon-512.png', silent: false });
+                    // click handler: focus the app
+                    n.onclick = () => { try { window.focus(); n.close(); } catch(_) {} };
+                    // auto-close after 6s
+                    setTimeout(() => { try { n.close(); } catch(_) {} }, 6000);
+                    return true;
+                } catch (e) { return false; }
+            }
+
+            // Local visible toast + optional system notification
+            function notifyChange(message) {
+                try {
+                    // in-app toast
+                    showToast(message, 3800);
+                    // system notification if granted
+                    if (Notification && Notification.permission === 'granted') {
+                        showSystemNotification('Lumina', message, '/fiveicon.png');
+                    }
+                } catch (e) {}
+            }
+
+            // Initial setup: request permission gently when user interacts or after a short delay
+            function initBadgesAndNotifications() {
+                try {
+                    // start periodic rotation
+                    window.__lumina_badge_timer = setInterval(rotateTagsTick, BADGE_ROTATE_INTERVAL);
+
+                    // Request permission after first user gesture to avoid blocking UX
+                    const askNow = async () => {
+                        try {
+                            document.removeEventListener('pointerdown', askNow);
+                            document.removeEventListener('touchstart', askNow);
+                            document.removeEventListener('click', askNow);
+                            const granted = await requestNotificationPermission();
+                            if (granted) showToast('Notificações ativadas', 1800);
+                            else showToast('Notificações não ativadas', 1800);
+                        } catch (e) {}
+                    };
+                    document.addEventListener('pointerdown', askNow, { once: true, passive: true });
+                    document.addEventListener('touchstart', askNow, { once: true, passive: true });
+                    document.addEventListener('click', askNow, { once: true, passive: true });
+
+                    // Also expose manual API on window to trigger notification for testing
+                    window.luminaNotify = (title, text) => {
+                        showToast(text || title, 2800);
+                        if (Notification && Notification.permission === 'granted') showSystemNotification(title || 'Lumina', text || '');
+                    };
+                } catch (e) {
+                    console.warn('initBadgesAndNotifications failed', e);
+                }
+            }
+
+            // Ensure we initialize after app init; try to run soon if DOM already loaded
+            if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                setTimeout(initBadgesAndNotifications, 600);
+            } else {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(initBadgesAndNotifications, 600));
+            }
+
+            // Cleanup on pagehide/unload
+            window.addEventListener('pagehide', () => { try { clearInterval(window.__lumina_badge_timer); } catch(_) {} }, { passive: true });
+            window.addEventListener('beforeunload', () => { try { clearInterval(window.__lumina_badge_timer); } catch(_) {} }, { passive: true });
         })();
     </script>
 </body>
