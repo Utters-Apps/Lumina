@@ -121,6 +121,21 @@
         .player-idle .player-ui { opacity: 0; pointer-events: none; transform: translateY(10px); }
         .player-ui { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
+        /* Centered top title inside player: absolute centered container so title remains visually centered
+           regardless of left-side controls width. Pointer-events are disabled on wrapper so overlay controls
+           remain interactive; inner heading keeps readable alignment. */
+        .player-ui .top-center {
+            position: absolute;
+            left: 50%;
+            top: 12px;
+            transform: translateX(-50%);
+            width: min(760px, calc(100% - 120px)); /* leave space for left/right controls */
+            text-align: center;
+            pointer-events: none; /* allow buttons under/around to remain interactive */
+            z-index: 50;
+        }
+        .player-ui .top-center * { pointer-events: auto; } /* allow text selection / focus if needed */
+
         /* Utilities */
         .fade-bottom { background: linear-gradient(to top, #09090b 0%, transparent 100%); }
         .fade-right { background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.8) 50%, transparent 100%); }
@@ -322,10 +337,14 @@
                         </button>
                     </div>
 
-                    <div class="flex flex-col items-center max-w-[60%] text-center">
-                        <h2 id="player-series-title" class="text-white/60 text-xs font-semibold tracking-wide uppercase hidden md:block mb-1">Série</h2>
-                        <h1 id="player-ep-title" class="text-white font-display font-medium text-lg md:text-xl truncate w-full">Episódio</h1>
+                    <!-- Centered title wrapper (absolute-centered to keep it visually centered regardless of left controls) -->
+                    <div class="top-center">
+                        <div class="flex flex-col items-center text-center">
+                            <h2 id="player-series-title" class="text-white/60 text-xs font-semibold tracking-wide uppercase hidden md:block mb-1">Série</h2>
+                            <h1 id="player-ep-title" class="text-white font-display font-medium text-lg md:text-xl truncate w-full">Episódio</h1>
+                        </div>
                     </div>
+
                     <div class="w-10"></div>
                 </div>
 
