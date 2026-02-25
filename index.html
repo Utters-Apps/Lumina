@@ -378,6 +378,9 @@
                             </div>
 
                             <!-- Picture-in-Picture (custom icon) -->
+                            <button id="skip-intro-btn" onclick="skipIntro()" class="text-white hover:text-accent transition-colors" title="Pular abertura" aria-label="Pular abertura" style="display:none;">
+                                <i class="ph ph-forward text-lg"></i>
+                            </button>
                             <button id="pip-btn" onclick="togglePiP()" class="text-white hover:text-white/70 transition-colors" title="Picture-in-Picture" aria-label="Picture-in-Picture">
                                 <img src="PiPicon.png" alt="PiP" class="w-5 h-5 object-contain">
                             </button>
@@ -430,14 +433,14 @@
                 nextEpisodeTrigger: 30,
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://www.dropbox.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm&raw=1" },
-                        { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://www.dropbox.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os&raw=1" },
-                        { id: 's1-e3', title: "Morta e Confusa", url: "https://www.dropbox.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux&raw=1" },
-                        { id: 's1-e4', title: "Intenções Mórbidas", url: "https://www.dropbox.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc&raw=1" },
-                        { id: 's1-e5', title: "O Passado Entra em Campo", url: "https://www.dropbox.com/scl/fi/eajat75t4zeeq1usv7ifa/S_S_1_5_D.mp4?rlkey=dlaqabp1m3g9o2ankaa7okhsk&raw=1" },
-                        { id: 's1-e6', title: "Os Fantasmas se Divertem no Baile", url: "https://www.dropbox.com/scl/fi/1uk571r9d12h0otsasdnp/S_S_1_6_D.mp4?rlkey=xp4z4l5dv4zj210ohyc53fj58&raw=1" },
-                        { id: 's1-e7', title: "A Última Sessão Mediúnica", url: "https://www.dropbox.com/scl/fi/8h4lqdo5f1daf4zxc6yeh/S_S_1_7_D.mp4?rlkey=0bt8rn6wquag21y7iwpaj06r5&raw=1" },
-                        { id: 's1-e8', title: "O Corpo de Madison", url: "https://www.dropbox.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq&raw=1" }
+                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://www.dropbox.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm&raw=1", introStart: 173, introDuration: 55 },
+                        { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://www.dropbox.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os&raw=1", introStart: 230, introDuration: 55 },
+                        { id: 's1-e3', title: "Morta e Confusa", url: "https://www.dropbox.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux&raw=1", introStart: 109, introDuration: 55 },
+                        { id: 's1-e4', title: "Intenções Mórbidas", url: "https://www.dropbox.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc&raw=1", introStart: 119, introDuration: 55 },
+                        { id: 's1-e5', title: "O Passado Entra em Campo", url: "https://www.dropbox.com/scl/fi/eajat75t4zeeq1usv7ifa/S_S_1_5_D.mp4?rlkey=dlaqabp1m3g9o2ankaa7okhsk&raw=1", introStart: 83, introDuration: 55 },
+                        { id: 's1-e6', title: "Os Fantasmas se Divertem no Baile", url: "https://www.dropbox.com/scl/fi/1uk571r9d12h0otsasdnp/S_S_1_6_D.mp4?rlkey=xp4z4l5dv4zj210ohyc53fj58&raw=1", introStart: 196, introDuration: 55 },
+                        { id: 's1-e7', title: "A Última Sessão Mediúnica", url: "https://www.dropbox.com/scl/fi/8h4lqdo5f1daf4zxc6yeh/S_S_1_7_D.mp4?rlkey=0bt8rn6wquag21y7iwpaj06r5&raw=1", introStart: 386, introDuration: 55 },
+                        { id: 's1-e8', title: "O Corpo de Madison", url: "https://www.dropbox.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq&raw=1", introStart: 211, introDuration: 55 }
                     ],
                     2: [
                         { id: 's2-e1', title: "O Que Terá Acontecido a Maddie Nears?", url: "https://www.dropbox.com/scl/fi/erfoa38zyjkll3z252pox/SSPRTS_2_1.mp4?rlkey=96tmhe507k8tsqueakqd6b9oo&raw=1" },
@@ -3822,6 +3825,38 @@
         function toggleFullscreen() {
             const m = document.getElementById('player-modal');
             !document.fullscreenElement ? m.requestFullscreen().catch(e=>e) : document.exitFullscreen();
+        }
+
+        // Skip intro: seeks past saved intro metadata (works for native video and YouTube iframe)
+        function skipIntro() {
+            try {
+                if (!player || !player.context) {
+                    showToast('Nenhum episódio com abertura disponível.');
+                    return;
+                }
+                const start = Number(player.context.introStart || 0);
+                const dur = Number(player.context.introDuration || 0);
+                if (!start || !dur) {
+                    showToast('Nenhum dado de abertura encontrado para este episódio.');
+                    return;
+                }
+                const target = start + dur;
+                // YouTube
+                if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.seekTo === 'function') {
+                    try { player.ytPlayer.seekTo(target, true); showToast('Abertura pulada.'); } catch (_) { showToast('Falha ao pular abertura.'); }
+                    return;
+                }
+                // native video
+                if (player.vid) {
+                    try { player.vid.currentTime = target; showToast('Abertura pulada.'); } catch (e) { showToast('Falha ao pular abertura.'); }
+                    return;
+                }
+                // iframe fallback: cannot seek reliably
+                showToast('Não é possível pular abertura neste tipo de embed.');
+            } catch (e) {
+                console.warn('skipIntro failed', e);
+                showToast('Erro ao tentar pular abertura.');
+            }
         }
 
         // Picture-in-Picture toggle for native video (graceful non-blocking fallback)
