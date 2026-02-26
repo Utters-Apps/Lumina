@@ -61,6 +61,108 @@
             }
         }
     </script>
+
+    <!-- BEGIN: Splash screen styles (inserted cinematic intro) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           RESET E VARIÁVEIS GERAIS (SPLASH)
+           ========================================================================== */
+        :root {
+            --bg-color-splash: #050505;
+            --bg-center-splash: #0a0a0c;
+            --primary-glow-splash: #9d33ff;
+            --secondary-glow-splash: #4b00b4;
+            --text-main-splash: #ffffff;
+        }
+        /* Splash-specific base */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--bg-center-splash) 0%, var(--bg-color-splash) 100%);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-user-select: none; user-select: none;
+        }
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeInParticles 4s ease-in forwards;
+        }
+        .logo-container { position: relative; z-index: 10; display:flex; justify-content:center; align-items:center; width:100%; perspective:1000px; }
+        .laser-beam {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 0%;
+            height: 1px;
+            background: #fff;
+            box-shadow: 0 0 10px #fff, 0 0 20px var(--primary-glow-splash), 0 0 40px var(--secondary-glow-splash);
+            z-index: 11;
+            animation: drawLaser 1.4s cubic-bezier(0.8,0,0.2,1) 0.5s forwards, explodeLaser 0.7s cubic-bezier(0.19,1,0.22,1) 1.9s forwards;
+        }
+        .lumina-text {
+            font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            font-weight: 900;
+            font-size: clamp(3rem, 12vw, 6.5rem);
+            letter-spacing: clamp(1rem,4vw,2.5rem);
+            color: var(--text-main-splash);
+            margin-right: calc(-1 * clamp(1rem, 4vw, 2.5rem));
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9) translateZ(0);
+            filter: blur(25px);
+            z-index: 12;
+            animation: textReveal 3s cubic-bezier(0.23,1,0.32,1) 2.1s forwards;
+            will-change: transform, opacity, filter;
+        }
+        .lumina-text::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            color: transparent;
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0.8) 50%, var(--primary-glow-splash) 65%, transparent 85%);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: lightSweep 4s ease-in-out 3s infinite;
+            opacity: 0;
+        }
+        @keyframes fadeInParticles { to { opacity: 0.5; } }
+        @keyframes drawLaser {
+            0% { width:0%; opacity:0; } 30% { opacity:1; } 100% { width:60%; opacity:1; }
+        }
+        @keyframes explodeLaser {
+            0% { height:1px; filter: blur(0px); opacity:1; }
+            60% { height:120px; filter: blur(30px); opacity:1; background:#fff; }
+            100% { height:300px; filter: blur(60px); opacity:0; visibility:hidden; }
+        }
+        @keyframes textReveal {
+            0% { opacity:0; transform:scale(0.92); filter:blur(20px); }
+            50% { opacity:1; filter:blur(5px); }
+            100% { opacity:1; transform:scale(1); filter:blur(0px); text-shadow: 0 0 25px rgba(157,51,255,0.4), 0 0 50px rgba(75,0,180,0.2); }
+        }
+        @keyframes lightSweep {
+            0% { opacity:0; background-position:200% center; }
+            15% { opacity:1; }
+            45% { opacity:1; background-position:-100% center; }
+            60%,100% { opacity:0; background-position:-100% center; }
+        }
+        @media (max-width:768px) {
+            .lumina-text { letter-spacing:0.8rem; margin-right:-0.8rem; }
+            .laser-beam { box-shadow: 0 0 10px #fff, 0 0 20px var(--primary-glow-splash); }
+            @keyframes drawLaser { 100% { width:85%; opacity:1; } }
+        }
+    </style>
+    <!-- END: Splash screen styles -->
+    
     <style>
         :root { color-scheme: dark; }
 
@@ -314,6 +416,15 @@
 </head>
 <body class="antialiased select-none pb-24 md:pb-0">
 
+    <!-- SPLASH SCREEN (CINEMATIC INTRO) -->
+    <div id="splash-screen" aria-hidden="false" role="dialog" aria-label="Intro Lumina">
+        <canvas id="particles-canvas" aria-hidden="true"></canvas>
+        <div class="laser-beam" aria-hidden="true"></div>
+        <div class="logo-container" aria-hidden="true">
+            <h1 class="lumina-text" data-text="LUMINA">LUMINA</h1>
+        </div>
+    </div>
+
     <!-- Desktop Navbar (Floating Pill) -->
     <nav class="hidden md:flex fixed top-6 left-1/2 -translate-x-1/2 z-40 glass rounded-full px-8 py-3 items-center gap-10 shadow-2xl transition-all duration-300">
         <div class="flex items-center gap-2 cursor-pointer" onclick="switchTab('home')">
@@ -508,6 +619,30 @@
     </div>
 
     <script>
+        // Auto-hide splash: fade and remove after intro completes (safeguard)
+        (function(){
+            const splash = document.getElementById('splash-screen');
+            if (!splash) return;
+            // remove splash after animations complete (~5.2s). Keep fallback to 7s for slow devices.
+            const REMOVE_DELAY = 5200;
+            const FINAL_FALLBACK = 7000;
+            const doRemove = () => {
+                try {
+                    splash.style.transition = 'opacity 420ms ease, visibility 420ms';
+                    splash.style.opacity = '0';
+                    splash.style.visibility = 'hidden';
+                    setTimeout(() => {
+                        try { splash.remove(); document.body.style.overflow = ''; } catch(_) {}
+                    }, 480);
+                } catch(e) { try { splash.remove(); document.body.style.overflow = ''; } catch(_) {} }
+            };
+            setTimeout(doRemove, REMOVE_DELAY);
+            setTimeout(() => { if (document.getElementById('splash-screen')) doRemove(); }, FINAL_FALLBACK);
+
+            // prevent background scroll while splash present
+            document.body.style.overflow = 'hidden';
+        })();
+
         // --- DATABASE ---
         const db = [
             {
@@ -1514,18 +1649,18 @@
                         { title: 'Tridente do Diabo', url: 'https://www.dropbox.com/scl/fi/dsz4m2hlpjfh4yxdtg6km/2-13-2.mp4?rlkey=bkdcxdntcdq93wsenfecooyi7&st=zuoqus6j&raw=1' }
                     ],
                     3: [
-                        { title: 'Achado Não é Roubado!', url: 'https://www.tokyvideo.com/br/embed/845210' },
-                        { title: 'Não Abram a Porta', url: 'https://www.tokyvideo.com/br/embed/845357' },
-                        { title: 'Ofuscado', url: '' },
-                        { title: 'Atropelamento', url: '' },
-                        { title: 'Árvore de Natal', url: '' },
-                        { title: 'Um Natal do Diabo', url: '' },
-                        { title: 'Entrega Especial', url: '' },
-                        { title: 'Dado', url: '' },
-                        { title: 'Passeio Divertido', url: '' },
-                        { title: 'Brincando com o Perigo', url: '' },
-                        { title: 'O Diabo e Senhorita Cálice', url: '' }
-                    ]
+    { title: 'Achado Não é Roubado!', url: 'https://www.dropbox.com/scl/fi/kiq28pzc4xmcvr7n9l4v2/3-1-10.mp4?rlkey=zum8um89n1oexmovpnpsevcjx&st=0c5rcvjx&raw=1' },
+    { title: 'Não Abram a Porta', url: 'https://www.dropbox.com/scl/fi/rkmbetaj8uzuem68a1l26/3-2-10.mp4?rlkey=ww9zsynygtqx3r7pk8jbkahuk&st=huyuyyp3&raw=1' },
+    { title: 'Ofuscado', url: 'https://www.dropbox.com/scl/fi/uizcddxflrujvu9crmioq/3-3.mp4?rlkey=clry2k62qnavyvnz8h5ip36jx&st=wx4jqbq0&raw=1' },
+    { title: 'Atropelamento', url: 'https://www.dropbox.com/scl/fi/7moi6dpep8ohufu69dxyw/3-4-3.mp4?rlkey=qa7w917n59paumwj2m5fdi4b1&st=3pazue91&raw=1' },
+    { title: 'Árvore de Natal', url: 'https://www.dropbox.com/scl/fi/gc3ar9ymlp24ld31l4jiw/3-5-8.mp4?rlkey=7841evvuaov2dyh2ttbu90atd&st=jtffgh4o&raw=1' },
+    { title: 'Um Natal do Diabo', url: 'https://www.dropbox.com/scl/fi/xvr1suzbedbzay5y1zu5j/3-6-6.mp4?rlkey=86esrljshwjgus0w6r7xxate9&st=4evirgmh&raw=1' },
+    { title: 'Entrega Especial', url: 'https://www.dropbox.com/scl/fi/1vxcq9qcafu1hxrgbnaj3/3-7-9.mp4?rlkey=c5vp6z51rhrnaxf4vaib2tye6&st=ongurtvr&raw=1' },
+    { title: 'Dado', url: 'https://www.dropbox.com/scl/fi/n0csa4dzt7trie9d7amrz/3-8-5.mp4?rlkey=8dxi7bxnmy7f8k3jalbdexb0r&st=h8jog8zo&raw=1' },
+    { title: 'Passeio Divertido', url: 'https://www.dropbox.com/scl/fi/ltjxwk0mena9h6ik2iclz/3-9-6.mp4?rlkey=yoj52fth5eh2d0coxpe2ulpnm&st=5c2999j9&raw=1' },
+    { title: 'Brincando com o Perigo', url: 'https://www.dropbox.com/scl/fi/8wogdwzukc92rzopcphsb/3-10-3.mp4?rlkey=3r7cair020lsa94h4vrw5s80x&st=m7037bx2&raw=1' },
+    { title: 'O Diabo e Senhorita Cálice', url: 'https://www.dropbox.com/scl/fi/afh4gmm1pkrz503rdnos3/3-11.mp4?rlkey=h1bszplom6233nruwxgsyi55y&st=0yan6m2v&raw=1' }
+                  ]
                 }
             },
             {
@@ -1630,7 +1765,7 @@
                 cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABaU6IoT_jX47_a6rnhBYqj5x1UYUIPg-RPIErhVtQtk4nMt3yv6Un0Wz-dPf-WbjYdsqkg-8WdsOxxQbn7kn64hQu8s3urQX4Q-_.jpg?r=efe',
                 description: 'Jesse Pinkman fugindo da polícia e de seus traumas após escapar do cativeiro no final de Breaking Bad, buscando liberdade e um novo recomeço enquanto lida com flashbacks do passado e tenta garantir seu futuro.',
                 // prefer embed in a larger iframe — keep as provided src (will render in iframe)
-                url: '//assistir.biz/iframe/el-camino?player=1'
+                url: 'https://www.dropbox.com/scl/fi/ysvdy6vc2dhkj569fjz5k/El.Camino-HD.mp4?rlkey=ooxhi47avsvsgggxzdgle41km&st=1bqteeyz&raw=1'
             },
             {
                 id: 'scream-1996',
@@ -3632,102 +3767,126 @@
             },
 
             setupEvents: function() {
-                if(this.isEmbed || !this.vid) return;
+                // Only wire advanced interaction handlers for native <video> instances
+                if (this.isEmbed || !this.vid) return;
                 const container = document.getElementById('custom-player-container');
                 const progBar = document.getElementById('progress-bar');
                 const fill = document.getElementById('progress-fill');
-                
-                // defensive guards: ensure DOM nodes exist before touching them
+
+                // defensive guards: ensure DOM nodes exist
                 try { if (progBar) progBar.value = 0; } catch(e) {}
                 try { if (fill) fill.style.width = '0%'; } catch(e) {}
                 updatePlayBtns(true);
 
-                // Toggle visibility of the player UI quicker on tap/click:
-                // - single tap when controls visible hides them instantly
-                // - single tap when hidden shows them and resets auto-hide timer
-                const toggleControlsVisibility = () => {
-                    const ui = document.querySelector('.player-ui');
-                    if (!ui || !container) return;
-                    const isHidden = ui.style.opacity === '0' || container.classList.contains('player-idle');
-                    if (isHidden) {
-                        // show controls
+                // Unified show/hide controls helpers
+                const ui = document.querySelector('.player-ui');
+                const showControls = () => {
+                    try {
+                        if (!ui || !container) return;
                         container.classList.remove('player-idle');
                         ui.style.opacity = '';
                         ui.style.pointerEvents = '';
-                        resetControls(); // restart auto-hide timer
-                    } else {
-                        // hide controls immediately
+                        // reset auto-hide
+                        clearTimeout(this.uiTimeout);
+                        this.uiTimeout = setTimeout(() => { if (this.vid && !this.vid.paused && container) container.classList.add('player-idle'); }, 3500);
+                    } catch (e) {}
+                };
+                const hideControls = () => {
+                    try {
+                        if (!ui || !container) return;
                         container.classList.add('player-idle');
-                        // make UI non-interactive quickly
                         ui.style.pointerEvents = 'none';
                         ui.style.opacity = '0';
-                    }
+                    } catch (e) {}
+                };
+                const toggleControlsVisibility = () => {
+                    try {
+                        if (!ui || !container) return;
+                        const hidden = container.classList.contains('player-idle') || ui.style.opacity === '0';
+                        if (hidden) showControls(); else hideControls();
+                    } catch (e) {}
                 };
 
-                const resetControls = () => {
-                    if (container) container.classList.remove('player-idle');
-                    clearTimeout(this.uiTimeout);
-                    this.uiTimeout = setTimeout(() => { if (this.vid && !this.vid.paused && container) container.classList.add('player-idle'); }, 3500);
-                };
-
-                // Ensure primary play/pause buttons always trigger the unified togglePlay handler.
-                // This guards against cases where buttons exist in DOM but weren't wired (race conditions).
+                // Ensure primary play/pause buttons call unified toggle
                 try {
                     const centerBtn = document.getElementById('center-play-btn');
                     if (centerBtn) centerBtn.onclick = () => togglePlay();
                     const bottomBtn = document.getElementById('bottom-play-btn');
                     if (bottomBtn) bottomBtn.onclick = () => togglePlay();
-                } catch (e) { /* non-fatal */ }
+                } catch (e) {}
 
-                // Mouse/touch movement resets auto-hide
-                if (container) { 
-                    container.onmousemove = resetControls; 
-                    container.ontouchstart = resetControls;
-                    // Single tap/click toggles controls visibility (mobile-friendly)
-                    // Attach tap/click handler to the media area so tapping the screen toggles controls.
-                    // Use the media wrapper so clicks on UI elements (buttons/inputs) are ignored.
+                // Interaction handler that shows controls on pointer/touch/mouse and is debounced lightly
+                let interactionDebounce = null;
+                const onUserInteraction = (ev) => {
+                    try {
+                        // if interaction is on UI controls, ignore as they are already interactive
+                        const target = ev && ev.target;
+                        if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) {
+                            // still reset hide timer so UI doesn't disappear while interacting
+                            showControls();
+                            return;
+                        }
+                        showControls();
+                        // small debounce to avoid thrashing on continuous pointermove
+                        if (interactionDebounce) clearTimeout(interactionDebounce);
+                        interactionDebounce = setTimeout(() => { interactionDebounce = null; }, 120);
+                    } catch (err) { /* ignore */ }
+                };
+
+                // Attach robust pointer/mouse/touch listeners to both wrappers and media element
+                try {
                     const mediaWrap = document.getElementById('player-media-wrapper') || container;
-                    const isUiClick = (el) => {
-                        try {
-                            return el && (el.closest('.player-ui, .player-ui *') || el.closest('button, a, input, select, textarea'));
-                        } catch (e) { return false; }
-                    };
-                    // Use pointerup to better handle touch interactions across devices
+                    // Use pointer events when available for unified handling
+                    mediaWrap.addEventListener('pointermove', onUserInteraction, { passive: true });
+                    mediaWrap.addEventListener('pointerdown', onUserInteraction, { passive: true });
                     mediaWrap.addEventListener('pointerup', (ev) => {
-                        // If the user actually interacted with a control element, do nothing
-                        if (isUiClick(ev.target)) return;
-                        // Toggle visibility of controls
+                        // toggle on quick taps when not hitting UI controls
+                        const target = ev && ev.target;
+                        if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) return;
+                        // only treat as toggle when it's a short tap (allow dragging to not trigger toggles)
                         toggleControlsVisibility();
                     }, { passive: true });
+
+                    // additional touch fallback for older browsers
+                    mediaWrap.addEventListener('touchstart', onUserInteraction, { passive: true });
+                    mediaWrap.addEventListener('touchmove', onUserInteraction, { passive: true });
+                    // mouse fallback
+                    mediaWrap.addEventListener('mousemove', onUserInteraction, { passive: true });
+
+                    // Listen on container as well in case iframe or other overlays intercept events
+                    container.addEventListener('pointermove', onUserInteraction, { passive: true });
+                    container.addEventListener('pointerdown', onUserInteraction, { passive: true });
+                    container.addEventListener('touchstart', onUserInteraction, { passive: true });
+                } catch (e) {
+                    // best-effort: ignore attach failures
                 }
-                
+
+                // Keyboard handlers
                 window.onkeydown = (e) => {
                     const pm = document.getElementById('player-modal');
                     if(!pm || pm.classList.contains('hidden')) return;
-                    resetControls();
+                    showControls();
                     if(e.code === 'Space') { e.preventDefault(); togglePlay(); }
                     if(e.code === 'ArrowRight') skipVideo(10);
                     if(e.code === 'ArrowLeft') skipVideo(-10);
                 };
 
-                this.vid.onplaying = () => { 
-                    const pl = document.getElementById('player-loading'); 
-                    if(pl) pl.classList.add('hidden'); 
-                    updatePlayBtns(false); 
-                    // cancel watchdog once native video actually starts playing
+                // Native video event wiring
+                this.vid.onplaying = () => {
+                    const pl = document.getElementById('player-loading');
+                    if (pl) pl.classList.add('hidden');
+                    updatePlayBtns(false);
                     try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
                 };
                 this.vid.onwaiting = () => { const pl = document.getElementById('player-loading'); if(pl) pl.classList.remove('hidden'); };
-                this.vid.onpause = () => { 
-                    updatePlayBtns(true); 
-                    if (container) container.classList.remove('player-idle'); 
-                    try { this.saveProgress(); } catch(_) {} /* ensure progress saved immediately on pause */
+                this.vid.onpause = () => {
+                    updatePlayBtns(true);
+                    showControls(); // keep controls visible on pause
+                    try { this.saveProgress(); } catch(_) {}
                 };
-                
+
                 this.vid.ontimeupdate = () => {
-                    // guard against race conditions where the video element has been removed
                     if (!this.vid) return;
-                    // ensure we have metadata before using duration/currentTime
                     if (this.vid.readyState < 1) {
                         const tc = document.getElementById('time-current');
                         if (tc) tc.innerText = formatTime(0);
@@ -3742,12 +3901,8 @@
 
                     const tc = document.getElementById('time-current');
                     if (tc) tc.innerText = formatTime(this.vid.currentTime || 0);
-
-                    // manage skip-intro visibility for native <video>
                     try { if (typeof player.updateSkipIntroVisibility === 'function') player.updateSkipIntroVisibility(this.vid.currentTime); } catch(_) {}
-
-                    // protect next-episode check from throwing if context/state changed
-                    try { this.checkNextTrigger(); } catch (e) { /* swallow safe */ }
+                    try { this.checkNextTrigger(); } catch (e) {}
                 };
 
                 this.vid.onloadedmetadata = () => { const td = document.getElementById('time-duration'); if(td) td.innerText = formatTime(this.vid.duration); };
@@ -3765,6 +3920,9 @@
                         this.vid.volume = e.target.value; this.vid.muted = (e.target.value == 0); updateVolIcon();
                     };
                 }
+
+                // Ensure controls show initially and auto-hide when playing
+                showControls();
             },
 
             checkNextTrigger: function() {
@@ -4810,6 +4968,37 @@
 
         // expose init on load
         window.onload = init;
+
+        // Ensure navigation buttons reliably call switchTab by attaching safe event listeners
+        function attachNavTabListeners() {
+            try {
+                const mapping = {
+                    'tab-home-desktop': 'home',
+                    'tab-fav-desktop': 'favorites',
+                    'tab-home-mobile': 'home',
+                    'tab-search-mobile': 'search',
+                    'tab-fav-mobile': 'favorites'
+                };
+                Object.keys(mapping).forEach(id => {
+                    const el = document.getElementById(id);
+                    if (!el) return;
+                    // avoid adding duplicate listeners
+                    if (!el.__lumina_nav_bound) {
+                        el.addEventListener('click', (ev) => {
+                            ev.preventDefault();
+                            try { switchTab(mapping[id]); } catch (_) {}
+                        }, { passive: true });
+                        el.__lumina_nav_bound = true;
+                    }
+                });
+            } catch (e) { /* silent */ }
+        }
+        // Attach once DOM is interactive to cover all render timing
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', attachNavTabListeners);
+        } else {
+            setTimeout(attachNavTabListeners, 50);
+        }
 
         // Ensure progress is flushed when the user navigates away or the page is hidden
         window.addEventListener('beforeunload', () => {
