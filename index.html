@@ -3262,12 +3262,12 @@
                                 const iframe = document.createElement('iframe');
                                 if (fallbackId) {
                                     // build robust embed URL with autoplay/muted/playsinline and JS API enabled
-                                    const embedSrc = `https://www.youtube.com/embed/${fallbackId}?autoplay=1&mute=1&playsinline=1&enablejsapi=1&rel=0`;
+                                    const embedSrc = `https://www.youtube.com/embed/${fallbackId}?autoplay=1&playsinline=1&enablejsapi=1&rel=0`;
                                     iframe.src = embedSrc;
                                 } else {
-                                    // last-resort: use original URL but append autoplay & mute; keep safe attributes
+                                    // last-resort: use original URL but append autoplay and playsinline (do not force mute)
                                     const sep = url.includes('?') ? '&' : '?';
-                                    iframe.src = url + sep + 'autoplay=1&mute=1&playsinline=1';
+                                    iframe.src = url + sep + 'autoplay=1&playsinline=1';
                                 }
                                 // ensure PiP/fullscreen/autoplay allowed and restrict popups/navigation
                                 iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media');
@@ -3515,11 +3515,8 @@
                                     await this.vid.play();
                                 } catch (err) {
                                     try {
-                                        // Autoplay with sound was blocked — mute and retry autoplay silently
-                                        this.vid.muted = true;
-                                        this.vid.volume = 0;
-                                        await this.vid.play().catch(()=>{});
-                                        // give a lightweight hint so user knows to tap to enable audio
+                                        // Autoplay with sound was blocked — keep audio enabled and prompt the user to tap to enable sound
+                                        // We do not auto-mute; inform the user to interact to enable audio.
                                         showToast('Toque na tela para ativar o áudio', 2800);
                                     } catch (_) {}
                                 }
@@ -3637,9 +3634,7 @@
                             await this.vid.play();
                         } catch (err) {
                             try {
-                                this.vid.muted = true;
-                                this.vid.volume = 0;
-                                await this.vid.play().catch(()=>{});
+                                // Autoplay with sound was blocked — keep audio enabled and prompt user interaction instead of forcing mute
                                 showToast('Toque na tela para ativar o áudio', 2800);
                             } catch (_) {}
                         }
