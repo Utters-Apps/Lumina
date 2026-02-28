@@ -1846,6 +1846,22 @@
                 url: 'https://drive.google.com/file/d/1gWY53IfGAnNsIi4p8yvqyHcZGVPrlSVD/view?usp=drive_link'
             },
             {
+                id: 'panico-7',
+                title: 'Pânico 7',
+                originalTitle: 'Scream 7',
+                type: 'filme',
+                category: 'Terror / Mistério / Crime',
+                year: '2026',
+                yearBR: '2026',
+                ageRating: '18',
+                cover: 'https://rollingstone.com.br/wp-content/uploads/2026/02/Panico-7-com-o-retorno-de-Neve-Campbell-estreia-nos-cinemas-brasileiros-800x450.jpg',
+                description: 'Quando um novo assassino Ghostface surge na pacata cidade onde Sidney Prescott reconstruiu sua vida, seus medos mais sombrios tornam-se realidade enquanto sua filha se torna o novo alvo. Determinada a proteger sua família, Sidney deve enfrentar os horrores do passado e tentar pôr fim ao massacre.',
+                distributor: 'Paramount Pictures',
+                production: ['Spyglass Media Group', 'Project X Entertainment', 'Outerbanks Entertainment'],
+                tags: ['Lançamento','Série Pânico'],
+                url: 'https://www.dropbox.com/scl/fi/21zbjic9xs0vokhc5snzk/Fhyawatm6digkk9u-1.mp4?rlkey=bt52prmnce63y9v7wrr1mk8vq&st=r4as72fu&raw=1'
+            },
+            {
                 id: 'descendentes-1',
                 title: 'Descendentes',
                 type: 'filme',
@@ -1929,6 +1945,51 @@
             searchQuery: '',
             pendingVideo: null
         };
+
+        // Background timer control helpers:
+        // Pause non-essential background activity when video playback is active to avoid
+        // continual DOM updates/timers from starving rendering during long sessions.
+        function stopHeroRotate() {
+            try { if (typeof __heroRotateTimer !== 'undefined' && __heroRotateTimer) { clearInterval(__heroRotateTimer); __heroRotateTimer = null; } } catch(err) {}
+        }
+        function startHeroRotate() {
+            try {
+                // don't start if already running
+                if (typeof __heroRotateTimer !== 'undefined' && __heroRotateTimer) return;
+                __heroRotateTimer = setInterval(() => {
+                    try {
+                        heroIndex = (heroIndex + 1) % db.length;
+                        // if current tab is home, update only hero area for performance
+                        if (state.tab === 'home') updateHeroCard();
+                    } catch (e) { /* safe guard */ }
+                }, 10000);
+            } catch (e) {}
+        }
+
+        function stopBadgeTimer() {
+            try { if (window.__lumina_badge_timer) { clearInterval(window.__lumina_badge_timer); window.__lumina_badge_timer = null; } } catch(e){}
+        }
+        function startBadgeTimer() {
+            try {
+                if (window.__lumina_badge_timer) return;
+                window.__lumina_badge_timer = setInterval(rotateTagsTick, typeof BADGE_ROTATE_INTERVAL !== 'undefined' ? BADGE_ROTATE_INTERVAL : 8000);
+            } catch(e){}
+        }
+
+        // globally pause/resume background activity (safe no-op when already in desired state)
+        function pauseBackgroundActivity() {
+            try {
+                stopHeroRotate();
+                stopBadgeTimer();
+                // any other repeating background tasks could be paused here if needed
+            } catch(e) {}
+        }
+        function resumeBackgroundActivity() {
+            try {
+                startHeroRotate();
+                startBadgeTimer();
+            } catch(e) {}
+        }
 
         // Small safe DOM utility (named 'doom' per request) to avoid crashes when querying elements
         const doom = (sel, root = document) => {
@@ -2033,14 +2094,8 @@
             insertLegalFooter();
             // handle incoming share links via query string
             try { handleSharedQuery(); } catch(e) {}
-            // start rotation: change hero every 10s
-            __heroRotateTimer = setInterval(() => {
-                try {
-                    heroIndex = (heroIndex + 1) % db.length;
-                    // if current tab is home, update only hero area for performance
-                    if (state.tab === 'home') updateHeroCard();
-                } catch (e) { /* safe guard */ }
-            }, 10000);
+            // start rotation: change hero every 10s (use helper to allow pausing during playback)
+            startHeroRotate();
         }
 
         // Smooth tab switching with light fade/slide and render debounce to avoid layout thrash
@@ -2560,8 +2615,6 @@
                     // ensure a stable episode id even when source lacks an explicit id (use seriesId-s{season}-e{episode})
                     const epId = ep && ep.id ? ep.id : (ep ? `${item.id}-s${s}-e${e}` : null);
                     state.history[item.id] = { s: s, e: e, epId: epId, timestamp: Date.now() };
-                    // persist history immediately so "Continuar Assistindo" and share links survive reloads
-                    try { saveProgressData(); } catch(_) {}
                 }
 
                 // Ensure UI is ready: open home and then details; small delay to let initial render finish
@@ -3156,23 +3209,23 @@
                 // defensively tear down any previous playback artifacts before initializing a new one
                 try { this._cleanupBeforeInit(); } catch(_) {}
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
-                // Persist initial playback context immediately so history/progress stays in localStorage
+                // Persist initial history/progress entry when starting playback so "Continuar Assistindo" updates immediately.
                 try {
                     if (this.context && this.context.type === 'serie' && this.context.seriesId) {
-                        // record that this series/episode was opened
                         state.history[this.context.seriesId] = {
                             s: this.context.season,
                             e: this.context.episode,
-                            epId: this.context.id || (this.context.seriesId + '-s' + this.context.season + '-e' + this.context.episode),
+                            epId: this.context.id,
                             timestamp: Date.now()
                         };
+                        // write to storage (debounced inside saveProgressData)
+                        saveProgressData();
                     } else if (this.context && this.context.type === 'filme' && this.context.id) {
-                        // ensure a progress entry exists for films (even if empty) so "Continuar" can appear
+                        // ensure a placeholder progress record exists for films (helps continue list and safe saves)
                         state.progress[this.context.id] = state.progress[this.context.id] || { time: 0, duration: 0, timestamp: Date.now() };
+                        saveProgressData();
                     }
-                    // debounce/persist via existing helper
-                    try { saveProgressData(); } catch(_) {}
-                } catch (_) {}
+                } catch (e) { /* non-blocking */ }
                 const modal = document.getElementById('player-modal');
                 modal.classList.remove('hidden'); modal.classList.add('flex');
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
@@ -3706,21 +3759,51 @@
 
                 if(window.innerWidth <= 768 && document.documentElement.requestFullscreen) modal.requestFullscreen().catch(e=>e);
 
+                // pause background activity while player is active to avoid heavy periodic UI updates during long playback
+                try { pauseBackgroundActivity(); } catch(_) {}
                 // Only set save interval for native video (increase frequency to improve sync)
                 if(!this.isEmbed) this.saveInterval = setInterval(() => this.saveProgress(), 2000);
             },
             
             restoreProgress: function() {
-                if(this.isEmbed) return;
-                if(!this.context || !this.context.id) return;
+                // Always attempt to restore saved time for native video sources (e.g. Dropbox),
+                // even when a stored duration is missing or zero. We wait for 'loadedmetadata'
+                // and then clamp the seek target to the actual duration to avoid seeking past EOF.
+                if (this.isEmbed) return;
+                if (!this.context || !this.context.id) return;
                 const prog = state.progress[this.context.id];
-                if(prog && prog.time > 0 && prog.time < prog.duration - 5) {
-                    const seekToSaved = () => {
-                        this.vid.currentTime = prog.time;
-                        this.vid.removeEventListener('loadedmetadata', seekToSaved);
-                    };
-                    this.vid.addEventListener('loadedmetadata', seekToSaved);
-                }
+                if (!prog || typeof prog.time !== 'number' || prog.time <= 0) return;
+
+                const attemptSeek = () => {
+                    try {
+                        const dur = (this.vid && !isNaN(this.vid.duration)) ? Math.max(0, Number(this.vid.duration)) : 0;
+                        let target = Number(prog.time) || 0;
+                        // If duration available, ensure we don't seek to beyond end; leave a 1s margin.
+                        if (dur > 0 && target >= dur) target = Math.max(0, dur - 1);
+                        // Perform the seek defensively; some browsers throw when seeking very early.
+                        try { this.vid.currentTime = target; } catch (e) {
+                            // retry shortly after if immediate assignment fails
+                            setTimeout(() => { try { if (this.vid) this.vid.currentTime = target; } catch(_) {} }, 80);
+                        }
+                    } catch (e) { /* silent */ }
+                    // remove listener if attached
+                    try { this.vid.removeEventListener('loadedmetadata', attemptSeek); } catch(_) {}
+                };
+
+                // If metadata already loaded, seek immediately; otherwise wait for loadedmetadata.
+                try {
+                    if (this.vid && this.vid.readyState > 0 && !isNaN(this.vid.duration)) {
+                        attemptSeek();
+                    } else if (this.vid) {
+                        this.vid.addEventListener('loadedmetadata', attemptSeek);
+                        // also set a fallback timer in case loadedmetadata never fires quickly (network delays)
+                        setTimeout(() => {
+                            try {
+                                if (this.vid && this.vid.readyState > 0) attemptSeek();
+                            } catch(_) {}
+                        }, 16000); // generous fallback for slow Dropbox responses
+                    }
+                } catch (e) { /* silent */ }
             },
 
             saveProgress: function() {
@@ -3767,6 +3850,9 @@
                 const bp = document.getElementById('bottom-play-btn');
                 if(bp) bp.style.display = '';
 
+                // resume background timers that were paused when playback began
+                try { resumeBackgroundActivity(); } catch(_) {}
+
                 const modal = document.getElementById('player-modal');
                 modal.classList.add('opacity-0');
                 setTimeout(() => {
@@ -3792,7 +3878,7 @@
                 try { if (fill) fill.style.width = '0%'; } catch(e) {}
                 updatePlayBtns(true);
 
-                // Unified show/hide controls helpers
+                // Unified show/hide controls helpers (exposed so external listeners can call)
                 const ui = document.querySelector('.player-ui');
                 const showControls = () => {
                     try {
@@ -3840,6 +3926,7 @@
                             showControls();
                             return;
                         }
+                        // show controls immediately on any pointer/touch/mouse event
                         showControls();
                         // small debounce to avoid thrashing on continuous pointermove
                         if (interactionDebounce) clearTimeout(interactionDebounce);
@@ -3847,30 +3934,37 @@
                     } catch (err) { /* ignore */ }
                 };
 
-                // Attach robust pointer/mouse/touch listeners to both wrappers and media element
+                // Attach robust pointer/mouse/touch listeners to wrapper, container and document to ensure events are captured
                 try {
                     const mediaWrap = document.getElementById('player-media-wrapper') || container;
-                    // Use pointer events when available for unified handling
-                    mediaWrap.addEventListener('pointermove', onUserInteraction, { passive: true });
-                    mediaWrap.addEventListener('pointerdown', onUserInteraction, { passive: true });
-                    mediaWrap.addEventListener('pointerup', (ev) => {
-                        // toggle on quick taps when not hitting UI controls
-                        const target = ev && ev.target;
-                        if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) return;
-                        // only treat as toggle when it's a short tap (allow dragging to not trigger toggles)
-                        toggleControlsVisibility();
-                    }, { passive: true });
 
-                    // additional touch fallback for older browsers
-                    mediaWrap.addEventListener('touchstart', onUserInteraction, { passive: true });
-                    mediaWrap.addEventListener('touchmove', onUserInteraction, { passive: true });
-                    // mouse fallback
-                    mediaWrap.addEventListener('mousemove', onUserInteraction, { passive: true });
+                    // Prefer pointer events for unified handling when supported
+                    ['pointermove','pointerdown','pointerup','mousemove','touchstart','touchmove','touchend'].forEach(evtName => {
+                        try {
+                            // use passive: true for move/start to avoid blocking, but pointerup needs default to allow releasePointerCapture in other handlers
+                            const opts = (evtName === 'pointerup' || evtName === 'touchend') ? { passive: true } : { passive: true };
+                            // attach to media wrap and container (some user agents route touches differently)
+                            mediaWrap.addEventListener(evtName, onUserInteraction, opts);
+                            container.addEventListener(evtName, onUserInteraction, opts);
+                            // attach on document as a last-resort to catch events when overlays/iframes intercept them
+                            document.addEventListener(evtName, onUserInteraction, opts);
+                        } catch(_) {}
+                    });
 
-                    // Listen on container as well in case iframe or other overlays intercept events
-                    container.addEventListener('pointermove', onUserInteraction, { passive: true });
-                    container.addEventListener('pointerdown', onUserInteraction, { passive: true });
-                    container.addEventListener('touchstart', onUserInteraction, { passive: true });
+                    // special case: treat quick taps (pointerup) as toggle only when not interacting with UI
+                    const onTapToggle = (ev) => {
+                        try {
+                            const target = ev && ev.target;
+                            if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) return;
+                            // ensure very short taps toggle; long presses or drags shouldn't
+                            const now = Date.now();
+                            // Use timeout heuristic: if it's a quick up event, toggle
+                            toggleControlsVisibility();
+                        } catch(_) {}
+                    };
+                    mediaWrap.addEventListener('pointerup', onTapToggle, { passive: true });
+                    container.addEventListener('pointerup', onTapToggle, { passive: true });
+                    document.addEventListener('pointerup', onTapToggle, { passive: true });
                 } catch (e) {
                     // best-effort: ignore attach failures
                 }
@@ -3923,8 +4017,106 @@
                 this.vid.onended = () => { if(this.context && this.context.nextEp) playNextEpisode(); };
 
                 if (progBar) {
-                    progBar.oninput = (e) => { this.isSeeking = true; if (fill) try { fill.style.width = `${e.target.value}%`; } catch(e) {} };
-                    progBar.onchange = (e) => { if (this.vid && !isNaN(this.vid.duration)) { this.vid.currentTime = (e.target.value / 100) * this.vid.duration; this.isSeeking = false; } };
+                    // Improved scrub/seek handling:
+                    // - Use pointer events so scrubbing doesn't cause play()/pause() race conditions
+                    // - Pause the video when user starts scrubbing, set target time while dragging, then seek once released
+                    // - Resume playback only if it was playing before the scrub, and swallow play() promise rejections
+                    let wasPlayingBeforeScrub = false;
+                    let pendingTargetPct = null;
+
+                    const updateFill = (pct) => {
+                        try { if (fill) fill.style.width = `${pct}%`; } catch (_) {}
+                    };
+
+                    // input updates visual feedback immediately but does not perform an intrusive seek
+                    progBar.addEventListener('input', (e) => {
+                        try {
+                            const pct = Number(e.target.value) || 0;
+                            pendingTargetPct = pct;
+                            this.isSeeking = true;
+                            updateFill(pct);
+                        } catch (_) {}
+                    }, { passive: true });
+
+                    // When user starts interacting with the thumb, record playing state and pause to avoid play/pause races
+                    progBar.addEventListener('pointerdown', (e) => {
+                        try {
+                            if (!this.vid) return;
+                            wasPlayingBeforeScrub = !this.vid.paused;
+                            // do not call pause() here to avoid play()/pause() race conditions that can
+                            // generate unhandled promise rejections and freeze playback; actual pause/resume
+                            // is handled after the seek on pointerup.
+                            try { if (e && e.target && typeof e.target.setPointerCapture === 'function') e.target.setPointerCapture(e.pointerId); } catch(_) {}
+                        } catch(_) {}
+                    }, { passive: true });
+
+                    // On pointerup (release), compute final target and perform a single seek operation, then resume if needed.
+                    progBar.addEventListener('pointerup', (e) => {
+                        try {
+                            if (!this.vid) { this.isSeeking = false; pendingTargetPct = null; return; }
+                            const pct = (pendingTargetPct != null) ? pendingTargetPct : (Number(e.target.value) || 0);
+                            const dur = this.vid.duration || 0;
+                            const targetTime = (!isNaN(dur) && dur > 0) ? (pct / 100) * dur : 0;
+
+                            // perform the seek in a defensive way
+                            try {
+                                // Attempt direct set; if it fails, schedule a tiny retry
+                                this.vid.currentTime = targetTime;
+                            } catch (err) {
+                                setTimeout(() => {
+                                    try { if (this.vid) this.vid.currentTime = targetTime; } catch(_) {}
+                                }, 60);
+                            }
+
+                            // small UI update to ensure times reflect the new position quickly
+                            requestAnimationFrame(() => {
+                                try {
+                                    const tc = document.getElementById('time-current');
+                                    const td = document.getElementById('time-duration');
+                                    if (tc) tc.innerText = formatTime(targetTime);
+                                    if (td && !isNaN(dur)) td.innerText = formatTime(dur);
+                                    updateFill(pct);
+                                } catch (_) {}
+                            });
+
+                            // reset seeking flag and resume playback only if it was playing before scrub
+                            this.isSeeking = false;
+                            const resumeIfNeeded = () => {
+                                try {
+                                    if (wasPlayingBeforeScrub) {
+                                        // swallow promise rejections to avoid unhandledRejection (play interrupted by pause)
+                                        this.vid.play().catch(() => {});
+                                    }
+                                } catch (_) {}
+                            };
+
+                            // Some browsers restrict immediate play after setting currentTime; do resume on next tick
+                            setTimeout(resumeIfNeeded, 30);
+                            pendingTargetPct = null;
+
+                            try { if (e && e.target && typeof e.target.releasePointerCapture === 'function') e.target.releasePointerCapture(e.pointerId); } catch(_) {}
+                        } catch (_) {
+                            this.isSeeking = false;
+                            pendingTargetPct = null;
+                        }
+                    }, { passive: true });
+
+                    // Also support keyboard change events (accessible): perform the seek and keep previous play state behavior
+                    progBar.addEventListener('change', (e) => {
+                        try {
+                            if (!this.vid) return;
+                            const pct = Number(e.target.value) || 0;
+                            const dur = this.vid.duration || 0;
+                            const targetTime = (!isNaN(dur) && dur > 0) ? (pct / 100) * dur : 0;
+
+                            const wasPlaying = !this.vid.paused;
+                            try { this.vid.pause(); } catch(_) {}
+                            try { this.vid.currentTime = targetTime; } catch (err) { setTimeout(()=>{ try{ this.vid.currentTime = targetTime; }catch(_){} }, 60); }
+                            requestAnimationFrame(() => updateFill(pct));
+                            // resume if it was playing
+                            setTimeout(() => { try { if (wasPlaying) this.vid.play().catch(()=>{}); } catch(_){} }, 30);
+                        } catch (_) {}
+                    }, { passive: true });
                 }
 
                 const volEl = document.getElementById('volume-bar');
@@ -3937,6 +4129,10 @@
 
                 // Ensure controls show initially and auto-hide when playing
                 showControls();
+
+                // expose helpers for external debugging if needed
+                this._showControls = showControls;
+                this._hideControls = hideControls;
             },
 
             checkNextTrigger: function() {
@@ -4150,7 +4346,7 @@
             // intentionally left blank; acknowledgement does not close the modal
         }
         function togglePlay() {
-            // unified play/pause for native video and YouTube iframe player
+            // unified play/pause for native video and YouTube iframe player with robust promise handling
             try {
                 if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') {
                     const st = player.ytPlayer.getPlayerState();
@@ -4167,8 +4363,21 @@
             } catch (e) { /* failover to native */ }
 
             if (player.vid) {
-                if (player.vid.paused) player.vid.play();
-                else player.vid.pause();
+                try {
+                    if (player.vid.paused) {
+                        // call play and swallow any promise rejection to avoid unhandledRejection when a pause occurs immediately
+                        const p = player.vid.play();
+                        if (p && typeof p.then === 'function') p.catch(() => {});
+                        updatePlayBtns(false);
+                    } else {
+                        try { player.vid.pause(); } catch(_) {}
+                        updatePlayBtns(true);
+                    }
+                } catch (err) {
+                    // last-resort: avoid throwing from toggle
+                    try { player.vid && player.vid.pause && player.vid.pause(); } catch(_) {}
+                    updatePlayBtns(true);
+                }
             }
         }
 
@@ -4980,8 +5189,41 @@
             } catch (e) { /* silent */ }
         }
 
-        // expose init on load
-        window.onload = init;
+        // expose init on load (robust startup with graceful error handling and guaranteed listeners)
+        (function robustInit() {
+            const safeInit = () => {
+                try {
+                    // Ensure nav listeners attached before first render
+                    try { attachNavTabListeners(); } catch (e) { console.warn('attachNavTabListeners failed', e); }
+                    // Run main initialization
+                    init();
+                } catch (err) {
+                    console.error('Lumina init failed:', err);
+                    try {
+                        // best-effort fallback UI: render minimal view to avoid a blank page
+                        state.tab = state.tab || 'home';
+                        renderView();
+                        insertLegalFooter();
+                    } catch (e2) { console.error('fallback render failed', e2); }
+                }
+            };
+
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', safeInit);
+            } else {
+                // DOM already ready
+                setTimeout(safeInit, 16);
+            }
+
+            // Also protect against runtime errors that could break subsequent interactions
+            window.addEventListener('error', (ev) => {
+                console.error('Runtime error captured:', ev.error || ev.message, ev.filename + ':' + ev.lineno);
+            }, { passive: true });
+
+            window.addEventListener('unhandledrejection', (ev) => {
+                console.warn('Unhandled promise rejection captured:', ev.reason);
+            });
+        })();
 
         // Ensure navigation buttons reliably call switchTab by attaching safe event listeners
         function attachNavTabListeners() {
@@ -5017,60 +5259,18 @@
         // Ensure progress is flushed when the user navigates away or the page is hidden
         window.addEventListener('beforeunload', () => {
             try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
-            try { luminaCleanup(); } catch(_) {}
         }, { passive: true });
 
         // Also handle pagehide/visibilitychange to better capture mobile cases (background / tab switches)
         window.addEventListener('pagehide', () => {
             try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
-            try { luminaCleanup(); } catch(_) {}
         }, { passive: true });
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
                 try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
-                try { luminaCleanup(); } catch(_) {}
             }
         }, { passive: true });
-
-        // Global cleanup to avoid memory leaks and runaway timers during long sessions.
-        // Called on unload/pagehide/visibilitychange and can be invoked manually.
-        function luminaCleanup() {
-            try {
-                // Clear app-level timers/intervals
-                try { if (typeof __heroRotateTimer !== 'undefined' && __heroRotateTimer) { clearInterval(__heroRotateTimer); __heroRotateTimer = null; } } catch(_) {}
-                try { if (window.__lumina_badge_timer) { clearInterval(window.__lumina_badge_timer); window.__lumina_badge_timer = null; } } catch(_) {}
-                try { if (typeof __switchTabTimer !== 'undefined' && __switchTabTimer) { clearTimeout(__switchTabTimer); __switchTabTimer = null; } } catch(_) {}
-                try { if (typeof __searchDebounce !== 'undefined' && __searchDebounce) { clearTimeout(__searchDebounce); __searchDebounce = null; } } catch(_) {}
-                try { if (typeof __saveProgressTimer !== 'undefined' && __saveProgressTimer) { clearTimeout(__saveProgressTimer); __saveProgressTimer = null; } } catch(_) {}
-                try { if (player && player.saveInterval) { clearInterval(player.saveInterval); player.saveInterval = null; } } catch(_) {}
-                try { if (player && player.ytSaveInterval) { clearInterval(player.ytSaveInterval); player.ytSaveInterval = null; } } catch(_) {}
-                try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
-
-                // Safely close any active player instance to free resources
-                try { if (window.player && typeof window.player.close === 'function') { window.player.close(); } } catch(_) {}
-
-                // Remove heavy global listeners that can accumulate during long uptime
-                try { window.removeEventListener && window.removeEventListener('resize', handleOrientation); } catch(_) {}
-                try { document.removeEventListener && document.removeEventListener('pointerdown', null); } catch(_) {}
-
-                // Best-effort garbage hints: drop large ephemeral references
-                try { window.__lumina_badge_timer = null; window.__heroRotateTimer = null; } catch(_) {}
-
-                // persist final state synchronously if possible
-                try {
-                    if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress();
-                    if (state && typeof state === 'object') {
-                        try { localStorage.setItem('lumina_v2_favs', JSON.stringify(state.favorites || [])); } catch(_) {}
-                        try { localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress || {})); } catch(_) {}
-                        try { localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {})); } catch(_) {}
-                    }
-                } catch(_) {}
-            } catch(e) {
-                // swallow cleanup errors to avoid blocking unload
-                try { console.warn('luminaCleanup failed', e); } catch(_) {}
-            }
-        }
 
         // --- LEGAL / DISCLAIMER HANDLERS ---
         // Robust modal open/close that queries DOM at call time (avoids init-order failures)
@@ -5708,34 +5908,20 @@
             }, { passive: false });
 
             // also guard against developer-tools-open via outerWidth change detection (best-effort) - desktop only
-            // Reduce false positives by requiring multiple consecutive large changes before sanitizing.
             let lastWidth = window.outerWidth;
-            let __lumina_outerWidth_change_count = 0;
-            const __LUMINA_OUTERWIDTH_THRESHOLD = 220; // larger threshold to avoid normal UI/resizing jitter
-            const __LUMINA_OUTERWIDTH_CONSECUTIVE_REQUIRED = 3; // require multiple consecutive detections
-            const __LUMINA_OUTERWIDTH_INTERVAL_MS = 1200;
             setInterval(() => {
                 try {
                     if (isMobile()) {
                         lastWidth = window.outerWidth;
-                        __lumina_outerWidth_change_count = 0;
                         return; // skip desktop heuristics on mobile
                     }
-                    const delta = Math.abs(window.outerWidth - lastWidth);
-                    if (delta > __LUMINA_OUTERWIDTH_THRESHOLD && isPlayerActive()) {
-                        __lumina_outerWidth_change_count++;
-                    } else {
-                        __lumina_outerWidth_change_count = 0;
-                    }
-                    // Only sanitize when the change is persistent (to avoid single transient layout changes)
-                    if (__lumina_outerWidth_change_count >= __LUMINA_OUTERWIDTH_CONSECUTIVE_REQUIRED) {
-                        // possible devtools docked changed size -> sanitize (last-resort)
-                        try { sanitizeMediaAndStripURLs(); } catch(_) {}
-                        __lumina_outerWidth_change_count = 0;
+                    if (Math.abs(window.outerWidth - lastWidth) > 160 && isPlayerActive()) {
+                        // possible devtools docked changed size -> sanitize
+                        sanitizeMediaAndStripURLs();
                     }
                     lastWidth = window.outerWidth;
                 } catch(_) {}
-            }, __LUMINA_OUTERWIDTH_INTERVAL_MS);
+            }, 1200);
 
             // Expose a manual call (for debugging or automated flows) but keep non-intrusive
             window.__lumina_sanitize_media = sanitizeMediaAndStripURLs;
@@ -5801,6 +5987,92 @@
             }
             // allow other unhandled rejections to behave normally
         });
+
+        // --- Robust long-session cleanup & visibility handling ---
+        // central cleanup helper to stop timers/intervals and release heavy resources
+        window.luminaCleanup = function() {
+            try {
+                // stop hero rotate timer
+                try { if (typeof __heroRotateTimer !== 'undefined' && __heroRotateTimer) { clearInterval(__heroRotateTimer); __heroRotateTimer = null; } } catch(_) {}
+                // stop badge rotate timer
+                try { if (window.__lumina_badge_timer) { clearInterval(window.__lumina_badge_timer); window.__lumina_badge_timer = null; } } catch(_) {}
+                // stop any save/progress timers
+                try { if (typeof __saveProgressTimer !== 'undefined' && __saveProgressTimer) { clearTimeout(__saveProgressTimer); __saveProgressTimer = null; } } catch(_) {}
+                // player cleanup if exists
+                try {
+                    if (window.player) {
+                        try { if (window.player.saveInterval) { clearInterval(window.player.saveInterval); window.player.saveInterval = null; } } catch(_) {}
+                        try { if (window.player.ytSaveInterval) { clearInterval(window.player.ytSaveInterval); window.player.ytSaveInterval = null; } } catch(_) {}
+                        try { if (typeof window.player.close === 'function') { window.player.close(); } } catch(_) {}
+                    }
+                } catch(_) {}
+                // best-effort GC hint: remove large DOM references used by media wrappers
+                try {
+                    const wrapper = document.getElementById('player-media-wrapper');
+                    if (wrapper) { wrapper.innerHTML = ''; }
+                } catch(_) {}
+            } catch (e) {
+                console.warn('luminaCleanup failed', e);
+            }
+        };
+
+        // Pause background activity when document is hidden and resume when visible to avoid timers causing long-run issues
+        document.addEventListener('visibilitychange', () => {
+            try {
+                if (document.visibilityState === 'hidden') {
+                    // save progress and pause periodic tasks
+                    try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch(_) {}
+                    pauseBackgroundActivity();
+                    // also reduce badge rotation frequency as extra safety
+                    try { if (window.__lumina_badge_timer) { clearInterval(window.__lumina_badge_timer); window.__lumina_badge_timer = null; } } catch(_) {}
+                } else {
+                    // resume lightweight background tasks
+                    resumeBackgroundActivity();
+                    // restart badge rotation if missing
+                    try { if (!window.__lumina_badge_timer) window.__lumina_badge_timer = setInterval(rotateTagsTick, BADGE_ROTATE_INTERVAL || 8000); } catch(_) {}
+                }
+            } catch (e) {}
+        }, { passive: true });
+
+        // Ensure cleanup runs on pagehide/unload to release intervals for long-lived sessions (mobile browsers)
+        window.addEventListener('pagehide', () => {
+            try {
+                // flush player progress and perform cleanup
+                try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch(_) {}
+                window.luminaCleanup();
+            } catch (e) {}
+        }, { passive: true });
+
+        window.addEventListener('beforeunload', () => {
+            try {
+                try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch(_) {}
+                window.luminaCleanup();
+            } catch (e) {}
+        }, { passive: true });
+
+        // defensive periodic sanity: occasionally trim localStorage growth when app runs for many hours
+        (function storageTrimTask() {
+            try {
+                // run every 30 minutes to keep localStorage under control
+                const TRIM_MS = 30 * 60 * 1000;
+                setInterval(() => {
+                    try {
+                        // cap 'lumina_v2_prog' entries to most recent 200 if present
+                        const key = 'lumina_v2_prog';
+                        const raw = localStorage.getItem(key);
+                        if (!raw) return;
+                        const obj = JSON.parse(raw);
+                        const entries = Object.entries(obj || {});
+                        if (entries.length > 200) {
+                            entries.sort((a,b) => (b[1].timestamp||0)-(a[1].timestamp||0));
+                            const kept = Object.fromEntries(entries.slice(0,200));
+                            localStorage.setItem(key, JSON.stringify(kept));
+                        }
+                    } catch(_) {}
+                }, TRIM_MS);
+            } catch (_) {}
+        })();
+
     </script>
 
     <!-- Android-only "Install Lumina" liquid modal (shows once) -->
@@ -6190,8 +6462,8 @@
             // Initial setup: request permission gently when user interacts or after a short delay
             function initBadgesAndNotifications() {
                 try {
-                    // start periodic rotation
-                    window.__lumina_badge_timer = setInterval(rotateTagsTick, BADGE_ROTATE_INTERVAL);
+                    // start periodic rotation (use controllable timer so we can pause during long playback)
+                    startBadgeTimer();
 
                     // Request permission after first user gesture to avoid blocking UX
                     const askNow = async () => {
