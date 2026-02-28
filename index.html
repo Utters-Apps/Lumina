@@ -2560,6 +2560,8 @@
                     // ensure a stable episode id even when source lacks an explicit id (use seriesId-s{season}-e{episode})
                     const epId = ep && ep.id ? ep.id : (ep ? `${item.id}-s${s}-e${e}` : null);
                     state.history[item.id] = { s: s, e: e, epId: epId, timestamp: Date.now() };
+                    // persist history immediately so "Continuar Assistindo" and share links survive reloads
+                    try { saveProgressData(); } catch(_) {}
                 }
 
                 // Ensure UI is ready: open home and then details; small delay to let initial render finish
@@ -3154,6 +3156,23 @@
                 // defensively tear down any previous playback artifacts before initializing a new one
                 try { this._cleanupBeforeInit(); } catch(_) {}
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
+                // Persist initial playback context immediately so history/progress stays in localStorage
+                try {
+                    if (this.context && this.context.type === 'serie' && this.context.seriesId) {
+                        // record that this series/episode was opened
+                        state.history[this.context.seriesId] = {
+                            s: this.context.season,
+                            e: this.context.episode,
+                            epId: this.context.id || (this.context.seriesId + '-s' + this.context.season + '-e' + this.context.episode),
+                            timestamp: Date.now()
+                        };
+                    } else if (this.context && this.context.type === 'filme' && this.context.id) {
+                        // ensure a progress entry exists for films (even if empty) so "Continuar" can appear
+                        state.progress[this.context.id] = state.progress[this.context.id] || { time: 0, duration: 0, timestamp: Date.now() };
+                    }
+                    // debounce/persist via existing helper
+                    try { saveProgressData(); } catch(_) {}
+                } catch (_) {}
                 const modal = document.getElementById('player-modal');
                 modal.classList.remove('hidden'); modal.classList.add('flex');
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
@@ -4998,18 +5017,60 @@
         // Ensure progress is flushed when the user navigates away or the page is hidden
         window.addEventListener('beforeunload', () => {
             try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+            try { luminaCleanup(); } catch(_) {}
         }, { passive: true });
 
         // Also handle pagehide/visibilitychange to better capture mobile cases (background / tab switches)
         window.addEventListener('pagehide', () => {
             try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+            try { luminaCleanup(); } catch(_) {}
         }, { passive: true });
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
                 try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+                try { luminaCleanup(); } catch(_) {}
             }
         }, { passive: true });
+
+        // Global cleanup to avoid memory leaks and runaway timers during long sessions.
+        // Called on unload/pagehide/visibilitychange and can be invoked manually.
+        function luminaCleanup() {
+            try {
+                // Clear app-level timers/intervals
+                try { if (typeof __heroRotateTimer !== 'undefined' && __heroRotateTimer) { clearInterval(__heroRotateTimer); __heroRotateTimer = null; } } catch(_) {}
+                try { if (window.__lumina_badge_timer) { clearInterval(window.__lumina_badge_timer); window.__lumina_badge_timer = null; } } catch(_) {}
+                try { if (typeof __switchTabTimer !== 'undefined' && __switchTabTimer) { clearTimeout(__switchTabTimer); __switchTabTimer = null; } } catch(_) {}
+                try { if (typeof __searchDebounce !== 'undefined' && __searchDebounce) { clearTimeout(__searchDebounce); __searchDebounce = null; } } catch(_) {}
+                try { if (typeof __saveProgressTimer !== 'undefined' && __saveProgressTimer) { clearTimeout(__saveProgressTimer); __saveProgressTimer = null; } } catch(_) {}
+                try { if (player && player.saveInterval) { clearInterval(player.saveInterval); player.saveInterval = null; } } catch(_) {}
+                try { if (player && player.ytSaveInterval) { clearInterval(player.ytSaveInterval); player.ytSaveInterval = null; } } catch(_) {}
+                try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
+
+                // Safely close any active player instance to free resources
+                try { if (window.player && typeof window.player.close === 'function') { window.player.close(); } } catch(_) {}
+
+                // Remove heavy global listeners that can accumulate during long uptime
+                try { window.removeEventListener && window.removeEventListener('resize', handleOrientation); } catch(_) {}
+                try { document.removeEventListener && document.removeEventListener('pointerdown', null); } catch(_) {}
+
+                // Best-effort garbage hints: drop large ephemeral references
+                try { window.__lumina_badge_timer = null; window.__heroRotateTimer = null; } catch(_) {}
+
+                // persist final state synchronously if possible
+                try {
+                    if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress();
+                    if (state && typeof state === 'object') {
+                        try { localStorage.setItem('lumina_v2_favs', JSON.stringify(state.favorites || [])); } catch(_) {}
+                        try { localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress || {})); } catch(_) {}
+                        try { localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {})); } catch(_) {}
+                    }
+                } catch(_) {}
+            } catch(e) {
+                // swallow cleanup errors to avoid blocking unload
+                try { console.warn('luminaCleanup failed', e); } catch(_) {}
+            }
+        }
 
         // --- LEGAL / DISCLAIMER HANDLERS ---
         // Robust modal open/close that queries DOM at call time (avoids init-order failures)
@@ -5647,20 +5708,34 @@
             }, { passive: false });
 
             // also guard against developer-tools-open via outerWidth change detection (best-effort) - desktop only
+            // Reduce false positives by requiring multiple consecutive large changes before sanitizing.
             let lastWidth = window.outerWidth;
+            let __lumina_outerWidth_change_count = 0;
+            const __LUMINA_OUTERWIDTH_THRESHOLD = 220; // larger threshold to avoid normal UI/resizing jitter
+            const __LUMINA_OUTERWIDTH_CONSECUTIVE_REQUIRED = 3; // require multiple consecutive detections
+            const __LUMINA_OUTERWIDTH_INTERVAL_MS = 1200;
             setInterval(() => {
                 try {
                     if (isMobile()) {
                         lastWidth = window.outerWidth;
+                        __lumina_outerWidth_change_count = 0;
                         return; // skip desktop heuristics on mobile
                     }
-                    if (Math.abs(window.outerWidth - lastWidth) > 160 && isPlayerActive()) {
-                        // possible devtools docked changed size -> sanitize
-                        sanitizeMediaAndStripURLs();
+                    const delta = Math.abs(window.outerWidth - lastWidth);
+                    if (delta > __LUMINA_OUTERWIDTH_THRESHOLD && isPlayerActive()) {
+                        __lumina_outerWidth_change_count++;
+                    } else {
+                        __lumina_outerWidth_change_count = 0;
+                    }
+                    // Only sanitize when the change is persistent (to avoid single transient layout changes)
+                    if (__lumina_outerWidth_change_count >= __LUMINA_OUTERWIDTH_CONSECUTIVE_REQUIRED) {
+                        // possible devtools docked changed size -> sanitize (last-resort)
+                        try { sanitizeMediaAndStripURLs(); } catch(_) {}
+                        __lumina_outerWidth_change_count = 0;
                     }
                     lastWidth = window.outerWidth;
                 } catch(_) {}
-            }, 1200);
+            }, __LUMINA_OUTERWIDTH_INTERVAL_MS);
 
             // Expose a manual call (for debugging or automated flows) but keep non-intrusive
             window.__lumina_sanitize_media = sanitizeMediaAndStripURLs;
