@@ -3790,7 +3790,17 @@
                     sTitle.classList.add('hidden');
                 }
 
-                if(window.innerWidth <= 768 && document.documentElement.requestFullscreen) modal.requestFullscreen().catch(e=>e);
+                // Only request fullscreen automatically on small screens when the browser is capable
+                // and not running on iOS (iOS Safari / iPadOS handle fullscreen differently and can produce a blank/gray player).
+                try {
+                    const ua = navigator.userAgent || navigator.vendor || '';
+                    const isiOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                    if (window.innerWidth <= 768 && document.documentElement.requestFullscreen && !isiOS) {
+                        modal.requestFullscreen().catch(() => {});
+                    }
+                } catch(_) {
+                    // swallow any errors and avoid forcing fullscreen on problematic environments
+                }
 
                 // pause background activity while player is active to avoid heavy periodic UI updates during long playback
                 try { pauseBackgroundActivity(); } catch(_) {}
