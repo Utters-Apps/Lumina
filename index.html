@@ -1237,14 +1237,14 @@
                         { title: "Perfeito", url: "https://www.dropbox.com/scl/fi/zk3ovo2d1bp5rq7n1lkd6/Epis-dio.08.mp4?rlkey=aay10wnwogtgettfjdlsqs9xg&st=rxgpc813&raw=1" }
                     ],
                     3: [
-                        { title: "Amor", url: "https://watch.brplayer.cc/watch?v=NLE41OIK" },
-                        { title: "Casa", url: "https://watch.brplayer.cc/watch?v=P9JB65OT" },
-                        { title: "Conversa", url: "https://watch.brplayer.cc/watch?v=ZU71AT9C" },
-                        { title: "Jornada", url: "https://watch.brplayer.cc/watch?v=62RD59WG" },
-                        { title: "Inverno", url: "https://watch.brplayer.cc/watch?v=Y3N046BK" },
-                        { title: "Corpo", url: "https://watch.brplayer.cc/watch?v=UATYPSGH" },
-                        { title: "Juntos", url: "https://watch.brplayer.cc/watch?v=01Y92FWG" },
-                        { title: "Separados", url: "https://watch.brplayer.cc/watch?v=LM24A0Z3" }
+                        { title: "Amor", url: "https://www.dropbox.com/scl/fi/lra6xqui7xueqnzl4tt71/s3ep1.mp4?rlkey=445birdi6294yz3etif91jh3y&st=vll7b3p6&raw=1" },
+                        { title: "Casa", url: "https://www.dropbox.com/scl/fi/3o4e5w1c7z86ppw5rqn27/s3ep2.mp4?rlkey=7n2j1k69ruwxkpb7ba1o3227z&st=ei6oa00z&raw=1" },
+                        { title: "Conversa", url: "https://www.dropbox.com/scl/fi/32enlxrbe0rosbor3bdfb/s3ep3.mp4?rlkey=anchyonm7vsntcy7ege6odhyg&st=qbahfqf8&raw=1" },
+                        { title: "Jornada", url: "https://www.dropbox.com/scl/fi/cg5lyxtcts5n6it9bb88c/s3ep4.mp4?rlkey=vcpj4ntwco5d64dr3uq4owbxt&st=gp6skkq2&raw=1" },
+                        { title: "Inverno", url: "https://www.dropbox.com/scl/fi/g6ojpy3y9gxx33qcdbqt3/s3ep5.mp4?rlkey=3c57srzpeigxtm3m5eylyytr0&st=6sm7w82q&raw=1" },
+                        { title: "Corpo", url: "https://www.dropbox.com/scl/fi/9tfzztdl4ktpoddc21zz9/s3e6.mp4?rlkey=vmw4ljjub9t0mq9hgm7ee4xdw&st=w9nlqt7o&raw=1" },
+                        { title: "Juntos", url: "https://www.dropbox.com/scl/fi/v7b02t9w2kta87vigdqnp/s3e7.mp4?rlkey=rzhkjo9hagywzungczlym4eq6&st=fwosp8ha&raw=1" },
+                        { title: "Separados", url: "https://www.dropbox.com/scl/fi/6wgapdfa5rkwuciw3ldfh/s3e8.mp4?rlkey=j4s070fgdlyjxkxgv807hfqb7&st=jnjibqjo&raw=1" }
                     ]
                 }
             },
@@ -1258,6 +1258,21 @@
                 description: 'Na Riviera Italiana, uma amizade improvável, mas forte, cresce entre um ser humano e um monstro marinho disfarçado de humano.',
                 ageRating: 'L',
                 url: 'https://www.dropbox.com/scl/fi/7sbohwhegt2pl0x46vamb/Luca.2021.1080p.WEB-DL.DUAL.5.1.COMANDO.TO.mp4?rlkey=y0n75i1dectwu3lw1rcwibvul&st=kp56wmqc&raw=1'
+            },
+            {
+                id: 'matilda-1996',
+                title: 'Matilda',
+                originalTitle: 'Matilda',
+                type: 'filme',
+                category: 'Comédia / Fantasia / Família',
+                year: '1996',
+                yearBR: '1996',
+                cover: 'https://www.calone.com.br/storage/2025/04/d314b81695d1f862c3c90af7437247785a6efea3b96fbc45513e382632ef1de5._SX1080_FMjpg_.jpg',
+                description: 'Matilda é uma menina extremamente inteligente que vive com pais negligentes e sofre nas mãos da cruel diretora Trunchbull. Ao descobrir que possui poderes telecinéticos, ela decide usá-los para ajudar seus amigos e enfrentar as injustiças ao seu redor.',
+                ageRating: 'L',
+                distributor: 'Sony Pictures Releasing',
+                production: 'TriStar Pictures / Jersey Films',
+                url: 'https://youtu.be/zRUr6CSNzrQ'
             },
             {
                 id: 'soul',
@@ -1713,6 +1728,7 @@
                 ageRating: '10',
                 cover: 'https://i.ytimg.com/vi/vJBYsEim_yU/maxresdefault.jpg',
                 description: 'Acompanhe as desventuras do impulsivo Cuphead e seu irmão cauteloso Mugman pelas surreais Ilhas Inkwell, enfrentando fantasmas, concursos e até o próprio Diabo com humor inspirado nos desenhos dos anos 1930.',
+                nextEpisodeTrigger: 234,
                 seasons: {
                     1: [
                         { title: 'Carna-Mal', url: 'https://www.dropbox.com/scl/fi/e6e2cavvizk2g69urk8nj/1-1-32.mp4?rlkey=anwg5iglw8hnz51e020mzjzus&st=xhtn5a5k&raw=1' },
@@ -3952,52 +3968,99 @@
             },
             
             restoreProgress: function() {
-                // Always attempt to restore saved time for native video sources (e.g. Dropbox),
-                // even when a stored duration is missing or zero. We wait for 'loadedmetadata'
-                // and then clamp the seek target to the actual duration to avoid seeking past EOF.
+                // Only restore for native video; guard and apply the saved position only once.
                 if (this.isEmbed) return;
                 if (!this.context || !this.context.id) return;
+                // avoid restoring multiple times for same player instance
+                if (this._restoredOnce) return;
                 const prog = state.progress[this.context.id];
                 if (!prog || typeof prog.time !== 'number' || prog.time <= 0) return;
 
-                const attemptSeek = () => {
+                // If current playback already progressed beyond saved time, skip restore
+                const safeSeek = (target) => {
                     try {
-                        const dur = (this.vid && !isNaN(this.vid.duration)) ? Math.max(0, Number(this.vid.duration)) : 0;
-                        let target = Number(prog.time) || 0;
-                        // If duration available, ensure we don't seek to beyond end; leave a 1s margin.
-                        if (dur > 0 && target >= dur) target = Math.max(0, dur - 1);
-                        // Perform the seek defensively; some browsers throw when seeking very early.
-                        try { this.vid.currentTime = target; } catch (e) {
-                            // retry shortly after if immediate assignment fails
-                            setTimeout(() => { try { if (this.vid) this.vid.currentTime = target; } catch(_) {} }, 80);
+                        if (!this.vid) return;
+                        const dur = (!isNaN(this.vid.duration) && Number(this.vid.duration) > 0) ? Number(this.vid.duration) : 0;
+                        let t = Number(target) || 0;
+                        if (dur > 0) {
+                            // clamp to [0, dur - 0.5] to avoid seeking to exact EOF which some players treat oddly
+                            t = Math.max(0, Math.min(t, Math.max(0, dur - 0.5)));
+                        } else {
+                            t = Math.max(0, t);
+                        }
+                        // Only seek if the player is not already past the saved time (avoid regressions)
+                        const current = (typeof this.vid.currentTime === 'number') ? this.vid.currentTime : 0;
+                        if (current > t + 1) return; // don't rewind if user already ahead
+                        try { this.vid.currentTime = t; } catch (e) {
+                            setTimeout(() => { try { if (this.vid) this.vid.currentTime = t; } catch(_) {} }, 80);
                         }
                     } catch (e) { /* silent */ }
-                    // remove listener if attached
+                };
+
+                const attemptSeek = () => {
+                    try {
+                        safeSeek(prog.time);
+                        // mark as restored so we don't re-apply later
+                        this._restoredOnce = true;
+                        // also tag persisted progress so other logic knows we've applied the restore
+                        try {
+                            const ex = state.progress[this.context.id] || {};
+                            ex._restored = true;
+                            state.progress[this.context.id] = ex;
+                            saveProgressData();
+                        } catch(_) {}
+                    } catch (e) { /* silent */ }
                     try { this.vid.removeEventListener('loadedmetadata', attemptSeek); } catch(_) {}
                 };
 
-                // If metadata already loaded, seek immediately; otherwise wait for loadedmetadata.
                 try {
                     if (this.vid && this.vid.readyState > 0 && !isNaN(this.vid.duration)) {
                         attemptSeek();
                     } else if (this.vid) {
                         this.vid.addEventListener('loadedmetadata', attemptSeek);
-                        // also set a fallback timer in case loadedmetadata never fires quickly (network delays)
                         setTimeout(() => {
-                            try {
-                                if (this.vid && this.vid.readyState > 0) attemptSeek();
-                            } catch(_) {}
-                        }, 16000); // generous fallback for slow Dropbox responses
+                            try { if (this.vid && this.vid.readyState > 0) attemptSeek(); } catch(_) {}
+                        }, 16000);
                     }
                 } catch (e) { /* silent */ }
             },
 
             saveProgress: function() {
-                if(this.isEmbed) return;
-                if(!this.vid || !this.context || !this.context.id || isNaN(this.vid.duration)) return;
-                state.progress[this.context.id] = { time: this.vid.currentTime, duration: this.vid.duration, timestamp: Date.now() };
-                if(this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id };
-                saveProgressData();
+                if (this.isEmbed) return;
+                if (!this.vid || !this.context || !this.context.id) return;
+                try {
+                    const cur = Number(this.vid.currentTime) || 0;
+                    const dur = (!isNaN(this.vid.duration) && Number(this.vid.duration) > 0) ? Number(this.vid.duration) : 0;
+                    // clamp current time to valid range (0 .. dur - 0.5) to avoid seeking past EOF or storing invalid values
+                    const safeCur = dur > 0 ? Math.max(0, Math.min(cur, Math.max(0, dur - 0.5))) : Math.max(0, cur);
+
+                    // Prevent regressing saved progress: only update if new time is >= previously saved time minus small epsilon,
+                    // or if no previous good record exists. This avoids later writes from rewinding the saved position.
+                    try {
+                        const id = this.context.id;
+                        const prev = state.progress[id] || {};
+                        const prevTime = (typeof prev.time === 'number') ? prev.time : -1;
+                        // If previously marked restored, accept updates normally (we just avoid overwriting with older values)
+                        if (prevTime >= 0 && safeCur < prevTime - 1) {
+                            // do not overwrite with an older time; still update timestamp so recency is tracked
+                            prev.timestamp = Date.now();
+                            state.progress[id] = prev;
+                        } else {
+                            state.progress[id] = { time: safeCur, duration: dur, timestamp: Date.now() };
+                        }
+                    } catch (inner) {
+                        state.progress[this.context.id] = { time: safeCur, duration: dur, timestamp: Date.now() };
+                    }
+
+                    if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
+                    saveProgressData();
+                } catch (e) {
+                    // non-blocking: avoid breaking playback on storage errors
+                    try {
+                        state.progress[this.context.id] = { time: 0, duration: 0, timestamp: Date.now() };
+                        saveProgressData();
+                    } catch(_) {}
+                }
             },
 
             close: function() {
@@ -4346,6 +4409,34 @@
 
                 if (dur - cur <= trigger) {
                     this.nextPromptShown = true;
+
+                    // Mark episode as "considered finished" when near the trigger without stopping playback:
+                    // set progress time to duration (or dur - 0.5 for safety) and flag completed, then persist.
+                    try {
+                        const safeTime = Math.max(0, Math.max(0, dur - 0.5));
+                        if (this.context && this.context.id) {
+                            state.progress[this.context.id] = state.progress[this.context.id] || {};
+                            state.progress[this.context.id].time = safeTime;
+                            state.progress[this.context.id].duration = dur;
+                            state.progress[this.context.id].completed = true;
+                            state.progress[this.context.id].timestamp = Date.now();
+                            // update series history as completed
+                            if (this.context.type === 'serie' && this.context.seriesId) {
+                                state.history[this.context.seriesId] = {
+                                    s: this.context.season,
+                                    e: this.context.episode,
+                                    epId: this.context.id,
+                                    timestamp: Date.now(),
+                                    completed: true
+                                };
+                            }
+                            // persist (debounced)
+                            saveProgressData();
+                        }
+                    } catch (e) {
+                        // silent fallback - do not interrupt playback
+                    }
+
                     const prompt = document.getElementById('next-ep-prompt');
                     document.getElementById('next-ep-title').innerText = (this.context.nextEp.title || '').split(' - ')[1] || this.context.nextEp.title || '';
                     const seriesData = db.find(i => i.id === this.context.seriesId);
@@ -4656,10 +4747,20 @@
                 // update in-memory progress and schedule a debounced persistent save for performance
                 try {
                     if (player.context && player.context.id) {
-                        state.progress[player.context.id] = state.progress[player.context.id] || {};
-                        state.progress[player.context.id].time = target;
-                        state.progress[player.context.id].duration = (!isNaN(dur) && dur > 0) ? dur : (state.progress[player.context.id].duration || 0);
-                        state.progress[player.context.id].timestamp = Date.now();
+                        const pid = player.context.id;
+                        const prev = state.progress[pid] || {};
+                        const prevTime = (typeof prev.time === 'number') ? prev.time : -1;
+                        if (prevTime >= 0 && target < prevTime - 1) {
+                            // prevent regression: keep previous time but refresh timestamp
+                            prev.timestamp = Date.now();
+                            state.progress[pid] = prev;
+                        } else {
+                            state.progress[pid] = state.progress[pid] || {};
+                            state.progress[pid].time = target;
+                            state.progress[pid].duration = (!isNaN(dur) && dur > 0) ? dur : (state.progress[pid].duration || 0);
+                            state.progress[pid].timestamp = Date.now();
+                        }
+
                         if (player.context.type === 'serie' && player.context.seriesId) {
                             state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
                         }
