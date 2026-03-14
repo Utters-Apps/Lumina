@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lumina-v1';
+const CACHE_NAME = 'lumina-v2';
 const OFFLINE_URL = '/';
 const ASSETS_TO_CACHE = [
   '/',
@@ -55,25 +55,52 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // for other requests use cache-first then network
-  event.respondWith(
-    caches.match(req).then(cached => {
+  // For other requests, use a network-first approach when the request includes query params
+  // or targets known media providers (e.g. Dropbox) to avoid serving stale URLs cached earlier.
+  event.respondWith((async () => {
+    try {
+      const isDropbox = url.hostname.includes('dropbox.com');
+      const hasQuery = !!url.search; // any query params present
+      // For navigation we handled above; for media-like requests prefer network-first when query or dropbox
+      if (isDropbox || hasQuery) {
+        try {
+          const networkResponse = await fetch(req.clone());
+          // update cache with fresh response if successful
+          if (networkResponse && networkResponse.status === 200) {
+            const copy = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              try { cache.put(req, copy); } catch (e) {}
+            });
+          }
+          return networkResponse;
+        } catch (err) {
+          // network failed -> fallback to cache if available
+          const cached = await caches.match(req);
+          if (cached) return cached;
+          // fallback to offline root for images/documents
+          if (req.destination === 'image' || req.destination === 'document') {
+            return caches.match(OFFLINE_URL);
+          }
+          // otherwise throw to let browser handle
+          throw err;
+        }
+      }
+
+      // Default: cache-first then network
+      const cached = await caches.match(req);
       if (cached) return cached;
-      return fetch(req).then(networkRes => {
-        // store a copy for future
-        if (networkRes && networkRes.status === 200) {
-          const clone = networkRes.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            try { cache.put(req, clone); } catch(e) {}
-          });
-        }
-        return networkRes;
-      }).catch(() => {
-        // fallback to offline root if an image or document requested
-        if (req.destination === 'image' || req.destination === 'document') {
-          return caches.match(OFFLINE_URL);
-        }
-      });
-    })
-  );
+      const networkRes = await fetch(req.clone());
+      if (networkRes && networkRes.status === 200) {
+        const clone = networkRes.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          try { cache.put(req, clone); } catch(e) {}
+        });
+      }
+      return networkRes;
+    } catch (e) {
+      // final fallback
+      const fallback = await caches.match(OFFLINE_URL);
+      return fallback;
+    }
+  })());
 });
