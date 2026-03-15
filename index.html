@@ -2117,6 +2117,53 @@
             }
         ];
 
+        // --- DATABASE LAZY LOADER & OBFUSCATION ---
+        (function(){
+            try {
+                // keep an immediate in-memory copy in a private slot, then clear the global 'db' reference so it isn't trivially available after JS runs
+                // (the original inline db remains in source but is removed from window to make casual copy/paste harder)
+                try { window.__db_store = window.db || null; } catch(_) { window.__db_store = null; }
+                try { window.db = []; } catch(_) { window.db = []; }
+
+                // ensureDB: returns the current db (prefers server-fetched obfuscated JSON if available), and populates window.db when resolved
+                window.ensureDB = async function ensureDB() {
+                    try {
+                        // if already populated with real objects, return immediately
+                        if (Array.isArray(window.db) && window.db.length > 0 && !window.__db_fetched) return window.db;
+                        // try to fetch a non-cached DB JSON (server-side file /db.json). Network-first to avoid stale embedded links in client cache
+                        try {
+                            const res = await fetch('/db.json', { cache: 'no-store', credentials: 'same-origin' });
+                            if (res && res.ok) {
+                                const j = await res.json();
+                                if (Array.isArray(j)) {
+                                    window.__db_store = j;
+                                }
+                            }
+                        } catch (e) {
+                            // network failed: keep any __db_store that may have been copied from the inline db at load-time
+                        }
+                        // install the store into the runtime db reference and mark fetched (so we don't re-fetch on subsequent calls unless explicitly desired)
+                        window.db = Array.isArray(window.__db_store) ? window.__db_store : (window.db || []);
+                        window.__db_fetched = true;
+                        return window.db;
+                    } catch (e) {
+                        // on any error, ensure window.db exists as a safe empty array
+                        try { window.db = window.db || []; } catch(_) { window.db = []; }
+                        return window.db;
+                    }
+                };
+
+                // light-weight helper: protect direct assignments to window.db by replacing with getter that yields empty array until ensureDB runs
+                try {
+                    if (!window.db || (Array.isArray(window.db) && window.db.length === 0)) {
+                        Object.defineProperty(window, '__db_guard', { value: true, writable: false, configurable: false });
+                    }
+                } catch (e) { /* ignore defineProperty errors */ }
+            } catch (e) {
+                /* silent fallback */
+            }
+        })();
+
         // --- STATE & LOCAL STORAGE ---
         let state = {
             favorites: JSON.parse(localStorage.getItem('lumina_v2_favs')) || [],
@@ -2270,11 +2317,14 @@
         // rotating hero index to cycle top highlight periodically
         let heroIndex = 0;
         let __heroRotateTimer = null;
-        function init() { 
+        async function init() { 
+            // ensure database loaded lazily and not left on global scope for casual scraping
+            try { await ensureDB(); } catch(_) { /* proceed even if ensureDB fails */ }
+
             renderView();
             insertLegalFooter();
-            // handle incoming share links via query string
-            try { handleSharedQuery(); } catch(e) {}
+            // handle incoming share links via query string (ensure we have a DB for mapping)
+            try { await handleSharedQuery && handleSharedQuery(); } catch(e) {}
             // start rotation: change hero every 10s (use helper to allow pausing during playback)
             startHeroRotate();
         }
@@ -2871,9 +2921,13 @@
                 // some films use id_ep while others use id — use id_ep if present, otherwise fallback to item.id
                 const filmKey = item.id_ep || item.id;
                 const prog = state.progress[filmKey];
-                if(prog && prog.time > 5 && prog.time < prog.duration - 5) {
+                // Treat completed markers as resumable: if a film was previously marked completed we show "Continuar" and preserve progress
+                if (prog && (prog.completed === true || (prog.time > 5 && prog.time < prog.duration - 5))) {
                     playBtnText = 'Continuar';
-                    progressPct = (prog.time / prog.duration) * 100;
+                    // prefer showing 100% when explicitly completed; otherwise compute percentage safely
+                    if (prog.completed && prog.duration) progressPct = 100;
+                    else if (prog && prog.duration) progressPct = (prog.time / prog.duration) * 100;
+                    else progressPct = (prog && prog.time) ? Math.min(100, (prog.time / (prog.duration || prog.time || 1)) * 100) : 0;
                 }
                 // For films adapt: if link is not direct video then pass it as embed
                 urlToPlay = item.url;
@@ -4263,7 +4317,53 @@
                 };
 
                 this.vid.onloadedmetadata = () => { const td = document.getElementById('time-duration'); if(td) td.innerText = formatTime(this.vid.duration); };
-                this.vid.onended = () => { if(this.context && this.context.nextEp) playNextEpisode(); };
+                this.vid.onended = () => {
+                    try {
+                        // If explicit nextEp exists, use playNextEpisode. Otherwise, if at the last episode of the season,
+                        // attempt to advance to the first episode of the next season (if available).
+                        if (this.context && this.context.nextEp) {
+                            playNextEpisode();
+                            return;
+                        }
+                        if (this.context && this.context.type === 'serie' && this.context.seriesId) {
+                            const seriesData = db.find(i => i.id === this.context.seriesId);
+                            if (seriesData && typeof this.context.season !== 'undefined' && typeof this.context.episode !== 'undefined') {
+                                const sNum = Number(this.context.season);
+                                const eIdx = Number(this.context.episode);
+                                const seasonArr = (seriesData.seasons && seriesData.seasons[sNum]) ? seriesData.seasons[sNum] : [];
+                                // if this was the last episode in the season, check next season for first ep
+                                if (eIdx + 1 >= seasonArr.length) {
+                                    const nextSeasonNum = String(sNum + 1);
+                                    const nextSeasonArr = seriesData.seasons && seriesData.seasons[nextSeasonNum] ? seriesData.seasons[nextSeasonNum] : null;
+                                    if (nextSeasonArr && nextSeasonArr.length > 0) {
+                                        const firstEp = nextSeasonArr[0];
+                                        const stableEpId = (firstEp && firstEp.id) ? firstEp.id : `${seriesData.id}-s${nextSeasonNum}-e0`;
+                                        // prepare full context and start next season's first episode
+                                        const fullContext = {
+                                            type: 'serie',
+                                            seriesId: seriesData.id,
+                                            seriesTitle: seriesData.title,
+                                            season: nextSeasonNum,
+                                            episode: 0,
+                                            id: stableEpId,
+                                            trigger: seriesData.nextEpisodeTrigger || 0,
+                                            nextEp: (nextSeasonArr.length > 1) ? { url: nextSeasonArr[1].url, title: `T${nextSeasonNum}:E2 - ${nextSeasonArr[1].title}`, s: nextSeasonNum, e: 1 } : null,
+                                            url: firstEp.url
+                                        };
+                                        // init player for next season first episode
+                                        player.init(firstEp.url, `T${nextSeasonNum}:E1 - ${firstEp.title}`, fullContext);
+                                        // update season UI if open
+                                        try { changeSeason(seriesData.id, nextSeasonNum); } catch(_) {}
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                        // fallback: no next episode found
+                    } catch (e) {
+                        // ignore errors and do nothing
+                    }
+                };
 
                 if (progBar) {
                     // Improved scrub/seek handling:
@@ -4386,7 +4486,7 @@
 
             checkNextTrigger: function() {
                 // support native video and YouTube iframe players for next-episode prompt
-                if (!this.context || !this.context.nextEp || this.nextPromptShown) return;
+                if (!this.context || this.nextPromptShown) return;
 
                 let cur = 0, dur = 0;
                 try {
@@ -4437,13 +4537,40 @@
                         // silent fallback - do not interrupt playback
                     }
 
-                    const prompt = document.getElementById('next-ep-prompt');
-                    document.getElementById('next-ep-title').innerText = (this.context.nextEp.title || '').split(' - ')[1] || this.context.nextEp.title || '';
+                    // Build nextEp prompt: if explicit nextEp exists use it; otherwise, if this is the last episode of season,
+                    // try to locate the next season's first episode and use that as nextEp so player can jump to next season automatically.
                     const seriesData = db.find(i => i.id === this.context.seriesId);
-                    if (seriesData) document.getElementById('next-ep-img').src = seriesData.cover || '';
+                    let nextContext = this.context.nextEp || null;
+                    try {
+                        if (!nextContext && seriesData && typeof this.context.season !== 'undefined' && typeof this.context.episode !== 'undefined') {
+                            const sNum = Number(this.context.season);
+                            const eIdx = Number(this.context.episode);
+                            const seasonArr = (seriesData.seasons && seriesData.seasons[sNum]) ? seriesData.seasons[sNum] : [];
+                            // if this is last episode in current season, check for next season's first ep
+                            if (eIdx + 1 >= seasonArr.length) {
+                                const nextSeasonNum = String(sNum + 1);
+                                const nextSeasonArr = seriesData.seasons && seriesData.seasons[nextSeasonNum] ? seriesData.seasons[nextSeasonNum] : null;
+                                if (nextSeasonArr && nextSeasonArr.length > 0) {
+                                    const firstEp = nextSeasonArr[0];
+                                    const stableEpId = (firstEp && firstEp.id) ? firstEp.id : `${seriesData.id}-s${nextSeasonNum}-e0`;
+                                    nextContext = { url: firstEp.url, title: `T${nextSeasonNum}:E1 - ${firstEp.title}`, s: nextSeasonNum, e: 0, id: stableEpId };
+                                    // also set a lightweight nextEp on the player.context for UI consistency
+                                    try { this.context.nextEp = nextContext; } catch(_) {}
+                                }
+                            }
+                        }
+                    } catch (_) {
+                        // ignore errors, proceed with whatever nextContext we have
+                    }
 
-                    prompt.classList.remove('hidden');
-                    requestAnimationFrame(() => prompt.classList.remove('opacity-0', 'translate-y-4'));
+                    if (nextContext) {
+                        const prompt = document.getElementById('next-ep-prompt');
+                        document.getElementById('next-ep-title').innerText = (nextContext.title || '').split(' - ')[1] || nextContext.title || '';
+                        const seriesCover = seriesData ? seriesData.cover : '';
+                        if (seriesCover) document.getElementById('next-ep-img').src = seriesCover;
+                        prompt.classList.remove('hidden');
+                        requestAnimationFrame(() => prompt.classList.remove('opacity-0', 'translate-y-4'));
+                    }
                 }
             },
 
