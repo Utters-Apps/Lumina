@@ -5,7 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#09090b">
+    <!-- Restrict which origins may embed this page (defense-in-depth). Browsers that respect CSP will honor this. -->
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://websim.com https://utters-apps.github.io/Lumina/;">
     <meta name="application-name" content="Lumina">
+
+    <!-- Anti-iframe guard: if running inside a frame not from an allowed origin, break out immediately.
+         Uses a safe try/catch to detect parent origin; if origin cannot be read, it will fallback to postMessage hint
+         and then force top to about:blank to avoid silent framing. -->
+    <script>
+        (function(){
+            try {
+                // If not framed, nothing to do.
+                if (window.top === window) return;
+                var allowed = {
+                    "https://websim.com": true,
+                    "https://utters-apps.github.io": true,
+                    "https://utters-apps.github.io/Lumina/": true
+                };
+
+                // Attempt to determine parent's origin in a robust way.
+                var parentOrigin = null;
+                try {
+                    // Accessing parent.location.origin may throw if cross-origin; guard with try/catch.
+                    if (window.parent && window.parent.location && window.parent.location.origin) {
+                        parentOrigin = window.parent.location.origin;
+                    }
+                } catch (e) {
+                    // If we cannot read parent origin, attempt to use document.referrer (may be empty or full path).
+                    try {
+                        if (document.referrer) {
+                            var refUrl = new URL(document.referrer);
+                            parentOrigin = refUrl.origin;
+                        }
+                    } catch (ee) {
+                        parentOrigin = null;
+                    }
+                }
+
+                // Normalize to allow both exact origin and exact allowed embed URL for github pages variant
+                var ok = false;
+                if (parentOrigin && allowed[parentOrigin]) ok = true;
+
+                // Also tolerate the exact full embed URL for the GitHub Pages path if referrer included full path
+                try {
+                    if (!ok && document.referrer) {
+                        var r = document.referrer.replace(/\/+$/,'');
+                        if (r === 'https://utters-apps.github.io/Lumina' || r === 'https://utters-apps.github.io/Lumina/') ok = true;
+                    }
+                } catch(e){}
+
+                if (!ok) {
+                    // Defensive actions to prevent framing:
+                    // 1) remove body to avoid rendering any sensitive UI
+                    try { document.documentElement.innerHTML = '<meta name=\"robots\" content=\"noindex,nofollow\">'; } catch(_) {}
+                    // 2) attempt to navigate top window away (best effort)
+                    try { window.top.location.href = 'about:blank'; } catch (e) {
+                        // 3) if navigation blocked, post a message to parent and then set self location to about:blank
+                        try { window.parent.postMessage({ type: 'lumina-blocked-embed' }, '*'); } catch(_) {}
+                        try { window.location.replace('about:blank'); } catch(_) {}
+                    }
+                }
+            } catch (err) {
+                // Always fail-safe: if unexpected error, try to neutralize visible UI
+                try { document.documentElement.style.display = 'none'; } catch(_) {}
+            }
+        })();
+    </script>
     <title>Lumina</title>
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
@@ -1239,12 +1304,50 @@
                     3: [
                         { title: "Amor", url: "https://www.dropbox.com/scl/fi/lra6xqui7xueqnzl4tt71/s3ep1.mp4?rlkey=445birdi6294yz3etif91jh3y&st=vll7b3p6&raw=1" },
                         { title: "Casa", url: "https://www.dropbox.com/scl/fi/3o4e5w1c7z86ppw5rqn27/s3ep2.mp4?rlkey=7n2j1k69ruwxkpb7ba1o3227z&st=ei6oa00z&raw=1" },
-                        { title: "Conversa", url: "https://www.dropbox.com/scl/fi/32enlxrbe0rosbor3bdfb/s3ep3.mp4?rlkey=anchyonm7vsntcy7ege6odhyg&st=qbahfqf8&raw=1" },
-                        { title: "Jornada", url: "https://www.dropbox.com/scl/fi/cg5lyxtcts5n6it9bb88c/s3ep4.mp4?rlkey=vcpj4ntwco5d64dr3uq4owbxt&st=gp6skkq2&raw=1" },
-                        { title: "Inverno", url: "https://www.dropbox.com/scl/fi/g6ojpy3y9gxx33qcdbqt3/s3ep5.mp4?rlkey=3c57srzpeigxtm3m5eylyytr0&st=6sm7w82q&raw=1" },
-                        { title: "Corpo", url: "https://www.dropbox.com/scl/fi/9tfzztdl4ktpoddc21zz9/s3e6.mp4?rlkey=vmw4ljjub9t0mq9hgm7ee4xdw&st=w9nlqt7o&raw=1" },
-                        { title: "Juntos", url: "https://www.dropbox.com/scl/fi/v7b02t9w2kta87vigdqnp/s3e7.mp4?rlkey=rzhkjo9hagywzungczlym4eq6&st=fwosp8ha&raw=1" },
-                        { title: "Separados", url: "https://www.dropbox.com/scl/fi/6wgapdfa5rkwuciw3ldfh/s3e8.mp4?rlkey=j4s070fgdlyjxkxgv807hfqb7&st=jnjibqjo&raw=1" }
+                        { title: "Conversa", url: "https://www.dropbox.com/scl/fi/b9i71slr3ddjgrzkhd6oh/s3ep3.mp4?rlkey=kzkp8kkzsgles2gtrvmk3cr1u&st=cyc4ixri&raw=1" },
+                        { title: "Jornada", url: "https://www.dropbox.com/scl/fi/cubs77s0mu0jzejkeywvh/s3ep4.mp4?rlkey=rdn1xwvwft2zi937u0x0cofx3&st=ww1o9sk9&raw=1" },
+                        { title: "Inverno", url: "https://www.dropbox.com/scl/fi/2tg8j6mf0a32u4sgkqd1o/s3ep5.mp4?rlkey=pa9lbw03rxgihzf8u5uhlxqv4&st=cu7qnihr&raw=1" },
+                        { title: "Corpo", url: "https://www.dropbox.com/scl/fi/wibgnkw11tt0yy9gt4qha/s3e6.mp4?rlkey=56s4o3v4isjutz6cagcb4h06f&st=90z4hrss&raw=1" },
+                        { title: "Juntos", url: "https://www.dropbox.com/scl/fi/fog552nye68kzb0u17mgm/s3e7.mp4?rlkey=4wlcxjsxqpy3j1vcla831quhv&st=u7yzrfeu&raw=1" },
+                        { title: "Separados", url: "https://www.dropbox.com/scl/fi/6vrxnaxau9fqbfrikdltc/s3e8.mp4?rlkey=dc28luvh1b2ehre7ft1gxss6r&st=zgi0rhhb&raw=1" }
+                    ]
+                }
+            },
+            {
+                id: 'one-piece-live',
+                title: 'One Piece: A Série',
+                originalTitle: 'One Piece',
+                type: 'serie',
+                category: 'Ação, Aventura, Fantasia, Piratas',
+                year: '2023',
+                cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABQoanayG9s_bmksLG_ns99SBRD5jng7a7SjSmSv0qZjdrHEaR9_jr3R8Zk_9coOaarTAubYV67HGQk6xNkGIZBX8flnwTVIFx2uB.jpg?r=71c',
+                description: 'A série acompanha o jovem pirata Monkey D. Luffy, que sonha em se tornar o Rei dos Piratas. Após comer uma fruta misteriosa que lhe concede poderes elásticos, ele parte para o mar em busca do lendário tesouro One Piece, formando uma tripulação com novos amigos enquanto enfrenta piratas perigosos, a Marinha e segredos do mundo.',
+                ageRating: '16',
+                creators: ['Steven Maeda', 'Matt Owens'],
+                executiveProducers: ['Eiichiro Oda','Steven Maeda','Matt Owens','Marty Adelstein','Becky Clements'],
+                originalPlatform: 'Netflix',
+                nextEpisodeTrigger: 30,
+                tags: ['Nova Temporada'],
+                seasons: {
+                    1: [
+                        { title: "O amanhecer de uma aventura", url: "https://www.dropbox.com/scl/fi/0ioji1hyg1btpgvkzz1j7/1-1-2.mp4?rlkey=nda7bc4s0zr9tbaeblu60b6vf&st=x5355pp9&raw=1" },
+                        { title: "O homem do chapéu de palha", url: "" },
+                        { title: "O contador de histórias", url: "" },
+                        { title: "Os piratas estão vindo", url: "" },
+                        { title: "Venha comer no Baratie!", url: "" },
+                        { title: "O chef e o faz-tudo", url: "" },
+                        { title: "A garota com a tatuagem de peixe-serra", url: "" },
+                        { title: "O mais procurado do East Blue", url: "" }
+                    ],
+                    2: [
+                        { title: "O início e o fim", url: "" },
+                        { title: "A balada da baleia", url: "" },
+                        { title: "Não pisque em Whisky Peak", url: "" },
+                        { title: "Problemas gigantes em Little Garden", url: "" },
+                        { title: "Não vale fazer cera", url: "" },
+                        { title: "Querida Nami", url: "" },
+                        { title: "O médico e a rena", url: "" },
+                        { title: "Batalha pelo Reino de Drum", url: "" }
                     ]
                 }
             },
