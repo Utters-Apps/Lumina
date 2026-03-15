@@ -3741,11 +3741,25 @@
                     // clear any previous load timeout
                     if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
 
-                    // Determine appropriate timeout: longer for Dropbox links (16s), otherwise 7s
+                    // Determine appropriate timeout: longer for Dropbox links (16s), otherwise 7s.
+                    // Special-case: episodes 2..8 (indices 1..7) of season 1 for series 'one-piece-live' get 15s.
                     let watchdogDelay = 7000;
                     try {
                         const lower = String(url || '').toLowerCase();
-                        if (lower.includes('dropbox.com')) watchdogDelay = 16000;
+                        // If this playback request targets one-piece-live S1 episodes 2..8, give 15s
+                        try {
+                            const isOnePiece = this.context && this.context.seriesId === 'one-piece-live';
+                            const seasonStr = this.context && (typeof this.context.season !== 'undefined') ? String(this.context.season) : null;
+                            const episodeIdx = (typeof this.context !== 'undefined' && typeof this.context.episode !== 'undefined') ? Number(this.context.episode) : NaN;
+                            if (isOnePiece && seasonStr === '1' && !isNaN(episodeIdx) && episodeIdx >= 1 && episodeIdx <= 7) {
+                                watchdogDelay = 15000;
+                            } else if (lower.includes('dropbox.com')) {
+                                // Dropbox links can be slow: 16s
+                                watchdogDelay = 16000;
+                            }
+                        } catch (inner) {
+                            if (lower.includes('dropbox.com')) watchdogDelay = 16000;
+                        }
                     } catch (e) { /* ignore and use default */ }
 
                     this.loadTimeout = setTimeout(() => {
