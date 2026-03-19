@@ -448,13 +448,89 @@
             white-space: nowrap;
         }
         .card-badge.small { padding: 4px 8px; font-size: 10px; }
-        .badge-purple { background: linear-gradient(90deg,#8b5cf6,#7c3aed); color:#fff; }
-        .badge-red    { background: linear-gradient(90deg,#ef4444,#dc2626); color:#fff; }
-        .badge-green  { background: linear-gradient(90deg,#34d399,#10b981); color:#042912; }
-        .badge-yellow { background: linear-gradient(90deg,#facc15,#f59e0b); color:#081004; }
-        .badge-blue   { background: linear-gradient(90deg,#60a5fa,#3b82f6); color:#04112a; }
-        .badge-pink   { background: linear-gradient(90deg,#fb7185,#f43f5e); color:#23010b; }
-        .badge-gray   { background: linear-gradient(90deg,#e5e7eb,#d1d5db); color:#081018; }
+        /* Enhanced badge palette with subtle glass, soft glow and accessible contrasts */
+        .badge-indigo { background: linear-gradient(90deg,#6366f1 0%, #7c3aed 100%); color: #fff; box-shadow: 0 6px 18px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-rose   { background: linear-gradient(90deg,#ff7ab6 0%, #fb7185 100%); color:#2b0014; box-shadow: 0 6px 18px rgba(255,122,182,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-amber  { background: linear-gradient(90deg,#f59e0b 0%, #facc15 100%); color: #081004; box-shadow: 0 6px 18px rgba(245,158,11,0.10), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .badge-cyan   { background: linear-gradient(90deg,#06b6d4 0%, #22d3ee 100%); color: #02262a; box-shadow: 0 6px 18px rgba(6,182,212,0.10), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .badge-emerald { background: linear-gradient(90deg,#34d399 0%, #10b981 100%); color: #042912; box-shadow: 0 6px 18px rgba(16,185,129,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-teal   { background: linear-gradient(90deg,#2dd4bf 0%, #06b6d4 100%); color: #002b2b; box-shadow: 0 6px 18px rgba(45,212,191,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-orange { background: linear-gradient(90deg,#fb923c 0%, #f97316 100%); color: #2b0f00; box-shadow: 0 6px 18px rgba(249,115,22,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-blue   { background: linear-gradient(90deg,#60a5fa 0%, #3b82f6 100%); color:#04112a; box-shadow: 0 6px 18px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-pink   { background: linear-gradient(90deg,#fb7185 0%, #f43f5e 100%); color:#23010b; box-shadow: 0 6px 18px rgba(244,63,94,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-red    { background: linear-gradient(90deg,#ff6b6b 0%, #ef4444 100%); color:#fff; box-shadow: 0 6px 18px rgba(239,68,38,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-gray   { background: linear-gradient(90deg,#f3f4f6 0%, #e5e7eb 100%); color:#081018; box-shadow: 0 6px 18px rgba(15,15,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6); }
+
+        /* Distinct "Take" palette — rich gradients, non-muted, each take has its own elegant tint */
+        .badge-take1 { background: linear-gradient(90deg,#ff9a8b 0%, #ff6a88 50%, #ff4771 100%); color: #0b0410; box-shadow: 0 10px 30px rgba(255,74,110,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take2 { background: linear-gradient(90deg,#ffd27f 0%, #ffb86b 50%, #ff9f4f 100%); color: #141005; box-shadow: 0 10px 30px rgba(255,168,75,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take3 { background: linear-gradient(90deg,#ffe28a 0%, #d4ff8a 50%, #9effc7 100%); color: #04220f; box-shadow: 0 10px 30px rgba(140,230,145,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-take4 { background: linear-gradient(90deg,#8be9ff 0%, #57c7ff 50%, #2fa4ff 100%); color: #001526; box-shadow: 0 10px 30px rgba(45,180,255,0.10), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take5 { background: linear-gradient(90deg,#caa1ff 0%, #a36bff 50%, #6f3dff 100%); color: #0c0022; box-shadow: 0 10px 30px rgba(120,70,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take6 { background: linear-gradient(90deg,#ffb3f2 0%, #ff84d1 50%, #ff57b5 100%); color: #1a0011; box-shadow: 0 10px 30px rgba(255,85,165,0.10), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take7 { background: linear-gradient(90deg,#a8ffcf 0%, #6fffb3 50%, #3fe998 100%); color: #04220f; box-shadow: 0 10px 30px rgba(90,220,160,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-take8 { background: linear-gradient(90deg,#ffd1a9 0%, #ffb67a 50%, #ff944f 100%); color: #201005; box-shadow: 0 10px 30px rgba(255,142,75,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+
+        /* Slight size tweak for take badges so they feel distinctive */
+        .card-badge.badge-take1, .card-badge.badge-take2, .card-badge.badge-take3,
+        .card-badge.badge-take4, .card-badge.badge-take5, .card-badge.badge-take6,
+        .card-badge.badge-take7, .card-badge.badge-take8 {
+            padding-left: 10px; padding-right: 10px; font-weight: 800;
+            text-transform: none;
+        }
+
+        /* New thematic badges: Classic, Remake and Live Action — slightly larger glass, subtle rim and soft glow */
+        .badge-classic {
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 10px 30px rgba(157,51,255,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+            background-image: linear-gradient(90deg,#f3ec78 0%, #f7d794 50%, #e6bea6 100%);
+            color: #081017;
+            font-weight: 800;
+        }
+        .badge-remake {
+            background: linear-gradient(90deg,#fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+            color: #20120a;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(250,204,21,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .badge-liveaction {
+            background: linear-gradient(90deg,#111827 0%, #0b1220 60%, #0f1724 100%);
+            color: #ffd9b3;
+            border: 1px solid rgba(255,217,179,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 6px 20px rgba(255,173,51,0.06);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            font-weight: 800;
+            padding-left: 10px; padding-right: 10px;
+        }
+
+        /* Keep previous small variations supported */
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #0b0b0b;
+            border-radius: 999px;
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.04);
+            pointer-events: none;
+            transform-origin: left top;
+            white-space: nowrap;
+        }
+        .card-badge.small { padding: 4px 8px; font-size: 10px; }
 
         /* ensure badge scales nicely on hover and doesn't break layout */
         .aspect-video .card-badge { transform: translateZ(0); transition: transform 220ms cubic-bezier(0.16,1,0.3,1), opacity 180ms; }
@@ -958,7 +1034,7 @@
                 cover: 'https://cdn.oantagonista.com/uploads/2024/08/Divertida-Mente-2-entra-top-10-de-bilheterias-da-historia.jpg',
                 description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
                 ageRating: '10',
-                url: 'https://drive.google.com/file/d/1-qpXor4EgfGwNzxNmETa3PriyCwLH7SM/preview'
+                url: 'https://www.dropbox.com/scl/fi/52txzjif5aydz9lhm0jpo/Divertida-Mente-2.mp4?rlkey=0qb4kpi7tlecwiu0oxngoxt0f&st=jv5n3jij&raw=1'
             },
             {
                 id: 'miraculous-ladybug',
@@ -1249,7 +1325,49 @@
                 production: 'Disney Branded Television',
                 productionNote: 'Distribuidora / Publicadora: Disney Branded Television / Disney Channel',
                 cast: ['Zed','Addison'],
-                url: 'https://www.tokyvideo.com/br/embed/765869'
+                url: 'https://www.dropbox.com/scl/fi/2gnl6j49cuf48fyhvo5m1/Zombies.4.mp4?rlkey=0j73q1s00bjdbeauifx3tjgcg&st=r7gwga4f&raw=1'
+            },
+            {
+                id: 'zombies',
+                title: 'Zombies',
+                originalTitle: 'Zombies',
+                type: 'filme',
+                category: 'Musical / Romance / Comédia / Fantasia / Família',
+                year: '2018',
+                yearBR: '2018',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/b07f1003-36cc-4ba3-a0f2-2f960206c86f/compose?aspectRatio=1.78&format=webp&width=1200',
+                description: 'Em uma cidade onde humanos e zumbis vivem separados, Zed, um zumbi, e Addison, uma líder de torcida humana, se aproximam e desafiam o preconceito entre os dois grupos, tentando provar que podem conviver em harmonia.',
+                ageRating: 'L',
+                distributor: 'Disney Channel / Disney+',
+                production: 'Disney Branded Television',
+                tags: ['Musical','Família'],
+                url: 'https://www.dropbox.com/scl/fi/cgsoyhwjhaafs2zaumd04/Zombies-480P.mp4?rlkey=eoa3131k9ee1fur6294yzw726&st=up8jkl0w&raw=1'
+            },
+            {
+                id: 'zombies-2',
+                title: 'Zombies 2',
+                type: 'filme',
+                category: 'Musical / Romance / Comédia / Fantasia / Família',
+                year: '2020',
+                cover: 'https://i.ytimg.com/vi/Spk0zJNqCKU/maxresdefault.jpg',
+                description: 'Após a convivência entre humanos e zumbis começar a se estabilizar, uma nova ameaça surge com a chegada dos lobisomens. Zed e Addison precisam unir os grupos rivais e evitar um novo conflito enquanto enfrentam desafios de identidade e pertencimento.',
+                ageRating: 'L',
+                distributor: 'Disney Channel / Disney+',
+                production: 'Disney Branded Television',
+                url: 'https://www.dropbox.com/scl/fi/ia3sv97bcf09xp43001c0/Zombies.2.2020-Hd.mp4?rlkey=gnae538tgqwagt3jng0v7le56&st=b1tt9iza&raw=1'
+            },
+            {
+                id: 'zombies-3',
+                title: 'Zombies 3',
+                type: 'filme',
+                category: 'Musical / Romance / Comédia / Ficção científica / Fantasia / Família',
+                year: '2022',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/db5ca0516ff1c7f470a8e4d6efbc12b5b8062ef92aca215fa84fb9d3088d53a5._SX1080_FMjpg_.jpg',
+                description: 'Quando uma nave alienígena chega à cidade de Seabrook, Zed e Addison precisam lidar com a presença de extraterrestres que podem ameaçar a paz conquistada. Enquanto tentam ajudar os novos visitantes, eles enfrentam desafios que podem mudar o futuro de todos.',
+                ageRating: 'L',
+                distributor: 'Disney+ / Disney Channel',
+                production: 'Disney Branded Television',
+                url: 'https://www.dropbox.com/scl/fi/s9cg96p5oyg68wt3lul41/Zombies.3-480P.mp4?rlkey=lqbhk156za7kat4eu5a6lzgf6&st=1k60llto&raw=1'
             },
             {
                 id: 'super-mario-2023',
@@ -1386,7 +1504,7 @@
                 cover: 'https://businessisjammin.ca/wp-content/uploads/2021/02/soul-poster-fi-e1573147724188.jpg',
                 description: 'Joe Gardner é um professor de música que recebe a chance de tocar no melhor clube de jazz da cidade, mas um pequeno passo em falso o leva das ruas de Nova York para o Pré-Vida.',
                 ageRating: '10',
-                url: 'https://drive.google.com/file/d/1wixB2432TFKEhWy_N6b374VRHldoUX0b/preview'
+                url: 'https://www.dropbox.com/scl/fi/grpsdlanqwe4uuece2c9r/Soul.mp4?rlkey=nsloinuu541dwyhbsaazipczz&st=h5hcr2om&raw=1'
             },
             {
                 id: 'divertida-mente-1',
@@ -1419,7 +1537,7 @@
                 cover: 'https://ingresso-a.akamaihd.net/b2b/production/uploads/article/image/1856/46d22a5f31d4977a391b2e1a8e9ebc21.jpg',
                 description: 'Mike Schmidt, um segurança noturno problemático que aceita um emprego na abandonada Pizzaria Freddy Fazbear para cuidar de sua irmã mais nova, Abby.',
                 ageRating: '14',
-                url: 'https://embedplayer1.xyz/video/f2fedf501c8f8271e520e3301cc25605'
+                url: 'https://www.dropbox.com/scl/fi/lnwynwjmed0gkwpq5plsl/Five.Nights.At.Freddys.O.Pesadelo.Sem.Fim.2023-Hd.mp4?rlkey=aq5kv92zsqw5kdpxcehqfz20h&st=ij51pnak&raw=1'
             },
             {
                 id: 'fnaf-2',
@@ -1463,7 +1581,7 @@
                 cover: 'https://s2-techtudo.glbimg.com/6ixSt7jyxXN9ci-oLYls8wbcKk0=/0x0:1080x652/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/w/K/fuKxsITtGc8hv1htCkPw/20190628-spiderman001.webp',
                 description: 'Peter Parker viaja pela Europa com amigos, mas logo enfrenta perigos quando novas ameaças interdimensionais aparecem.',
                 ageRating: '10',
-                url: 'https://drive.google.com/file/d/1W2r4WnajcJR3Vwbz1q2yzwmCgt3WANlu/view?usp=sharing'
+                url: 'https://www.dropbox.com/scl/fi/7uii8bxj7o83ag6ughc3n/Homem-Aranha-2-Longe-De-Casa-2019-Dublado-SeriesZoiudo.mp4?rlkey=b11vwoa59gwpjrdxb6a4l7pmz&st=csr3bezl&raw=1'
             },
             {
                 id: 'outer-banks',
@@ -1534,7 +1652,7 @@
                 cover: 'https://m.media-amazon.com/images/S/pv-target-images/a8d4b023bc418eaf7583a9336843c8c0b341d4ceec6d341e3308a293ad8baadf._SX1080_FMjpg_.jpg',
                 description: 'Uma aventura alucinante quando a turma de South Park é lançada por acidente em múltiplos universos paralelos.',
                 ageRating: '16',
-                url: 'https://www.tokyvideo.com/br/embed/639806'
+                url: 'https://www.dropbox.com/scl/fi/kbek8rogmax8p0ggubu4k/Pandeverso.mp4?rlkey=6psn3kj9bjo7dpjrbvobgch2n&st=54hiy3hj&raw=1'
             },
             {
                 id: 'it-bem-vindos-a-derry',
@@ -1567,7 +1685,7 @@
                 cover: 'https://images.justwatch.com/backdrop/333384494/s640/demon-slayer-kimetsu-no-yaiba-infinity-castle',
                 description: 'Tanjiro e seus aliados enfrentam a ameaça dos Dez Lendários Lua para salvar Nezuko e acabar com o reinado de terror dos demônios.',
                 ageRating: '18',
-                url: 'https://drive.google.com/file/d/1NveQ-a7JXkArdeHdedqy_DPPYgF2S3en/view?usp=sharing'
+                url: 'https://www.dropbox.com/scl/fi/ekad4zzvqvw74yba25z7x/Demon-Slayer-Kimetsu-No-Yaiba-Castelo-Infinito.mp4?rlkey=9fepnj37fl9q1i62wk4gfqk39&st=rqr4bt67&raw=1'
             },
             {
                 id: 'round-6',
@@ -1992,7 +2110,7 @@
                 cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABccXgqXjgC0o-ud2hGqkysjV8V0ij3sXQxmmqZ99kxjKx94xoigeHgXolIeIiFQCgolwKcektQP-D30bVrHAl3q2PVwLOleXyUwf.jpg?r=f12',
                 description: 'Em uma pacata cidade da Califórnia, um assassino mascarado fanático por filmes de terror assombra estudantes com telefonemas e violência brutal.',
                 ratings: { imdb: 7.4, rottenTomatoes: 77 },
-                url: 'https://www.tokyvideo.com/br/embed/737193'
+                url: 'https://www.dropbox.com/scl/fi/ioxcukt5h8le1pux4r75v/P-nico.mp4?rlkey=yonc6tmrclp5fc0ftxw113zf0&st=4nlu6974&raw=1'
             },
             {
                 id: 'scream-2-1997',
@@ -2005,7 +2123,7 @@
                 cover: 'https://static.ndmais.com.br/2022/01/panico-2.jpg',
                 description: 'Dois anos após os assassinatos em Woodsboro, Sidney e seus aliados enfrentam um novo Ghostface numa universidade enquanto tentam reconstruir suas vidas.',
                 ratings: { imdb: 6.3, rottenTomatoes: 82 },
-                url: 'https://www.tokyvideo.com/br/embed/737207'
+                url: 'https://www.dropbox.com/scl/fi/kbt9ru1h8rufqtddks33w/P-nico2.mp4?rlkey=7zs7n8a07ljqoxbek0xqmvqao&st=v61yzcoe&raw=1'
             },
             {
                 id: 'scream-3-2000',
@@ -2018,7 +2136,7 @@
                 cover: 'https://cinepop.com.br/wp-content/uploads/2020/05/p%C3%A2nico-3-1.png',
                 description: 'Sidney é atraída para Hollywood quando um novo Ghostface começa a matar o elenco de um filme baseado nos assassinatos de Woodsboro.',
                 ratings: { imdb: 5.6, rottenTomatoes: 44 },
-                url: 'https://www.tokyvideo.com/br/embed/737234'
+                url: 'https://www.dropbox.com/scl/fi/txh34vnsmubgmxexnjtj3/Scream-3.mp4?rlkey=dk2q8s1omdrh031h06k07cwdz&st=b08mxbmp&raw=1'
             },
             {
                 id: 'scream-4-2011',
@@ -2044,7 +2162,7 @@
                 cover: 'https://tm.ibxk.com.br/2022/01/13/13093300424066.jpg',
                 description: 'Vinte e cinco anos após os crimes originais, um novo Ghostface persegue um grupo de adolescentes em Woodsboro, reacesando segredos do passado mortal da cidade.',
                 ratings: { imdb: 6.3, rottenTomatoes: 76 },
-                url: 'https://www.tokyvideo.com/br/embed/738053'
+                url: 'https://www.dropbox.com/scl/fi/qygkl6a5orfkn4h9e1tmw/Scream-5.mp4?rlkey=9aujtyh9i5fmz2bhc0oqapvsq&st=e3vla0if&raw=1'
             },
             {
                 id: 'scream-6-2023',
@@ -2255,6 +2373,73 @@
                 url: 'https://www.dropbox.com/scl/fi/rfc5fpxg0iazl4ufdogbp/Moana-Um-Mar-De-Aventuras-2016-Dublado-1080P.mp4?rlkey=otg5vzozc7gksgi5bc61ym4th&st=fhg11zpl&raw=1'
             },
             {
+                id: 'como-treinar-o-seu-dragao',
+                title: 'Como Treinar o Seu Dragão',
+                originalTitle: 'How to Train Your Dragon',
+                type: 'filme',
+                category: 'Animação, Aventura, Fantasia, Família',
+                year: '2010',
+                yearBR: '2010',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/e30b59549dac1e89d0d4dbe6c1ffb1f81c499c4d9be764c50a846f797b10a3f1.jpg',
+                description: 'Soluço, um jovem viking, vive em uma vila onde dragões são inimigos. Ao capturar um raro dragão chamado Banguela, ele descobre que essas criaturas não são tão perigosas quanto parecem, mudando completamente a forma como seu povo vê os dragões.',
+                ageRating: 'L',
+                distributor: 'Paramount Pictures',
+                production: 'DreamWorks Animation',
+                tags: ['Clássico','Família'],
+                url: 'https://www.dropbox.com/scl/fi/iwqubballkr3wxgefcvpb/Como.Treinar.O.Seu.Dragao-Hd.mp4?rlkey=02sb7rh7nkkqk0nd0q4hxmqrp&st=0jcf833k&raw=1'
+            },
+            {
+                id: 'como-treinar-o-seu-dragao-2025',
+                title: 'Como Treinar o Seu Dragão',
+                originalTitle: 'How to Train Your Dragon',
+                type: 'filme',
+                category: 'Aventura, Fantasia, Ação, Família',
+                year: '2025',
+                yearBR: '2025',
+                cover: 'https://i.ytimg.com/vi/n_U-67WfHp0/maxresdefault.jpg',
+                description: 'Soluço, um jovem viking que não se encaixa nas tradições de sua vila, captura um raro dragão chamado Banguela, mas decide libertá-lo. Ao criar uma amizade inesperada, ele descobre que humanos e dragões podem viver em paz e tenta mudar a forma como seu povo vê essas criaturas.',
+                ageRating: '10',
+                distributor: 'Universal Pictures',
+                production: 'DreamWorks Animation / Marc Platt Productions',
+                director: 'Dean DeBlois',
+                duration: '125 minutos',
+                tags: ['Remake','Live‑action'],
+                url: 'https://www.dropbox.com/scl/fi/0dimyh3zv7k3ynf49cbb0/Cm.Tr.Drg.25-Hd.mp4?rlkey=oxto4r5ks6ybc4pu53jmt5mjx&st=t7oirif0&raw=1'
+            },
+            {
+                id: 'como-treinar-o-seu-dragao-2',
+                title: 'Como Treinar o Seu Dragão 2',
+                originalTitle: 'How to Train Your Dragon 2',
+                type: 'filme',
+                category: 'Animação, Aventura, Fantasia, Ação, Família',
+                year: '2014',
+                yearBR: '2014',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/cb3c95400a3fb3ad7da19ca4c0bbacb2eb7dbf5df9e749fb673aa0e5c22f1dae._UR1920,1080_.jpg',
+                description: 'Anos após unir vikings e dragões, Soluço e Banguela exploram novos territórios e descobrem uma ameaça perigosa liderada por um conquistador que controla dragões. Durante a jornada, Soluço também encontra uma figura importante de seu passado, mudando seu destino para sempre.',
+                ageRating: 'L',
+                distributor: '20th Century Fox',
+                production: 'DreamWorks Animation',
+                tags: ['Clássico','Família','Aventura'],
+                url: 'https://www.dropbox.com/scl/fi/yqlwwshs1aj9ittck6b6s/Como.Treinar.Dragao.2-Hd.mp4?rlkey=dhx2qkuppuoc7f44xfjyy71d2&st=iy7gdosw&raw=1'
+            },
+            {
+                id: 'como-treinar-o-seu-dragao-3',
+                title: 'Como Treinar o Seu Dragão 3',
+                originalTitle: 'How to Train Your Dragon: The Hidden World',
+                type: 'filme',
+                category: 'Animação, Aventura, Fantasia, Ação, Família',
+                year: '2019',
+                yearBR: '2019',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/05f7a467f762a37b7e3794d4ca0e1ccdc1e7abbc5a545a27a77c4540c078d505.jpg',
+                description: 'Soluço, agora líder de Berk, enfrenta um novo inimigo que ameaça os dragões. Ao mesmo tempo, Banguela conhece uma fêmea de sua espécie, levando Soluço a tomar uma difícil decisão para proteger seus amigos e o futuro dos dragões.',
+                ageRating: 'L',
+                distributor: 'Universal Pictures',
+                production: 'DreamWorks Animation',
+                yearBRNote: '2019 (Brasil)',
+                tags: ['Clássico','Família'],
+                url: 'https://www.dropbox.com/scl/fi/iddtmfzpqwz4ottnl4ik9/Como.Treinar.Dragao.3-Hd.mp4?rlkey=v42w571a3kdm3az6p2cw8i7ek&st=vzofkz6z&raw=1'
+            },
+            {
                 id: 'superman-2025',
                 title: 'Superman',
                 originalTitle: 'Superman',
@@ -2274,6 +2459,24 @@
                 tags: ['Lançamento','Gods and Monsters'],
                 notes: 'Estreia no Brasil em 10 de julho de 2025. Marca o início do novo Universo DC (DCU) dirigido por James Gunn e Peter Safran — capítulo "Gods and Monsters".',
                 url: 'https://www.dropbox.com/scl/fi/1jqpzu7n6glwqfdi3thgx/Sprman.mp4?rlkey=yb4ydorajku6bqzh6k35o4e0e&st=ym2cvjhn&raw=1'
+            }
+        ,
+            {
+                id: 'descendentes-ascensao-de-copas',
+                title: 'Descendentes: A Ascensão de Copas',
+                originalTitle: 'Descendants: The Rise of Red',
+                type: 'filme',
+                category: 'Musical / Fantasia / Aventura / Família',
+                year: '2024',
+                yearBR: '2024',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/406504fe034c701b554907c01c4962666fc82a9710fdc5d6eb166a5fdd3ec9d4.jpg',
+                description: 'Red, filha da Rainha de Copas, e Chloe, filha da Cinderela, precisam unir forças quando um golpe ameaça o reino de Auradon; elas viajam no tempo para tentar mudar o evento que levou a Rainha de Copas a se tornar vilã.',
+                ageRating: 'L',
+                distributor: 'Disney+ / Disney Channel',
+                production: 'Disney Branded Television',
+                yearBRNote: 'Lançamento em 12 de julho de 2024 no Disney+',
+                tags: ['Musical','Família'],
+                url: 'https://www.dropbox.com/scl/fi/7ypz7e4092l5lhhf7r9ih/Theriseofred.mp4?rlkey=93gog1rlx8kbw55np0lu51993&st=xlkocn66&raw=1'
             }
         ];
 
@@ -5959,13 +6162,28 @@
                 const tag = (item.tags && Array.isArray(item.tags) && item.tags.length) ? item.tags[0] : null;
                 const tagToClass = (t) => {
                     if (!t) return 'badge-gray';
-                    const key = String(t).toLowerCase();
-                    if (/lan(ç|c)amento|lançamento|lancamento|novo/i.test(key)) return 'badge-purple';
-                    if (/popular|em alta|destaque/i.test(key)) return 'badge-red';
-                    if (/nova temporada|temporada/i.test(key)) return 'badge-yellow';
-                    if (/novo episodio|novo episódio|episodio|episódio/i.test(key)) return 'badge-blue';
-                    if (/exclusivo/i.test(key)) return 'badge-pink';
-                    if (/comédia|comedia|família|aventura/i.test(key)) return 'badge-green';
+                    const key = String(t).toLowerCase().trim();
+
+                    // support "Take 1" .. "Take 8" (and variants like "take1", "take-3")
+                    const takeMatch = key.match(/take[\s\-]*(\d+)/i);
+                    if (takeMatch) {
+                        let idx = parseInt(takeMatch[1], 10) || 1;
+                        idx = Math.max(1, Math.min(8, idx)); // clamp 1..8
+                        return `badge-take${idx}`;
+                    }
+
+                    // curated keyword -> badge mapping (wider palette and friendlier tints)
+                    if (/lan(ç|c)amento|lançamento|lancamento|novo|estreia/i.test(key)) return 'badge-indigo';
+                    if (/popular|em alta|destaque|top|hit/i.test(key)) return 'badge-rose';
+                    if (/nova temporada|temporada/i.test(key)) return 'badge-amber';
+                    if (/novo episodio|novo episódio|episodio|episódio|episódio novo/i.test(key)) return 'badge-cyan';
+                    if (/exclusivo|exclusiva/i.test(key)) return 'badge-pink';
+                    if (/comédia|comedia|família|aventura|família/i.test(key)) return 'badge-emerald';
+                    if (/animação|animação|animaçao|anima/i.test(key)) return 'badge-teal';
+                    if (/ação|acao|aventura/i.test(key)) return 'badge-orange';
+                    if (/série|serie|temporada/i.test(key)) return 'badge-indigo';
+                    if (/recomendado|recomendação|recomendado para você/i.test(key)) return 'badge-blue';
+                    // fallback
                     return 'badge-gray';
                 };
 
@@ -7320,31 +7538,71 @@
             function rotateTagsTick() {
                 try {
                     if (!Array.isArray(window.db)) return;
-                    // choose 4 items to update (or fewer if db small)
+                    const now = Date.now();
+                    const FIFTEEN_DAYS_MS = 15 * 24 * 60 * 60 * 1000;
+
+                    // Purge stale tags older than 15 days using per-item tagMeta map
+                    try {
+                        window.db.forEach(item => {
+                            if (!item || !Array.isArray(item.tags)) return;
+                            if (!item.tagMeta || typeof item.tagMeta !== 'object') item.tagMeta = {};
+                            // build new tags list keeping only recent ones
+                            const kept = [];
+                            item.tags.forEach(t => {
+                                const ts = item.tagMeta && item.tagMeta[t] ? item.tagMeta[t] : 0;
+                                if (now - ts <= FIFTEEN_DAYS_MS) kept.push(t);
+                                else {
+                                    // cleanup metadata for removed tag
+                                    try { delete item.tagMeta[t]; } catch(_) {}
+                                }
+                            });
+                            // replace tags only if changed
+                            if (kept.length !== item.tags.length || kept.some((v,i)=> v !== item.tags[i])) {
+                                item.tags = kept;
+                            }
+                        });
+                    } catch (purgeErr) {
+                        // non-blocking: continue to rotation even if purge fails
+                        console.warn('rotateTagsTick purge failed', purgeErr);
+                    }
+
+                    // choose up to 4 items to update (or fewer if db small)
                     const pickCount = Math.min(4, Math.max(1, Math.floor(window.db.length * 0.06)));
                     const dbCopy = window.db.slice();
                     for (let i=0;i<pickCount;i++) {
                         const idx = Math.floor(Math.random()*dbCopy.length);
                         const item = dbCopy.splice(idx,1)[0];
                         if (!item) continue;
+                        // ensure structures exist
+                        if (!Array.isArray(item.tags)) item.tags = [];
+                        if (!item.tagMeta || typeof item.tagMeta !== 'object') item.tagMeta = {};
+
                         // randomly decide to add, remove or replace tags
                         const mode = Math.random();
-                        if (!Array.isArray(item.tags)) item.tags = [];
                         if (mode < 0.35 && item.tags.length > 0) {
-                            // remove one random tag
+                            // remove one random tag and its metadata
                             const removeIdx = Math.floor(Math.random()*item.tags.length);
                             const removed = item.tags.splice(removeIdx,1)[0];
+                            try { delete item.tagMeta[removed]; } catch(_) {}
                             if (NOTIFY_ON_CHANGE) notifyChange(`${item.title} perdeu a tag "${removed}"`);
                         } else {
                             // add or replace
                             const n = 1 + Math.floor(Math.random() * Math.min(MAX_BADGES_PER_ITEM, 2));
                             const picks = sample(BADGE_POOL, n);
-                            // merge unique
-                            const merged = Array.from(new Set([...(item.tags||[]), ...picks])).slice(0, MAX_BADGES_PER_ITEM);
+                            // merge unique and cap
+                            const mergedSet = new Set([...(item.tags||[]), ...picks]);
+                            const merged = Array.from(mergedSet).slice(0, MAX_BADGES_PER_ITEM);
                             item.tags = merged;
+                            // timestamp new/kept tags
+                            merged.forEach(tag => {
+                                if (!item.tagMeta[tag]) item.tagMeta[tag] = now;
+                            });
+                            // remove metadata keys no longer present
+                            Object.keys(item.tagMeta).forEach(k => { if (item.tags.indexOf(k) === -1) try { delete item.tagMeta[k]; } catch(_) {} });
                             if (NOTIFY_ON_CHANGE) notifyChange(`${item.title} agora tem: ${merged.join(', ')}`);
                         }
                     }
+
                     // Re-render active lists to reflect tag changes without full reload
                     try {
                         if (state.tab === 'home') {
