@@ -26,7 +26,7 @@ const PRECACHE_URLS = [
 const STATIC_EXT = /\.(?:js|css|png|jpg|jpeg|webp|svg|gif|woff2?|ttf|ico)$/i;
 
 // resources considered "media" (prefer network)
-const MEDIA_HOSTS = ['dropbox.com', 'player.odycdn.com', 'drive.google.com'];
+const MEDIA_HOSTS = ['dropbox.com', 'player.odycdn.com', 'drive.google.com', 'youtube.com', 'www.youtube.com', 'youtu.be'];
 
 // Install: pre-cache core shell
 self.addEventListener('install', (event) => {
@@ -115,7 +115,13 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Media / CDN hosts -> network-first (long timeout)
+  // Treat direct .mp4 requests as network-first to ensure large media isn't served stale or blocked by SW
+  if (url.pathname && /\.mp4(\?|$)/i.test(url.pathname)) {
+    event.respondWith(networkFirst(req));
+    return;
+  }
+
+  // Media / CDN hosts (including YouTube/short links) -> network-first (long timeout)
   if (MEDIA_HOSTS.some(h => url.hostname.includes(h)) || url.search) {
     event.respondWith(networkFirst(req));
     return;
