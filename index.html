@@ -11,7 +11,7 @@
 
       <script src="https://cdn.tailwindcss.com"></script>
     <!-- PWA Manifest (local) -->
-    <link rel="manifest" href="./manifest.json">
+    <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="./style.css">
 
     <!-- Anti-iframe guard (soft): allow embedding for authorized hosts and avoid forcing top navigation.
@@ -109,8 +109,8 @@
         })();
     </script>
     <title>Lumina</title>
-    <link rel="icon" href="./fiveicon.png" sizes="32x32">
-    <link rel="apple-touch-icon" href="./fiveicon-512.png">
+    <link rel="icon" href="fiveicon.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="fiveicon-512.png">
     <!-- PWA / Theme -->
     <meta name="theme-color" content="#09090b">
     <meta name="msapplication-TileColor" content="#09090b">
@@ -442,7 +442,7 @@
                                 <i class="ph ph-forward text-lg"></i>
                             </button>
                             <button id="pip-btn" onclick="togglePiP()" class="text-white hover:text-white/70 transition-colors" title="Picture-in-Picture" aria-label="Picture-in-Picture">
-                                <img src="./PiPicon.png" alt="PiP" class="w-5 h-5 object-contain">
+                                <img src="PiPicon.png" alt="PiP" class="w-5 h-5 object-contain">
                             </button>
 
                             <!-- Cast / Presentation API launcher removed from bottom controls (use top-cast button next to Close) -->
@@ -7169,7 +7169,7 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').then(reg => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
                     console.log('SW registered:', reg.scope);
                 }).catch(err => {
                     console.warn('SW registration failed:', err);
@@ -7410,7 +7410,7 @@
         <div id="android-install-card" class="glass" role="document">
             <div class="liquid-hero">
                 <div class="liquid-icon">
-                    <img src="./fiveicon-512.png" alt="Lumina">
+                    <img src="fiveicon-512.png" alt="Lumina">
                 </div>
                 <div style="flex:1;min-width:0">
                     <div class="liquid-title">Baixar Lumina</div>
