@@ -1,106 +1,148 @@
-const CACHE_NAME = 'lumina-v2';
-const OFFLINE_URL = '/';
-const ASSETS_TO_CACHE = [
-  '/',
+/**
+ * Service Worker for Lumina (2026 best-practices)
+ *
+ * Strategy:
+ * - Navigation (document) requests: Network-first -> fallback to cached navigation shell (ensures fresh content)
+ * - Static assets (CSS/JS/Images/fonts): Stale-while-revalidate (serve cache immediately and refresh in background)
+ * - Media files (big video files / CDN links with query): Network-first and fall back to cache if offline
+ *
+ * Notes:
+ * - Cache names versioned so updates rotate caches cleanly.
+ * - Small in-memory routing helpers keep fetch handler readable.
+ */
+
+const CACHE_VERSION = 'v1';
+const PRECACHE = `lumina-precache-${CACHE_VERSION}`;
+const RUNTIME = `lumina-runtime-${CACHE_VERSION}`;
+const NAV_CACHE_KEY = '/index.html'; // navigation fallback (app shell)
+const PRECACHE_URLS = [
+  '/', 
   '/index.html',
   '/manifest.json',
   '/fiveicon.png',
-  '/fiveicon-512.png',
-  // fonts & external assets are best-effort; keep minimal to avoid large cache
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap'
+  '/fiveicon-512.png'
 ];
 
+// resources considered "static" for stale-while-revalidate
+const STATIC_EXT = /\.(?:js|css|png|jpg|jpeg|webp|svg|gif|woff2?|ttf|ico)$/i;
+
+// resources considered "media" (prefer network)
+const MEDIA_HOSTS = ['dropbox.com', 'player.odycdn.com', 'drive.google.com'];
+
+// Install: pre-cache core shell
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE.map(url => new Request(url, { cache: 'reload' }))).catch(() => {
-        // ignore errors adding some remote assets
-        return cache.add(OFFLINE_URL).catch(()=>{});
-      });
-    })
+    caches.open(PRECACHE).then(cache => cache.addAll(PRECACHE_URLS.map(u => new Request(u, { cache: 'reload' }))))
   );
 });
 
+// Activate: cleanup old caches
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    (async () => {
-      // remove old caches
-      const keys = await caches.keys();
-      await Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)));
-      if (self.clients && clients.claim) await clients.claim();
-    })()
-  );
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(k => ![PRECACHE, RUNTIME].includes(k)).map(k => caches.delete(k)));
+    try { await self.clients.claim(); } catch (_) {}
+  })());
 });
 
+// Utility: respond with stale-while-revalidate
+async function staleWhileRevalidate(request) {
+  const cache = await caches.open(RUNTIME);
+  const cached = await cache.match(request);
+  const networkPromise = fetch(request).then(networkRes => {
+    if (networkRes && networkRes.ok) cache.put(request, networkRes.clone()).catch(()=>{});
+    return networkRes;
+  }).catch(()=>null);
+
+  // return cache immediately if available, otherwise wait network
+  return cached || (await networkPromise) || new Response('', { status: 503, statusText: 'Service Unavailable' });
+}
+
+// Utility: network-first with cache fallback
+async function networkFirst(request, cacheKeyOverride) {
+  const cache = await caches.open(RUNTIME);
+  try {
+    const networkResponse = await fetch(request.clone());
+    if (networkResponse && networkResponse.ok) {
+      cache.put(cacheKeyOverride || request, networkResponse.clone()).catch(()=>{});
+      return networkResponse;
+    }
+    // if network responded but non-OK, fall back
+    const cached = await cache.match(cacheKeyOverride || request);
+    if (cached) return cached;
+    return networkResponse;
+  } catch (err) {
+    const cached = await cache.match(cacheKeyOverride || request);
+    if (cached) return cached;
+    // fallback to navigation shell if it's a navigation
+    if (request.mode === 'navigate') {
+      const pre = await caches.open(PRECACHE);
+      const shell = await pre.match(NAV_CACHE_KEY);
+      return shell || Response.error();
+    }
+    return Response.error();
+  }
+}
+
+// Main fetch handler
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  const url = new URL(req.url);
-
-  // only handle GET
+  // Only handle GET
   if (req.method !== 'GET') return;
 
-  // prefer network for navigation requests but fallback to cache (network-first for navigations)
-  if (event.request.mode === 'navigate') {
+  const url = new URL(req.url);
+
+  // Navigation (document) -> network-first, ensure app shell fallback
+  if (req.mode === 'navigate') {
     event.respondWith(
-      fetch(req).then(res => {
-        // put a copy into cache
-        const copy = res.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(OFFLINE_URL, copy));
-        return res;
-      }).catch(() => {
-        return caches.match(OFFLINE_URL);
-      })
+      (async () => {
+        const resp = await networkFirst(req, NAV_CACHE_KEY);
+        // if networkFirst returned a response that's not valid, fallback to precache shell
+        if (!resp || resp.status >= 500) {
+          const pre = await caches.open(PRECACHE);
+          const shell = await pre.match(NAV_CACHE_KEY);
+          return shell || new Response('<h1>Offline</h1>', { headers: { 'Content-Type': 'text/html' } });
+        }
+        return resp;
+      })()
     );
     return;
   }
 
-  // For other requests, use a network-first approach when the request includes query params
-  // or targets known media providers (e.g. Dropbox) to avoid serving stale URLs cached earlier.
-  event.respondWith((async () => {
-    try {
-      const isDropbox = url.hostname.includes('dropbox.com');
-      const hasQuery = !!url.search; // any query params present
-      // For navigation we handled above; for media-like requests prefer network-first when query or dropbox
-      if (isDropbox || hasQuery) {
-        try {
-          const networkResponse = await fetch(req.clone());
-          // update cache with fresh response if successful
-          if (networkResponse && networkResponse.status === 200) {
-            const copy = networkResponse.clone();
-            caches.open(CACHE_NAME).then(cache => {
-              try { cache.put(req, copy); } catch (e) {}
-            });
-          }
-          return networkResponse;
-        } catch (err) {
-          // network failed -> fallback to cache if available
-          const cached = await caches.match(req);
-          if (cached) return cached;
-          // fallback to offline root for images/documents
-          if (req.destination === 'image' || req.destination === 'document') {
-            return caches.match(OFFLINE_URL);
-          }
-          // otherwise throw to let browser handle
-          throw err;
-        }
-      }
+  // Static assets (js/css/images/fonts) -> stale-while-revalidate
+  if (STATIC_EXT.test(url.pathname) || url.origin === location.origin && url.pathname.startsWith('/assets/')) {
+    event.respondWith(staleWhileRevalidate(req));
+    return;
+  }
 
-      // Default: cache-first then network
-      const cached = await caches.match(req);
-      if (cached) return cached;
-      const networkRes = await fetch(req.clone());
-      if (networkRes && networkRes.status === 200) {
-        const clone = networkRes.clone();
-        caches.open(CACHE_NAME).then(cache => {
-          try { cache.put(req, clone); } catch(e) {}
-        });
+  // Media / CDN hosts -> network-first (long timeout)
+  if (MEDIA_HOSTS.some(h => url.hostname.includes(h)) || url.search) {
+    event.respondWith(networkFirst(req));
+    return;
+  }
+
+  // Default: try cache, then network, then precache fallback
+  event.respondWith((async () => {
+    const cache = await caches.open(RUNTIME);
+    const cached = await cache.match(req);
+    if (cached) return cached;
+    try {
+      const networkRes = await fetch(req);
+      if (networkRes && networkRes.ok) {
+        cache.put(req, networkRes.clone()).catch(()=>{});
+        return networkRes;
       }
-      return networkRes;
-    } catch (e) {
-      // final fallback
-      const fallback = await caches.match(OFFLINE_URL);
-      return fallback;
-    }
+    } catch (e) {}
+    // fallback to precache for safe assets
+    const pre = await caches.open(PRECACHE);
+    const shell = await pre.match(NAV_CACHE_KEY);
+    return shell || Response.error();
   })());
+});
+
+// Keep service worker alive during long-running operations if needed
+self.addEventListener('message', (event) => {
+  if (!event.data) return;
+  if (event.data.type === 'SKIP_WAITING') self.skipWaiting();
 });
