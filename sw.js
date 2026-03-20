@@ -110,7 +110,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Static assets (js/css/images/fonts) -> stale-while-revalidate
-  if (STATIC_EXT.test(url.pathname) || (url.origin === location.origin && url.pathname.startsWith('assets/'))) {
+  if (STATIC_EXT.test(url.pathname) || url.origin === location.origin && url.pathname.startsWith('/assets/')) {
     event.respondWith(staleWhileRevalidate(req));
     return;
   }
