@@ -13,7 +13,7 @@
     <!-- PWA Manifest (local) -->
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
-  
+
     <!-- Anti-iframe guard (soft): allow embedding for authorized hosts and avoid forcing top navigation.
          If embedding comes from an unknown origin we hide sensitive UI but do NOT force top navigation,
          which prevents breaking legitimate PWA or allowed-site integrations. -->
@@ -111,9 +111,6 @@
     <title>Lumina</title>
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
-    <!-- Web App Manifest -->
-    <link rel="manifest" href="manifest.json">
-
     <!-- PWA / Theme -->
     <meta name="theme-color" content="#09090b">
     <meta name="msapplication-TileColor" content="#09090b">
@@ -185,8 +182,7 @@
                 } catch(e){}
             }
 
-            // parse share param and try to match DB item id/title; this will run early but DB is defined later,
-            // so if DB isn't available yet we retry on DOMContentLoaded and after a short delay.
+            // parse share param and try to match DB item id/title; this will run early but DB is defined later in the page
             var shareSlug = null;
             try {
                 var params = new URLSearchParams(window.location.search || window.location.hash.replace('#','?'));
@@ -280,8 +276,6 @@
     </script>
 
     <!-- Splash styles moved to style.css -->
-    
-    <style>/* All page styles moved to style.css */</style>
 </head>
 <body class="antialiased select-none pb-24 md:pb-0">
 
@@ -1695,7 +1689,8 @@
                         { id: 'yt-s1-e4-Q9KWcWKo2T8', title: 'Um Dia a Máscara Cai', duration: 1533, url: 'https://www.youtube.com/embed/Q9KWcWKo2T8' },
                         { id: 'yt-s1-e5-mOvhHim78YA', title: 'Sem Título', duration: 1533, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
                         { id: 'yt-s1-e6-mOvhHim78YA-2', title: 'Todos Ganham Armas', duration: 2034, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
-                        { id: 'yt-s1-e7-oaOG1xOk7XY', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' }
+                        { id: 'yt-s1-e7-oaOG1xOk7XY', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' },
+                        { id: 'yt-s1-e8-DMNlzf8PiEM', title: 'hjsakldfhl', duration: 0, url: 'https://www.youtube.com/embed/DMNlzf8PiEM' }
                     ]
                 }
             },
