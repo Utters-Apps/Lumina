@@ -6791,16 +6791,26 @@
 
         // expose init on load (robust startup with graceful error handling and guaranteed listeners)
         (function robustInit() {
+            // Lightweight startup: render UI but avoid starting periodic/expensive tasks until user interacts.
             const safeInit = () => {
                 try {
-                    // Ensure nav listeners attached before first render
+                    // Attach nav listeners immediately
                     try { attachNavTabListeners(); } catch (e) { console.warn('attachNavTabListeners failed', e); }
-                    // Run main initialization
-                    init();
+
+                    // Render UI and insert lightweight footer so page is interactive fast
+                    try { renderView(); insertLegalFooter(); } catch (e) { console.warn('initial render failed', e); }
+
+                    // Load DB and minimal init without starting rotators/badge timers
+                    (async () => {
+                        try {
+                            await ensureDB();
+                        } catch (_) {}
+                        // Do not start heavy rotators until user engages — let init() finish light work
+                        try { init(); } catch (e) { console.warn('init() caught', e); }
+                    })();
                 } catch (err) {
-                    console.error('Lumina init failed:', err);
+                    console.error('Lumina safeInit failed:', err);
                     try {
-                        // best-effort fallback UI: render minimal view to avoid a blank page
                         state.tab = state.tab || 'home';
                         renderView();
                         insertLegalFooter();
@@ -6808,12 +6818,34 @@
                 }
             };
 
+            // Start heavy background tasks only after a first real user gesture to avoid CPU spikes on load and prevent background timers from running on backgrounded tabs.
+            const startDeferredBackgroundWork = () => {
+                try {
+                    // Run once and remove listeners
+                    window.removeEventListener('pointerdown', startDeferredBackgroundWork);
+                    window.removeEventListener('touchstart', startDeferredBackgroundWork);
+                    window.removeEventListener('click', startDeferredBackgroundWork);
+
+                    // Start rotators and badge timers gently
+                    try { startHeroRotate(); } catch (_) {}
+                    try { startHomeRotator(); } catch (_) {}
+                    try { startBadgeTimer(); } catch (_) {}
+
+                    // initialize notifications/badges that required user gesture
+                    try { if (typeof initBadgesAndNotifications === 'function') initBadgesAndNotifications(); } catch (_) {}
+                } catch (e) { console.warn('startDeferredBackgroundWork failed', e); }
+            };
+
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', safeInit);
             } else {
-                // DOM already ready
                 setTimeout(safeInit, 16);
             }
+
+            // Defer starting periodic heavy tasks until user interacts; this reduces startup CPU and avoids background throttling issues.
+            window.addEventListener('pointerdown', startDeferredBackgroundWork, { passive: true, once: true });
+            window.addEventListener('touchstart', startDeferredBackgroundWork, { passive: true, once: true });
+            window.addEventListener('click', startDeferredBackgroundWork, { passive: true, once: true });
 
             // Also protect against runtime errors that could break subsequent interactions
             window.addEventListener('error', (ev) => {
@@ -8277,5 +8309,180 @@
         })();
     </script>
 
+    <script>
+    // Resilient image loader: retries image loads using fetch (with timeout) and falls back to a neutral placeholder.
+    // This improves behavior on flaky/slow networks and handles cross-origin opaque responses gracefully.
+    (function(){
+        const PLACEHOLDER = '/fiveicon.png'; // local fallback
+        const MAX_RETRIES = 3;
+        const BASE_TIMEOUT = 5000; // 5s initial fetch timeout, will backoff
+
+        // helper: fetch with timeout returning a blob or null
+        async function fetchWithTimeout(url, timeoutMs) {
+            try {
+                const controller = new AbortController();
+                const id = setTimeout(() => controller.abort(), timeoutMs);
+                // prefer cors mode but allow no-cors fallback for opaque responses
+                const res = await fetch(url, { mode: 'cors', credentials: 'omit', signal: controller.signal });
+                clearTimeout(id);
+                if (res && res.ok) {
+                    const blob = await res.blob();
+                    return blob;
+                }
+                // try no-cors fallback (may return opaque response as blob)
+                try {
+                    const res2 = await fetch(url, { mode: 'no-cors', credentials: 'omit', signal: controller.signal });
+                    clearTimeout(id);
+                    if (res2) {
+                        // best-effort to obtain blob (may be empty opaque)
+                        try { return await res2.blob(); } catch(_) { return null; }
+                    }
+                } catch(_) {}
+                return null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // Attempt to replace src by fetching and creating object URL (avoids some browser caching oddities on flaky networks)
+        async function attemptLoadImg(img, attempt) {
+            const src = img.getAttribute('data-src') || img.getAttribute('src') || '';
+            if (!src) return false;
+            const timeout = BASE_TIMEOUT * Math.pow(1.6, Math.max(0, attempt - 1));
+            const blob = await fetchWithTimeout(src, Math.round(timeout));
+            if (blob) {
+                try {
+                    const objectUrl = URL.createObjectURL(blob);
+                    // set a temporary attribute so we can revoke later if needed
+                    img.__resilient_object_url = objectUrl;
+                    img.src = objectUrl;
+                    // mark loaded state
+                    img.dataset.resilientLoaded = '1';
+                    // revoke object URL later to avoid leaks
+                    setTimeout(() => { try { URL.revokeObjectURL(objectUrl); } catch(_) {} }, 60_000);
+                    return true;
+                } catch (e) {
+                    // fallback to direct src assignment
+                    try { img.src = src; img.dataset.resilientLoaded = '1'; return true; } catch(_) { return false; }
+                }
+            }
+            return false;
+        }
+
+        // Main retry loop for an image element
+        async function loadWithRetries(img) {
+            if (!img) return;
+            // avoid double-processing
+            if (img.dataset.resilientProcessing === '1') return;
+            img.dataset.resilientProcessing = '1';
+
+            // If data-src exists prefer it (renderers should set data-src when available)
+            const candidate = img.getAttribute('data-src') || img.getAttribute('src');
+            if (!candidate) {
+                img.src = PLACEHOLDER;
+                return;
+            }
+
+            for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+                // small progressive delay before retrying (first attempt immediate)
+                if (attempt > 1) await new Promise(r => setTimeout(r, 300 * attempt));
+                const ok = await attemptLoadImg(img, attempt);
+                if (ok) {
+                    // remove error handler after success
+                    try { img.removeEventListener('error', img.__resilientErrHandler); } catch(_) {}
+                    return;
+                }
+            }
+            // final fallback
+            try { img.src = PLACEHOLDER; img.dataset.resilientFailed = '1'; } catch(_) {}
+        }
+
+        // Global error handler: when any image errors, attempt resilient load
+        function onImgError(e) {
+            const img = e.currentTarget || e.target;
+            if (!img) return;
+            // if already attempted, let fallback handle
+            if (img.dataset.resilientLoaded === '1' || img.dataset.resilientFailed === '1') return;
+            // schedule retry flow
+            loadWithRetries(img).catch(()=>{ try { img.src = PLACEHOLDER; } catch(_){} });
+        }
+
+        // Attach observers to handle images inserted dynamically and existing images on page
+        function observeImages(root = document) {
+            // initial attach for existing images
+            const imgs = Array.from(root.querySelectorAll('img'));
+            imgs.forEach(img => {
+                // prefer not to override intentionally small placeholders
+                if (!img.getAttribute('data-src') && img.src) {
+                    // preserve existing src but also store original in data-src so loader can use fetch
+                    try { img.setAttribute('data-src', img.src); } catch(_) {}
+                }
+                // attach error listener only once
+                if (!img.__resilientBound) {
+                    img.__resilientBound = true;
+                    img.addEventListener('error', onImgError, { passive: true });
+                }
+            });
+        }
+
+        // Observe DOM mutations to bind new images automatically
+        const mo = new MutationObserver((mutations) => {
+            for (const m of mutations) {
+                if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
+                    m.addedNodes.forEach(node => {
+                        if (node.nodeType !== 1) return;
+                        if (node.tagName && node.tagName.toLowerCase() === 'img') {
+                            if (!node.__resilientBound) {
+                                node.__resilientBound = true;
+                                node.addEventListener('error', onImgError, { passive: true });
+                                // if image hasn't loaded in a timely manner, attempt resilient load after short delay
+                                setTimeout(() => { if (!node.complete || (node.naturalWidth === 0 && !node.dataset.resilientLoaded)) loadWithRetries(node); }, 600);
+                            }
+                        } else {
+                            // check inside subtree for images
+                            try { observeImages(node); } catch(_) {}
+                        }
+                    });
+                } else if (m.type === 'attributes' && m.target && m.target.tagName && m.target.tagName.toLowerCase() === 'img') {
+                    const img = m.target;
+                    if (!img.__resilientBound) {
+                        img.__resilientBound = true;
+                        img.addEventListener('error', onImgError, { passive: true });
+                    }
+                }
+            }
+        });
+
+        // Start observing the document body
+        try {
+            observeImages(document);
+            mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+        } catch (e) {
+            // last-resort: attach load handlers to window to attempt retries
+            window.addEventListener('error', (ev) => {
+                try {
+                    const target = ev && ev.target;
+                    if (target && target.tagName && target.tagName.toLowerCase() === 'img') {
+                        onImgError({ target });
+                    }
+                } catch(_) {}
+            }, true);
+        }
+
+        // Proactively attempt to retry images that are in a loading state after initial load (covers slow networks)
+        window.addEventListener('load', () => {
+            try {
+                const imgs = Array.from(document.images || []);
+                imgs.forEach(img => {
+                    if (!img.complete || img.naturalWidth === 0) {
+                        // schedule a retry attempt after a gentle delay
+                        setTimeout(() => loadWithRetries(img).catch(()=>{}), 900);
+                    }
+                });
+            } catch (_) {}
+        }, { passive: true });
+
+    })();
+    </script>
 </body>
 </html>
