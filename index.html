@@ -9,6 +9,10 @@
     <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://websim.com https://utters-apps.github.io/Lumina/;">
     <meta name="application-name" content="Lumina">
 
+      <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PWA Manifest - Updated with provided icon. For production, convert to Data URL with multiple sizes. -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJpY29ucyI6IFsKICAgIHsgInNyYyI6ICJpY29uZS5wbmciLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjoiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIiB9LAogICAgeyAic3JjIjogImZpdmVpY29uLnBuZyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIn0KICBdLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJzdGFydF91cmwiOiAiLiIsCiAgIm5hbWUiOiAiTHVtaW5hIiwKICAic2hvcnRfbmFtZSI6ICJMdW1pbmEiLAogICJkZXNjcmlwdGlvbiI6ICJTdHJlYW1pbmcgZGUgZmlsbWVzIGUgc8OpcmllcyIsCiAgInRoZW1lX2NvbG9yIjogIiMwOTA5MGIiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwOTA5MGIiCn0=">
+  
     <!-- Anti-iframe guard: if running inside a frame not from an allowed origin, break out immediately.
          Uses a safe try/catch to detect parent origin; if origin cannot be read, it will fallback to postMessage hint
          and then force top to about:blank to avoid silent framing. -->
@@ -8272,5 +8276,6 @@
             window.__lumina_ensure_footer = ensureFooter;
         })();
     </script>
+
 </body>
 </html>
