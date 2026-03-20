@@ -74,7 +74,27 @@
     <title>Lumina</title>
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
+    <!-- Web App Manifest -->
     <link rel="manifest" href="/manifest.json">
+
+    <!-- PWA / Theme -->
+    <meta name="theme-color" content="#09090b">
+    <meta name="msapplication-TileColor" content="#09090b">
+
+    <!-- iOS / Safari -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Lumina">
+    <link rel="apple-touch-icon" href="/fiveicon-512.png">
+
+    <!-- iOS splash screens (basic set) -->
+    <link rel="apple-touch-startup-image" href="/fiveicon-512.png">
+
+    <!-- Viewport & display hints -->
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Manifest hints to prefer standalone display on compatible browsers -->
+    <meta name="theme-color" content="#09090b">
     <!-- PWA / iOS integration: prefer app-like behavior and explicit touch icons -->
 
     <!-- Social preview defaults (OG / Twitter) -->
@@ -6576,32 +6596,193 @@
             } catch(e) { /* fail silently */ }
         }
 
-        // insert a small legal button at the end of Home and Search views (mobile-friendly & inside content)
+        // insert a small legal button and a "Surpreenda-me" pill at the end of Home and Search views (mobile-friendly & inside content)
         function insertLegalFooter() {
             try {
                 const container = document.getElementById('main-content');
                 if (!container) return;
-                // remove any existing injected button to avoid duplicates
+                // remove any existing injected area to avoid duplicates
                 const prev = document.getElementById('legal-footer-inserted');
                 if (prev) prev.remove();
 
                 // only show inside Home and Search
                 if (state.tab !== 'home' && state.tab !== 'search') return;
 
-                const btn = document.createElement('button');
-                btn.id = 'legal-footer-inserted';
-                btn.className = 'w-full md:w-auto mt-6 mb-8 md:mb-0 glass rounded-full px-4 py-2 text-xs text-white/70 hover:text-white transition-colors';
-                btn.innerText = 'Aviso Legal';
-                btn.onclick = (e) => { e.stopPropagation(); openLegal2(); };
-                // ensure it is placed visually at the end of the current content area
-                // for mobile we want it full-width; for desktop it'll look like a small pill
+                // create a compact footer with two side-by-side pill buttons
                 const wrapper = document.createElement('div');
-                wrapper.className = 'px-6 md:px-16';
-                wrapper.appendChild(btn);
+                wrapper.id = 'legal-footer-inserted';
+                wrapper.className = 'px-6 md:px-16 mt-6 mb-8 flex gap-3 items-center justify-center md:justify-start';
+
+                // improved visual: left small hint and right action pills
+                const leftInfo = document.createElement('div');
+                leftInfo.className = 'hidden md:flex items-center gap-3 text-white/60 text-sm';
+                leftInfo.innerHTML = `<i class="ph ph-gavel text-xl text-white/30"></i><span>Projeto de demonstração • Conteúdo de terceiros</span>`;
+
+                const pills = document.createElement('div');
+                pills.className = 'flex gap-3 flex-wrap';
+
+                const legalBtn = document.createElement('button');
+                legalBtn.className = 'glass px-4 py-2 rounded-full text-xs text-white/90 hover:text-white transition-colors flex items-center gap-2';
+                legalBtn.innerHTML = `<i class="ph ph-file-text text-sm"></i><span>Aviso Legal</span>`;
+                legalBtn.onclick = (e) => { e.stopPropagation(); openLegal2(); };
+
+                const surpriseBtn = document.createElement('button');
+                surpriseBtn.id = 'surprise-btn';
+                surpriseBtn.className = 'bg-accent px-4 py-2 rounded-full text-xs font-semibold text-black hover:bg-accentHover transition-colors flex items-center gap-2';
+                surpriseBtn.innerHTML = `<i class="ph ph-dice text-sm"></i><span>Surpreenda-me</span>`;
+                surpriseBtn.onclick = (e) => { e.stopPropagation(); surpriseMe(); };
+
+                pills.appendChild(surpriseBtn);
+                pills.appendChild(legalBtn);
+
+                wrapper.appendChild(leftInfo);
+                wrapper.appendChild(pills);
 
                 // append to container (end of content visible area)
                 container.appendChild(wrapper);
+
+                // small animation hint on first insert for discoverability
+                requestAnimationFrame(() => {
+                    try {
+                        wrapper.style.opacity = '0';
+                        wrapper.style.transform = 'translateY(6px)';
+                        wrapper.style.transition = 'opacity 360ms ease, transform 360ms cubic-bezier(0.16,1,0.3,1)';
+                        requestAnimationFrame(() => { wrapper.style.opacity = '1'; wrapper.style.transform = 'translateY(0)'; });
+                        setTimeout(() => { wrapper.style.transition = ''; wrapper.style.opacity = ''; wrapper.style.transform = ''; }, 520);
+                    } catch (e) {}
+                });
             } catch (e) { /* silent */ }
+        }
+
+        // Surpreenda-me: pick a random item weighted by user's favorite genres/history and play it immediately.
+        function surpriseMe() {
+            try {
+                // Build preferred genre set from favorites and history
+                const favGenres = new Set();
+                (state.favorites || []).forEach(fid => {
+                    try {
+                        const f = db.find(d => d.id === fid);
+                        if (!f || !f.category) return;
+                        f.category.split(/[,\/]| e | & /i).forEach(g => {
+                            const ng = String(g || '').toLowerCase().trim();
+                            if (ng) favGenres.add(ng);
+                        });
+                    } catch(_) {}
+                });
+
+                // also include genres from recently watched history items
+                Object.keys(state.history || {}).forEach(seriesId => {
+                    try {
+                        const h = state.history[seriesId];
+                        const s = db.find(d => d.id === seriesId);
+                        if (!s || !s.category) return;
+                        s.category.split(/[,\/]| e | & /i).forEach(g => {
+                            const ng = String(g || '').toLowerCase().trim();
+                            if (ng) favGenres.add(ng);
+                        });
+                    } catch(_) {}
+                });
+
+                // Build candidate pool: prefer items matching any preferred genre, fallback to whole DB
+                let pool = [];
+                if (favGenres.size > 0) {
+                    const arr = Array.from(favGenres);
+                    pool = db.filter(item => {
+                        try {
+                            const cat = (item.category || '').toLowerCase();
+                            return arr.some(g => g && cat.includes(g));
+                        } catch (e) { return false; }
+                    });
+                }
+                if (!Array.isArray(pool) || pool.length === 0) {
+                    // fallback: include recently viewed items and then everything
+                    const recentIds = Object.keys(state.history || {}).sort((a,b) => {
+                        const ta = (state.history[a] && state.history[a].timestamp) || 0;
+                        const tb = (state.history[b] && state.history[b].timestamp) || 0;
+                        return tb - ta;
+                    });
+                    pool = recentIds.map(id => db.find(d => d.id === id)).filter(Boolean);
+                    if (pool.length < 6) pool = pool.concat(db.filter(i => !pool.includes(i))).slice(0, Math.max(8, db.length));
+                }
+
+                // choose a random item from pool (weighted slightly by matching tags / popularity)
+                const scored = pool.map(item => {
+                    let score = 1;
+                    try { if (item.tags && item.tags.includes('Lançamento')) score += 2; } catch(_) {}
+                    try { if (item.ratings && item.ratings.imdb) score += Math.min(3, Math.floor((item.ratings.imdb || 0) / 3)); } catch(_) {}
+                    return { item, score };
+                });
+                const total = scored.reduce((s, x) => s + (x.score || 1), 0) || 1;
+                let pick = Math.random() * total;
+                let chosen = scored[0].item;
+                for (const s of scored) {
+                    pick -= s.score;
+                    if (pick <= 0) { chosen = s.item; break; }
+                }
+
+                if (!chosen) {
+                    showToast('Não foi possível encontrar algo agora. Tente novamente.', 2000);
+                    return;
+                }
+
+                // If chosen is a film: play its url; if series: prefer user's last watched episode or first ep
+                if (chosen.type === 'filme') {
+                    if (!chosen.url) {
+                        showToast('Desculpe, a mídia selecionada não está disponível.', 2000);
+                        return;
+                    }
+                    // build context similar to openDetails/requestPlay expectations
+                    const filmKey = chosen.id_ep || chosen.id;
+                    const ctx = { type: 'filme', id: filmKey || ('url:' + encodeURIComponent(chosen.url)), url: chosen.url };
+                    // ensure we're on home tab so player resources are available
+                    switchTab('home', false);
+                    setTimeout(() => requestPlay(chosen.url, chosen.title, ctx), 180);
+                    return;
+                } else if (chosen.type === 'serie') {
+                    // determine season/episode: prefer history entry
+                    const hist = state.history[chosen.id];
+                    let s = hist ? hist.s : null;
+                    let e = hist ? hist.e : null;
+                    if (s == null) {
+                        // pick first non-empty season
+                        const seasons = Object.keys(chosen.seasons || {});
+                        if (seasons.length) s = seasons[0];
+                        else s = '1';
+                        e = 0;
+                    }
+                    const seasonArr = chosen.seasons && chosen.seasons[s] ? chosen.seasons[s] : (chosen.seasons ? chosen.seasons[Object.keys(chosen.seasons)[0]] : []);
+                    const ep = (seasonArr && seasonArr[e]) ? seasonArr[e] : (seasonArr && seasonArr[0]) ? seasonArr[0] : null;
+                    if (!ep || !ep.url) {
+                        // fallback: find any episode with a url
+                        let found = null;
+                        if (chosen.seasons) {
+                            for (const ss of Object.keys(chosen.seasons)) {
+                                const arr = chosen.seasons[ss] || [];
+                                for (let ix=0; ix<arr.length; ix++) {
+                                    if (arr[ix] && arr[ix].url) { found = { s: ss, e: ix, ep: arr[ix] }; break; }
+                                }
+                                if (found) break;
+                            }
+                        }
+                        if (!found) {
+                            showToast('Episódio não disponível para reprodução.', 2000);
+                            return;
+                        }
+                        s = found.s; e = found.e; 
+                        ep = found.ep;
+                    }
+                    const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : `${chosen.id}-s${s}-e${e}`;
+                    const ctx = { type: 'serie', seriesId: chosen.id, seriesTitle: chosen.title, season: s, episode: e, id: stableEpId, trigger: chosen.nextEpisodeTrigger || 0, url: ep.url, introStart: ep.introStart || 0, introDuration: ep.introDuration || 0 };
+                    switchTab('home', false);
+                    setTimeout(() => requestPlay(ep.url, `T${s}:E${Number(e)+1} - ${ep.title}`, ctx), 220);
+                    return;
+                } else {
+                    showToast('Tipo de item desconhecido.', 1600);
+                }
+            } catch (e) {
+                console.warn('surpriseMe failed', e);
+                showToast('Erro ao escolher um item. Tente novamente.', 2000);
+            }
         }
 
         // expose init on load (robust startup with graceful error handling and guaranteed listeners)
@@ -7958,5 +8139,139 @@
             window.addEventListener('beforeunload', () => { try { clearInterval(window.__lumina_badge_timer); } catch(_) {} }, { passive: true });
         })();
     </script>
+    <style>
+        /* Enhanced Legal Modals — cleaner, centered card with stronger hierarchy and larger tap targets */
+        #legal-modal, #legal-modal-2 { display: none; align-items: center; justify-content: center; padding: 20px; }
+        #legal-modal:not(.hidden), #legal-modal-2:not(.hidden) { display: flex; }
+
+        /* Overlay */
+        #legal-modal > .absolute.inset-0,
+        #legal-modal-2 > .absolute.inset-0 {
+            transition: opacity 260ms ease;
+            opacity: 0;
+            will-change: opacity;
+            background: rgba(6,6,8,0.72);
+            backdrop-filter: blur(8px) saturate(120%);
+            -webkit-backdrop-filter: blur(8px) saturate(120%);
+        }
+
+        /* Card */
+        #legal-modal [data-legal-card],
+        #legal-modal-2 .relative.max-w-lg.w-full {
+            transform-origin: center center;
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            box-shadow: 0 18px 48px rgba(1,2,4,0.7);
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.04);
+            max-width: 740px;
+            width: 100%;
+            background: linear-gradient(180deg, rgba(17,17,19,0.86), rgba(9,9,11,0.98));
+        }
+
+        /* Card initial hidden state */
+        #legal-modal [data-legal-card] {
+            transform: translateY(10px) scale(0.995);
+            opacity: 0;
+            transition: transform 320ms cubic-bezier(0.16,1,0.3,1), opacity 240ms ease;
+            padding: 18px;
+        }
+
+        /* Open */
+        #legal-modal.modal-open > .absolute.inset-0 { opacity: 1; }
+        #legal-modal.modal-open [data-legal-card] {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* Closing */
+        #legal-modal.modal-closing > .absolute.inset-0 { opacity: 0; }
+        #legal-modal.modal-closing [data-legal-card] {
+            transform: translateY(10px) scale(0.995);
+            opacity: 0;
+            transition: transform 220ms cubic-bezier(0.22,0.9,0.29,1), opacity 160ms ease;
+        }
+
+        /* Tighter layout for the secondary modal too */
+        #legal-modal-2 .relative.max-w-lg.w-full { padding: 14px; transform: translateY(8px) scale(0.995); opacity: 0; transition: transform 300ms cubic-bezier(0.16,1,0.3,1), opacity 220ms ease; }
+        #legal-modal-2:not(.hidden) .relative.max-w-lg.w-full { transform: translateY(0) scale(1); opacity: 1; }
+
+        /* Buttons clear style */
+        #legal-modal .btn, #legal-modal-2 .btn { min-width: 92px; padding: 10px 12px; border-radius: 12px; }
+        #legal-modal .btn-primary, #legal-modal-2 .btn-primary { background: linear-gradient(90deg,#8b5cf6,#7c3aed); color: #050607; font-weight:700; }
+        #legal-modal .btn-ghost, #legal-modal-2 .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+
+        /* Responsive tweaks for small viewports */
+        @media (max-width: 520px) {
+            #legal-modal [data-legal-card], #legal-modal-2 .relative.max-w-lg.w-full { padding: 14px; border-radius: 14px; }
+            #legal-modal h3, #legal-modal-2 h3 { font-size: 16px; }
+            #legal-modal p, #legal-modal-2 p { font-size: 13px; }
+            #legal-modal .btn, #legal-modal-2 .btn { min-width: 84px; padding: 10px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #legal-modal [data-legal-card],
+            #legal-modal-2 .relative.max-w-lg.w-full,
+            #legal-modal > .absolute.inset-0,
+            #legal-modal-2 > .absolute.inset-0 { transition: none !important; transform: none !important; opacity: 1 !important; }
+        }
+    </style>
+
+    <script>
+        // Ensure the Legal footer (Aviso Legal + Surpreenda-me) is always present after player closes.
+        // Use MutationObserver to detect when the player modal becomes hidden and re-insert the footer.
+        (function(){
+            const playerModal = document.getElementById('player-modal');
+            if (!playerModal) return;
+
+            const ensureFooter = () => {
+                try {
+                    // insertLegalFooter is defined in the main script; call if available
+                    if (typeof insertLegalFooter === 'function') insertLegalFooter();
+                    else {
+                        // fallback: attempt to dispatch small event to trigger insertion via renderView when available
+                        try { document.dispatchEvent(new CustomEvent('lumina-ensure-legal-footer')); } catch(_) {}
+                    }
+                } catch (e) {}
+            };
+
+            // Observe attribute changes on the player modal (class changes)
+            const obs = new MutationObserver((mutations) => {
+                for (const m of mutations) {
+                    if (m.type === 'attributes' && m.attributeName === 'class') {
+                        const isHidden = playerModal.classList.contains('hidden') || playerModal.style.display === 'none';
+                        if (isHidden) {
+                            // defer slightly to let closing animations finish
+                            setTimeout(ensureFooter, 420);
+                        }
+                    }
+                }
+            });
+
+            try { obs.observe(playerModal, { attributes: true, attributeFilter: ['class', 'style'] }); } catch(e) {}
+
+            // Also attach a one-time event listener for the player's programmatic close shorthand (robust)
+            document.addEventListener('lumina-player-closed', ensureFooter);
+
+            // Defensive: re-insert when details modal closed as well (some flows hide both)
+            const details = document.getElementById('details-modal');
+            if (details) {
+                const detailsObs = new MutationObserver((mut) => {
+                    for (const m of mut) {
+                        if (m.type === 'attributes' && m.attributeName === 'class') {
+                            const hidden = details.classList.contains('hidden');
+                            if (hidden) setTimeout(ensureFooter, 300);
+                        }
+                    }
+                });
+                try { detailsObs.observe(details, { attributes: true, attributeFilter: ['class', 'style'] }); } catch(_) {}
+            }
+
+            // Expose manual re-insert function for debugging
+            window.__lumina_ensure_footer = ensureFooter;
+        })();
+    </script>
+
 </body>
 </html>
