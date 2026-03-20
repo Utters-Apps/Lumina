@@ -10,68 +10,99 @@
     <meta name="application-name" content="Lumina">
 
       <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PWA Manifest - Updated with provided icon. For production, convert to Data URL with multiple sizes. -->
-    <link rel="manifest" href="data:application/json;base64,ewogICJpY29ucyI6IFsKICAgIHsgInNyYyI6ICJpY29uZS5wbmciLCAic2l6ZXMiOiAiMTkyeDE5MiIsICJ0eXBlIjoiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIiB9LAogICAgeyAic3JjIjogImZpdmVpY29uLnBuZyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIn0KICBdLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJzdGFydF91cmwiOiAiLiIsCiAgIm5hbWUiOiAiTHVtaW5hIiwKICAic2hvcnRfbmFtZSI6ICJMdW1pbmEiLAogICJkZXNjcmlwdGlvbiI6ICJTdHJlYW1pbmcgZGUgZmlsbWVzIGUgc8OpcmllcyIsCiAgInRoZW1lX2NvbG9yIjogIiMwOTA5MGIiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwOTA5MGIiCn0=">
+    <link rel="manifest" href="manifest.json">
   
-    <!-- Anti-iframe guard: if running inside a frame not from an allowed origin, break out immediately.
-         Uses a safe try/catch to detect parent origin; if origin cannot be read, it will fallback to postMessage hint
-         and then force top to about:blank to avoid silent framing. -->
+    <!-- Anti-iframe guard (soft): allow embedding for authorized hosts and avoid forcing top navigation.
+         If embedding comes from an unknown origin we hide sensitive UI but do NOT force top navigation,
+         which prevents breaking legitimate PWA or allowed-site integrations. -->
     <script>
         (function(){
             try {
                 // If not framed, nothing to do.
                 if (window.top === window) return;
-                var allowed = {
+
+                // List of allowed parent origins (add more origins here if needed)
+                var allowedOrigins = {
                     "https://websim.com": true,
                     "https://utters-apps.github.io": true,
+                    "https://utters-apps.github.io/Lumina": true,
                     "https://utters-apps.github.io/Lumina/": true
                 };
 
-                // Attempt to determine parent's origin in a robust way.
+                // Try to determine parent origin; fall back to document.referrer (best-effort)
                 var parentOrigin = null;
                 try {
-                    // Accessing parent.location.origin may throw if cross-origin; guard with try/catch.
                     if (window.parent && window.parent.location && window.parent.location.origin) {
                         parentOrigin = window.parent.location.origin;
                     }
                 } catch (e) {
-                    // If we cannot read parent origin, attempt to use document.referrer (may be empty or full path).
                     try {
                         if (document.referrer) {
-                            var refUrl = new URL(document.referrer);
-                            parentOrigin = refUrl.origin;
+                            var ref = new URL(document.referrer);
+                            parentOrigin = ref.origin;
                         }
                     } catch (ee) {
                         parentOrigin = null;
                     }
                 }
 
-                // Normalize to allow both exact origin and exact allowed embed URL for github pages variant
-                var ok = false;
-                if (parentOrigin && allowed[parentOrigin]) ok = true;
+                // Helper: neutralize sensitive UI without breaking embedding
+                var neutralizeUI = function() {
+                    try {
+                        // hide interactive elements and remove potential inline scripts
+                        document.querySelectorAll('button, a, input, textarea, select, video, iframe').forEach(function(el){
+                            try { el.setAttribute('tabindex','-1'); el.style.pointerEvents = 'none'; } catch(_) {}
+                        });
+                        // remove player and details to avoid accidental media navigation
+                        try { var p = document.getElementById('player-modal'); if (p) p.classList.add('hidden'); } catch(_) {}
+                        try { var d = document.getElementById('details-modal'); if (d) d.classList.add('hidden'); } catch(_) {}
+                        // keep a minimal visible placeholder to avoid blank frames
+                        try {
+                            if (!document.getElementById('embedded-note')) {
+                                var note = document.createElement('div');
+                                note.id = 'embedded-note';
+                                note.style.position = 'absolute';
+                                note.style.inset = '0';
+                                note.style.display = 'flex';
+                                note.style.alignItems = 'center';
+                                note.style.justifyContent = 'center';
+                                note.style.background = 'rgba(9,9,11,0.9)';
+                                note.style.color = '#fff';
+                                note.style.fontFamily = 'Inter, sans-serif';
+                                note.style.fontSize = '14px';
+                                note.style.padding = '12px';
+                                note.innerText = 'Lumina incorporado neste site — algumas funcionalidades podem estar limitadas.';
+                                document.body.appendChild(note);
+                            }
+                        } catch(_) {}
+                    } catch(_) {}
+                };
 
-                // Also tolerate the exact full embed URL for the GitHub Pages path if referrer included full path
+                // If parentOrigin is known and allowed, do nothing (allow embedding).
+                if (parentOrigin && allowedOrigins[parentOrigin]) {
+                    // Allow embedding; nothing else needed.
+                    return;
+                }
+
+                // If referrer exactly matches a known allowed full path variant, allow as well
                 try {
-                    if (!ok && document.referrer) {
+                    if (document.referrer) {
                         var r = document.referrer.replace(/\/+$/,'');
-                        if (r === 'https://utters-apps.github.io/Lumina' || r === 'https://utters-apps.github.io/Lumina/') ok = true;
+                        if (r === 'https://utters-apps.github.io/Lumina' || r === 'https://utters-apps.github.io/Lumina/') return;
                     }
                 } catch(e){}
 
-                if (!ok) {
-                    // Defensive actions to prevent framing:
-                    // 1) remove body to avoid rendering any sensitive UI
-                    try { document.documentElement.innerHTML = '<meta name=\"robots\" content=\"noindex,nofollow\">'; } catch(_) {}
-                    // 2) attempt to navigate top window away (best effort)
-                    try { window.top.location.href = 'about:blank'; } catch (e) {
-                        // 3) if navigation blocked, post a message to parent and then set self location to about:blank
-                        try { window.parent.postMessage({ type: 'lumina-blocked-embed' }, '*'); } catch(_) {}
-                        try { window.location.replace('about:blank'); } catch(_) {}
-                    }
-                }
+                // Otherwise: SOFT-FALLBACK — do not break out or navigate top; instead neutralize interactive parts.
+                neutralizeUI();
+
+                // Post a friendly message to parent (best-effort) to help integrators diagnose embedding restrictions.
+                try { window.parent.postMessage({ type: 'lumina-embedded', origin: window.location.origin }, '*'); } catch(_) {}
+
             } catch (err) {
-                // Always fail-safe: if unexpected error, try to neutralize visible UI
-                try { document.documentElement.style.display = 'none'; } catch(_) {}
+                // Fail-safe: if something unexpected happens, avoid forcing navigation and just hide sensitive UI.
+                try {
+                    document.documentElement.style.display = 'none';
+                } catch(_) {}
             }
         })();
     </script>
@@ -79,7 +110,7 @@
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
     <!-- Web App Manifest -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
 
     <!-- PWA / Theme -->
     <meta name="theme-color" content="#09090b">
@@ -89,7 +120,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Lumina">
-    <link rel="apple-touch-icon" href="/fiveicon-512.png">
+    <link rel="apple-touch-icon" href="fiveicon-512.png">
 
     <!-- iOS splash screens (basic set) -->
     <link rel="apple-touch-startup-image" href="/fiveicon-512.png">
@@ -200,10 +231,10 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Lumina">
     <meta name="msapplication-TileColor" content="#09090b">
-    <meta name="msapplication-TileImage" content="/fiveicon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/fiveicon-512.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="/fiveicon.png">
-    <link rel="icon" href="/fiveicon.png" sizes="32x32">
+    <meta name="msapplication-TileImage" content="fiveicon.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="fiveicon-512.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="fiveicon.png">
+    <link rel="icon" href="fiveicon.png" sizes="32x32">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -7567,14 +7598,13 @@
     <!-- PWA: register service worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(reg => {
-                    console.log('SW registered:', reg.scope);
-                }).catch(err => {
-                    console.warn('SW registration failed:', err);
-                });
-            });
-        }
+      window.addEventListener('load', () => {
+        // O caminho './sw.js' assume que o arquivo está na mesma pasta que o index.html
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registrado com sucesso!', reg.scope))
+          .catch(err => console.log('Falha ao registrar o Service Worker:', err));
+      });
+    }
 
         // store beforeinstallprompt event for optional use by UI and notify installer helper
         window.deferredInstallPrompt = null;
