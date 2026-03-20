@@ -14,13 +14,12 @@
 const CACHE_VERSION = 'v1';
 const PRECACHE = `lumina-precache-${CACHE_VERSION}`;
 const RUNTIME = `lumina-runtime-${CACHE_VERSION}`;
-const NAV_CACHE_KEY = '/index.html'; // navigation fallback (app shell)
+const NAV_CACHE_KEY = 'index.html'; // navigation fallback (app shell)
 const PRECACHE_URLS = [
-  '/', 
-  '/index.html',
-  '/manifest.json',
-  '/fiveicon.png',
-  '/fiveicon-512.png'
+  'index.html',
+  'manifest.json',
+  'fiveicon.png',
+  'fiveicon-512.png'
 ];
 
 // resources considered "static" for stale-while-revalidate
@@ -111,7 +110,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Static assets (js/css/images/fonts) -> stale-while-revalidate
-  if (STATIC_EXT.test(url.pathname) || url.origin === location.origin && url.pathname.startsWith('/assets/')) {
+  if (STATIC_EXT.test(url.pathname) || (url.origin === location.origin && url.pathname.startsWith('assets/'))) {
     event.respondWith(staleWhileRevalidate(req));
     return;
   }
