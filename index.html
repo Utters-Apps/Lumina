@@ -9,20 +9,8 @@
     <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://websim.com https://utters-apps.github.io/Lumina/;">
     <meta name="application-name" content="Lumina">
 
-      <style>
-      /* Critical minimal styling to avoid flash-of-unstyled-content (FOUC)
-         Provides base colors, fonts fallback, and basic layout so the app
-         appears correctly styled even if external CSS/JS is delayed or blocked. */
-      :root { color-scheme: dark; --bg:#09090b; --panel:#161618; --muted:#9ca3af; --accent:#8b5cf6; }
-      html,body{height:100%;margin:0;padding:0;background:var(--bg);color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased;}
-      a{color:var(--accent);text-decoration:none}
-      img{max-width:100%;display:block}
-      .glass{background:rgba(24,24,27,0.6);backdrop-filter:blur(8px)}
-      nav,main,footer{box-sizing:border-box}
-      /* Keep splash visible area centered and avoid layout jump */
-      #splash-screen{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at center,#0a0a0c,#050505);color:#fff;width:100%;height:100vh}
-    </style>
-    <script src="https://cdn.tailwindcss.com"></script>
+      <script src="https://cdn.tailwindcss.com"></script>
+    <!-- PWA Manifest (local) -->
     <link rel="manifest" href="manifest.json">
   
     <!-- Anti-iframe guard (soft): allow embedding for authorized hosts and avoid forcing top navigation.
@@ -248,6 +236,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="fiveicon-512.png">
     <link rel="apple-touch-icon" sizes="152x152" href="fiveicon.png">
     <link rel="icon" href="fiveicon.png" sizes="32x32">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Phosphor Icons (Modern & Clean Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -7608,13 +7599,14 @@
     <!-- PWA: register service worker -->
     <script>
         if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        // O caminho './sw.js' assume que o arquivo está na mesma pasta que o index.html
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('Service Worker registrado com sucesso!', reg.scope))
-          .catch(err => console.log('Falha ao registrar o Service Worker:', err));
-      });
-    }
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(reg => {
+                    console.log('SW registered:', reg.scope);
+                }).catch(err => {
+                    console.warn('SW registration failed:', err);
+                });
+            });
+        }
 
         // store beforeinstallprompt event for optional use by UI and notify installer helper
         window.deferredInstallPrompt = null;
@@ -8522,142 +8514,6 @@
             } catch (_) {}
         }, { passive: true });
 
-    })();
-    </script>
-
-    <!-- Resilient style fallback: if the page loads unstyled (or when coming from bfcache), inject inline styles as a safe fallback.
-         This collects any <style> blocks already in <head> and applies them as a single fallback style element.
-         It also listens for stylesheet load/error and for pageshow (bfcache) events. -->
-    <script>
-    (function(){
-        function isLikelyUnstyled() {
-            try {
-                // Check a handful of critical computed styles; if body background is transparent and font-family fallback used,
-                // we assume the main styling failed to apply.
-                var cs = window.getComputedStyle(document.body);
-                if (!cs) return false;
-                var bg = cs.backgroundColor || '';
-                if (bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent' || bg.trim() === '') {
-                    // also check a font fallback signature (generic sans-serif fallback)
-                    var font = (cs.fontFamily || '').toLowerCase();
-                    if (!font || /serif|fantasy|monospace/.test(font)) return true;
-                    // if background transparent but font looks ok, still treat as unstyled when body has minimal inline content
-                    return true;
-                }
-                return false;
-            } catch (e) { return false; }
-        }
-
-        function buildFallbackStyle() {
-            try {
-                // Collect all inline <style> content from head (this file already contains many critical <style> blocks).
-                var combined = '';
-                var styles = document.head.querySelectorAll('style');
-                styles.forEach(function(s){
-                    try { combined += s.textContent + '\n'; } catch(e){}
-                });
-                // Also try to include any small-critical inline CSS contained in elements with data-critical attribute
-                var criticals = document.head.querySelectorAll('[data-critical-style]');
-                criticals.forEach(function(n){
-                    try { combined += (n.textContent || '') + '\n'; } catch(e){}
-                });
-                return combined;
-            } catch (e) { return ''; }
-        }
-
-        function applyFallbackIfNeeded() {
-            try {
-                // If page appears unstyled, and no fallback exists, inject the combined inline styles.
-                if (!isLikelyUnstyled()) {
-                    // if previously inserted fallback exists and main styles seem fine, remove it.
-                    var existing = document.getElementById('lumina-fallback-style');
-                    if (existing) try { existing.remove(); } catch(e){}
-                    return;
-                }
-                var existing = document.getElementById('lumina-fallback-style');
-                if (existing) return; // already applied
-
-                var css = buildFallbackStyle();
-                if (!css) return;
-                var el = document.createElement('style');
-                el.id = 'lumina-fallback-style';
-                el.setAttribute('data-injected-by','lumina-fallback');
-                el.appendChild(document.createTextNode(css));
-                // Insert near the top of head so it takes effect quickly
-                if (document.head.firstChild) document.head.insertBefore(el, document.head.firstChild);
-                else document.head.appendChild(el);
-                console.info && console.info('Lumina: fallback styles applied');
-            } catch (e) {
-                // silent
-            }
-        }
-
-        // Attempt to apply fallback after DOM ready and again shortly after in case of slow style processing
-        window.addEventListener('DOMContentLoaded', function(){
-            try { applyFallbackIfNeeded(); } catch (e) {}
-            // second check after short delay to catch late bfcache/rehydration issues
-            setTimeout(applyFallbackIfNeeded, 600);
-            setTimeout(applyFallbackIfNeeded, 1600);
-        }, { once: true });
-
-        // When page is shown from back-forward cache, re-evaluate styles
-        window.addEventListener('pageshow', function(e){
-            try {
-                // if persisted came from bfcache, re-eval and apply fallback if needed
-                if (e && e.persisted) {
-                    setTimeout(applyFallbackIfNeeded, 40);
-                    setTimeout(applyFallbackIfNeeded, 420);
-                } else {
-                    // also run check for normal navigations
-                    setTimeout(applyFallbackIfNeeded, 120);
-                }
-            } catch (err) {}
-        });
-
-        // Listen for stylesheet load/error events: if external stylesheet fails, apply fallback; if it loads successfully, remove fallback.
-        (function observeStylesheetSignals(){
-            try {
-                var links = document.querySelectorAll('link[rel="stylesheet"]');
-                links.forEach(function(link){
-                    try {
-                        // onerror -> apply fallback
-                        link.addEventListener('error', function(){ applyFallbackIfNeeded(); }, { passive: true });
-                        // onload -> remove fallback if present and re-evaluate
-                        link.addEventListener('load', function(){
-                            try {
-                                var f = document.getElementById('lumina-fallback-style');
-                                if (f) f.remove();
-                            } catch(e){}
-                            setTimeout(function(){ try { applyFallbackIfNeeded(); } catch(e){} }, 80);
-                        }, { passive: true });
-                    } catch(e){}
-                });
-
-                // Also monitor head for newly injected <link> or <style> so we can react to dynamic changes
-                var mo = new MutationObserver(function(muts){
-                    muts.forEach(function(m){
-                        if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
-                            Array.from(m.addedNodes).forEach(function(n){
-                                if (n.nodeType !== 1) return;
-                                if (n.tagName && n.tagName.toLowerCase() === 'link' && n.rel === 'stylesheet') {
-                                    n.addEventListener && n.addEventListener('error', applyFallbackIfNeeded);
-                                    n.addEventListener && n.addEventListener('load', function(){
-                                        try { var f = document.getElementById('lumina-fallback-style'); if (f) f.remove(); } catch(e){}
-                                        setTimeout(applyFallbackIfNeeded, 80);
-                                    });
-                                } else if (n.tagName && n.tagName.toLowerCase() === 'style') {
-                                    setTimeout(applyFallbackIfNeeded, 40);
-                                }
-                            });
-                        }
-                    });
-                });
-                mo.observe(document.head, { childList: true, subtree: false });
-            } catch (e) {}
-        })();
-
-        // Expose a manual hook for debugging / forced fallback from console: window.luminaApplyStyleFallback()
-        try { window.luminaApplyStyleFallback = applyFallbackIfNeeded; } catch(e){}
     })();
     </script>
 </body>
