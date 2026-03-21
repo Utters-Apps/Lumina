@@ -703,6 +703,60 @@
         .hero-cover-no-scale, .fade-bottom, .fade-right { backface-visibility: hidden; transform-style: preserve-3d; }
     </style>
     <style>
+        /* Respect device notch / camera cutout (iPhone X and Android notches) by using safe-area-inset-top.
+           Adjust common top-fixed elements so nothing is placed under the camera area when running as PWA or
+           in browsers that support env(safe-area-inset-*) variables. Provide sensible fallbacks. */
+
+        :root {
+            /* fallback value in case env() unsupported */
+            --safe-area-top: env(safe-area-inset-top, 0px);
+        }
+
+        /* Apply a small offset to top-fixed floating navs to avoid being hidden under the notch.
+           Keep the original spacing (6px) while adding dynamic safe-area inset. */
+        nav.fixed {
+            top: calc(6px + var(--safe-area-top)) !important;
+        }
+
+        /* Mobile bottom nav already respects bottom safe area with pb-safe class; ensure it's preserved */
+        .pb-safe {
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        }
+
+        /* Details modal close button and other top-floating buttons must be accessible on notch devices */
+        #close-details-btn {
+            top: calc(6px + var(--safe-area-top)) !important;
+            right: 12px !important;
+        }
+
+        /* Player top controls safe offset */
+        .player-ui .top-center {
+            top: calc(12px + var(--safe-area-top));
+        }
+
+        /* Orientation / rotate modals centered visual shouldn't be clipped by the notch */
+        #orientation-modal, #rotate-vertical-modal {
+            padding-top: calc(12px + var(--safe-area-top));
+        }
+
+        /* Ensure the persistent header / splash elements also respect safe area */
+        #splash-screen .logo-container {
+            padding-top: calc(12px + var(--safe-area-top));
+        }
+
+        /* For any other absolute top offsets that used fixed pixel values (small screens),
+           provide a utility class you can add where needed. */
+        .top-safe {
+            padding-top: calc(var(--safe-area-top));
+        }
+
+        /* Small tweak for very small viewports so increased top offset doesn't push content off-screen */
+        @media (max-width: 420px) {
+            nav.fixed { top: calc(4px + var(--safe-area-top)) !important; }
+            #close-details-btn { top: calc(8px + var(--safe-area-top)) !important; }
+            .player-ui .top-center { top: calc(8px + var(--safe-area-top)); }
+        }
+
         /* Move mobile search input slightly higher for one-screen mobile view */
         @media (max-width: 767px) {
             /* raise the mobile search input so it appears closer to the top */
@@ -2752,7 +2806,7 @@
         //
         (function(){
             // internal state
-            window.__home_rotator = { timer: null, interval: 60000, step: 1, lastShift: 0, running: false };
+            window.__home_rotator = { timer: null, interval: 30000, step: 1, lastShift: 0, running: false };
 
             function pickRotatedList(source, offset, count) {
                 if (!Array.isArray(source) || source.length === 0) return [];
@@ -3040,7 +3094,7 @@
             __saveProgressTimer = setTimeout(() => {
                 try { flushProgressNow(); } catch (e) {}
                 __saveProgressTimer = null;
-            }, 300);
+            }, 800);
         }
 
         // helper: detect if URL is direct video file (or youtube embed)
@@ -4492,6 +4546,27 @@
             init: function(url, title, context) {
                 // defensively tear down any previous playback artifacts before initializing a new one
                 try { this._cleanupBeforeInit(); } catch(_) {}
+                // Normalize context so we always have a stable id key for progress/history writes.
+                try {
+                    context = context || {};
+                    // Prefer an explicit id when provided. For films prefer id_ep or item id or derive from URL.
+                    if (!context.id) {
+                        if (context.type === 'filme') {
+                            // common film key sources: id_ep, id, fallback to url-based stable key
+                            context.id = context.id || context.id_ep || context.filmKey || (context.url ? ('url:' + encodeURIComponent(String(context.url))) : null);
+                        } else if (context.type === 'serie') {
+                            // for series ensure episode id exists: prefer explicit ep id, otherwise build stable string
+                            if (!context.id) {
+                                if (context.seriesId && typeof context.season !== 'undefined' && typeof context.episode !== 'undefined') {
+                                    context.id = context.id || `${context.seriesId}-s${context.season}-e${context.episode}`;
+                                }
+                            }
+                        } else {
+                            // generic fallback to URL-based id for any other content
+                            context.id = context.id || (context.url ? ('url:' + encodeURIComponent(String(context.url))) : context.id || null);
+                        }
+                    }
+                } catch (e) { /* non-blocking */ }
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
                 // Persist initial history/progress entry when starting playback so "Continuar Assistindo" updates immediately.
                 try {
@@ -5191,7 +5266,18 @@
                 if (!this.vid) return;
                 if (!this.context || !this.context.id) return;
                 if (this._restoredOnce) return;
-                const prog = state.progress[this.context.id];
+                // Try multiple stable keys to find existing saved progress (explicit id, episode fallback, or url-derived)
+                const probeKeys = [
+                    (this.context && this.context.id) || null,
+                    (this.context && this.context.id_ep) || null,
+                    (this.context && this.context.filmKey) || null,
+                    (this.context && this.context.url) ? ('url:' + encodeURIComponent(String(this.context.url))) : null
+                ].filter(Boolean);
+
+                let prog = null;
+                for (let k of probeKeys) {
+                    if (state.progress && state.progress[k]) { prog = state.progress[k]; break; }
+                }
                 if (!prog || typeof prog.time !== 'number' || prog.time <= 0) return;
 
                 // Helper to perform a defensive seek and return a Promise that resolves when seek is reflected.
@@ -5304,7 +5390,10 @@
 
             saveProgress: function() {
                 // Save progress for both native video and embed players (YouTube / iframe) where possible.
-                if (!this.context || !this.context.id) return;
+                // Derive a stable context id if missing (try common fallbacks) so progress never silently fails to persist.
+                if (!this.context) return;
+                const ctxId = this.context.id || this.context.id_ep || (this.context.type === 'filme' && this.context.filmKey) || (this.context.url ? ('url:' + encodeURIComponent(String(this.context.url))) : null);
+                if (!ctxId) return;
                 try {
                     let cur = 0, dur = 0, hasTime = false;
 
@@ -7184,7 +7273,14 @@
 
         // Ensure progress is flushed when the user navigates away or the page is hidden
         window.addEventListener('beforeunload', () => {
-            try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
+            try {
+                // prefer player's save then force an immediate flush to localStorage to avoid lost progress
+                if (window.player && typeof window.player.saveProgress === 'function') {
+                    try { window.player.saveProgress(); } catch (_) {}
+                }
+                // flushProgressNow is defined above and performs a safe merge/flush
+                try { flushProgressNow(); } catch (_) {}
+            } catch (_) {}
         }, { passive: true });
 
         // Also handle pagehide/visibilitychange to better capture mobile cases (background / tab switches)
@@ -7862,7 +7958,8 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
+                // register with explicit absolute path and scope to avoid scope mismatches when served from subpaths
+                navigator.serviceWorker.register('/sw.js', { scope: '/' }).then(reg => {
                     console.log('SW registered:', reg.scope);
                 }).catch(err => {
                     console.warn('SW registration failed:', err);
