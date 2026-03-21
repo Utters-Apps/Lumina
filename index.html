@@ -12,7 +12,7 @@
       <script src="https://cdn.tailwindcss.com"></script>
     <!-- PWA Manifest (local) -->
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="style.css">
 
     <!-- Anti-iframe guard (soft): allow embedding for authorized hosts and avoid forcing top navigation.
          If embedding comes from an unknown origin we hide sensitive UI but do NOT force top navigation,
@@ -3254,12 +3254,19 @@
             } catch (e) {}
         }
 
-        // Helper to detect mobile OS (Android or iOS). Returns true only for phones/tablets.
+        // Helper to detect mobile OS (Android, iOS or iPadOS). Returns true for phones/tablets.
         function isMobileOS() {
             try {
                 const ua = navigator.userAgent || navigator.vendor || '';
-                // Android or iOS (iPhone/iPad/iPod). Exclude Windows Phone.
-                return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
+                // Android (exclude Windows Phone)
+                if (/android/i.test(ua) && !/windows phone/i.test(ua)) return true;
+                // Classic iOS devices
+                if (/iPad|iPhone|iPod/.test(ua)) return true;
+                // Modern iPadOS may report as Mac; detect via platform + touch capability
+                try {
+                    if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1) return true;
+                } catch (e) {}
+                return false;
             } catch (e) {
                 return false;
             }
