@@ -769,6 +769,11 @@
             .pt-24.md\:pt-32 {
                 padding-top: 1.5rem !important;
             }
+            /* subtly lift the mobile search magnifying-glass icon a bit higher for better alignment */
+            .mobile-search-icon {
+                top: 48% !important;
+                transform: translateY(-50%) !important;
+            }
         }
     </style>
     <style>
@@ -3273,7 +3278,7 @@
                             
                             <!-- Mobile Search Input (Visible only on mobile) -->
                             <div class="relative w-full mb-8 md:hidden">
-                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl"></i>
+                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl mobile-search-icon"></i>
                                 <input type="text" id="mobile-search" placeholder="Buscar filmes e séries..." class="w-full bg-surface border border-white/10 rounded-full py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-accent transition-colors placeholder:text-white/30 text-sm" oninput="handleSearch(this.value)" value="${state.searchQuery}" autofocus>
                             </div>
 
@@ -3342,7 +3347,7 @@
                             
                             <!-- Mobile Search Input (Visible only on mobile) -->
                             <div class="relative w-full mb-8 md:hidden">
-                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl"></i>
+                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl mobile-search-icon"></i>
                                 <input type="text" id="mobile-search" placeholder="Buscar filmes e séries..." class="w-full bg-surface border border-white/10 rounded-full py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-accent transition-colors placeholder:text-white/30 text-sm" oninput="handleSearch(this.value)" value="${state.searchQuery}" autofocus>
                             </div>
 
