@@ -2663,6 +2663,13 @@
         })();
 
         // --- STATE & LOCAL STORAGE ---
+        // Reset user data on startup (clear v2 keys) to ensure a fresh state
+        try {
+            localStorage.removeItem('lumina_v2_favs');
+            localStorage.removeItem('lumina_v2_prog');
+            localStorage.removeItem('lumina_v2_hist');
+        } catch (e) { /* ignore storage errors */ }
+
         let state = {
             favorites: JSON.parse(localStorage.getItem('lumina_v2_favs')) || [],
             progress: JSON.parse(localStorage.getItem('lumina_v2_prog')) || {}, 
@@ -8908,6 +8915,48 @@
                     }
                 } catch(err){ try{ console.warn('keyboard handler error', err); }catch(_){} }
             }, { passive:false });
+        })();
+    </script>
+    <script>
+        // Block common "view source" / devtools key combos like Ctrl/Cmd+U (and also block Ctrl+Shift+I / F12 as extra defense)
+        (function(){
+            function isEditableElement(el) {
+                if (!el) return false;
+                const tag = (el.tagName || '').toLowerCase();
+                if (tag === 'input' || tag === 'textarea' || el.isContentEditable) return true;
+                return false;
+            }
+
+            document.addEventListener('keydown', function(e) {
+                try {
+                    // do not block when focusing an editable element (so typing in inputs/textareas still works)
+                    if (isEditableElement(document.activeElement)) return;
+
+                    const key = (e.key || '').toLowerCase();
+
+                    // Detect Ctrl/Cmd + U (view-source) on most browsers
+                    const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+                    if (isCtrlOrMeta && key === 'u') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+
+                    // Additional common inspection shortcuts: F12, Ctrl+Shift+I, Ctrl+Shift+C, Ctrl+Shift+J
+                    if (e.key === 'F12') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (key === 'i' || key === 'c' || key === 'j' || key === 'u')) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                    }
+                } catch (_) {
+                    // swallow errors to avoid breaking site interactions
+                }
+            }, { passive: false, capture: true });
         })();
     </script>
 </body>
