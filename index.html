@@ -721,10 +721,19 @@
         /* PWA-only: nudge mobile search slightly lower when running as a standalone PWA */
         @media (max-width: 767px) {
             body.in-pwa #mobile-search {
-                /* move the mobile search down a bit compared to normal embedded view */
-                margin-top: 8px !important;
+                /* move the mobile search down further in the PWA for better visual spacing */
+                margin-top: 28px !important;
                 padding-top: 0.75rem !important;
                 padding-bottom: 0.75rem !important;
+            }
+        }
+    </style>
+    <style>
+        /* PWA-only: nudge "Minha Lista" heading lower on mobile when running as a standalone PWA */
+        @media (max-width: 767px) {
+            body.in-pwa #favorites-title {
+                margin-top: 28px !important;
+                display: block;
             }
         }
     </style>
@@ -3391,7 +3400,7 @@
                 const favData = db.filter(item => state.favorites.includes(item.id));
                 container.innerHTML = `
                     <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
-                        <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-8">Minha Lista</h1>
+                        <h1 id="favorites-title" class="text-2xl md:text-3xl font-display font-bold text-white mb-8">Minha Lista</h1>
                         ${favData.length === 0 ? `
                             <div class="flex flex-col items-center justify-center py-20 text-center">
                                 <div class="w-20 h-20 rounded-full glass flex items-center justify-center mb-6">
@@ -3772,17 +3781,41 @@
         // Saved key: 'lumina_disable_orientation_both_v1' (boolean string '1' = disabled for both horizontal & vertical prompts)
         function getOrientationDisabled() {
             try {
-                return localStorage.getItem('lumina_disable_orientation_both_v1') === '1';
+                // read from localStorage first (works in normal and PWA contexts)
+                const stored = localStorage.getItem('lumina_disable_orientation_both_v1') === '1';
+                // also consider a body class to reflect runtime state (useful in PWA/stubbed storage situations)
+                const cls = document.body && document.body.classList && document.body.classList.contains('lumina-orientation-disabled');
+                return stored || cls;
             } catch (e) {
-                return false;
+                // fallback to checking body class only
+                try { return document.body && document.body.classList && document.body.classList.contains('lumina-orientation-disabled'); } catch (ee) { return false; }
             }
         }
         function setOrientationDisabled(val) {
             try {
-                if (val) localStorage.setItem('lumina_disable_orientation_both_v1', '1');
-                else localStorage.removeItem('lumina_disable_orientation_both_v1');
-            } catch (e) {}
+                if (val) {
+                    localStorage.setItem('lumina_disable_orientation_both_v1', '1');
+                    try { document.body.classList.add('lumina-orientation-disabled'); } catch(_) {}
+                } else {
+                    localStorage.removeItem('lumina_disable_orientation_both_v1');
+                    try { document.body.classList.remove('lumina-orientation-disabled'); } catch(_) {}
+                }
+            } catch (e) {
+                // best-effort: still set/remove the body class so PWA runtime honors the change
+                try { if (val) document.body.classList.add('lumina-orientation-disabled'); else document.body.classList.remove('lumina-orientation-disabled'); } catch(_) {}
+            }
         }
+
+        // Ensure persisted preference applies on startup (including PWA / standalone launches)
+        (function applyOrientationPrefOnLoad(){
+            try {
+                if (getOrientationDisabled()) {
+                    try { document.body.classList.add('lumina-orientation-disabled'); } catch(_) {}
+                } else {
+                    try { document.body.classList.remove('lumina-orientation-disabled'); } catch(_) {}
+                }
+            } catch (e) {}
+        })();
 
         // Helper to detect mobile OS (Android or iOS). Returns true only for phones/tablets.
         function isMobileOS() {
@@ -4344,7 +4377,7 @@
                         // proceed with orientation prompt / playback flow after warmup attempt
                         try {
                             // If portrait orientation & orientation prompts are enabled, show prompt; otherwise open player
-                            if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
+                            if (isMobileOS() && isPortrait && !getOrientationDisabled()) {
                                 const modal = document.getElementById('orientation-modal');
                                 modal.classList.remove('hidden');
                                 modal.classList.add('flex');
@@ -4362,7 +4395,7 @@
 
             } else {
                 // same behavior as before: show orientation prompt on mobile or open player directly
-                if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
+                if (isMobileOS() && isPortrait && !getOrientationDisabled()) {
                     state.pendingVideo = { url, title, context };
                     const modal = document.getElementById('orientation-modal');
                     modal.classList.remove('hidden');
@@ -6041,63 +6074,62 @@
         }
 
         function skipVideo(s) {
-            // Optimized unified skip handler: minimal blocking work, immediate UI frame updates, and throttled progress save.
+            // Highly-optimized unified skip: compute target quickly, perform a single non-blocking seek,
+            // immediately update UI via requestAnimationFrame, and only update in-memory progress then schedule a debounced save.
             try {
-                // Helper to clamp a value safely
-                const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-                // Prefer YouTube API when available
+                const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+                // Fast path: YouTube via API
                 if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getCurrentTime === 'function') {
                     let cur = 0, dur = 0;
                     try { cur = Number(player.ytPlayer.getCurrentTime()) || 0; } catch(_) { cur = 0; }
                     try { dur = Number(player.ytPlayer.getDuration()) || 0; } catch(_) { dur = 0; }
 
-                    let target = Number(cur) + Number(s || 0);
+                    let target = cur + Number(s || 0);
                     if (isNaN(target)) target = cur;
                     target = clamp(target, 0, (dur > 0 ? dur : Number.POSITIVE_INFINITY));
 
-                    // perform seek quickly and non-blocking
-                    try {
-                        if (typeof player.ytPlayer.seekTo === 'function') player.ytPlayer.seekTo(target, true);
-                    } catch (_) {}
+                    // Single non-blocking seek call
+                    try { player.ytPlayer.seekTo(target, true); } catch(_) {}
 
-                    // update UI immediately on next animation frame for smooth sync
+                    // Immediate UI update on next frame (no layout thrash)
                     requestAnimationFrame(() => {
                         try {
                             const tc = document.getElementById('time-current');
                             const td = document.getElementById('time-duration');
-                            const progBar = document.getElementById('progress-bar');
+                            const pb = document.getElementById('progress-bar');
                             const fill = document.getElementById('progress-fill');
                             if (tc) tc.innerText = formatTime(target);
                             if (td && dur) td.innerText = formatTime(dur);
-                            if (progBar && dur > 0) progBar.value = (target / dur) * 100;
+                            if (pb && dur > 0) pb.value = (target / dur) * 100;
                             if (fill && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
-                        } catch (_) {}
+                        } catch(_) {}
                     });
 
-                    // persist a lightweight progress snapshot asynchronously (debounced inside saveProgressData)
+                    // Lightweight in-memory progress update + debounced persistence
                     try {
                         if (player.context && player.context.id) {
-                            // avoid heavy localStorage calls here; update in-memory and schedule save
-                            state.progress[player.context.id] = state.progress[player.context.id] || {};
-                            state.progress[player.context.id].time = target;
-                            state.progress[player.context.id].duration = dur || (state.progress[player.context.id].duration || 0);
-                            state.progress[player.context.id].timestamp = Date.now();
+                            const id = player.context.id;
+                            state.progress[id] = state.progress[id] || {};
+                            state.progress[id].time = target;
+                            state.progress[id].duration = dur || (state.progress[id].duration || 0);
+                            state.progress[id].timestamp = Date.now();
                             if (player.context.type === 'serie' && player.context.seriesId) {
-                                state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
+                                state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: id, timestamp: Date.now() };
                             }
-                            // schedule debounced merge-save then call player.saveProgress to persist immediately
+                            // schedule debounced save (cheap)
                             saveProgressData();
-                            try { if (player && typeof player.saveProgress === 'function') player.saveProgress(); } catch(_) {}
+                            // attempt immediate in-memory flush but avoid forcing synchronous localStorage writes here
+                            try { if (typeof player.saveProgress === 'function') player.saveProgress(); } catch(_) {}
                         }
-                    } catch (_) {}
+                    } catch(_) {}
 
                     return;
                 }
-            } catch (e) {
-                // continue to native fallback
+            } catch (err) {
+                /* fall through to native path */
             }
 
-            // Native HTMLVideoElement path (fast and defensive)
+            // Native HTMLVideoElement path
             try {
                 const vid = player.vid;
                 if (!vid) return;
@@ -6106,36 +6138,35 @@
                 let target = cur + Number(s || 0);
                 if (isNaN(target)) target = cur;
                 if (target < 0) target = 0;
-                if (!isNaN(dur) && dur > 0 && target > dur) target = dur;
+                if (!isNaN(dur) && dur > 0) target = Math.min(dur, target);
 
-                // set currentTime inside try/catch; browsers may throw if seeking during certain states
-                try { vid.currentTime = target; } catch (err) {
-                    // fallback: attempt a small delayed seek if immediate seek fails
-                    try { setTimeout(() => { try { if (player.vid) player.vid.currentTime = target; } catch(_) {} }, 80); } catch(_) {}
+                // Single guarded seek attempt; if it throws, retry once shortly after (non-blocking)
+                try { vid.currentTime = target; } catch (e) {
+                    setTimeout(() => { try { if (player.vid) player.vid.currentTime = target; } catch(_) {} }, 60);
                 }
 
-                // schedule UI update on next frame for smoothness and to avoid layout thrash
+                // Immediate UI refresh on next frame
                 requestAnimationFrame(() => {
                     try {
                         const tc = document.getElementById('time-current');
                         const td = document.getElementById('time-duration');
-                        const progBar = document.getElementById('progress-bar');
+                        const pb = document.getElementById('progress-bar');
                         const fill = document.getElementById('progress-fill');
                         if (tc) tc.innerText = formatTime(target);
                         if (td && !isNaN(dur)) td.innerText = formatTime(dur);
-                        if (progBar && !isNaN(dur) && dur > 0) progBar.value = (target / dur) * 100;
+                        if (pb && !isNaN(dur) && dur > 0) pb.value = (target / dur) * 100;
                         if (fill && !isNaN(dur) && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
-                    } catch (_) {}
+                    } catch(_) {}
                 });
 
-                // update in-memory progress and schedule a debounced persistent save for performance
+                // Efficient in-memory progress update and schedule debounced save
                 try {
                     if (player.context && player.context.id) {
                         const pid = player.context.id;
                         const prev = state.progress[pid] || {};
                         const prevTime = (typeof prev.time === 'number') ? prev.time : -1;
                         if (prevTime >= 0 && target < prevTime - 1) {
-                            // prevent regression: keep previous time but refresh timestamp
+                            // avoid regression: refresh timestamp
                             prev.timestamp = Date.now();
                             state.progress[pid] = prev;
                         } else {
@@ -6144,17 +6175,15 @@
                             state.progress[pid].duration = (!isNaN(dur) && dur > 0) ? dur : (state.progress[pid].duration || 0);
                             state.progress[pid].timestamp = Date.now();
                         }
-
                         if (player.context.type === 'serie' && player.context.seriesId) {
-                            state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
+                            state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: pid, timestamp: Date.now() };
                         }
-                        // defer writes via the shared saveProgressData debounce
+                        // schedule debounced write (cheap) instead of immediate sync localStorage write
                         saveProgressData();
                     }
-                } catch (_) {}
-
+                } catch(_) {}
             } catch (e) {
-                // silent fallback
+                // silent ignore
             }
         }
 
@@ -8317,7 +8346,8 @@
             // Config
             const BADGE_POOL = ['Lançamento','Novo Episódio','Nova Temporada','Popular','Destaque','Exclusivo','Em Alta'];
             const BADGE_ROTATE_INTERVAL = 8000; // ms
-            const NOTIFY_ON_CHANGE = true; // toggle system notification when a badge is applied
+            // Do not trigger system notifications automatically on app entry / badge rotation
+            const NOTIFY_ON_CHANGE = false;
             const MAX_BADGES_PER_ITEM = 3;
 
             // Utility: pick random elements from array
@@ -8477,20 +8507,8 @@
                     // start periodic rotation (use controllable timer so we can pause during long playback)
                     startBadgeTimer();
 
-                    // Request permission after first user gesture to avoid blocking UX
-                    const askNow = async () => {
-                        try {
-                            document.removeEventListener('pointerdown', askNow);
-                            document.removeEventListener('touchstart', askNow);
-                            document.removeEventListener('click', askNow);
-                            const granted = await requestNotificationPermission();
-                            if (granted) showToast('Notificações ativadas', 1800);
-                            else showToast('Notificações não ativadas', 1800);
-                        } catch (e) {}
-                    };
-                    document.addEventListener('pointerdown', askNow, { once: true, passive: true });
-                    document.addEventListener('touchstart', askNow, { once: true, passive: true });
-                    document.addEventListener('click', askNow, { once: true, passive: true });
+                    // Do not automatically request notification permission or send notifications on app entry.
+                    // Notifications will remain available, but only if the user explicitly enables them via browser/site settings.
 
                     // Also expose manual API on window to trigger notification for testing
                     window.luminaNotify = (title, text) => {
