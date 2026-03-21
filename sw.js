@@ -16,8 +16,9 @@ const PRECACHE = `lumina-precache-${CACHE_VERSION}`;
 const RUNTIME = `lumina-runtime-${CACHE_VERSION}`;
 const NAV_CACHE_KEY = 'index.html'; // navigation fallback (app shell)
 const PRECACHE_URLS = [
-  'index.html',
+  './index.html',
   'manifest.json',
+  './style.css',
   'fiveicon.png',
   'fiveicon-512.png'
 ];
