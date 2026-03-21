@@ -10,9 +10,7 @@
     <meta name="application-name" content="Lumina">
 
       <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PWA Manifest (local) -->
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css">
+    <!-- PWA Manifest - Updated with provided icon. For production, convert to Data URL with multiple sizes. -->
 
     <!-- Anti-iframe guard (soft): allow embedding for authorized hosts and avoid forcing top navigation.
          If embedding comes from an unknown origin we hide sensitive UI but do NOT force top navigation,
@@ -111,6 +109,9 @@
     <title>Lumina</title>
     <link rel="icon" href="fiveicon.png" sizes="32x32">
     <link rel="apple-touch-icon" href="fiveicon-512.png">
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+
     <!-- PWA / Theme -->
     <meta name="theme-color" content="#09090b">
     <meta name="msapplication-TileColor" content="#09090b">
@@ -119,10 +120,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Lumina">
-    <link rel="apple-touch-icon" href="fiveicon-512.png">
+    <link rel="apple-touch-icon" href="./fiveicon-512.png">
 
     <!-- iOS splash screens (basic set) -->
-    <link rel="apple-touch-startup-image" href="fiveicon-512.png">
+    <link rel="apple-touch-startup-image" href="/fiveicon-512.png">
 
     <!-- Viewport & display hints -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -182,7 +183,8 @@
                 } catch(e){}
             }
 
-            // parse share param and try to match DB item id/title; this will run early but DB is defined later in the page
+            // parse share param and try to match DB item id/title; this will run early but DB is defined later,
+            // so if DB isn't available yet we retry on DOMContentLoaded and after a short delay.
             var shareSlug = null;
             try {
                 var params = new URLSearchParams(window.location.search || window.location.hash.replace('#','?'));
@@ -232,7 +234,10 @@
     <meta name="msapplication-TileImage" content="./fiveicon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="./fiveicon-512.png">
     <link rel="apple-touch-icon" sizes="152x152" href="./fiveicon.png">
-    <link rel="icon" href="fiveicon.png" sizes="32x32">
+    <link rel="icon" href="./fiveicon.png" sizes="32x32">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Phosphor Icons (Modern & Clean Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -272,7 +277,433 @@
         }
     </script>
 
-    <!-- Splash styles moved to style.css -->
+    <!-- BEGIN: Splash screen styles (inserted cinematic intro) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           RESET E VARIÁVEIS GERAIS (SPLASH)
+           ========================================================================== */
+        :root {
+            --bg-color-splash: #050505;
+            --bg-center-splash: #0a0a0c;
+            --primary-glow-splash: #9d33ff;
+            --secondary-glow-splash: #4b00b4;
+            --text-main-splash: #ffffff;
+        }
+        /* Splash-specific base */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, var(--bg-center-splash) 0%, var(--bg-color-splash) 100%);
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow: hidden;
+            -webkit-user-select: none; user-select: none;
+        }
+        #particles-canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeInParticles 4s ease-in forwards;
+        }
+        .logo-container { position: relative; z-index: 10; display:flex; justify-content:center; align-items:center; width:100%; perspective:1000px; }
+        .laser-beam {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%,-50%);
+            width: 0%;
+            height: 1px;
+            background: #fff;
+            box-shadow: 0 0 10px #fff, 0 0 20px var(--primary-glow-splash), 0 0 40px var(--secondary-glow-splash);
+            z-index: 11;
+            animation: drawLaser 1.4s cubic-bezier(0.8,0,0.2,1) 0.5s forwards, explodeLaser 0.7s cubic-bezier(0.19,1,0.22,1) 1.9s forwards;
+        }
+        .lumina-text {
+            font-family: 'Montserrat', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            font-weight: 900;
+            font-size: clamp(3rem, 12vw, 6.5rem);
+            letter-spacing: clamp(1rem,4vw,2.5rem);
+            color: var(--text-main-splash);
+            margin-right: calc(-1 * clamp(1rem, 4vw, 2.5rem));
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9) translateZ(0);
+            filter: blur(25px);
+            z-index: 12;
+            animation: textReveal 3s cubic-bezier(0.23,1,0.32,1) 2.1s forwards;
+            will-change: transform, opacity, filter;
+        }
+        .lumina-text::after {
+            content: attr(data-text);
+            position: absolute;
+            inset: 0;
+            color: transparent;
+            background: linear-gradient(to right, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0.8) 50%, var(--primary-glow-splash) 65%, transparent 85%);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            animation: lightSweep 4s ease-in-out 3s infinite;
+            opacity: 0;
+        }
+        @keyframes fadeInParticles { to { opacity: 0.5; } }
+        @keyframes drawLaser {
+            0% { width:0%; opacity:0; } 30% { opacity:1; } 100% { width:60%; opacity:1; }
+        }
+        @keyframes explodeLaser {
+            0% { height:1px; filter: blur(0px); opacity:1; }
+            60% { height:120px; filter: blur(30px); opacity:1; background:#fff; }
+            100% { height:300px; filter: blur(60px); opacity:0; visibility:hidden; }
+        }
+        @keyframes textReveal {
+            0% { opacity:0; transform:scale(0.92); filter:blur(20px); }
+            50% { opacity:1; filter:blur(5px); }
+            100% { opacity:1; transform:scale(1); filter:blur(0px); text-shadow: 0 0 25px rgba(157,51,255,0.4), 0 0 50px rgba(75,0,180,0.2); }
+        }
+        @keyframes lightSweep {
+            0% { opacity:0; background-position:200% center; }
+            15% { opacity:1; }
+            45% { opacity:1; background-position:-100% center; }
+            60%,100% { opacity:0; background-position:-100% center; }
+        }
+        @media (max-width:768px) {
+            .lumina-text { letter-spacing:0.8rem; margin-right:-0.8rem; }
+            .laser-beam { box-shadow: 0 0 10px #fff, 0 0 20px var(--primary-glow-splash); }
+            @keyframes drawLaser { 100% { width:85%; opacity:1; } }
+        }
+    </style>
+    <!-- END: Splash screen styles -->
+    
+    <style>
+        :root { color-scheme: dark; }
+
+        /* Treat touch interactions like native apps: prevent browser double-tap/pinch zooming side-effects */
+        html, body { touch-action: manipulation; -ms-touch-action: manipulation; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+        
+        body {
+            background-color: #09090b; color: #fafafa; overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent; scroll-behavior: smooth;
+        }
+        
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #52525b; }
+        
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(24, 24, 27, 0.65); backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Smooth Images & Hover */
+        img { transition: opacity 0.3s ease-in-out; }
+        img[loading] { opacity: 0; }
+        img.loaded { opacity: 1; }
+
+        .hover-card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease; }
+        .hover-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+
+        /* Favorite button pop animation for feedback */
+        .pop-anim {
+            animation: popAnim 360ms cubic-bezier(0.2, 0.9, 0.2, 1);
+            transform-origin: center center;
+        }
+        @keyframes popAnim {
+            0% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+            40% { transform: scale(1.18); filter: drop-shadow(0 12px 18px rgba(0,0,0,0.45)); }
+            100% { transform: scale(1); filter: drop-shadow(0 0 0 rgba(0,0,0,0)); }
+        }
+
+        /* Minimalist Player Range */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 20px; cursor: pointer; }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; transition: height 0.2s;
+        }
+        input[type=range]:hover::-webkit-slider-runnable-track { height: 6px; }
+        input[type=range]::-webkit-slider-thumb {
+            height: 0; width: 0; background: #fff; -webkit-appearance: none; margin-top: 2px; border-radius: 50%; transition: all 0.2s;
+        }
+        input[type=range]:hover::-webkit-slider-thumb { height: 16px; width: 16px; margin-top: -5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+        /* WebKit / AirPlay tweaks: ensure native controls panel visible and hide native play button (we use custom controls) */
+        video::-webkit-media-controls-panel {
+            display: block;
+        }
+        video::-webkit-media-controls-play-button {
+            display: none;
+        }
+
+        /* Player Auto-hide */
+        .player-idle { cursor: none !important; }
+        .player-idle .player-ui { opacity: 0; pointer-events: none; transform: translateY(10px); }
+        .player-ui { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+
+        /* Centered top title inside player: absolute centered container so title remains visually centered
+           regardless of left-side controls width. Pointer-events are disabled on wrapper so overlay controls
+           remain interactive; inner heading keeps readable alignment. */
+        .player-ui .top-center {
+            position: absolute;
+            left: 50%;
+            top: 12px;
+            transform: translateX(-50%);
+            width: min(760px, calc(100% - 120px)); /* leave space for left/right controls */
+            text-align: center;
+            pointer-events: none; /* allow buttons under/around to remain interactive */
+            z-index: 50;
+        }
+        .player-ui .top-center * { pointer-events: auto; } /* allow text selection / focus if needed */
+
+        /* Position the skip-intro button just above the progress bar on the right side.
+           Hidden by default and shown by JS when needed. Adjusts for mobile widths. */
+        #skip-intro-btn {
+            position: absolute;
+            right: 96px;              /* sit to the right of center controls, above progress */
+            bottom: 110px;           /* a bit above the bottom progress bar area */
+            z-index: 70;
+            pointer-events: auto;
+            display: none;           /* visibility controlled by player logic */
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: white;
+            padding: 8px 10px;
+            border-radius: 10px;
+            min-width: 44px;
+            height: auto;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Card tag/badge styles: single colorful badge positioned top-left of the cover image */
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #0b0b0b;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+            pointer-events: none;
+            transform-origin: left top;
+            white-space: nowrap;
+        }
+        .card-badge.small { padding: 4px 8px; font-size: 10px; }
+        /* Enhanced badge palette with subtle glass, soft glow and accessible contrasts */
+        .badge-indigo { background: linear-gradient(90deg,#6366f1 0%, #7c3aed 100%); color: #fff; box-shadow: 0 6px 18px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-rose   { background: linear-gradient(90deg,#ff7ab6 0%, #fb7185 100%); color:#2b0014; box-shadow: 0 6px 18px rgba(255,122,182,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-amber  { background: linear-gradient(90deg,#f59e0b 0%, #facc15 100%); color: #081004; box-shadow: 0 6px 18px rgba(245,158,11,0.10), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .badge-cyan   { background: linear-gradient(90deg,#06b6d4 0%, #22d3ee 100%); color: #02262a; box-shadow: 0 6px 18px rgba(6,182,212,0.10), inset 0 1px 0 rgba(255,255,255,0.05); }
+        .badge-emerald { background: linear-gradient(90deg,#34d399 0%, #10b981 100%); color: #042912; box-shadow: 0 6px 18px rgba(16,185,129,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-teal   { background: linear-gradient(90deg,#2dd4bf 0%, #06b6d4 100%); color: #002b2b; box-shadow: 0 6px 18px rgba(45,212,191,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-orange { background: linear-gradient(90deg,#fb923c 0%, #f97316 100%); color: #2b0f00; box-shadow: 0 6px 18px rgba(249,115,22,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-blue   { background: linear-gradient(90deg,#60a5fa 0%, #3b82f6 100%); color:#04112a; box-shadow: 0 6px 18px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-pink   { background: linear-gradient(90deg,#fb7185 0%, #f43f5e 100%); color:#23010b; box-shadow: 0 6px 18px rgba(244,63,94,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-red    { background: linear-gradient(90deg,#ff6b6b 0%, #ef4444 100%); color:#fff; box-shadow: 0 6px 18px rgba(239,68,38,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-gray   { background: linear-gradient(90deg,#f3f4f6 0%, #e5e7eb 100%); color:#081018; box-shadow: 0 6px 18px rgba(15,15,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6); }
+
+        /* Distinct "Take" palette — rich gradients, non-muted, each take has its own elegant tint */
+        .badge-take1 { background: linear-gradient(90deg,#ff9a8b 0%, #ff6a88 50%, #ff4771 100%); color: #0b0410; box-shadow: 0 10px 30px rgba(255,74,110,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take2 { background: linear-gradient(90deg,#ffd27f 0%, #ffb86b 50%, #ff9f4f 100%); color: #141005; box-shadow: 0 10px 30px rgba(255,168,75,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take3 { background: linear-gradient(90deg,#ffe28a 0%, #d4ff8a 50%, #9effc7 100%); color: #04220f; box-shadow: 0 10px 30px rgba(140,230,145,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-take4 { background: linear-gradient(90deg,#8be9ff 0%, #57c7ff 50%, #2fa4ff 100%); color: #001526; box-shadow: 0 10px 30px rgba(45,180,255,0.10), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take5 { background: linear-gradient(90deg,#caa1ff 0%, #a36bff 50%, #6f3dff 100%); color: #0c0022; box-shadow: 0 10px 30px rgba(120,70,255,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take6 { background: linear-gradient(90deg,#ffb3f2 0%, #ff84d1 50%, #ff57b5 100%); color: #1a0011; box-shadow: 0 10px 30px rgba(255,85,165,0.10), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-take7 { background: linear-gradient(90deg,#a8ffcf 0%, #6fffb3 50%, #3fe998 100%); color: #04220f; box-shadow: 0 10px 30px rgba(90,220,160,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-take8 { background: linear-gradient(90deg,#ffd1a9 0%, #ffb67a 50%, #ff944f 100%); color: #201005; box-shadow: 0 10px 30px rgba(255,142,75,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+
+        /* Slight size tweak for take badges so they feel distinctive */
+        .card-badge.badge-take1, .card-badge.badge-take2, .card-badge.badge-take3,
+        .card-badge.badge-take4, .card-badge.badge-take5, .card-badge.badge-take6,
+        .card-badge.badge-take7, .card-badge.badge-take8 {
+            padding-left: 10px; padding-right: 10px; font-weight: 800;
+            text-transform: none;
+        }
+
+        /* New thematic badges: Classic, Remake and Live Action — slightly larger glass, subtle rim and soft glow */
+        .badge-classic {
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 10px 30px rgba(157,51,255,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+            background-image: linear-gradient(90deg,#f3ec78 0%, #f7d794 50%, #e6bea6 100%);
+            color: #081017;
+            font-weight: 800;
+        }
+        .badge-remake {
+            background: linear-gradient(90deg,#fef3c7 0%, #fde68a 50%, #fcd34d 100%);
+            color: #20120a;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 10px 30px rgba(250,204,21,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+        .badge-liveaction {
+            background: linear-gradient(90deg,#111827 0%, #0b1220 60%, #0f1724 100%);
+            color: #ffd9b3;
+            border: 1px solid rgba(255,217,179,0.08);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 6px 20px rgba(255,173,51,0.06);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            font-weight: 800;
+            padding-left: 10px; padding-right: 10px;
+        }
+
+        /* Keep previous small variations supported */
+        .card-badge {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 60;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #0b0b0b;
+            border-radius: 999px;
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.04);
+            pointer-events: none;
+            transform-origin: left top;
+            white-space: nowrap;
+        }
+        .card-badge.small { padding: 4px 8px; font-size: 10px; }
+
+        /* ensure badge scales nicely on hover and doesn't break layout */
+        .aspect-video .card-badge { transform: translateZ(0); transition: transform 220ms cubic-bezier(0.16,1,0.3,1), opacity 180ms; }
+        .hover-card:hover .card-badge { transform: translateY(-2px) scale(1.02); opacity: 0.98; }
+
+        /* Slightly shift for narrow viewports so the button doesn't overflow off-screen */
+        @media (max-width: 767px) {
+            #skip-intro-btn {
+                right: 20px;
+                bottom: 120px;
+            }
+        }
+
+        /* Utilities */
+        .fade-bottom { background: linear-gradient(to top, #09090b 0%, transparent 100%); }
+        .fade-right { background: linear-gradient(to right, #09090b 0%, rgba(9,9,11,0.8) 50%, transparent 100%); }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* Search Input Animation */
+        .search-input-desktop:focus, .search-input-desktop:not(:placeholder-shown) { width: 180px; padding-left: 8px; }
+
+        /* Prevent scale on hero cover specifically */
+        .hero-cover-no-scale { transition: opacity 0.3s ease-in-out; transform: none !important; }
+
+        /* Desktop refinements */
+        @media (min-width: 768px) {
+            body { font-size: 16px; }
+            nav { transform: translateZ(0); }
+            .hover-card:hover { box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6); }
+            .player-ui { padding-left: 12px; padding-right: 12px; }
+        }
+
+        /* Mobile optimized adjustments */
+        @media (max-width: 767px) {
+            body { font-size: 14px; -webkit-font-smoothing: antialiased; }
+            .glass { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+            .player-ui { padding: 10px; }
+            .hover-card:hover { transform: none; box-shadow: none; }
+            nav, .md\\:hidden { transform: none; }
+
+            /* Mobile: two vertical columns (two stacks) for search and favorites */
+            #search-grid, #fav-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.75rem;
+            }
+            /* Ensure session cards span full column width on mobile stacks */
+            #search-grid .session-card, #fav-grid .session-card, .session-wrap .session-card {
+                min-width: unset;
+                width: 100%;
+            }
+            /* Slightly tighter card aspect for stacked mobile lists */
+            #search-grid .aspect-video, #fav-grid .aspect-video { aspect-ratio: 16/9; }
+        }
+
+        /* Tab transition wrapper */
+        #main-content { transition: opacity 300ms cubic-bezier(0.2,0.9,0.2,1), transform 300ms cubic-bezier(0.2,0.9,0.2,1); will-change: opacity, transform; }
+        .tab-exit { opacity: 0; transform: translateY(8px); pointer-events: none; }
+        .tab-enter { opacity: 0; transform: translateY(-8px); }
+        .tab-enter-active { opacity: 1; transform: translateY(0); transition: opacity 300ms cubic-bezier(0.2,0.9,0.2,1), transform 300ms cubic-bezier(0.2,0.9,0.2,1); }
+
+        /* Session horizontal scroller + arrows */
+        .session-row { display: flex; gap: 1rem; align-items: stretch; }
+        .session-scroll { display: flex; gap: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scroll-behavior: smooth; }
+        .session-scroll::-webkit-scrollbar { height: 8px; }
+        .session-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 8px; }
+        .session-card { min-width: 12rem; max-width: 20rem; flex: 0 0 auto; position: relative; overflow: visible; } /* ensures side-by-side cards but constrains size and allows hover overflow */
+
+        .session-arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 44px; height: 44px; border-radius: 999px;
+            background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center;
+            color: white; z-index: 30; cursor: pointer; transition: transform 0.18s, background 0.18s, opacity 0.18s;
+            opacity: 0; pointer-events: none;
+        }
+        .session-arrow:hover { transform: translateY(-50%) scale(1.06); background: rgba(255,255,255,0.06); }
+        .session-arrow.left { left: 8px; }
+        .session-arrow.right { right: 8px; }
+
+        /* show arrows on hover in desktop for sessions that support them */
+        .session-wrap:hover .session-arrow { opacity: 1; pointer-events: auto; }
+
+        /* Mobile: show arrows for all sessions and use compact toggles */
+        @media (max-width: 767px) {
+            .session-arrow { opacity: 1; pointer-events: auto; background: rgba(0,0,0,0.6); }
+            .session-card { min-width: 14rem; }
+            /* Collapsible sections on mobile (closed by default except continue)
+               Use max-height transitions and opacity for a subtle open/close animation
+               instead of instantly toggling display. */
+            .session-body {
+                transition: max-height 340ms cubic-bezier(0.2,0.9,0.2,1), opacity 260ms ease, transform 260ms ease;
+                will-change: max-height, opacity, transform;
+                overflow: hidden;
+                max-height: 2000px; /* large default to allow content */
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .mobile-collapsed .session-body {
+                max-height: 0 !important;
+                opacity: 0;
+                transform: translateY(-6px);
+                pointer-events: none;
+            }
+            .mobile-toggle-btn {
+                display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.03);
+                padding: 6px 10px; border-radius: 999px; cursor: pointer;
+                transition: background 180ms ease, transform 200ms ease;
+            }
+            .mobile-toggle-btn .caret {
+                transition: transform 260ms cubic-bezier(0.2,0.9,0.2,1);
+                display: inline-block;
+            }
+        }
+
+        /* Small perf: reduce repaint area for hero overlays */
+        .hero-cover-no-scale, .fade-bottom, .fade-right { backface-visibility: hidden; transform-style: preserve-3d; }
+    </style>
 </head>
 <body class="antialiased select-none pb-24 md:pb-0">
 
@@ -1686,8 +2117,7 @@
                         { id: 'yt-s1-e4-Q9KWcWKo2T8', title: 'Um Dia a Máscara Cai', duration: 1533, url: 'https://www.youtube.com/embed/Q9KWcWKo2T8' },
                         { id: 'yt-s1-e5-mOvhHim78YA', title: 'Sem Título', duration: 1533, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
                         { id: 'yt-s1-e6-mOvhHim78YA-2', title: 'Todos Ganham Armas', duration: 2034, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
-                        { id: 'yt-s1-e7-oaOG1xOk7XY', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' },
-                        { id: 'yt-s1-e8-DMNlzf8PiEM', title: 'hjsakldfhl', duration: 0, url: 'https://www.youtube.com/embed/DMNlzf8PiEM' }
+                        { id: 'yt-s1-e7-oaOG1xOk7XY', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' }
                     ]
                 }
             },
@@ -3254,19 +3684,12 @@
             } catch (e) {}
         }
 
-        // Helper to detect mobile OS (Android, iOS or iPadOS). Returns true for phones/tablets.
+        // Helper to detect mobile OS (Android or iOS). Returns true only for phones/tablets.
         function isMobileOS() {
             try {
                 const ua = navigator.userAgent || navigator.vendor || '';
-                // Android (exclude Windows Phone)
-                if (/android/i.test(ua) && !/windows phone/i.test(ua)) return true;
-                // Classic iOS devices
-                if (/iPad|iPhone|iPod/.test(ua)) return true;
-                // Modern iPadOS may report as Mac; detect via platform + touch capability
-                try {
-                    if (navigator.platform === 'MacIntel' && navigator.maxTouchPoints && navigator.maxTouchPoints > 1) return true;
-                } catch (e) {}
-                return false;
+                // Android or iOS (iPhone/iPad/iPod). Exclude Windows Phone.
+                return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
             } catch (e) {
                 return false;
             }
