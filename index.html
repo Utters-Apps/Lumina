@@ -237,9 +237,6 @@
     <link rel="apple-touch-icon" sizes="152x152" href="/fiveicon.png">
     <link rel="icon" href="fiveicon.png">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
     <!-- Phosphor Icons (Modern & Clean Icons) -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
@@ -2627,6 +2624,64 @@
                         }
                         // install the store into the runtime db reference and mark fetched (so we don't re-fetch on subsequent calls unless explicitly desired)
                         window.db = Array.isArray(window.__db_store) ? window.__db_store : (window.db || []);
+
+                        // Normalize Dropbox links across the DB: ensure dropbox URLs end with raw=1
+                        try {
+                            const normalizeDropboxUrl = (u) => {
+                                if (!u || typeof u !== 'string') return u;
+                                try {
+                                    const low = u.toLowerCase();
+                                    if (!low.includes('dropbox.com')) return u;
+                                    // remove trailing parameters dl=0 or dl=1 or raw=... then add raw=1
+                                    // split off hash first
+                                    const hashIndex = u.indexOf('#');
+                                    const hash = hashIndex >= 0 ? u.slice(hashIndex) : '';
+                                    const baseWithQuery = hashIndex >= 0 ? u.slice(0, hashIndex) : u;
+                                    const parts = baseWithQuery.split('?');
+                                    const base = parts[0];
+                                    const params = parts[1] ? parts[1].split('&').filter(Boolean) : [];
+                                    // filter out dl and raw params
+                                    const filtered = params.filter(p => {
+                                        const k = p.split('=')[0].toLowerCase();
+                                        return k !== 'dl' && k !== 'raw';
+                                    });
+                                    // append raw=1
+                                    filtered.push('raw=1');
+                                    return base + '?' + filtered.join('&') + hash;
+                                } catch (e) {
+                                    return u;
+                                }
+                            };
+
+                            const walkAndNormalize = (obj) => {
+                                if (!obj || typeof obj !== 'object') return;
+                                if (Array.isArray(obj)) {
+                                    for (let i = 0; i < obj.length; i++) {
+                                        if (typeof obj[i] === 'string') obj[i] = normalizeDropboxUrl(obj[i]);
+                                        else walkAndNormalize(obj[i]);
+                                    }
+                                } else {
+                                    Object.keys(obj).forEach(k => {
+                                        try {
+                                            const v = obj[k];
+                                            if (typeof v === 'string') {
+                                                obj[k] = normalizeDropboxUrl(v);
+                                            } else if (typeof v === 'object' && v !== null) {
+                                                walkAndNormalize(v);
+                                            }
+                                        } catch (e) {}
+                                    });
+                                }
+                            };
+
+                            if (Array.isArray(window.db)) {
+                                walkAndNormalize(window.db);
+                            }
+                        } catch (e) {
+                            // normalization failure should not block DB usage
+                            console.warn('Dropbox URL normalization failed', e);
+                        }
+
                         window.__db_fetched = true;
                         return window.db;
                     } catch (e) {
@@ -4189,29 +4244,60 @@
 
         function closeDetails() {
             const modal = document.getElementById('details-modal');
+            if (!modal) return;
+            // start hide transition
             modal.classList.add('opacity-0');
+
+            // capture reference to content element outside try blocks so it's always defined in cleanup scope
+            const content = document.getElementById('details-content');
+
             setTimeout(() => {
-                modal.classList.add('hidden');
-                // Unload details content and any attached listeners to free memory
-                const content = document.getElementById('details-content');
-                if (content) {
-                    // Remove season select listeners if any
-                    doomAll('select[id^="season-select-"]', content).forEach(s => { s.onchange = null; });
-                    content.innerHTML = '';
-                }
-                // Remove any pending references
-                state.pendingVideo = null;
-                document.body.style.overflow = '';
                 try {
-                    // Force-save progress/history when leaving details (manual save)
-                    if (window.player && typeof window.player.saveProgress === 'function') {
-                        try { window.player.saveProgress(); } catch(_) {}
+                    // hide modal
+                    modal.classList.add('hidden');
+
+                    // Unload details content and any attached listeners to free memory
+                    if (content) {
+                        try {
+                            // Remove season select listeners if any
+                            doomAll('select[id^="season-select-"]', content).forEach(s => { try { s.onchange = null; } catch(_) {} });
+                        } catch(_) {}
+                        try { content.innerHTML = ''; } catch(_) { content.textContent = ''; }
                     }
-                    try { flushProgressNow(); } catch(_) {}
-                } catch (_) {}
-                // Resume home/session rotator after details modal closes to restart gentle background updates
-                try { startHomeRotator(); } catch (e) {}
-                renderView();
+
+                    // Remove any pending references
+                    state.pendingVideo = null;
+
+                    // Attempt to flush progress/history safely
+                    try {
+                        if (window.player && typeof window.player.saveProgress === 'function') {
+                            try { window.player.saveProgress(); } catch(_) {}
+                        }
+                        try { flushProgressNow(); } catch(_) {}
+                    } catch (_) {}
+
+                    // Resume home/session rotator after details modal closes to restart gentle background updates
+                    try { startHomeRotator(); } catch (e) {}
+
+                    // Re-render main view to refresh UI
+                    try { renderView(); } catch(_) {}
+
+                    // restore body scroll (only if no other modal is open)
+                    try {
+                        const playerModal = document.getElementById('player-modal');
+                        if (playerModal && !playerModal.classList.contains('hidden')) {
+                            // keep body overflow hidden if player still open
+                        } else {
+                            document.body.style.overflow = '';
+                        }
+                    } catch(_) { document.body.style.overflow = ''; }
+                } catch (err) {
+                    // best-effort fallback cleanup if anything throws
+                    try { if (content) { content.innerHTML = ''; } } catch(_) {}
+                    try { state.pendingVideo = null; } catch(_) {}
+                    try { document.body.style.overflow = ''; } catch(_) {}
+                    try { startHomeRotator(); } catch(_) {}
+                }
             }, 500);
         }
 
@@ -7223,145 +7309,6 @@
     </style>
 
     <!-- Small persistent footer link to open legal modal (non-intrusive) -->
-    
-    <!-- Discreet download/install pill (desktop: download manifest fallback; Android: prompt PWA install when available) -->
-    <button id="download-lumina-btn" aria-label="Baixar Lumina" title="Baixar / Instalar Lumina" class="fixed z-50 left-6 bottom-24 md:bottom-auto md:top-6 md:left-6 glass rounded-full px-4 py-2 flex items-center gap-3 text-sm text-white shadow-lg" style="min-height:44px; min-width:44px;">
-        <i class="ph ph-download-simple text-lg"></i>
-        <span id="download-lumina-label" class="hidden md:inline">Baixar</span>
-    </button>
-
-    <script>
-        (function(){
-            const btn = document.getElementById('download-lumina-btn');
-            const label = document.getElementById('download-lumina-label');
-
-            // Detect Chromium-based desktop browsers (Chrome, Edge, Brave, Vivaldi).
-            // Brave exposes navigator.brave in some builds; Vivaldi/Edge/Vivaldi include their name in UA.
-            function isChromiumDesktop() {
-                try {
-                    const ua = navigator.userAgent || navigator.vendor || '';
-                    // exclude Android/iOS
-                    const isMobile = /android|iphone|ipad|ipod|windows phone/i.test(ua);
-                    if (isMobile) return false;
-
-                    // Explicitly exclude Firefox and Opera (including Opera GX) which can include Chromium-like tokens
-                    if (/Firefox\//i.test(ua)) return false;
-                    if (/OPR\/|Opera\//i.test(ua)) return false;
-
-                    // common Chromium markers
-                    const isChrome = /\bChrome\/|CriOS\//i.test(ua);
-                    const isEdge = /\bEdg(e|A|iOS)?\//i.test(ua);
-                    const isVivaldi = /\bVivaldi\//i.test(ua);
-                    const isBrave = !!(navigator.brave) || /\bBrave\//i.test(ua);
-
-                    // Accept when any Chromium-family desktop (excluding Opera/Firefox) is present
-                    return Boolean(isChrome || isEdge || isVivaldi || isBrave);
-                } catch (e) { return false; }
-            }
-
-            // Update visual label for small viewports (only icon on narrow screens)
-            function updateLabel() {
-                if (window.innerWidth < 520) label.classList.add('hidden');
-                else label.classList.remove('hidden');
-            }
-            updateLabel();
-            window.addEventListener('resize', updateLabel);
-
-            // Show the button only for supported Chromium desktop browsers; otherwise hide it.
-            try {
-                if (!isChromiumDesktop()) {
-                    btn.style.display = 'none';
-                } else {
-                    btn.style.display = ''; // ensure visible for supported browsers
-                }
-            } catch (e) {
-                // on error, hide to be conservative
-                try { btn.style.display = 'none'; } catch(_) {}
-            }
-
-            btn.addEventListener('click', async (ev) => {
-                ev.preventDefault();
-                ev.stopPropagation();
-
-                // Android-specific install flow: use deferred prompt when available
-                const ua = navigator.userAgent || navigator.vendor || '';
-                const isAndroidLocal = /android/i.test(ua) && !/windows phone/i.test(ua);
-
-                try {
-                    if (isAndroidLocal && window.deferredInstallPrompt) {
-                        try {
-                            const e = window.deferredInstallPrompt;
-                            e.prompt();
-                            const choice = await e.userChoice;
-                            window.deferredInstallPrompt = null;
-                            if (choice && choice.outcome === 'accepted') {
-                                try { showToast('Obrigado! Instalação iniciada.', 1800); } catch(_) {}
-                            } else {
-                                try { showToast('Instalação cancelada.', 1400); } catch(_) {}
-                            }
-                            return;
-                        } catch (err) {
-                            // fallback to manual instructions
-                        }
-                    }
-                } catch (e) {}
-
-                // For Chromium desktop: prefer showing the saved beforeinstallprompt if present
-                try {
-                    if (window.deferredInstallPrompt) {
-                        try {
-                            const e = window.deferredInstallPrompt;
-                            e.prompt();
-                            const choice = await e.userChoice;
-                            window.deferredInstallPrompt = null;
-                            if (choice && choice.outcome === 'accepted') {
-                                try { showToast('Instalação do PWA iniciada.', 1600); } catch(_) {}
-                            } else {
-                                try { showToast('Instalação cancelada.', 1400); } catch(_) {}
-                            }
-                            return;
-                        } catch (err) {
-                            // fall through to instructions modal
-                        }
-                    }
-                } catch (e) {}
-
-                // Important change: do NOT download manifest.json as a fallback.
-                // Instead present manual install instructions modal (openLegal2) or a toast.
-                try {
-                    // If user is on desktop Chromium but no prompt available, show friendly modal with instructions.
-                    if (isChromiumDesktop()) {
-                        try { openLegal2(); } catch(_) { showToast('Abra o menu do navegador e escolha "Instalar aplicativo" para adicionar Lumina.'); }
-                        return;
-                    } else {
-                        // For any other case, open manual instructions modal
-                        try { openLegal2(); } catch (_) { showToast('Para instalar Lumina, use o menu do navegador e escolha "Instalar aplicativo".'); }
-                        return;
-                    }
-                } catch (e) {
-                    try { showToast('Ação indisponível. Tente recarregar a página.', 1600); } catch(_) {}
-                }
-            }, { passive: false });
-
-            // Provide keyboard focus and accessible behavior
-            btn.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
-            });
-
-            // Minor visibility: hide when embedded (preserve soft-iframe guard)
-            try {
-                if (window.top !== window && document.getElementById('embedded-note')) {
-                    btn.style.display = 'none';
-                }
-            } catch (e) {}
-
-            // Ensure label toggles when install prompt presence changes (dynamic)
-            window.addEventListener('beforeinstallprompt', (e) => {
-                try { label.classList.remove('hidden'); } catch(_) {}
-            });
-
-        })();
-    </script>
 
     <!-- New: Simple functional Legal Modal (backup) -->
     <div id="legal-modal-2" class="fixed inset-0 z-[130] hidden items-center justify-center px-6" role="dialog" aria-modal="true" aria-labelledby="legal2-title">
