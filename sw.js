@@ -15,12 +15,22 @@ const CACHE_VERSION = 'v1';
 const PRECACHE = `lumina-precache-${CACHE_VERSION}`;
 const RUNTIME = `lumina-runtime-${CACHE_VERSION}`;
 const NAV_CACHE_KEY = '/index.html'; // navigation fallback (app shell)
+
+// simple asset list for offline caching and clarity
+const assets = [
+  'index.html',
+  'fiveicon.png',
+  'fiveicon-512.png',
+  'PiPicon.png',
+  'manifest.json'
+];
+
 const PRECACHE_URLS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './fiveicon.png',
-  './fiveicon-512.png'
+  '/', 
+  '/index.html',
+  '/manifest.json',
+  '/fiveicon.png',
+  '/fiveicon-512.png'
 ];
 
 // resources considered "static" for stale-while-revalidate
