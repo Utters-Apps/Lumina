@@ -3697,6 +3697,20 @@
             }
         }
 
+        // Detect whether the app is running as an installed PWA (standalone).
+        function isInPWA() {
+            try {
+                // display-mode media query OR navigator.standalone (iOS) OR match for standalone in URL (fallback)
+                if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return true;
+                if (window.navigator && window.navigator.standalone === true) return true;
+                // Some launchers add `utm_source=web_app` or similar; this is a last-resort check
+                try { if (new URL(window.location.href).searchParams.get('source') === 'pwa') return true; } catch(_) {}
+                return false;
+            } catch (e) {
+                return false;
+            }
+        }
+
         // --- DETAILS MODAL ---
         function openDetails(id) {
             const item = db.find(i => i.id === id);
@@ -4160,7 +4174,9 @@
             // respect global mobile orientation toggle (if user disabled orientation prompt, skip it)
             // Only show orientation prompt on real mobile devices (never on desktop or desktop windows),
             // even if the window is small — use isMobileOS() for a stricter platform check.
-            if (isMobileOS() && isPortrait && !getOrientationDisabled()) {
+            // If running as an installed PWA, do not block playback with an orientation prompt;
+            // allow the platform to handle rotation. Otherwise show orientation prompt when appropriate.
+            if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
                 state.pendingVideo = { url, title, context };
                 const modal = document.getElementById('orientation-modal');
                 modal.classList.remove('hidden');
@@ -4921,12 +4937,12 @@
                     sTitle.classList.add('hidden');
                 }
 
-                // Only request fullscreen automatically on small screens when the browser is capable
-                // and not running on iOS (iOS Safari / iPadOS handle fullscreen differently and can produce a blank/gray player).
+                // Only request fullscreen automatically on small screens when the browser is capable,
+                // not running on iOS, and not running as an installed PWA (we avoid forcing fullscreen in PWAs).
                 try {
                     const ua = navigator.userAgent || navigator.vendor || '';
                     const isiOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-                    if (window.innerWidth <= 768 && document.documentElement.requestFullscreen && !isiOS) {
+                    if (window.innerWidth <= 768 && document.documentElement.requestFullscreen && !isiOS && !isInPWA()) {
                         modal.requestFullscreen().catch(() => {});
                     }
                 } catch(_) {
