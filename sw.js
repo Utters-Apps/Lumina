@@ -18,7 +18,8 @@ const NAV_CACHE_KEY = 'index.html'; // navigation fallback (app shell)
 const PRECACHE_URLS = [
   './index.html',
   'manifest.json',
-  './style.css',
+  'style.css',
+  './style.css',              // include both variants to avoid path mismatches in different loads
   'fiveicon.png',
   'fiveicon-512.png'
 ];
