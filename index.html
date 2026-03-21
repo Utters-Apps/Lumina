@@ -4937,12 +4937,10 @@
                     sTitle.classList.add('hidden');
                 }
 
-                // Only request fullscreen automatically on small screens when the browser is capable,
-                // not running on iOS, and not running as an installed PWA (we avoid forcing fullscreen in PWAs).
+                // Only request fullscreen automatically on non-mobile desktop when the browser is capable,
+                // and avoid forcing fullscreen when running as an installed PWA (do not trigger fullscreen on iOS/Android PWAs).
                 try {
-                    const ua = navigator.userAgent || navigator.vendor || '';
-                    const isiOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-                    if (window.innerWidth <= 768 && document.documentElement.requestFullscreen && !isiOS && !isInPWA()) {
+                    if (document.documentElement.requestFullscreen && !isMobileOS() && !isInPWA()) {
                         modal.requestFullscreen().catch(() => {});
                     }
                 } catch(_) {
