@@ -167,38 +167,9 @@ self.addEventListener('fetch', (event) => {
   // Media / CDN hosts -> network-first, with Range-aware handler for streaming/ranged requests
   const isMediaHost = MEDIA_HOSTS.some(h => url.hostname.includes(h));
   if (isMediaHost || url.search) {
-    // If request includes a Range header, use the specialized handler that proxies ranges to the network
-    if (req.headers && req.headers.has('range')) {
-      event.respondWith(networkFirstRange(req));
-      return;
-    }
-    // For non-range media requests, prefer network but still cache successful full responses for offline fallback.
-    event.respondWith((async () => {
-      // Try network-first with a short timeout to favor fresh content while avoiding long stalls on mobile.
-      try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 12000); // 12s network timeout for large media on slow mobile
-        const res = await fetch(req.url, { mode: 'cors', credentials: 'omit', signal: controller.signal });
-        clearTimeout(timeout);
-        if (res && (res.ok || res.status === 206)) {
-          // Cache full OK responses (200) but avoid caching partial 206 since those are range-specific.
-          if (res.status === 200) {
-            const cache = await caches.open(RUNTIME);
-            cache.put(req, res.clone()).catch(()=>{});
-          }
-          return res;
-        }
-      } catch (e) {
-        // network failed or timed out; try cache below
-      }
-      const cache = await caches.open(RUNTIME);
-      const cached = await cache.match(req);
-      if (cached) return cached;
-      // final fallback to navigation shell for robustness
-      const pre = await caches.open(PRECACHE);
-      const shell = await pre.match(NAV_CACHE_KEY);
-      return shell || Response.error();
-    })());
+    // Let the browser handle media/CDN requests directly (no SW interception) to avoid CORS/Range issues
+    // that commonly prevent mobile players from fetching video bytes; returning here allows native
+    // network stack to handle Range requests and streaming for better mobile compatibility.
     return;
   }
 
