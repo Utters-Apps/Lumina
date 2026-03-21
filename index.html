@@ -1862,6 +1862,22 @@
                 url: 'https://www.dropbox.com/scl/fi/80zikmw07y1za5o9vdbql/Angry-Birds.mp4?rlkey=osrhvi0mv1l6yjxjmm5odl5mo&st=x9zlb5oy&raw=1'
             },
             {
+                id: 'as-branquelas',
+                title: 'As Branquelas',
+                originalTitle: 'White Chicks',
+                type: 'filme',
+                category: 'Comédia, Crime',
+                year: '2004',
+                yearBR: '2004 — estreia em 24 de setembro de 2004 nos cinemas brasileiros',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/b6eb0fc5a7f92d8dd8566e054950aab592ae2dc9c8ffbda9b517ed8c0b20ae0c.png',
+                description: 'Dois agentes do FBI se disfarçam como socialites brancas para investigar uma série de sequestros na alta sociedade. Durante a missão, eles precisam manter suas identidades em segredo enquanto lidam com situações absurdas e perigosas.',
+                ageRating: '14',
+                distributor: 'Sony Pictures Releasing',
+                production: 'Columbia Pictures / Revolution Studios',
+                yearBRNote: '2004 — estreia em 24 de setembro de 2004 nos cinemas brasileiros',
+                url: 'https://www.dropbox.com/scl/fi/zdvj3wj6kk2h9szsatavb/As-Branquelas.mp4?rlkey=vmlgxhypgyaowt1ozyn1wkuhh&st=613fzt2g&raw=1'
+            },
+            {
                 id: 'angry-birds-2-2019',
                 title: 'Angry Birds 2: O Filme',
                 originalTitle: 'The Angry Birds Movie 2',
@@ -2029,7 +2045,7 @@
                 distributor: 'Focus Features',
                 rights: 'Laika',
                 ageRating: '10',
-                url: 'https://youtu.be/2x8hJffRqDk?si=SixjTna0tcnpuMmg'
+                url: 'https://www.dropbox.com/scl/fi/se65vw4dxf3jyu0ugbw8d/Coraline-E-O-Mundo-Secreto.mp4?rlkey=wemxgff2f56lwxhm4xjyaa978&st=4l3gkrrt&raw=1'
             },
             {
                 id: 'homem-aranha-sem-volta',
@@ -3120,7 +3136,7 @@
             try { container.scrollTo({ top: 0, behavior: 'auto' }); } catch(e) { container.scrollTop = 0; }
             
             if (state.tab === 'search') {
-                // normalize function: strip diacritics and collapse non-alphanum to single dash/space for safer comparisons
+                // normalize function: strip diacritics and collapse non-alphanum to single space for safer comparisons
                 const normalizeText = function(s) {
                     if (!s) return '';
                     return String(s).toLowerCase()
@@ -3129,7 +3145,7 @@
                         .trim();
                 };
 
-                // simple Levenshtein distance for tiny fuzzy tolerances
+                // simple Levenshtein distance for fuzzy tolerances
                 const levenshtein = function(a, b) {
                     if (a === b) return 0;
                     const an = a ? a.length : 0;
@@ -3152,57 +3168,96 @@
                     return matrix[bn][an];
                 };
 
-                const rawQuery = state.searchQuery || '';
+                const rawQuery = (state.searchQuery || '').trim();
                 const nQuery = normalizeText(rawQuery);
-                const results = db.filter(item => {
-                    try {
-                        const title = normalizeText(item.title || item.originalTitle || '');
-                        const category = normalizeText(item.category || '');
-                        // direct contains match on normalized strings (ignores accents and punctuation)
-                        if (nQuery && (title.includes(nQuery) || category.includes(nQuery))) return true;
-                        // allow small typos: compute token-wise distance; accept if small relative to token length
-                        if (nQuery) {
-                            // try to match query against title tokens
-                            const qTokens = nQuery.split(/\s+/).filter(Boolean);
-                            const tTokens = title.split(/\s+/).filter(Boolean);
-                            for (let qt of qTokens) {
-                                for (let tt of tTokens) {
-                                    const dist = levenshtein(qt, tt);
-                                    const maxAllowed = Math.max(1, Math.floor(tt.length * 0.25)); // allow ~25% char typos (min 1)
-                                    if (dist <= maxAllowed) return true;
-                                }
-                            }
-                        }
-                        return false;
-                    } catch (e) { return false; }
-                });
-                
-                container.innerHTML = `
-                    <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
-                        
-                        <!-- Mobile Search Input (Visible only on mobile) -->
-                        <div class="relative w-full mb-8 md:hidden">
-                            <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl"></i>
-                            <input type="text" id="mobile-search" placeholder="Buscar filmes e séries..." class="w-full bg-surface border border-white/10 rounded-full py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-accent transition-colors placeholder:text-white/30 text-sm" oninput="handleSearch(this.value)" value="${state.searchQuery}" autofocus>
-                        </div>
 
-                        <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">Busca</h1>
-                        <p class="text-white/50 text-sm mb-8">Resultados para "${state.searchQuery}"</p>
-                        
-                        ${results.length === 0 ? `
+                // If query is empty, show no results and prompt (keeps behavior consistent)
+                if (!nQuery) {
+                    container.innerHTML = `
+                        <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
                             <div class="flex flex-col items-center justify-center py-20 text-center">
                                 <i class="ph ph-magnifying-glass text-4xl text-white/20 mb-4"></i>
-                                <h2 class="text-lg font-medium text-white mb-1">Nenhum resultado</h2>
-                                <p class="text-white/50 text-sm">Tente buscar por outro título ou gênero.</p>
+                                <h2 class="text-lg font-medium text-white mb-1">Comece a digitar para buscar</h2>
+                                <p class="text-white/50 text-sm">Use títulos, gêneros ou partes de palavras — acentos, espaços e maiúsculas não importam.</p>
                             </div>
-                        ` : `
-                            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" id="search-grid"></div>
-                        `}
-                    </div>
-                `;
-                
-                if(results.length > 0) render16by9CatalogCards(results, document.getElementById('search-grid'));
-                
+                        </div>
+                    `;
+                } else {
+                    // First: try an exact title match (ignores accents, case, multiple spaces) and return only that item if found.
+                    // This ensures searching an exact title yields a single precise result.
+                    const exactMatch = db.find(item => {
+                        try {
+                            const t = normalizeText(item.title || item.originalTitle || '');
+                            // also allow exact match against normalized originalTitle or id
+                            const o = normalizeText(item.originalTitle || '');
+                            const idnorm = normalizeText(item.id || '');
+                            return (t === nQuery) || (o === nQuery) || (idnorm === nQuery);
+                        } catch (e) { return false; }
+                    });
+
+                    let results = [];
+                    if (exactMatch) {
+                        results = [exactMatch];
+                    } else {
+                        // Fuzzy / broad search: preserve previous tolerant behavior but slightly more forgiving:
+                        // - ignore accents/case/spaces via normalizeText
+                        // - token-wise fuzzy matching with ~30% tolerance per token
+                        results = db.filter(item => {
+                            try {
+                                const title = normalizeText(item.title || item.originalTitle || '');
+                                const category = normalizeText(item.category || '');
+                                // direct contains match on normalized strings (ignores accents and punctuation)
+                                if (title.includes(nQuery) || category.includes(nQuery)) return true;
+
+                                // allow small typos: compute token-wise distance; accept if small relative to token length
+                                const qTokens = nQuery.split(/\s+/).filter(Boolean);
+                                const tTokens = title.split(/\s+/).filter(Boolean);
+                                for (let qt of qTokens) {
+                                    for (let tt of tTokens) {
+                                        const dist = levenshtein(qt, tt);
+                                        const maxAllowed = Math.max(1, Math.floor(tt.length * 0.30)); // allow ~30% char typos (min 1)
+                                        if (dist <= maxAllowed) return true;
+                                    }
+                                }
+
+                                // also allow partial starts (user typed beginning of a token)
+                                for (let qt of qTokens) {
+                                    if (tTokens.some(tt => tt.startsWith(qt))) return true;
+                                }
+
+                                return false;
+                            } catch (e) { return false; }
+                        });
+                    }
+
+                    // Render results
+                    container.innerHTML = `
+                        <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
+                            
+                            <!-- Mobile Search Input (Visible only on mobile) -->
+                            <div class="relative w-full mb-8 md:hidden">
+                                <i class="ph ph-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-white/50 text-xl"></i>
+                                <input type="text" id="mobile-search" placeholder="Buscar filmes e séries..." class="w-full bg-surface border border-white/10 rounded-full py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-accent transition-colors placeholder:text-white/30 text-sm" oninput="handleSearch(this.value)" value="${state.searchQuery}" autofocus>
+                            </div>
+
+                            <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">Busca</h1>
+                            <p class="text-white/50 text-sm mb-8">Resultados para "${state.searchQuery}"</p>
+                            
+                            ${results.length === 0 ? `
+                                <div class="flex flex-col items-center justify-center py-20 text-center">
+                                    <i class="ph ph-magnifying-glass text-4xl text-white/20 mb-4"></i>
+                                    <h2 class="text-lg font-medium text-white mb-1">Nenhum resultado</h2>
+                                    <p class="text-white/50 text-sm">Tente buscar por outro título ou gênero.</p>
+                                </div>
+                            ` : `
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" id="search-grid"></div>
+                            `}
+                        </div>
+                    `;
+                    
+                    if(results.length > 0) render16by9CatalogCards(results, document.getElementById('search-grid'));
+                }
+
                 // Focus mobile input if it's rendered
                 const mInput = document.getElementById('mobile-search');
                 if (mInput && window.innerWidth < 768 && !state.searchQuery) mInput.focus();
@@ -4381,7 +4436,9 @@
                         this.ytPlayer = null;
                         this.ytSaveInterval = null;
 
-                        const createYT = () => {
+                         // decide autoplay behavior: allow autoplay on desktop, require user interaction on mobile
+ const allowAutoplay = !isMobileOS();
+ const createYT = () => {
                             // extract video id from several possible formats
                             const extractId = (u) => {
                                 try {
@@ -4413,12 +4470,12 @@
                                 const iframe = document.createElement('iframe');
                                 if (fallbackId) {
                                     // build robust embed URL with autoplay/muted/playsinline and JS API enabled
-                                    const embedSrc = `https://www.youtube.com/embed/${fallbackId}?autoplay=1&playsinline=1&enablejsapi=1&rel=0`;
+                                    const embedSrc = `https://www.youtube.com/embed/${fallbackId}?autoplay=${allowAutoplay ? 1 : 0}&playsinline=1&enablejsapi=1&rel=0`;
                                     iframe.src = embedSrc;
                                 } else {
                                     // last-resort: use original URL but append autoplay and playsinline (do not force mute)
                                     const sep = url.includes('?') ? '&' : '?';
-                                    iframe.src = url + sep + 'autoplay=1&playsinline=1';
+                                    iframe.src = url + sep + `autoplay=${allowAutoplay ? 1 : 0}&playsinline=1`;
                                 }
                                 // ensure PiP/fullscreen/autoplay allowed and restrict popups/navigation
                                 iframe.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture; encrypted-media');
@@ -4937,14 +4994,25 @@
                     sTitle.classList.add('hidden');
                 }
 
-                // Only request fullscreen automatically on non-mobile desktop when the browser is capable,
-                // and avoid forcing fullscreen when running as an installed PWA (do not trigger fullscreen on iOS/Android PWAs).
+                // Request fullscreen automatically only for Android PWAs; do NOT force fullscreen on desktop or iOS.
                 try {
-                    if (document.documentElement.requestFullscreen && !isMobileOS() && !isInPWA()) {
-                        modal.requestFullscreen().catch(() => {});
+                    function isAndroidDevice() {
+                        try {
+                            const ua = navigator.userAgent || navigator.vendor || '';
+                            return /android/i.test(ua) && !/windows phone/i.test(ua);
+                        } catch (e) { return false; }
+                    }
+
+                    if (document.documentElement.requestFullscreen) {
+                        const inPwa = isInPWA();
+                        // Only request fullscreen when running as an Android PWA.
+                        if (inPwa && isAndroidDevice()) {
+                            modal.requestFullscreen().catch(() => {});
+                        }
+                        // Do not request fullscreen on desktop or iOS PWAs.
                     }
                 } catch(_) {
-                    // swallow any errors and avoid forcing fullscreen on problematic environments
+                    /* ignore fullscreen errors */
                 }
 
                 // pause background activity while player is active to avoid heavy periodic UI updates during long playback
@@ -7155,6 +7223,145 @@
     </style>
 
     <!-- Small persistent footer link to open legal modal (non-intrusive) -->
+    
+    <!-- Discreet download/install pill (desktop: download manifest fallback; Android: prompt PWA install when available) -->
+    <button id="download-lumina-btn" aria-label="Baixar Lumina" title="Baixar / Instalar Lumina" class="fixed z-50 left-6 bottom-24 md:bottom-auto md:top-6 md:left-6 glass rounded-full px-4 py-2 flex items-center gap-3 text-sm text-white shadow-lg" style="min-height:44px; min-width:44px;">
+        <i class="ph ph-download-simple text-lg"></i>
+        <span id="download-lumina-label" class="hidden md:inline">Baixar</span>
+    </button>
+
+    <script>
+        (function(){
+            const btn = document.getElementById('download-lumina-btn');
+            const label = document.getElementById('download-lumina-label');
+
+            // Detect Chromium-based desktop browsers (Chrome, Edge, Brave, Vivaldi).
+            // Brave exposes navigator.brave in some builds; Vivaldi/Edge/Vivaldi include their name in UA.
+            function isChromiumDesktop() {
+                try {
+                    const ua = navigator.userAgent || navigator.vendor || '';
+                    // exclude Android/iOS
+                    const isMobile = /android|iphone|ipad|ipod|windows phone/i.test(ua);
+                    if (isMobile) return false;
+
+                    // Explicitly exclude Firefox and Opera (including Opera GX) which can include Chromium-like tokens
+                    if (/Firefox\//i.test(ua)) return false;
+                    if (/OPR\/|Opera\//i.test(ua)) return false;
+
+                    // common Chromium markers
+                    const isChrome = /\bChrome\/|CriOS\//i.test(ua);
+                    const isEdge = /\bEdg(e|A|iOS)?\//i.test(ua);
+                    const isVivaldi = /\bVivaldi\//i.test(ua);
+                    const isBrave = !!(navigator.brave) || /\bBrave\//i.test(ua);
+
+                    // Accept when any Chromium-family desktop (excluding Opera/Firefox) is present
+                    return Boolean(isChrome || isEdge || isVivaldi || isBrave);
+                } catch (e) { return false; }
+            }
+
+            // Update visual label for small viewports (only icon on narrow screens)
+            function updateLabel() {
+                if (window.innerWidth < 520) label.classList.add('hidden');
+                else label.classList.remove('hidden');
+            }
+            updateLabel();
+            window.addEventListener('resize', updateLabel);
+
+            // Show the button only for supported Chromium desktop browsers; otherwise hide it.
+            try {
+                if (!isChromiumDesktop()) {
+                    btn.style.display = 'none';
+                } else {
+                    btn.style.display = ''; // ensure visible for supported browsers
+                }
+            } catch (e) {
+                // on error, hide to be conservative
+                try { btn.style.display = 'none'; } catch(_) {}
+            }
+
+            btn.addEventListener('click', async (ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+
+                // Android-specific install flow: use deferred prompt when available
+                const ua = navigator.userAgent || navigator.vendor || '';
+                const isAndroidLocal = /android/i.test(ua) && !/windows phone/i.test(ua);
+
+                try {
+                    if (isAndroidLocal && window.deferredInstallPrompt) {
+                        try {
+                            const e = window.deferredInstallPrompt;
+                            e.prompt();
+                            const choice = await e.userChoice;
+                            window.deferredInstallPrompt = null;
+                            if (choice && choice.outcome === 'accepted') {
+                                try { showToast('Obrigado! Instalação iniciada.', 1800); } catch(_) {}
+                            } else {
+                                try { showToast('Instalação cancelada.', 1400); } catch(_) {}
+                            }
+                            return;
+                        } catch (err) {
+                            // fallback to manual instructions
+                        }
+                    }
+                } catch (e) {}
+
+                // For Chromium desktop: prefer showing the saved beforeinstallprompt if present
+                try {
+                    if (window.deferredInstallPrompt) {
+                        try {
+                            const e = window.deferredInstallPrompt;
+                            e.prompt();
+                            const choice = await e.userChoice;
+                            window.deferredInstallPrompt = null;
+                            if (choice && choice.outcome === 'accepted') {
+                                try { showToast('Instalação do PWA iniciada.', 1600); } catch(_) {}
+                            } else {
+                                try { showToast('Instalação cancelada.', 1400); } catch(_) {}
+                            }
+                            return;
+                        } catch (err) {
+                            // fall through to instructions modal
+                        }
+                    }
+                } catch (e) {}
+
+                // Important change: do NOT download manifest.json as a fallback.
+                // Instead present manual install instructions modal (openLegal2) or a toast.
+                try {
+                    // If user is on desktop Chromium but no prompt available, show friendly modal with instructions.
+                    if (isChromiumDesktop()) {
+                        try { openLegal2(); } catch(_) { showToast('Abra o menu do navegador e escolha "Instalar aplicativo" para adicionar Lumina.'); }
+                        return;
+                    } else {
+                        // For any other case, open manual instructions modal
+                        try { openLegal2(); } catch (_) { showToast('Para instalar Lumina, use o menu do navegador e escolha "Instalar aplicativo".'); }
+                        return;
+                    }
+                } catch (e) {
+                    try { showToast('Ação indisponível. Tente recarregar a página.', 1600); } catch(_) {}
+                }
+            }, { passive: false });
+
+            // Provide keyboard focus and accessible behavior
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+            });
+
+            // Minor visibility: hide when embedded (preserve soft-iframe guard)
+            try {
+                if (window.top !== window && document.getElementById('embedded-note')) {
+                    btn.style.display = 'none';
+                }
+            } catch (e) {}
+
+            // Ensure label toggles when install prompt presence changes (dynamic)
+            window.addEventListener('beforeinstallprompt', (e) => {
+                try { label.classList.remove('hidden'); } catch(_) {}
+            });
+
+        })();
+    </script>
 
     <!-- New: Simple functional Legal Modal (backup) -->
     <div id="legal-modal-2" class="fixed inset-0 z-[130] hidden items-center justify-center px-6" role="dialog" aria-modal="true" aria-labelledby="legal2-title">
@@ -7853,21 +8060,33 @@
     </style>
 
     <div id="android-install-modal" aria-hidden="true" role="dialog" aria-label="Instalar Lumina">
-        <div id="android-install-card" class="glass" role="document">
-            <div class="liquid-hero">
-                <div class="liquid-icon">
-                    <img src="fiveicon-512.png" alt="Lumina">
+        <div id="android-install-card" class="glass" role="document" aria-live="polite" aria-modal="true">
+            <div class="liquid-hero" style="align-items:flex-start">
+                <div class="liquid-icon" aria-hidden="true">
+                    <img src="fiveicon-512.png" alt="Lumina" />
                 </div>
                 <div style="flex:1;min-width:0">
-                    <div class="liquid-title">Baixar Lumina</div>
-                    <div class="liquid-desc">Instale o app Lumina no seu dispositivo Android para uma experiência mais rápida, offline e com atalho na tela inicial.</div>
-                    <div class="liquid-subtle">Toque em "Baixar" para instalar o PWA. Você pode remover a notificação a qualquer momento.</div>
+                    <div class="liquid-title">Instale o Lumina</div>
+                    <div class="liquid-desc">Tenha acesso rápido, reprodução mais estável e um atalho na tela inicial — instale o PWA Lumina no seu dispositivo Android.</div>
+                    <div class="liquid-subtle">Recomendado para uso continuado: armazenamento local, offline e integração com tela inicial.</div>
+
+                    <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
+                        <progress id="install-progress" value="0" max="100" style="width:120px;display:none" aria-hidden="true"></progress>
+                        <span id="install-note" class="text-white/70 text-xs">Toque em "Baixar" para iniciar</span>
+                    </div>
+
+                    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;cursor:pointer">
+                        <input id="android-install-dismiss" type="checkbox" aria-label="Não mostrar novamente">
+                        <span class="text-white/70">Não mostrar novamente</span>
+                    </label>
                 </div>
-                <button id="android-install-close" class="btn-later" style="margin-left:12px;align-self:flex-start">Fechar</button>
+
+                <button id="android-install-close" class="btn-later" style="margin-left:12px;align-self:flex-start" aria-label="Fechar">Fechar</button>
             </div>
 
-            <div class="liquid-actions" style="justify-content:flex-end">
-                <button id="android-install-action" class="btn-install">Baixar Lumina</button>
+            <div class="liquid-actions" style="justify-content:flex-end;gap:10px">
+                <button id="android-install-action" class="btn-install" aria-haspopup="dialog" aria-controls="android-install-card">Baixar Lumina</button>
+                <button id="android-install-learn" class="btn-later" style="min-width:120px">Como adicionar manualmente</button>
             </div>
         </div>
     </div>
@@ -7883,70 +8102,122 @@
                 } catch(e) { return false; }
             }
 
+            function showModal() {
+                const modal = document.getElementById('android-install-modal');
+                if (!modal) return;
+                modal.classList.add('show');
+                modal.setAttribute('aria-hidden', 'false');
+                // focus primary action for accessibility
+                setTimeout(() => {
+                    const btn = document.getElementById('android-install-action');
+                    if (btn) btn.focus();
+                }, 120);
+            }
+
+            function hideModal(markDismissed = false) {
+                const modal = document.getElementById('android-install-modal');
+                if (!modal) return;
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                if (markDismissed) {
+                    try { localStorage.setItem(KEY, '1'); } catch(_) {}
+                }
+            }
+
             function tryShowInstallModal() {
                 try {
                     if (!isAndroid()) return;
                     if (localStorage.getItem(KEY)) return;
                     const e = window.deferredInstallPrompt;
                     if (!e) return;
-                    const modal = document.getElementById('android-install-modal');
-                    if (!modal) return;
-                    modal.classList.add('show');
-                    modal.setAttribute('aria-hidden', 'false');
+                    showModal();
                 } catch (e) {}
             }
 
-            // Attach direct handlers once DOM is ready to ensure clicks hit the correct element (avoid delegation target mismatch)
+            // Attach direct handlers once DOM is ready
             document.addEventListener('DOMContentLoaded', () => {
                 const closeBtn = document.getElementById('android-install-close');
                 const installBtn = document.getElementById('android-install-action');
+                const learnBtn = document.getElementById('android-install-learn');
+                const dontShow = document.getElementById('android-install-dismiss');
+                const progress = document.getElementById('install-progress');
+                const note = document.getElementById('install-note');
 
                 if (closeBtn) {
                     closeBtn.addEventListener('click', (ev) => {
                         ev.preventDefault();
-                        const modal = document.getElementById('android-install-modal');
-                        if (modal) modal.classList.remove('show');
-                        try { localStorage.setItem(KEY, '1'); } catch(_) {}
+                        hideModal(Boolean(dontShow && dontShow.checked));
+                    }, { passive: true });
+                }
+
+                if (learnBtn) {
+                    learnBtn.addEventListener('click', (ev) => {
+                        ev.preventDefault();
+                        hideModal(Boolean(dontShow && dontShow.checked));
+                        // show quick instructions fallback modal
+                        openLegal2();
                     }, { passive: true });
                 }
 
                 if (installBtn) {
                     installBtn.addEventListener('click', async (ev) => {
                         ev.preventDefault();
-                        const modal = document.getElementById('android-install-modal');
                         const promptEvent = window.deferredInstallPrompt;
-                        // prefer calling the stored beforeinstallprompt to trigger native install UI
+                        // show a small progress indicator while prompt flows
+                        if (progress) { progress.style.display = ''; progress.value = 20; }
                         if (promptEvent && typeof promptEvent.prompt === 'function') {
-                            try { localStorage.setItem(KEY, '1'); } catch(_) {}
                             try {
+                                // record that user saw modal (respect "don't show" state)
+                                try { if (dontShow && dontShow.checked) localStorage.setItem(KEY, '1'); } catch(_) {}
                                 promptEvent.prompt();
                                 const choice = await promptEvent.userChoice;
-                                // hide modal regardless of user's choice
-                                if (modal) modal.classList.remove('show');
-                                // clear stored prompt
+                                if (progress) { progress.value = 80; }
+                                // quickly update UI based on choice
+                                if (choice && choice.outcome === 'accepted') {
+                                    note.innerText = 'Instalação iniciada. Obrigado!';
+                                    if (progress) { progress.value = 100; }
+                                } else {
+                                    note.innerText = 'Instalação cancelada pelo usuário.';
+                                    if (progress) { progress.value = 0; progress.style.display = 'none'; }
+                                }
+                                // hide modal after short delay
+                                setTimeout(() => hideModal(Boolean(dontShow && dontShow.checked)), 900);
                                 window.deferredInstallPrompt = null;
                             } catch (err) {
-                                if (modal) modal.classList.remove('show');
+                                // fallback: show instructions modal
+                                try { localStorage.setItem(KEY, '1'); } catch(_) {}
+                                hideModal(true);
+                                openLegal2();
                                 window.deferredInstallPrompt = null;
                             }
                         } else {
-                            // fallback UX: mark as shown, hide modal and show small instructions modal
-                            try { localStorage.setItem(KEY, '1'); } catch(_) {}
-                            if (modal) modal.classList.remove('show');
-                            openLegal2(); // fallback instructions for manual add-to-home
+                            // no prompt available -> show manual instructions
+                            try { if (dontShow && dontShow.checked) localStorage.setItem(KEY, '1'); } catch(_) {}
+                            hideModal(Boolean(dontShow && dontShow.checked));
+                            openLegal2();
                         }
                     }, { passive: false });
                 }
+
+                // Make "Enter" activate install for keyboard users
+                document.getElementById('android-install-card')?.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        const btn = document.getElementById('android-install-action');
+                        if (btn) { btn.click(); e.preventDefault(); }
+                    }
+                });
             });
 
             // show when app ready and on load
             window.addEventListener('load', () => {
                 tryShowInstallModal();
-                // also attempt after beforeinstallprompt event if it fires later
                 window.addEventListener('beforeinstallprompt', () => {
                     tryShowInstallModal();
                 });
             });
+
+            // expose helper for manual invocation
+            window.showLuminaInstallModal = tryShowInstallModal;
         })();
     </script>
     <script>
@@ -7993,7 +8264,7 @@
             }
         })();
 
-        // Hide fullscreen button in PWA standalone on mobile devices
+        // Hide fullscreen button in PWA standalone on iOS devices only; keep fullscreen control available for Android PWAs.
         (function(){
             try {
                 const isPWAStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) 
@@ -8008,7 +8279,17 @@
                     } catch (e) { return false; }
                 })();
 
-                if (isPWAStandalone && isMobile) {
+                // detect iOS specifically
+                const isIOS = (function(){
+                    try {
+                        const ua = navigator.userAgent || navigator.vendor || '';
+                        const isi = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+                        return isi;
+                    } catch (e) { return false; }
+                })();
+
+                // Only hide fullscreen button when PWA standalone on iOS mobile; keep it visible for Android PWAs.
+                if (isPWAStandalone && isMobile && isIOS) {
                     const fs = document.getElementById('fullscreen-btn');
                     if (fs) {
                         fs.style.display = 'none';
@@ -8530,6 +8811,110 @@
         }, { passive: true });
 
     })();
+    </script>
+
+    <script>
+        // Keyboard shortcuts for native (.mp4) player, custom player and YouTube embeds.
+        // Keys: Space Play/Pause, Left/Right skip 10s, Up/Down volume, M mute, F fullscreen, P PiP, N next ep, S skip intro,
+        // ,/. fine seek -5/+5, 0-9 jump to 0%-90%, +/- adjust speed.
+        (function(){
+            function isPlayerVisible() {
+                const pm = document.getElementById('player-modal');
+                return pm && !pm.classList.contains('hidden');
+            }
+            function getPlayer() { return window.player || null; }
+            function safePrevent(e){ try{ e.preventDefault(); e.stopPropagation && e.stopImmediatePropagation && e.stopImmediatePropagation(); }catch(_){} }
+
+            document.addEventListener('keydown', function(e){
+                try {
+                    if (!isPlayerVisible()) return;
+                    const tag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : '';
+                    if (['input','textarea','select'].includes(tag)) return;
+
+                    const p = getPlayer();
+                    const k = e.key;
+
+                    if (k === ' ' || k === 'Spacebar') { safePrevent(e); try{ togglePlay(); }catch(_){}; return; }
+                    if (k === 'ArrowLeft')      { safePrevent(e); try{ skipVideo(-10); }catch(_){}; return; }
+                    if (k === 'ArrowRight')     { safePrevent(e); try{ skipVideo(10); }catch(_){}; return; }
+                    if (k === 'PageUp')         { safePrevent(e); try{ skipVideo(60); }catch(_){}; return; }
+                    if (k === 'PageDown')       { safePrevent(e); try{ skipVideo(-60); }catch(_){}; return; }
+                    if (k === ',')              { safePrevent(e); try{ skipVideo(-5); }catch(_){}; return; }
+                    if (k === '.')              { safePrevent(e); try{ skipVideo(5); }catch(_){}; return; }
+
+                    if (/^[0-9]$/.test(k)) {
+                        safePrevent(e);
+                        try {
+                            const n = Number(k);
+                            let dur = 0;
+                            if (p && p.isYouTube && p.ytPlayer && typeof p.ytPlayer.getDuration === 'function') dur = Number(p.ytPlayer.getDuration())||0;
+                            else if (p && p.vid) dur = Number(p.vid.duration)||0;
+                            if (!dur || dur <= 0) return;
+                            const target = (n/10)*dur;
+                            if (p && p.isYouTube && p.ytPlayer && typeof p.ytPlayer.seekTo === 'function') p.ytPlayer.seekTo(target, true);
+                            else if (p && p.vid) try{ p.vid.currentTime = target; }catch(_){ setTimeout(()=>{ try{ p.vid.currentTime = target; }catch(_){} },60); }
+                        } catch(_) {}
+                        return;
+                    }
+
+                    if (k === 'ArrowUp') {
+                        safePrevent(e);
+                        try {
+                            if (p && p.isYouTube && p.ytPlayer && typeof p.ytPlayer.setVolume === 'function') {
+                                const cur = (p.ytPlayer.getVolume && p.ytPlayer.getVolume()) || 100;
+                                p.ytPlayer.setVolume(Math.min(100, Math.round(cur+5)));
+                            } else if (p && p.vid) {
+                                p.vid.volume = Math.min(1, (p.vid.volume||1)+0.05);
+                                if (p.vid.volume>0) p.vid.muted=false;
+                                const volEl = document.getElementById('volume-bar'); if (volEl) volEl.value = p.vid.volume;
+                                updateVolIcon();
+                            }
+                        } catch(_) {}
+                        return;
+                    }
+                    if (k === 'ArrowDown') {
+                        safePrevent(e);
+                        try {
+                            if (p && p.isYouTube && p.ytPlayer && typeof p.ytPlayer.setVolume === 'function') {
+                                const cur = (p.ytPlayer.getVolume && p.ytPlayer.getVolume()) || 100;
+                                p.ytPlayer.setVolume(Math.max(0, Math.round(cur-5)));
+                            } else if (p && p.vid) {
+                                p.vid.volume = Math.max(0, (p.vid.volume||1)-0.05);
+                                if (p.vid.volume===0) p.vid.muted=true;
+                                const volEl = document.getElementById('volume-bar'); if (volEl) volEl.value = p.vid.volume;
+                                updateVolIcon();
+                            }
+                        } catch(_) {}
+                        return;
+                    }
+
+                    if (k.toLowerCase() === 'm') { safePrevent(e); try{ toggleMute(); }catch(_){}; return; }
+                    if (k.toLowerCase() === 'f') { safePrevent(e); try{ toggleFullscreen(); }catch(_){}; return; }
+                    if (k.toLowerCase() === 'p') { safePrevent(e); try{ togglePiP(); }catch(_){}; return; }
+                    if (k.toLowerCase() === 'n') { safePrevent(e); try{ playNextEpisode(); }catch(_){}; return; }
+                    if (k.toLowerCase() === 's') { safePrevent(e); try{ skipIntro(); }catch(_){}; return; }
+
+                    if (k === '+' || k === '=') {
+                        safePrevent(e);
+                        try {
+                            const cur = (player && player.preferredRate) ? Number(player.preferredRate) : 1;
+                            const next = Math.min(3, Math.round((cur + 0.25)*100)/100);
+                            setSpeed(next); showToast('Velocidade: '+next+'x',1000);
+                        } catch(_) {}
+                        return;
+                    }
+                    if (k === '-' || k === '_') {
+                        safePrevent(e);
+                        try {
+                            const cur = (player && player.preferredRate) ? Number(player.preferredRate) : 1;
+                            const next = Math.max(0.5, Math.round((cur - 0.25)*100)/100);
+                            setSpeed(next); showToast('Velocidade: '+next+'x',1000);
+                        } catch(_) {}
+                        return;
+                    }
+                } catch(err){ try{ console.warn('keyboard handler error', err); }catch(_){} }
+            }, { passive:false });
+        })();
     </script>
 </body>
 </html>
