@@ -717,6 +717,17 @@
             }
         }
     </style>
+    <style>
+        /* PWA-only: nudge mobile search slightly lower when running as a standalone PWA */
+        @media (max-width: 767px) {
+            body.in-pwa #mobile-search {
+                /* move the mobile search down a bit compared to normal embedded view */
+                margin-top: 8px !important;
+                padding-top: 0.75rem !important;
+                padding-bottom: 0.75rem !important;
+            }
+        }
+    </style>
 </head>
 <body class="antialiased select-none pb-24 md:pb-0">
 
@@ -2663,11 +2674,10 @@
         })();
 
         // --- STATE & LOCAL STORAGE ---
-        // Reset user data on startup (clear v2 keys) to ensure a fresh state
+        // NOTE: Do not clear user data on startup — preserve lumina_v2_* keys so favorites/progress/history persist.
+        // (Previous behavior removed stored state every load which prevented any saving from sticking.)
         try {
-            localStorage.removeItem('lumina_v2_favs');
-            localStorage.removeItem('lumina_v2_prog');
-            localStorage.removeItem('lumina_v2_hist');
+            // no-op: keep existing localStorage entries intact
         } catch (e) { /* ignore storage errors */ }
 
         let state = {
@@ -8957,6 +8967,22 @@
                     // swallow errors to avoid breaking site interactions
                 }
             }, { passive: false, capture: true });
+        })();
+    </script>
+    <script>
+        // Add an "in-pwa" class to body only when running as a PWA (standalone).
+        (function(){
+            try {
+                var inPwa = false;
+                try { inPwa = window.matchMedia && window.matchMedia('(display-mode: standalone)').matches; } catch(_) { inPwa = false; }
+                if (!inPwa) {
+                    try { inPwa = window.navigator && window.navigator.standalone === true; } catch(_) {}
+                }
+                if (inPwa) {
+                    document.documentElement.classList.add('in-pwa');
+                    document.body.classList.add('in-pwa');
+                }
+            } catch (e) { /* silent */ }
         })();
     </script>
 </body>
