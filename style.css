@@ -161,9 +161,14 @@
             display: none;
         }
 
-        /* Player Auto-hide */
+        /* Player Auto-hide: hide most controls when idle but allow specific controls to remain visible */
         .player-idle { cursor: none !important; }
-        .player-idle .player-ui { opacity: 0; pointer-events: none; transform: translateY(10px); }
+        /* Instead of forcing the entire UI to invisible (which hides persistent controls such as PiP),
+           we disable pointer events on the UI container and hide only elements marked as hide-on-idle.
+           Elements marked keep-visible remain interactive and visible (useful for PiP / persistent actions). */
+        .player-idle .player-ui { pointer-events: none; }
+        .player-idle .player-ui .hide-on-idle { opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.35s, transform 0.35s; }
+        .player-idle .player-ui .keep-visible { opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
         .player-ui { transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
 
         /* Centered top title inside player: absolute centered container so title remains visually centered
