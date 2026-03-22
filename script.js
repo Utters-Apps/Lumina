@@ -1,11 +1,16 @@
         // Ensure all images use lazy loading and async decoding for better performance and deferred resource usage.
         (function(){
+            const PLACEHOLDER_LOCAL = 'fiveicon.png';
             function setLazyForExistingImgs() {
                 try {
                     document.querySelectorAll('img').forEach(img => {
                         try {
                             if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
                             if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+                            // If image has no effective source, ensure a local placeholder so it renders immediately
+                            if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
+                                img.setAttribute('src', PLACEHOLDER_LOCAL);
+                            }
                         } catch(_) {}
                     });
                 } catch(_) {}
@@ -24,10 +29,18 @@
                                             if (node.tagName && node.tagName.toLowerCase() === 'img') {
                                                 if (!node.hasAttribute('loading')) node.setAttribute('loading','lazy');
                                                 if (!node.hasAttribute('decoding')) node.setAttribute('decoding','async');
+                                                if ((!node.getAttribute('src') || node.getAttribute('src') === '') && (!node.getAttribute('data-src') || node.getAttribute('data-src') === '')) {
+                                                    node.setAttribute('src', PLACEHOLDER_LOCAL);
+                                                }
                                             } else {
                                                 node.querySelectorAll && node.querySelectorAll('img').forEach(i => {
-                                                    if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
-                                                    if (!i.hasAttribute('decoding')) i.setAttribute('decoding','async');
+                                                    try {
+                                                        if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
+                                                        if (!i.hasAttribute('decoding')) i.setAttribute('decoding','async');
+                                                        if ((!i.getAttribute('src') || i.getAttribute('src') === '') && (!i.getAttribute('data-src') || i.getAttribute('data-src') === '')) {
+                                                            i.setAttribute('src', PLACEHOLDER_LOCAL);
+                                                        }
+                                                    } catch(_) {}
                                                 });
                                             }
                                         }
@@ -38,6 +51,9 @@
                                     const img = m.target;
                                     if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
                                     if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+                                    if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
+                                        img.setAttribute('src', PLACEHOLDER_LOCAL);
+                                    }
                                 } catch(_) {}
                             }
                         }
@@ -55,10 +71,18 @@
                                         if (node.tagName && node.tagName.toLowerCase() === 'img') {
                                             if (!node.hasAttribute('loading')) node.setAttribute('loading','lazy');
                                             if (!node.hasAttribute('decoding')) node.setAttribute('decoding','async');
+                                            if ((!node.getAttribute('src') || node.getAttribute('src') === '') && (!node.getAttribute('data-src') || node.getAttribute('data-src') === '')) {
+                                                node.setAttribute('src', PLACEHOLDER_LOCAL);
+                                            }
                                         } else {
                                             node.querySelectorAll && node.querySelectorAll('img').forEach(i => {
-                                                if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
-                                                if (!i.hasAttribute('decoding')) i.setAttribute('decoding','async');
+                                                try {
+                                                    if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
+                                                    if (!i.hasAttribute('decoding')) i.setAttribute('decoding','async');
+                                                    if ((!i.getAttribute('src') || i.getAttribute('src') === '') && (!i.getAttribute('data-src') || i.getAttribute('data-src') === '')) {
+                                                        i.setAttribute('src', PLACEHOLDER_LOCAL);
+                                                    }
+                                                } catch(_) {}
                                             });
                                         }
                                     }
@@ -69,6 +93,9 @@
                                 const img = m.target;
                                 if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
                                 if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
+                                if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
+                                    img.setAttribute('src', PLACEHOLDER_LOCAL);
+                                }
                             } catch(_) {}
                         }
                     }
