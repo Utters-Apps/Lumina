@@ -1,11 +1,20 @@
-        // Ensure all images use lazy loading and async decoding for better performance and deferred resource usage.
+        // Ensure non-DB images load eagerly and use async decoding; DB cover images (movie/series) will be lazy-loaded.
         (function(){
-            const PLACEHOLDER_LOCAL = 'fiveicon.png';
-            function setLazyForExistingImgs() {
+            const PLACEHOLDER_LOCAL = 'fiveicon.png'; // keep relative path so images resolve in nested scopes
+
+            function setEagerForExistingImgs() {
                 try {
                     document.querySelectorAll('img').forEach(img => {
                         try {
-                            if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+                            // If this img is marked as a DB cover (data-db-cover="1"), leave it lazy so covers defer loading
+                            const isDbCover = img.getAttribute('data-db-cover') === '1';
+                            if (!isDbCover) {
+                                if (!img.hasAttribute('loading')) img.setAttribute('loading', 'eager');
+                            } else {
+                                // ensure DB covers are lazy by default for performance
+                                if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+                            }
+                            // keep decoding async for performance where supported
                             if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
                             // If image has no effective source, ensure a local placeholder so it renders immediately
                             if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
@@ -15,10 +24,11 @@
                     });
                 } catch(_) {}
             }
-            // Apply as soon as DOM is ready, and observe new images inserted later to keep them lazy
+
+            // Apply as soon as DOM is ready, and observe new images inserted later to keep them non-lazy except DB covers
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', () => {
-                    setLazyForExistingImgs();
+                    setEagerForExistingImgs();
                     // observe future image additions
                     const mo = new MutationObserver((mut) => {
                         for (const m of mut) {
@@ -27,15 +37,26 @@
                                     try {
                                         if (node && node.nodeType === 1) {
                                             if (node.tagName && node.tagName.toLowerCase() === 'img') {
-                                                if (!node.hasAttribute('loading')) node.setAttribute('loading','lazy');
-                                                if (!node.hasAttribute('decoding')) node.setAttribute('decoding','async');
-                                                if ((!node.getAttribute('src') || node.getAttribute('src') === '') && (!node.getAttribute('data-src') || node.getAttribute('data-src') === '')) {
-                                                    node.setAttribute('src', PLACEHOLDER_LOCAL);
+                                                const img = node;
+                                                const isDbCover = img.getAttribute('data-db-cover') === '1';
+                                                if (!isDbCover) {
+                                                    if (!img.hasAttribute('loading')) img.setAttribute('loading','eager');
+                                                } else {
+                                                    if (!img.hasAttribute('loading')) img.setAttribute('loading','lazy');
+                                                }
+                                                if (!img.hasAttribute('decoding')) img.setAttribute('decoding','async');
+                                                if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
+                                                    img.setAttribute('src', PLACEHOLDER_LOCAL);
                                                 }
                                             } else {
                                                 node.querySelectorAll && node.querySelectorAll('img').forEach(i => {
                                                     try {
-                                                        if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
+                                                        const isDbCover = i.getAttribute('data-db-cover') === '1';
+                                                        if (!isDbCover) {
+                                                            if (!i.hasAttribute('loading')) i.setAttribute('loading','eager');
+                                                        } else {
+                                                            if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
+                                                        }
                                                         if (!i.hasAttribute('decoding')) i.setAttribute('decoding','async');
                                                         if ((!i.getAttribute('src') || i.getAttribute('src') === '') && (!i.getAttribute('data-src') || i.getAttribute('data-src') === '')) {
                                                             i.setAttribute('src', PLACEHOLDER_LOCAL);
@@ -49,7 +70,12 @@
                             } else if (m.type === 'attributes' && m.target && m.target.tagName && m.target.tagName.toLowerCase() === 'img') {
                                 try {
                                     const img = m.target;
-                                    if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+                                    const isDbCover = img.getAttribute('data-db-cover') === '1';
+                                    if (!isDbCover) {
+                                        if (!img.hasAttribute('loading')) img.setAttribute('loading', 'eager');
+                                    } else {
+                                        if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+                                    }
                                     if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
                                     if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
                                         img.setAttribute('src', PLACEHOLDER_LOCAL);
@@ -61,7 +87,7 @@
                     try { mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] }); } catch(_) {}
                 });
             } else {
-                setLazyForExistingImgs();
+                setEagerForExistingImgs();
                 const mo = new MutationObserver((mut) => {
                     for (const m of mut) {
                         if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
@@ -69,15 +95,26 @@
                                 try {
                                     if (node && node.nodeType === 1) {
                                         if (node.tagName && node.tagName.toLowerCase() === 'img') {
-                                            if (!node.hasAttribute('loading')) node.setAttribute('loading','lazy');
-                                            if (!node.hasAttribute('decoding')) node.setAttribute('decoding','async');
-                                            if ((!node.getAttribute('src') || node.getAttribute('src') === '') && (!node.getAttribute('data-src') || node.getAttribute('data-src') === '')) {
-                                                node.setAttribute('src', PLACEHOLDER_LOCAL);
+                                            const img = node;
+                                            const isDbCover = img.getAttribute('data-db-cover') === '1';
+                                            if (!isDbCover) {
+                                                if (!img.hasAttribute('loading')) img.setAttribute('loading','eager');
+                                            } else {
+                                                if (!img.hasAttribute('loading')) img.setAttribute('loading','lazy');
+                                            }
+                                            if (!img.hasAttribute('decoding')) img.setAttribute('decoding','async');
+                                            if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
+                                                img.setAttribute('src', PLACEHOLDER_LOCAL);
                                             }
                                         } else {
                                             node.querySelectorAll && node.querySelectorAll('img').forEach(i => {
                                                 try {
-                                                    if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
+                                                    const isDbCover = i.getAttribute('data-db-cover') === '1';
+                                                    if (!isDbCover) {
+                                                        if (!i.hasAttribute('loading')) i.setAttribute('loading','eager');
+                                                    } else {
+                                                        if (!i.hasAttribute('loading')) i.setAttribute('loading','lazy');
+                                                    }
                                                     if (!i.hasAttribute('decoding')) i.setAttribute('decoding','async');
                                                     if ((!i.getAttribute('src') || i.getAttribute('src') === '') && (!i.getAttribute('data-src') || i.getAttribute('data-src') === '')) {
                                                         i.setAttribute('src', PLACEHOLDER_LOCAL);
@@ -91,7 +128,12 @@
                         } else if (m.type === 'attributes' && m.target && m.target.tagName && m.target.tagName.toLowerCase() === 'img') {
                             try {
                                 const img = m.target;
-                                if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+                                const isDbCover = img.getAttribute('data-db-cover') === '1';
+                                if (!isDbCover) {
+                                    if (!img.hasAttribute('loading')) img.setAttribute('loading', 'eager');
+                                } else {
+                                    if (!img.hasAttribute('loading')) img.setAttribute('loading', 'lazy');
+                                }
                                 if (!img.hasAttribute('decoding')) img.setAttribute('decoding', 'async');
                                 if ((!img.getAttribute('src') || img.getAttribute('src') === '') && (!img.getAttribute('data-src') || img.getAttribute('data-src') === '')) {
                                     img.setAttribute('src', PLACEHOLDER_LOCAL);
@@ -1986,12 +2028,8 @@
         })();
 
         // --- STATE & LOCAL STORAGE ---
-        // Reset user data on startup (clear v2 keys) to ensure a fresh state
-        try {
-            localStorage.removeItem('lumina_v2_favs');
-            localStorage.removeItem('lumina_v2_prog');
-            localStorage.removeItem('lumina_v2_hist');
-        } catch (e) { /* ignore storage errors */ }
+        // NOTE: do not purge user data on startup so favorites/progress persist across sessions.
+        // (Previous behavior removed stored v2 keys which prevented saving/restore.)
 
         let state = {
             favorites: JSON.parse(localStorage.getItem('lumina_v2_favs')) || [],
@@ -2625,7 +2663,7 @@
                 let html = `
                     <div class="relative w-full h-[75vh] md:h-[85vh] flex items-end pb-12 md:pb-24 pt-32 px-6 md:px-16 animate-fade-in group cursor-pointer" onclick="openDetails('${heroItem.id}')">
                         <div class="absolute inset-0 bg-surface">
-                            <img src="${heroItem.cover}" class="w-full h-full object-cover opacity-50 hero-cover-no-scale" onload="this.classList.add('loaded')">
+                            <img loading="lazy" decoding="async" data-db-cover="1" src="${heroItem.cover}" class="w-full h-full object-cover opacity-50 hero-cover-no-scale" onload="this.classList.add('loaded')">
                             <div class="absolute inset-0 fade-right"></div>
                             <div class="absolute inset-0 fade-bottom"></div>
                         </div>
@@ -2846,7 +2884,7 @@
                 
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
-                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         
                         <!-- Play Icon Hover -->
@@ -3284,7 +3322,7 @@
                 </button>
 
                 <div class="relative w-full h-[60vh] bg-surface">
-                    <img src="${item.cover}" class="absolute inset-0 w-full h-full object-cover opacity-50 hero-cover-no-scale" onload="this.classList.add('loaded')">
+                    <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="absolute inset-0 w-full h-full object-cover opacity-50 hero-cover-no-scale" onload="this.classList.add('loaded')">
                     <div class="absolute inset-0 fade-bottom"></div>
                 </div>
 
@@ -6026,7 +6064,7 @@
 
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
-                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         
                         <!-- Play Icon Hover -->
@@ -6063,7 +6101,7 @@
 
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
-                        <img src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                             <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-white shadow-lg transform scale-75 group-hover:scale-100 transition-all duration-300">
