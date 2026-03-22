@@ -82,8 +82,8 @@
             const splash = document.getElementById('splash-screen');
             if (!splash) return;
             // remove splash after animations complete (~5.2s). Keep fallback to 7s for slow devices.
-            const REMOVE_DELAY = 2200;
-            const FINAL_FALLBACK = 4200;
+            const REMOVE_DELAY = 5200;
+            const FINAL_FALLBACK = 7200;
             const doRemove = () => {
                 try {
                     splash.style.transition = 'opacity 420ms ease, visibility 420ms';
@@ -1887,6 +1887,20 @@
             } catch (e) {
                 // silent
             }
+
+            // Ensure any inline store created at parse-time is decoded and restored into runtime window.db immediately.
+            try {
+                if (window.__lumina_deobf && typeof window.__lumina_deobf.decodeDb === 'function') {
+                    const store = window.__db_store || window.db || null;
+                    if (Array.isArray(store)) {
+                        try { window.__lumina_deobf.decodeDb(store); window.db = store; }
+                        catch (_) { window.db = window.db || []; }
+                    } else {
+                        // if no inline store, attempt to decode any existing window.db (defensive)
+                        try { window.__lumina_deobf.decodeDb(window.db || []); } catch (_) {}
+                    }
+                }
+            } catch (_) {}
         })();
 
         // --- DATABASE LAZY LOADER & OBFUSCATION ---
@@ -6316,6 +6330,23 @@
             // Lightweight startup: render UI but avoid starting periodic/expensive tasks until user interacts.
             const safeInit = () => {
                 try {
+                    // If an inline obfuscated DB was stored during parsing, decode it here before any render so links are available at runtime.
+                    try {
+                        if (window.__lumina_deobf && typeof window.__lumina_deobf.decodeDb === 'function') {
+                            // prefer the in-memory copy created earlier (__db_store) or fallback to any existing window.db
+                            const store = window.__db_store || window.db || null;
+                            if (Array.isArray(store)) {
+                                try { window.__lumina_deobf.decodeDb(store); } catch(_) {}
+                                try { window.db = store; } catch(_) {}
+                            } else {
+                                try { window.db = window.db || []; } catch(_) {}
+                            }
+                        }
+                    } catch (e) {
+                        // non-blocking: continue even if decode fails
+                        console.warn('DB decode at safeInit failed', e);
+                    }
+
                     // Attach nav listeners immediately
                     try { attachNavTabListeners(); } catch (e) { console.warn('attachNavTabListeners failed', e); }
 
