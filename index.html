@@ -377,7 +377,7 @@
                         </button>
                         <!-- Cast button placed next to close for quick access (custom TV icon image) -->
                         <button id="cast-top-btn" onclick="playOnTV()" class="flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white" title="Transmitir na TV">
-                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGKfnYZj4qHzTSj5JJo2-rOSsltvx4QaVDxA&s" alt="TV" class="w-5 h-5 object-contain">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGKfnYZj4qHzTSj5JJo2-rOSsltvx4QaVDxA&s" alt="TV" class="w-5 h-5 object-contain" loading="eager" decoding="async" onload="this.classList.add('loaded')" onerror="this.onerror=null; this.src='fiveicon.png'; this.classList.add('loaded');" />
                         </button>
                         <!-- AirPlay button for iOS: opens native AirPlay picker using webkitShowPlaybackTargetPicker on the video element -->
                         <button id="airplay-btn" onclick="playOnAirPlay()" class="ml-2 flex items-center justify-center w-10 h-10 rounded-full bg-black/40 hover:bg-white/20 backdrop-blur-md transition-colors text-white" title="AirPlay">
@@ -1884,7 +1884,7 @@
     // Resilient image loader: retries image loads using fetch (with timeout) and falls back to a neutral placeholder.
     // This improves behavior on flaky/slow networks and handles cross-origin opaque responses gracefully.
     (function(){
-        const PLACEHOLDER = '/fiveicon.png'; // local fallback
+        const PLACEHOLDER = 'fiveicon.png'; // local fallback (use relative path to be robust on subpaths)
         const MAX_RETRIES = 3;
         const BASE_TIMEOUT = 5000; // 5s initial fetch timeout, will backoff
 
