@@ -3846,7 +3846,7 @@
                 this.isEmbed = !isDirectVideo(url);
 
                 // Setup a load watchdog to close player if no playable media starts (YouTube/embed/native).
-                // Dropbox-hosted sources can be slower; allow up to 11s for Dropbox URLs, otherwise default to 7s.
+                // Dropbox-hosted sources can be slower; allow up to 16s for Dropbox URLs, otherwise default to 7s.
                 try {
                     // clear any previous load timeout
                     if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
