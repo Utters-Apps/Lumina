@@ -26,7 +26,8 @@ const PRECACHE_URLS = [
   '/style.css',
   '/script.js',
   '/fiveicon.png',
-  '/fiveicon-512.png'
+  '/fiveicon-512.png',
+  '/PiPicon.png'
 ];
 
 // resources considered "static" for stale-while-revalidate
