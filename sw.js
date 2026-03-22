@@ -20,14 +20,23 @@ const NAV_CACHE_KEY = '/index.html'; // navigation fallback (app shell)
 
 // Precache core shell
 const PRECACHE_URLS = [
-  '/',
+  '/',                   // root
   '/index.html',
   '/manifest.json',
+
+  // CSS / JS (include both absolute and relative paths to match how pages request them)
   '/style.css',
+  'style.css',
   '/script.js',
+  'script.js',
+
+  // Icons (cache both leading-slash and relative variants)
   '/fiveicon.png',
+  'fiveicon.png',
   '/fiveicon-512.png',
-  '/PiPicon.png'
+  'fiveicon-512.png',
+  '/PiPicon.png',
+  'PiPicon.png'
 ];
 
 // resources considered "static" for stale-while-revalidate
@@ -169,11 +178,28 @@ self.addEventListener('fetch', (event) => {
 
   // Media / CDN hosts -> network-first, with Range-aware handler for streaming/ranged requests
   const isMediaHost = MEDIA_HOSTS.some(h => url.hostname.includes(h));
-  if (isMediaHost || url.search) {
-    // Let the browser handle media/CDN requests directly (no SW interception) to avoid CORS/Range issues
-    // that commonly prevent mobile players from fetching video bytes; returning here allows native
-    // network stack to handle Range requests and streaming for better mobile compatibility.
+
+  // Treat query-containing URLs cautiously: many media CDNs use query params for tokens; prefer handling when host matches media list.
+  // If request targets a known media host (Dropbox, Odycdn, drive.google, etc.) use a range-capable network-first handler to allow
+  // byte-range streaming for mobile players (important for .mp4 dropbox links). For other cross-origin query URLs, fallback to letting
+  // the browser handle them directly to avoid breaking non-media endpoints.
+  const hasQuery = Boolean(url.search);
+  const looksLikeMediaExt = /\.(mp4|webm|m3u8|mov|ogg)$/i.test(url.pathname) || /\.(mp4|webm|m3u8|mov|ogg)$/i.test((url.pathname + (url.search || '')));
+
+  if (isMediaHost) {
+    // For known media hosts we intercept and use a Range-aware network-first strategy so mobile players can seek/stream reliably.
+    event.respondWith(networkFirstRange(req));
     return;
+  }
+
+  // If the URL has query tokens and looks like a media file but host isn't recognized, attempt Range-aware fetch as best-effort.
+  if (!isMediaHost && hasQuery && looksLikeMediaExt) {
+    try {
+      event.respondWith(networkFirstRange(req));
+      return;
+    } catch (e) {
+      // fall through to default handling below on error
+    }
   }
 
   // Default: try cache, then network, then precache fallback
