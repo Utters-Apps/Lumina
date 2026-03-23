@@ -5692,26 +5692,24 @@
         }
 
         function skipVideo(s) {
-            // Optimized unified skip handler: minimal blocking work, immediate UI frame updates, and throttled progress save.
+            // Reliable skip: pause first, compute/clamp target, perform a single seek, update UI, save progress, then resume playback.
+            const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
             try {
-                // Helper to clamp a value safely
-                const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
-                // Prefer YouTube API when available
+                // Handle YouTube (via API) first
                 if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.getCurrentTime === 'function') {
-                    let cur = 0, dur = 0;
-                    try { cur = Number(player.ytPlayer.getCurrentTime()) || 0; } catch(_) { cur = 0; }
-                    try { dur = Number(player.ytPlayer.getDuration()) || 0; } catch(_) { dur = 0; }
-
-                    let target = Number(cur) + Number(s || 0);
+                    const cur = Number(player.ytPlayer.getCurrentTime()) || 0;
+                    const dur = Number(player.ytPlayer.getDuration()) || 0;
+                    let target = cur + Number(s || 0);
                     if (isNaN(target)) target = cur;
-                    target = clamp(target, 0, (dur > 0 ? dur : Number.POSITIVE_INFINITY));
+                    target = clamp(target, 0, dur > 0 ? dur : target);
 
-                    // perform seek quickly and non-blocking
-                    try {
-                        if (typeof player.ytPlayer.seekTo === 'function') player.ytPlayer.seekTo(target, true);
-                    } catch (_) {}
+                    // Pause/ensure stable state before seeking
+                    try { player.ytPlayer.pauseVideo && player.ytPlayer.pauseVideo(); } catch (_) {}
 
-                    // update UI immediately on next animation frame for smooth sync
+                    // Single seek call
+                    try { player.ytPlayer.seekTo && player.ytPlayer.seekTo(target, true); } catch (_) {}
+
+                    // Update UI immediately
                     requestAnimationFrame(() => {
                         try {
                             const tc = document.getElementById('time-current');
@@ -5725,10 +5723,9 @@
                         } catch (_) {}
                     });
 
-                    // persist a lightweight progress snapshot asynchronously (debounced inside saveProgressData)
+                    // Save progress snapshot and then resume playback (swallow promise rejections)
                     try {
                         if (player.context && player.context.id) {
-                            // avoid heavy localStorage calls here; update in-memory and schedule save
                             state.progress[player.context.id] = state.progress[player.context.id] || {};
                             state.progress[player.context.id].time = target;
                             state.progress[player.context.id].duration = dur || (state.progress[player.context.id].duration || 0);
@@ -5736,36 +5733,47 @@
                             if (player.context.type === 'serie' && player.context.seriesId) {
                                 state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
                             }
-                            // schedule debounced merge-save then call player.saveProgress to persist immediately
                             saveProgressData();
                             try { if (player && typeof player.saveProgress === 'function') player.saveProgress(); } catch(_) {}
                         }
                     } catch (_) {}
 
+                    // Resume after tiny delay to allow seek to settle
+                    setTimeout(() => {
+                        try { player.ytPlayer.playVideo && player.ytPlayer.playVideo(); } catch (_) {}
+                    }, 120);
+
                     return;
                 }
             } catch (e) {
-                // continue to native fallback
+                // fallback to native
             }
 
-            // Native HTMLVideoElement path (fast and defensive)
+            // Native HTMLVideoElement path
             try {
                 const vid = player.vid;
                 if (!vid) return;
+                // Pause first to avoid race conditions
+                let wasPlaying = false;
+                try { wasPlaying = !vid.paused; } catch (_) { wasPlaying = false; }
+                try { if (wasPlaying) vid.pause(); } catch (_) {}
+
                 const cur = Number(vid.currentTime) || 0;
-                const dur = Number(vid.duration) || NaN;
+                const dur = (!isNaN(vid.duration) && Number(vid.duration) > 0) ? Number(vid.duration) : NaN;
                 let target = cur + Number(s || 0);
                 if (isNaN(target)) target = cur;
                 if (target < 0) target = 0;
-                if (!isNaN(dur) && dur > 0 && target > dur) target = dur;
+                if (!isNaN(dur) && dur > 0) target = clamp(target, 0, dur);
 
-                // set currentTime inside try/catch; browsers may throw if seeking during certain states
-                try { vid.currentTime = target; } catch (err) {
-                    // fallback: attempt a small delayed seek if immediate seek fails
-                    try { setTimeout(() => { try { if (player.vid) player.vid.currentTime = target; } catch(_) {} }, 80); } catch(_) {}
+                // Perform a single, defensive seek
+                try {
+                    vid.currentTime = target;
+                } catch (err) {
+                    // retry once shortly after if immediate assignment fails
+                    setTimeout(() => { try { if (player.vid) player.vid.currentTime = target; } catch(_) {} }, 60);
                 }
 
-                // schedule UI update on next frame for smoothness and to avoid layout thrash
+                // Update UI immediately
                 requestAnimationFrame(() => {
                     try {
                         const tc = document.getElementById('time-current');
@@ -5779,14 +5787,13 @@
                     } catch (_) {}
                 });
 
-                // update in-memory progress and schedule a debounced persistent save for performance
+                // Update in-memory progress and schedule save
                 try {
                     if (player.context && player.context.id) {
                         const pid = player.context.id;
                         const prev = state.progress[pid] || {};
                         const prevTime = (typeof prev.time === 'number') ? prev.time : -1;
                         if (prevTime >= 0 && target < prevTime - 1) {
-                            // prevent regression: keep previous time but refresh timestamp
                             prev.timestamp = Date.now();
                             state.progress[pid] = prev;
                         } else {
@@ -5795,17 +5802,19 @@
                             state.progress[pid].duration = (!isNaN(dur) && dur > 0) ? dur : (state.progress[pid].duration || 0);
                             state.progress[pid].timestamp = Date.now();
                         }
-
                         if (player.context.type === 'serie' && player.context.seriesId) {
                             state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
                         }
-                        // defer writes via the shared saveProgressData debounce
                         saveProgressData();
                     }
                 } catch (_) {}
 
+                // Resume playback only if it was playing before and after a slight delay for the seek to settle
+                setTimeout(() => {
+                    try { if (wasPlaying) { const p = vid.play(); if (p && typeof p.catch === 'function') p.catch(()=>{}); } } catch (_) {}
+                }, 140);
             } catch (e) {
-                // silent fallback
+                // swallow errors to avoid breaking UI
             }
         }
 
