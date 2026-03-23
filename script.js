@@ -217,6 +217,34 @@
                 }
             },
             {
+                id: 'my-melody-kuromi',
+                title: 'My Melody & Kuromi',
+                type: 'serie',
+                category: 'Animação, Comédia, Fantasia, Família',
+                year: '2025',
+                cover: 'https://occ-0-8407-2218.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABVkCt99X29NokSDpVceWvlNyiZobBAd0boetk4_0j-YfzL1k8cdsCk3_tmBJo5HTGbJ_vcDFue0h0pdBBtTlV-Mj15Gkpbo2PK3Z.jpg?r=931',
+                description: 'A confeiteira My Melody se une a sua rival, a doceira Kuromi, para salvar sua amada cidade.',
+                ageRating: 'A6',
+                distributor: 'Netflix',
+                producer: 'Sanrio',
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'O que é isso? Meu coração tá acelerado', url: 'https://dl.dropboxusercontent.com/scl/fi/7278mc0sibg5ko5z0bgt3/Mk01.mp4?rlkey=4deo3a56872q0dwsnywq1pkco&st=bq7iw7ps' },
+                        { id: 's1-e2', title: 'Macio e felpudinho', url: 'https://dl.dropboxusercontent.com/scl/fi/cmfib1v50bqq1pfwv0cgh/Mk02.mp4?rlkey=kapifjjla053widwoll69q203&st=ht2648jq' },
+                        { id: 's1-e3', title: 'O grande roubo de receita da Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/d4v2lfccg9ta862eawyvx/Mk03.mp4?rlkey=wfu6l3h4s7lfcge8utyaorpu7&st=bavou65n' },
+                        { id: 's1-e4', title: 'Perseguição ao carrinho de mel', url: 'https://dl.dropboxusercontent.com/scl/fi/1m1kxmbgmwjcd3txgzsyi/Mk04.mp4?rlkey=xj489k2sh3rxuis2fz0y5qhpp&st=c0wo9h6c' },
+                        { id: 's1-e5', title: 'Começa o concurso de doces', url: 'https://dl.dropboxusercontent.com/scl/fi/a94crxzdmljfgm5hj0qz4/Mk05.mp4?rlkey=iezuixz3v6q9ltclwenjir4hi&st=svgdwzrk' },
+                        { id: 's1-e6', title: 'O segredo do dorayaki da Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/q14kjvbmykm9urlohqmyq/mk06.mp4?rlkey=buoywwl64xu6cm2l9tztptphd&st=hmp9kcae' },
+                        { id: 's1-e7', title: 'E agora?', url: 'https://dl.dropboxusercontent.com/scl/fi/q1hplw790jiwpmdcmsbl5/mk07.mp4?rlkey=iyi5bk8kfw4ebrhm4np1saqd0&st=gb6dbap5' },
+                        { id: 's1-e8', title: 'Hora de trabalhar em equipe', url: 'https://dl.dropboxusercontent.com/scl/fi/1nu141eyod38i8a9cf31n/Mk08.mp4?rlkey=691tfpdx8tjhu8f0tg77ty9ao&st=exbpeoc5' },
+                        { id: 's1-e9', title: 'Para o País das Nuvens!', url: 'https://dl.dropboxusercontent.com/scl/fi/2puj59zvxc0h28ckic0gi/Mk09.mp4?rlkey=zkqtjfbt5xxn0jgk1ymh7k27s&st=5re9zzbb' },
+                        { id: 's1-e10', title: 'O passado de Pistachio', url: 'https://dl.dropboxusercontent.com/scl/fi/kyopkc5ncuwaw9vvznh69/Mk10.mp4?rlkey=uyzv1vsitfhw31db0rnrkl4oy&st=64xft11m' },
+                        { id: 's1-e11', title: 'Tudo pelos amigos', url: 'https://dl.dropboxusercontent.com/scl/fi/6akjy0vn8f4y62wnwqx2k/Mk11.mp4?rlkey=e4dsli41nxekicr8ckk365ii8&st=q8pi6m38' },
+                        { id: 's1-e12', title: 'My Melody & Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/fp7c5u7hpv541t2l2d8v5/mk12.mp4?rlkey=en0pd7q5auv3ak2b7yfl3m4mq&st=p4jq50d8' }
+                    ]
+                }
+            },
+            {
                 id: 'diario-banana-1',
                 title: 'Diário de um Banana',
                 type: 'filme',
@@ -2436,65 +2464,124 @@
         // Smooth tab switching with light fade/slide and render debounce to avoid layout thrash
         let __switchTabTimer = null;
         function switchTab(tab, clearSearch = true) {
-            if (state.tab === tab && clearSearch) return; // no-op if same tab
-            state.tab = tab;
+            // Lightweight "doom" navigation: unload previous view's heavy DOM and only render the new tab on demand.
+            try {
+                if (state.tab === tab && clearSearch) return;
+                const prevTab = state.tab;
+                state.tab = tab;
 
-            if (clearSearch) {
-                state.searchQuery = '';
-                const dSearch = document.getElementById('desktop-search');
-                if (dSearch) dSearch.value = '';
-            }
-
-            // Update Desktop Nav
-            const dTabs = {
-                'home': document.getElementById('tab-home-desktop'),
-                'favorites': document.getElementById('tab-fav-desktop')
-            };
-            Object.keys(dTabs).forEach(k => {
-                if (dTabs[k]) dTabs[k].className = k === tab ? 'text-white font-medium text-sm transition-all' : 'text-white/50 hover:text-white font-medium text-sm transition-all';
-            });
-
-            // Update Mobile Nav
-            const mTabs = {
-                'home': { el: document.getElementById('tab-home-mobile'), icon: 'ph-house' },
-                'search': { el: document.getElementById('tab-search-mobile'), icon: 'ph-magnifying-glass' },
-                'favorites': { el: document.getElementById('tab-fav-mobile'), icon: 'ph-bookmark-simple' }
-            };
-            Object.keys(mTabs).forEach(k => {
-                if (mTabs[k].el) {
-                    const isActive = k === tab;
-                    mTabs[k].el.className = `flex flex-col items-center gap-1 w-16 transition-all ${isActive ? 'text-white scale-110' : 'text-white/40 hover:text-white'}`;
-                    mTabs[k].el.querySelector('i').className = `${isActive ? 'ph-fill' : 'ph'} ${mTabs[k].icon} text-2xl mb-0.5`;
+                if (clearSearch) {
+                    state.searchQuery = '';
+                    const dSearch = doom('#desktop-search');
+                    if (dSearch) dSearch.value = '';
                 }
-            });
 
-            // Animate container out, then render new view and animate in
-            const container = document.getElementById('main-content');
-            if (!container) return;
+                // Update Desktop Nav
+                const dTabs = {
+                    'home': doom('#tab-home-desktop'),
+                    'favorites': doom('#tab-fav-desktop')
+                };
+                Object.keys(dTabs).forEach(k => {
+                    const el = dTabs[k];
+                    if (el) el.className = k === tab ? 'text-white font-medium text-sm transition-all' : 'text-white/50 hover:text-white font-medium text-sm transition-all';
+                });
 
-            // If a previous timer exists, clear it to avoid race conditions
-            if (__switchTabTimer) clearTimeout(__switchTabTimer);
+                // Update Mobile Nav
+                const mTabs = {
+                    'home': { el: doom('#tab-home-mobile'), icon: 'ph-house' },
+                    'search': { el: doom('#tab-search-mobile'), icon: 'ph-magnifying-glass' },
+                    'favorites': { el: doom('#tab-fav-mobile'), icon: 'ph-bookmark-simple' }
+                };
+                Object.keys(mTabs).forEach(k => {
+                    const entry = mTabs[k];
+                    if (entry.el) {
+                        const isActive = k === tab;
+                        entry.el.className = `flex flex-col items-center gap-1 w-16 transition-all ${isActive ? 'text-white scale-110' : 'text-white/40 hover:text-white'}`;
+                        const iconEl = entry.el.querySelector('i');
+                        if (iconEl) iconEl.className = `${isActive ? 'ph-fill' : 'ph'} ${entry.icon} text-2xl mb-0.5`;
+                    }
+                });
 
-            // start exit animation
-            container.classList.add('tab-exit');
+                const container = doom('#main-content');
+                if (!container) return;
 
-            // after CSS transition, render and animate enter
-            __switchTabTimer = setTimeout(() => {
-                container.classList.remove('tab-exit');
-                container.classList.add('tab-enter');
-                renderView();
-                insertLegalFooter();
-                // force reflow so transition picks up
-                container.getBoundingClientRect();
-                container.classList.add('tab-enter-active');
+                // Exit animation for previous view
+                container.classList.add('tab-exit');
 
-                // cleanup enter classes after transition
-                setTimeout(() => {
-                    container.classList.remove('tab-enter', 'tab-enter-active');
-                }, 350);
-                if (clearSearch) window.scrollTo({ top: 0, behavior: 'smooth' });
-                __switchTabTimer = null;
-            }, 180);
+                // Minimal unload: remove large DOM subtrees, stop timers and listeners tied to previous view
+                try {
+                    // fire global cleanup to stop background timers and release heavy refs
+                    try { window.luminaCleanup && window.luminaCleanup(); } catch(_) {}
+                    // remove player/details heavy nodes if they are not needed
+                    try {
+                        const details = doom('#details-modal');
+                        if (details && !details.classList.contains('hidden')) {
+                            // close details to free listeners and inner DOM
+                            closeDetails && closeDetails();
+                        }
+                    } catch (_) {}
+                    try {
+                        const pmod = doom('#player-modal');
+                        if (pmod && !pmod.classList.contains('hidden')) {
+                            // fully close the player to release media and blobs
+                            closePlayer && closePlayer();
+                        }
+                    } catch (_) {}
+
+                    // Remove any large injected sections (trend carousels, grids) to keep only the container
+                    // We preserve the main container element but clear its contents before rendering the new tab.
+                    // Also revoke any objectURLs created by resilient loader to avoid leaks.
+                    try {
+                        // revoke created object URLs on imgs
+                        document.querySelectorAll('img.__resilient_object_url').forEach(img => {
+                            try { if (img.__resilient_object_url) { URL.revokeObjectURL(img.__resilient_object_url); img.__resilient_object_url = null; } } catch(_) {}
+                        });
+                    } catch (_) {}
+
+                    // detach delegated listeners that tie to previous content (defensive)
+                    try { document.removeEventListener('lumina-ensure-legal-footer', insertLegalFooter); } catch(_) {}
+                } catch (e) {
+                    // non-fatal
+                }
+
+                // After a short delay run the render for the requested tab (gives exit animation a moment)
+                if (__switchTabTimer) clearTimeout(__switchTabTimer);
+                __switchTabTimer = setTimeout(() => {
+                    try {
+                        // Completely clear previous content (doom helper ensures safe queries)
+                        try { container.innerHTML = ''; } catch (_) { while (container.firstChild) container.removeChild(container.firstChild); }
+
+                        // Render only the requested tab (renderView already does selective rendering)
+                        renderView();
+
+                        // Insert lightweight footer for current view only
+                        insertLegalFooter && insertLegalFooter();
+
+                        // Force reflow to allow enter transitions, then animate in
+                        container.classList.remove('tab-exit');
+                        container.classList.add('tab-enter');
+                        void container.offsetHeight;
+                        container.classList.add('tab-enter-active');
+
+                        setTimeout(() => {
+                            try { container.classList.remove('tab-enter', 'tab-enter-active'); } catch(_) {}
+                        }, 350);
+
+                        // garbage-collect hints: schedule a microtask to remove detached nodes and call cleanup again
+                        Promise.resolve().then(() => {
+                            try { window.luminaCleanup && window.luminaCleanup(); } catch(_) {}
+                        });
+                    } catch (err) {
+                        console.warn('switchTab render error', err);
+                    } finally {
+                        __switchTabTimer = null;
+                        // scroll to top of app area explicitly
+                        try { window.scrollTo({ top: 0, behavior: 'auto' }); } catch(_) {}
+                    }
+                }, 180);
+            } catch (ex) {
+                console.warn('switchTab fatal', ex);
+            }
         }
 
         // Debounced search to avoid excessive renders while typing
@@ -2836,8 +2923,25 @@
             if(rating === '10') color = 'bg-blue-600/20 text-blue-400 border border-blue-600/30';
             if(rating === '12') color = 'bg-yellow-600/20 text-yellow-400 border border-yellow-600/30';
             if(rating === '14') color = 'bg-orange-600/20 text-orange-400 border border-orange-600/30';
+            if (rating === 'A6') color = 'badge-a6'; // A6 = não recomendado para menores de 6 anos
             if(['16','18'].includes(rating)) color = 'bg-red-600/20 text-red-400 border border-red-600/30';
             return `<span class="${color} text-[10px] font-bold px-1.5 py-0.5 rounded-sm">${rating}</span>`;
+        }
+
+        // Format category strings: replace commas with " / " and normalize multiple separators
+        function formatCategory(cat) {
+            try {
+                if (!cat) return '';
+                // replace commas and multiple separators with a single " / ", trim whitespace
+                return String(cat)
+                    .replace(/\s*,\s*/g, ' / ')
+                    .replace(/\s*\/\s*/g, ' / ')
+                    .replace(/\s*&\s*/g, ' / ')
+                    .replace(/\s+,\s+/g, ' / ')
+                    .replace(/\s+/g, ' ')
+                    .replace(/\s*\/\s*/g, ' / ')
+                    .trim();
+            } catch (e) { return String(cat || ''); }
         }
 
         // Horizontal Scroll Cards for "Continue Watching"
@@ -2898,7 +3002,7 @@
                         <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
                         <div class="flex items-center gap-2 mt-0.5">
                             ${getAgeBadge(item.ageRating)}
-                            <p class="text-white/40 text-[11px] truncate">${item.category}</p>
+                            <p class="text-white/40 text-[11px] truncate">${formatCategory(item.category)}</p>
                         </div>
                     </div>
                 `;
@@ -3161,15 +3265,153 @@
         }
 
         // --- DETAILS MODAL ---
+        // Render a compact "Relacionados" section inside the details modal for the given item object.
+        function renderRelatedItems(item) {
+            try {
+                if (!item || !item.id) return;
+                // Do not render the related/recommendations block for series pages (keep series details focused)
+                if (item.type === 'serie') return;
+                const container = document.getElementById('details-content');
+                if (!container) return;
+
+                // Remove any previous related section for this item
+                const prev = document.getElementById(`related-section-${item.id}`);
+                if (prev) prev.remove();
+
+                // Build candidates: same category tokens and shared tags (exclude the current item)
+                const normalize = s => (String(s || '').toLowerCase());
+                const categoryTokens = (item.category || '').split(/[,\/]| e | & /i).map(t => normalize(t).trim()).filter(Boolean);
+                const tagSet = new Set((item.tags || []).map(t => normalize(t)));
+
+                // Try to detect sequels explicitly: look for other items whose title/originalTitle contains the current title
+                const baseTitle = (item.title || item.originalTitle || '').replace(/[^a-z0-9\s]/ig, '').trim().toLowerCase();
+                const potentialSequels = db.filter(d => {
+                    if (!d || !d.id || d.id === item.id) return false;
+                    const t = ((d.title || '') + ' ' + (d.originalTitle || '')).toLowerCase();
+                    // match "Base Title 2", "Base Title II", "Base Title: The Sequel", or "Base Title (Year)" heuristics
+                    if (baseTitle && t.indexOf(baseTitle) !== -1 && t !== baseTitle) return true;
+                    return false;
+                });
+
+                // Fallback: build scored candidate list by category/tag similarity and rating
+                const scored = db
+                    .filter(d => d && d.id && d.id !== item.id && d.title)
+                    .map(d => {
+                        let score = 0;
+                        try {
+                            const dCats = (d.category || '').toLowerCase();
+                            categoryTokens.forEach(t => { if (t && dCats.includes(t)) score += 3; });
+                            (d.tags || []).forEach(t => { if (t && tagSet.has(normalize(t))) score += 2; });
+                            if (d.ratings && d.ratings.imdb) score += Math.min(4, Math.floor((d.ratings.imdb || 0) / 2));
+                        } catch (_) {}
+                        return { item: d, score: score || 1 };
+                    });
+
+                // Sort scored candidates descending
+                scored.sort((a,b) => b.score - a.score);
+
+                // Build final candidates: place explicit sequels first (de-duplicated), then top scored items up to 8 total
+                const seqIds = new Set();
+                potentialSequels.forEach(s => { if (s && s.id) seqIds.add(s.id); });
+                const candidates = [];
+
+                // push sequels first preserving original order
+                for (const s of potentialSequels) {
+                    if (candidates.length >= 8) break;
+                    if (s && s.id && s.cover) candidates.push(s);
+                }
+
+                // then fill from scored list skipping duplicates
+                for (const s of scored) {
+                    if (candidates.length >= 8) break;
+                    if (!s || !s.item) continue;
+                    if (s.item.id === item.id) continue;
+                    if (candidates.find(c => c.id === s.item.id)) continue;
+                    if (!s.item.cover) continue;
+                    candidates.push(s.item);
+                }
+
+                if (!candidates || candidates.length === 0) return;
+
+                // Create related block using the same section/card layout as Home (so cards match catalog style)
+                const wrap = document.createElement('div');
+                wrap.id = `related-section-${item.id}`;
+                wrap.className = 'px-6 md:px-16 mt-8 mb-12';
+                wrap.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-display text-lg font-medium text-white">Relacionados</h3>
+                        <span class="text-white/60 text-sm">Sugestões parecidas com ${item.title}</span>
+                    </div>
+                    <div id="related-grid-${item.id}" class="session-scroll grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+                `;
+
+                // Insert near the end of details content, after episodes block if present
+                const episodesContainer = document.getElementById(`episodes-container-${item.id}`);
+                if (episodesContainer && episodesContainer.parentNode) {
+                    episodesContainer.parentNode.parentNode.insertBefore(wrap, episodesContainer.parentNode.nextSibling);
+                } else {
+                    container.appendChild(wrap);
+                }
+
+                // Render cards using the same renderer as catalog so visual style matches exactly
+                const grid = document.getElementById(`related-grid-${item.id}`);
+                if (!grid) return;
+
+                try {
+                    render16by9CatalogCards(candidates, grid);
+                } catch (err) {
+                    // Fallback: if helper fails, perform a minimal card render (shouldn't normally happen)
+                    candidates.forEach(c => {
+                        try {
+                            const card = document.createElement('div');
+                            card.className = 'cursor-pointer group session-card';
+                            card.onclick = () => openDetails(c.id);
+                            const cover = c.cover || 'fiveicon.png';
+                            card.innerHTML = `
+                                <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
+                                    <img loading="lazy" decoding="async" data-db-cover="1" src="${cover}" onerror="this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-400" onload="this.classList.add('loaded')">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                </div>
+                                <div class="mt-2">
+                                    <h4 class="text-white text-sm font-medium truncate">${c.title}</h4>
+                                    <p class="text-white/50 text-xs truncate mt-0.5">${c.year || ''} • ${c.type || ''}</p>
+                                </div>
+                            `;
+                            grid.appendChild(card);
+                        } catch(_) {}
+                    });
+                }
+            } catch (e) {
+                // non-blocking: ignore related render failures
+                console.warn('renderRelatedItems failed', e);
+            }
+        }
+
         function openDetails(id) {
             const item = db.find(i => i.id === id);
             if (!item) return;
             // Pause home session rotation while details modal is open to avoid background DOM work
             try { stopHomeRotator(); } catch (e) {}
 
-            // Ensure main viewport and content are at top when opening details
-            try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(_) {}
-            try { const mc = document.getElementById('main-content'); if (mc) mc.scrollTo({ top: 0, behavior: 'smooth' }); else document.documentElement.scrollTop = 0; } catch(_) {}
+            // Ensure main viewport and content are at the top when opening details (use immediate jump to avoid race conditions)
+            try {
+                // Robust immediate scroll-to-top for document
+                try { window.scrollTo(0, 0); } catch (_) {}
+                try { document.documentElement.scrollTop = 0; } catch (_) {}
+                try { document.body.scrollTop = 0; } catch (_) {}
+
+                // If the main content container exists, ensure it is scrolled to top and is visible
+                const mc = document.getElementById('main-content');
+                if (mc) {
+                    try { mc.scrollTop = 0; } catch (_) {}
+                    try { mc.scrollTo && mc.scrollTo({ top: 0, behavior: 'auto' }); } catch (_) {}
+                    // also bring the container into view for embedded contexts
+                    try { mc.scrollIntoView && mc.scrollIntoView({ behavior: 'auto', block: 'start' }); } catch (_) {}
+                } else {
+                    // fallback: ensure document root at top
+                    try { window.scrollTo(0, 0); } catch (_) {}
+                }
+            } catch (_) {}
 
             const modal = document.getElementById('details-modal');
             const content = document.getElementById('details-content');
@@ -3335,7 +3577,7 @@
                             ${getAgeBadge(item.ageRating)}
                             <span>${item.year}</span>
                             <span>•</span>
-                            <span>${item.category}</span>
+                            <span>${formatCategory(item.category)}</span>
                         </div>
 
                         <p class="text-white/80 text-sm md:text-base leading-relaxed mb-4 font-light">${item.description}</p>
@@ -3438,8 +3680,38 @@
             } catch(e) { /* silent */ }
 
             document.body.style.overflow = 'hidden';
+            // make modal visible
             modal.classList.remove('hidden');
-            requestAnimationFrame(() => modal.classList.remove('opacity-0'));
+
+            // reset scroll positions so the modal content always opens at its top (title, cover and play button visible)
+            try { modal.scrollTop = 0; } catch(_) {}
+            try {
+                const dc = document.getElementById('details-content');
+                if (dc) {
+                    // ensure content scrolled to top and focused (helps in some embed/iframe contexts)
+                    try { dc.scrollTop = 0; } catch(_) {}
+                    try { dc.scrollTo && dc.scrollTo({ top: 0, behavior: 'auto' }); } catch(_) {}
+                    try { dc.focus && dc.focus(); } catch(_) {}
+                }
+            } catch(_) {}
+
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+                // final safety: bring the details-content to the start of the viewport
+                try { const dc = document.getElementById('details-content'); if (dc) dc.scrollIntoView && dc.scrollIntoView({ behavior: 'auto', block: 'start' }); } catch(_) {}
+            });
+
+            // Render a Related section under the details UI (non-blocking)
+            try {
+                // Attempt to find the item object (safe guard) and then render related items
+                const itemObj = db.find(d => d && d.id === id);
+                if (itemObj) {
+                    // slight delay to ensure details DOM nodes are present and stable
+                    setTimeout(() => {
+                        try { renderRelatedItems(itemObj); } catch(_) {}
+                    }, 120);
+                }
+            } catch (_) {}
         }
 
         function generateSeasonsHTML(item) {
@@ -5576,17 +5848,45 @@
             const wrapper = document.getElementById('speed-control-wrapper');
             const btn = document.getElementById('speed-btn');
             const menu = document.getElementById('speed-menu');
+            const progressBar = document.getElementById('progress-bar');
 
             if (!btn || !menu) return;
+
+            // helpers to disable/enable progress interactions while the speed menu is open
+            const disableProgressInteractions = () => {
+                try {
+                    if (progressBar) {
+                        // visually keep it but prevent pointer events and keyboard focus
+                        progressBar.style.pointerEvents = 'none';
+                        progressBar.setAttribute('aria-hidden', 'true');
+                        progressBar.tabIndex = -1;
+                    }
+                } catch(_) {}
+            };
+            const enableProgressInteractions = () => {
+                try {
+                    if (progressBar) {
+                        progressBar.style.pointerEvents = '';
+                        progressBar.removeAttribute('aria-hidden');
+                        // remove forced tabindex only if not explicitly set elsewhere
+                        try { progressBar.removeAttribute('tabindex'); } catch(_) {}
+                    }
+                } catch(_) {}
+            };
 
             // Toggle menu on button click
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const isOpen = !menu.classList.contains('hidden');
                 if (isOpen) {
-                    menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false');
+                    menu.classList.add('hidden');
+                    btn.setAttribute('aria-expanded', 'false');
+                    enableProgressInteractions();
                 } else {
-                    menu.classList.remove('hidden'); btn.setAttribute('aria-expanded', 'true');
+                    menu.classList.remove('hidden');
+                    btn.setAttribute('aria-expanded', 'true');
+                    // when menu opens, disable progress interactions to avoid accidental seeks
+                    disableProgressInteractions();
                 }
             }, { passive: true });
 
@@ -5596,14 +5896,37 @@
                 const target = e.target.closest('button[data-speed]');
                 if (!target) return;
                 const s = Number(target.getAttribute('data-speed')) || 1;
+                // Prevent the immediate next pointerup on the progress bar from causing an unintended seek
+                try {
+                    window.__lumina_ignore_next_pointerup = true;
+                    // Clear the flag shortly after to avoid stale state
+                    setTimeout(() => { try { window.__lumina_ignore_next_pointerup = false; } catch(_) {} }, 250);
+                } catch (_) {}
                 setSpeed(s);
                 // keep menu visible very briefly then close to show feedback
-                setTimeout(() => { menu.classList.add('hidden'); btn.setAttribute('aria-expanded', 'false'); }, 220);
+                setTimeout(() => { 
+                    menu.classList.add('hidden'); 
+                    btn.setAttribute('aria-expanded', 'false'); 
+                    // re-enable progress interactions after menu closes
+                    enableProgressInteractions();
+                }, 220);
             });
 
             // Close menu when clicking outside or pressing Escape
-            document.addEventListener('click', () => { if (!menu.classList.contains('hidden')) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); } }, { passive: true });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.classList.contains('hidden')) { menu.classList.add('hidden'); btn.setAttribute('aria-expanded','false'); } });
+            document.addEventListener('click', () => { 
+                if (!menu.classList.contains('hidden')) { 
+                    menu.classList.add('hidden'); 
+                    btn.setAttribute('aria-expanded','false'); 
+                    enableProgressInteractions();
+                } 
+            }, { passive: true });
+            document.addEventListener('keydown', (e) => { 
+                if (e.key === 'Escape' && !menu.classList.contains('hidden')) { 
+                    menu.classList.add('hidden'); 
+                    btn.setAttribute('aria-expanded','false'); 
+                    enableProgressInteractions();
+                } 
+            });
 
             // initialize label from stored preferredRate if available
             try {
@@ -6090,9 +6413,13 @@
                     tagsHtml = tag ? `<div class="card-badge ${tagToClass(tag)}">${String(tag)}</div>` : '';
                 }
 
+                // ensure stable cover and onerror fallback that preserves aspect ratio/size
+                const coverSrc = (item.cover && item.cover.trim()) ? item.cover : 'fiveicon.png';
+                const imgOnError = `this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');this.style.objectFit='cover';`;
+
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
-                        <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <img loading="lazy" decoding="async" data-db-cover="1" src="${coverSrc}" onerror="${imgOnError}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         
                         <!-- Play Icon Hover -->
@@ -6107,7 +6434,7 @@
                         <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
                         <div class="flex items-center gap-2 mt-1">
                             ${getAgeBadge(item.ageRating)}
-                            <p class="text-white/40 text-[11px] truncate">${item.category}</p>
+                            <p class="text-white/40 text-[11px] truncate">${formatCategory(item.category)}</p>
                         </div>
                     </div>
                 `;
