@@ -3922,6 +3922,30 @@
                 }
             } catch (_) {}
 
+            // If we already have saved progress for this content, resume immediately (skip warmup/orientation delays)
+            try {
+                const resolveContextId = (ctx) => {
+                    if (!ctx) return null;
+                    // prefer explicit stable id provided by context, fallback to series/film id or derived url key
+                    if (ctx.id) return ctx.id;
+                    if (ctx.type === 'filme' && ctx.id) return ctx.id;
+                    if (ctx.type === 'serie' && ctx.seriesId && typeof ctx.season !== 'undefined' && typeof ctx.episode !== 'undefined') {
+                        return `${ctx.seriesId}-s${ctx.season}-e${ctx.episode}`;
+                    }
+                    return null;
+                };
+
+                const ctxId = resolveContextId(context);
+                if (ctxId && state.progress && state.progress[ctxId] && typeof state.progress[ctxId].time === 'number' && state.progress[ctxId].time > 1) {
+                    // fast resume path: directly open player so it can restore and seek without extra warmup delays
+                    // This prevents starting from 0 when we already have meaningful saved position.
+                    openPlayer(url, title, context);
+                    return;
+                }
+            } catch (e) {
+                // fallback to normal flow on any error
+            }
+
             const isPortrait = window.innerHeight > window.innerWidth;
 
             // On mobile and for direct video files, perform a small range "warmup" fetch to prime the CDN/host
@@ -3938,14 +3962,12 @@
             })();
 
             if (shouldWarmup) {
-                // do not block orientation prompt flow: queue the pending video but warm the connection in background
+                // queue the pending video but warm the connection in background
                 state.pendingVideo = { url, title, context };
 
                 // attempt a lightweight range request for the first 64KB to warm connections
                 (async () => {
                     try {
-                        // normalize URL and request small byte range; some CDNs ignore Range for cross-origin HEADs,
-                        // so keep this best-effort and fail silently if blocked.
                         const controller = new AbortController();
                         const timeout = setTimeout(() => controller.abort(), 9000);
                         const res = await fetch(url, {
@@ -3958,15 +3980,12 @@
                         }).catch(() => null);
                         clearTimeout(timeout);
 
-                        // if we got a response (206 or 200) we can proceed to open the player; otherwise still attempt open
-                        // Slight delay to let TCP/TLS handshake stay warm on some networks
+                        // slight delay to let handshake stay warm
                         await new Promise(r => setTimeout(r, 160));
                     } catch (e) {
-                        // ignore errors; warmup is purely opportunistic
+                        // ignore errors; warmup is best-effort
                     } finally {
-                        // proceed with orientation prompt / playback flow after warmup attempt
                         try {
-                            // If portrait orientation & orientation prompts are enabled, show prompt; otherwise open player
                             if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
                                 const modal = document.getElementById('orientation-modal');
                                 modal.classList.remove('hidden');
@@ -3977,14 +3996,12 @@
                                 openPlayer(url, title, context);
                             }
                         } catch (_) {
-                            // fallback: open player regardless
                             try { openPlayer(url, title, context); } catch(_) {}
                         }
                     }
                 })();
 
             } else {
-                // same behavior as before: show orientation prompt on mobile or open player directly
                 if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
                     state.pendingVideo = { url, title, context };
                     const modal = document.getElementById('orientation-modal');
