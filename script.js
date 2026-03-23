@@ -3756,6 +3756,9 @@
                     if (this.saveInterval) { clearInterval(this.saveInterval); this.saveInterval = null; }
                     if (this.ytSaveInterval) { clearInterval(this.ytSaveInterval); this.ytSaveInterval = null; }
 
+                    // clear idle timer if set
+                    try { if (this._idleTimer) { clearTimeout(this._idleTimer); this._idleTimer = null; } } catch(_) {}
+
                     if (this.ytPlayer && typeof this.ytPlayer.destroy === 'function') {
                         try { this.ytPlayer.destroy(); } catch(_) {}
                         this.ytPlayer = null;
@@ -4762,29 +4765,54 @@
 
                 // Unified show/hide controls helpers (exposed so external listeners can call)
                 const ui = document.querySelector('.player-ui');
+
+                // Robust idle timer: show controls on user interaction, hide after idleTimeoutMs of inactivity.
+                const idleTimeoutMs = 3500;
+                const clearIdleTimer = () => {
+                    try { if (this._idleTimer) { clearTimeout(this._idleTimer); this._idleTimer = null; } } catch(_) {}
+                };
+                const scheduleHide = () => {
+                    try {
+                        clearIdleTimer();
+                        // only hide when playing
+                        if (!this.vid || this.vid.paused) return;
+                        this._idleTimer = setTimeout(() => {
+                            try { 
+                                const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+                                if (wrapper) wrapper.classList.add('player-idle'); 
+                                // ensure UI pointer-events are disabled for idle state
+                                if (ui) { ui.style.pointerEvents = 'none'; ui.style.opacity = '0'; }
+                            } catch(_) {}
+                        }, idleTimeoutMs);
+                    } catch(_) {}
+                };
                 const showControls = () => {
                     try {
-                        if (!ui || !container) return;
-                        container.classList.remove('player-idle');
+                        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+                        if (!ui || !wrapper) return;
+                        wrapper.classList.remove('player-idle');
                         ui.style.opacity = '';
                         ui.style.pointerEvents = '';
-                        // reset auto-hide
-                        clearTimeout(this.uiTimeout);
-                        this.uiTimeout = setTimeout(() => { if (this.vid && !this.vid.paused && container) container.classList.add('player-idle'); }, 3500);
+                        // reset auto-hide timer
+                        clearIdleTimer();
+                        scheduleHide();
                     } catch (e) {}
                 };
                 const hideControls = () => {
                     try {
-                        if (!ui || !container) return;
-                        container.classList.add('player-idle');
+                        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+                        if (!ui || !wrapper) return;
+                        wrapper.classList.add('player-idle');
                         ui.style.pointerEvents = 'none';
                         ui.style.opacity = '0';
+                        clearIdleTimer();
                     } catch (e) {}
                 };
                 const toggleControlsVisibility = () => {
                     try {
-                        if (!ui || !container) return;
-                        const hidden = container.classList.contains('player-idle') || ui.style.opacity === '0';
+                        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+                        if (!ui || !wrapper) return;
+                        const hidden = wrapper.classList.contains('player-idle') || ui.style.opacity === '0';
                         if (hidden) showControls(); else hideControls();
                     } catch (e) {}
                 };
