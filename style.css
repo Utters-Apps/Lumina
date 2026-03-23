@@ -236,6 +236,16 @@
         .badge-orange { background: linear-gradient(90deg,#fb923c 0%, #f97316 100%); color: #2b0f00; box-shadow: 0 6px 18px rgba(249,115,22,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
         .badge-blue   { background: linear-gradient(90deg,#60a5fa 0%, #3b82f6 100%); color:#04112a; box-shadow: 0 6px 18px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
         .badge-pink   { background: linear-gradient(90deg,#fb7185 0%, #f43f5e 100%); color:#23010b; box-shadow: 0 6px 18px rgba(244,63,94,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-a6 {
+            /* semitransparência + borda suave para combinar com outras badges */
+            background: linear-gradient(90deg, rgba(244,114,182,0.16) 0%, rgba(228,52,148,0.12) 100%);
+            color: #e43494;
+            border: 1px solid rgba(228,52,148,0.18);
+            box-shadow: 0 6px 18px rgba(228,52,148,0.10), inset 0 1px 0 rgba(255,255,255,0.03);
+            backdrop-filter: blur(6px) saturate(120%);
+            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            font-weight: 700;
+        }
         .badge-red    { background: linear-gradient(90deg,#ff6b6b 0%, #ef4444 100%); color:#fff; box-shadow: 0 6px 18px rgba(239,68,38,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
         .badge-gray   { background: linear-gradient(90deg,#f3f4f6 0%, #e5e7eb 100%); color:#081018; box-shadow: 0 6px 18px rgba(15,15,15,0.06), inset 0 1px 0 rgba(255,255,255,0.6); }
 
