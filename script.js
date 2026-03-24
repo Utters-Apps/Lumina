@@ -4227,7 +4227,99 @@
                                 try { this.close(); } catch(_) { player.close && player.close(); }
                             }
                         } catch (_) {}
+                        finally {
+                            // Ensure retry timer is cleared when the watchdog completes
+                            try { if (this._loadRetryTimer) { clearInterval(this._loadRetryTimer); this._loadRetryTimer = null; } } catch(_) {}
+                            try { if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; } } catch(_) {}
+                        }
                     }, watchdogDelay);
+
+                    // If this is a Dropbox-hosted link, start a short retry loop during the watchdog window to attempt reloads.
+                    try {
+                        const lowerUrl = String(url || '').toLowerCase();
+                        if (lowerUrl.includes('dropbox.com')) {
+                            // Max attempts spaced across the watchdog window (e.g., up to 3 attempts within watchdogDelay)
+                            const maxAttempts = 3;
+                            const intervalMs = Math.max(2200, Math.floor((Math.max(7000, (watchdogDelay || 7000)) - 800) / maxAttempts));
+                            this._loadAttempts = 0;
+
+                            // clear any previous retry timer
+                            if (this._loadRetryTimer) { clearInterval(this._loadRetryTimer); this._loadRetryTimer = null; }
+
+                            // retry function: try to reassign src and call play for native video; for iframe replace src to force reload.
+                            const attemptReload = () => {
+                                try {
+                                    if (this._loadAttempts >= maxAttempts) return;
+                                    this._loadAttempts++;
+                                    // only attempt if playback hasn't started yet
+                                    let started = false;
+                                    try {
+                                        if (this.vid && !this.vid.paused && this.vid.currentTime > 0) started = true;
+                                        if (!started && this.isYouTube && this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function') {
+                                            started = (this.ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
+                                        }
+                                        if (!started && this.iframe) {
+                                            started = !!(this.iframe.src && !this.iframe.src.includes('about:blank'));
+                                        }
+                                    } catch(_) { started = false; }
+
+                                    if (started) {
+                                        // playback started — clear retry timer
+                                        if (this._loadRetryTimer) { clearInterval(this._loadRetryTimer); this._loadRetryTimer = null; }
+                                        return;
+                                    }
+
+                                    // perform reload attempt
+                                    if (this.vid) {
+                                        try {
+                                            // force reload by toggling src then reassigning (best-effort)
+                                            const curSrc = this.vid.currentSrc || this.vid.src || url;
+                                            this.vid.pause && this.vid.pause();
+                                            this.vid.removeAttribute && this.vid.removeAttribute('src');
+                                            // small micro-delay then reassign src to prompt the browser to re-init connection
+                                            setTimeout(() => {
+                                                try {
+                                                    this.vid.src = curSrc;
+                                                    // force load metadata and try play
+                                                    try { this.vid.load && this.vid.load(); } catch(_) {}
+                                                    const p = this.vid.play && this.vid.play();
+                                                    if (p && typeof p.catch === 'function') p.catch(()=>{});
+                                                } catch(_) {}
+                                            }, 140);
+                                        } catch(_) {}
+                                    } else if (this.iframe) {
+                                        try {
+                                            const cur = this.iframe.src || url;
+                                            // force replace to trigger reload (append a tiny cache-buster if necessary)
+                                            const sep = (cur.indexOf('?') === -1) ? '?' : '&';
+                                            const nb = cur + sep + '_r=' + Date.now();
+                                            this.iframe.src = nb;
+                                        } catch(_) {}
+                                    } else {
+                                        // If player hasn't created vid/iframe yet, attempt a gentle fetch to warm connection (best-effort)
+                                        try {
+                                            fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store', credentials: 'omit' })
+                                                .then(r => {
+                                                    // no-op; fetch warms connection
+                                                }).catch(()=>{});
+                                        } catch(_) {}
+                                    }
+
+                                    // if we've reached maxAttempts, keep one final watchdog to close if still not started (the loadTimeout will handle closure)
+                                } catch (e) {
+                                    // ignore retry errors
+                                }
+                            };
+
+                            // schedule interval attempts until watchdog finishes
+                            this._loadRetryTimer = setInterval(() => {
+                                try { attemptReload(); } catch(_) {}
+                            }, intervalMs);
+
+                            // also attempt first reload immediately (do not wait for first tick)
+                            attemptReload();
+                        }
+                    } catch (_) {}
                 } catch (_) {}
 
                 // If it's an embed, attempt to detect YouTube and use the YT IFrame API to integrate with our custom UI.
