@@ -173,6 +173,48 @@
         // --- DATABASE ---
         const db = [
             {
+                id: 'akame-ga-kill',
+                title: 'Akame ga Kill!',
+                originalTitle: 'Akame ga Kill!',
+                type: 'serie',
+                category: 'Ação / Fantasia / Aventura / Drama',
+                year: '2014',
+                cover: 'https://criticalhits.com.br/wp-content/uploads/2025/05/Akame-Ga-Kill-Characters-15-Main-Characters-Ranked-00.jpg',
+                description: 'Tatsumi vai à capital em busca de fortuna e acaba se juntando ao grupo de assassinos Night Raid para derrubar um governo corrupto.',
+                ageRating: '16',
+                distributor: 'Netflix',
+                producer: 'White Fox',
+                nextEpisodeTrigger: 30,
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'Acabe com a escuridão', url: 'https://dl.dropboxusercontent.com/scl/fi/53s1rmpcpcdshqpz3tsxa/agk01.mp4?rlkey=3fthnep8tzvhnfx4daiv90wm4&st=gnpw1hpw' },
+                        { id: 's1-e2', title: 'Mate a autoridade', url: 'https://dl.dropboxusercontent.com/scl/fi/0t3zx6m6autkc47ib6mdr/agk02.mp4?rlkey=t79vwkzd9evlpr28hq7wnj685&st=3li346us' },
+                        { id: 's1-e3', title: 'Acabe com as preocupações', url: 'https://dl.dropboxusercontent.com/scl/fi/8lag5rtrsof8o8pmb0hn7/akg03.mp4?rlkey=aarv4quzjqsd9qkl4v5ci82b0&st=96go08jm' },
+                        { id: 's1-e4', title: 'Mate os usuários de armas imperiais', url: 'https://dl.dropboxusercontent.com/scl/fi/6rt85zt1744rq6g0j5hv2/agk04.mp4?rlkey=gb7xkn8f1ot7gztur16kafc4l&st=d4k27fn0' },
+                        { id: 's1-e5', title: 'Acabe com o sonho', url: 'https://dl.dropboxusercontent.com/scl/fi/v329z5lf7173ebft4r3ch/agk5.mp4?rlkey=g18r0gg7nlisbfxvcdn0fhfpk&st=md5lce9u' },
+                        { id: 's1-e6', title: 'Acabe com a justiça absoluta', url: 'https://dl.dropboxusercontent.com/scl/fi/ijzcje0h3s6zg29pg5pml/agk6.mp4?rlkey=pk3zzo2rrl94g9hy0v8lr67ya&st=gtrgb4xw' },
+                        { id: 's1-e7', title: 'Mate os três: Parte 1', url: 'https://dl.dropboxusercontent.com/scl/fi/zznax2qt08myu17swucgx/agk7.mp4?rlkey=ix17ebgwg2x4dm7141c6stgdq&st=y9tai6r6' },
+                        { id: 's1-e8', title: 'Mate os três: Parte 2', url: 'https://dl.dropboxusercontent.com/scl/fi/zl2z0akv5lpycdw5b9u95/agk8.mp4?rlkey=4sr5wf5je4kfabcpfvlyiwck7&st=6ip3gw97' },
+                        { id: 's1-e9', title: 'Mate a fanática por batalhas', url: 'https://dl.dropboxusercontent.com/scl/fi/lpk35oqn0zva2hhgo7r0n/agk9.mp4?rlkey=wkn3fkdw42657quz4fu6jkvms&st=ubqenpe3' },
+                        { id: 's1-e10', title: 'Acabe com a tentação', url: 'https://dl.dropboxusercontent.com/scl/fi/zwy2iwdrlmk9kz4lgvvkc/agk10.mp4?rlkey=a650chrr087bucsvabk48r93q&st=099z8g5b' },
+                        { id: 's1-e11', title: 'Mate o cientista louco', url: 'https://dl.dropboxusercontent.com/scl/fi/3v6ha3yp8q5mw5shuyw3h/agk11.mp4?rlkey=tgicrfa249r6zjx4qbkicvave&st=681es7lq' },
+                        { id: 's1-e12', title: 'Mate os novatos', url: 'https://dl.dropboxusercontent.com/scl/fi/miovtelxzj2m9guj9quea/agk12.mp4?rlkey=r9pa9yyx20tnm9738kkc2kn79&st=d5zjewxr' },
+                        { id: 's1-e13', title: 'Mate os que incomodam', url: 'https://dl.dropboxusercontent.com/scl/fi/86hvcas8gmc76br62ocqa/agk13.mp4?rlkey=5osqar2rdhxy5nahnxvu02o6u&st=5gk5yj87' },
+                        { id: 's1-e14', title: 'Mate a criatura', url: 'https://dl.dropboxusercontent.com/scl/fi/swg4vxwnxv9xafyvh0c7o/agk14.mp4?rlkey=vf39ywdklf4z1wty1jwxreg2n&st=8lckxkgm' },
+                        { id: 's1-e15', title: 'Acabe com a organização religiosa', url: 'https://dl.dropboxusercontent.com/scl/fi/qen5q545l7q45pbdpducr/agk15.mp4?rlkey=gvm8mv9ls13n09hqwyernc1qh&st=pcgtr9ph' },
+                        { id: 's1-e16', title: 'Mate os fantoches', url: 'https://dl.dropboxusercontent.com/scl/fi/4ktc6f7o1eb1ju70zl5wi/agk16.mp4?rlkey=hdpd98qb9av9dp35frd33vrw6&st=rfoq8yev' },
+                        { id: 's1-e17', title: 'Acabe com a maldição', url: 'https://dl.dropboxusercontent.com/scl/fi/hs602iyj90p6yz6vpa2bc/agk17.mp4?rlkey=x5gy4so1w2hsvka0rxxz2le9z&st=kpfk4yn3' },
+                        { id: 's1-e18', title: 'Mate os demônios', url: 'https://dl.dropboxusercontent.com/scl/fi/r9citm5bhsogbhta6ntyk/agk18.mp4?rlkey=fdef2cxg5kkgfiqjv5167zsrz&st=0sprzw9s' },
+                        { id: 's1-e19', title: 'Acabe com o destino', url: 'https://dl.dropboxusercontent.com/scl/fi/rsqt50lxh26gfhm4yv7nq/agk19.mp4?rlkey=ifnnhuiuhb8b1ubg4fqcj2xqy&st=isqmln5s' },
+                        { id: 's1-e20', title: 'Mate Syura', url: 'https://dl.dropboxusercontent.com/scl/fi/p1ha012sip2ni4y7ilcv0/agk20.mp4?rlkey=ihuwlufkaiq18zazu46qsvrcy&st=dylub9xa' },
+                        { id: 's1-e21', title: 'Acabe com o desespero', url: 'https://dl.dropboxusercontent.com/scl/fi/7izzdv0mqf0acpgbcu8v4/agk21.mp4?rlkey=5gassl8tuws06vlqhhp71nb9b&st=7e48rexv' },
+                        { id: 's1-e22', title: 'Mate a irmãzinha', url: 'https://dl.dropboxusercontent.com/scl/fi/hq1mgywett33j4exy4yj1/agk22.mp4?rlkey=g1ttc8u6w3bumkn7gju767bhm&st=w306n51t' },
+                        { id: 's1-e23', title: 'Mate o imperador', url: 'https://dl.dropboxusercontent.com/scl/fi/t4bkjwx50r9uf8ctw2m70/agk23.mp4?rlkey=qi5romrdfckrrlu84my0v2779&st=piuddzup' },
+                        { id: 's1-e24', title: 'Akame ga Kill!', url: 'https://dl.dropboxusercontent.com/scl/fi/irms5l9w61ryjvisckquq/agk24.mp4?rlkey=b6o0ci9lcw9dp7jtg83oxunyi&st=tpi81oaj' }
+                    ]
+                }
+            },
+            {
                 id: 'espiritos-na-escola',
                 title: 'Espíritos na Escola',
                 type: 'serie',
@@ -527,7 +569,7 @@
                         { id: 's6-e14', title: 'Fraldizer', url: 'https://player.odycdn.com/api/v3/streams/free/tetec/6487d54609e360c47f9e7175f87e835a2e7982be/8f68cd.mp4' },
                         { id: 's6-e15', title: 'A Alinhadora', url: 'https://player.odycdn.com/api/v3/streams/free/615/ed1e46dbe9e3303e6a5c3ba72ed6e81596da7983/51a335.mp4' },
                         { id: 's6-e16', title: 'Noe', url: 'https://player.odycdn.com/v6/streams/9cede011109fb452793f589640917b00cfa1e9a3/685cbb.mp4' },
-                        { id: 's6-e17', title: 'A Fada dos Belos Sonhos', url: 'https://player.odycdn.com/v6/streams/f504e216caeaeb948477d1e3dbc4306467722aa5/391e77.mp4' },
+                        { id: 's6-e17', title: 'A Fada dos Belos Sonhos', url: 'https://player.odycdn.com/api/v3/streams/free/fada/614b08606d6740eed5ae9d4a44fb26f2530c8f32/c19857.mp4' },
                         { id: 's6-e18', title: 'Os Quebra-Catástrofes', url: '' },
                         { id: 's6-e19', title: 'Regeneração', url: '' },
                         { id: 's6-e20', title: 'Inverte-Corações', url: '' },
@@ -1608,7 +1650,7 @@
                 distributor: 'Walt Disney Studios Motion Pictures (lançamento nos cinemas brasileiros pela Disney Brasil)',
                 production: 'Walt Disney Animation Studios',
                 tags: ['Lançamento','Popular'],
-                url: 'https://dl.dropboxusercontent.com/scl/fi/xyzqerjkmyb6g1eh534p9/ZTPA2_D.mp4?rlkey=ilxatr4tc33d18uhn89sqhju7&st=syt365zr'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/45veqhsyx58f26blg0vlh/Zootopia.2.2025.1080P.-Embedplay-1080P.mp4?rlkey=7raa9jlv909zvybjwy2f2o1dg&st=zaj69837'
             },
             {
                 id: 'wandinha',
@@ -5411,23 +5453,53 @@
                     try {
                         const safeTime = Math.max(0, Math.max(0, dur - 0.5));
                         if (this.context && this.context.id) {
-                            state.progress[this.context.id] = state.progress[this.context.id] || {};
-                            state.progress[this.context.id].time = safeTime;
-                            state.progress[this.context.id].duration = dur;
-                            state.progress[this.context.id].completed = true;
-                            state.progress[this.context.id].timestamp = Date.now();
-                            // update series history as completed
-                            if (this.context.type === 'serie' && this.context.seriesId) {
-                                state.history[this.context.seriesId] = {
-                                    s: this.context.season,
-                                    e: this.context.episode,
-                                    epId: this.context.id,
-                                    timestamp: Date.now(),
-                                    completed: true
-                                };
+                            // First determine if there's actually a next episode (across seasons)
+                            const seriesDataTmp = db.find(i => i.id === this.context.seriesId);
+                            let nextContextTmp = this.context.nextEp || null;
+                            try {
+                                if (!nextContextTmp && seriesDataTmp && typeof this.context.season !== 'undefined' && typeof this.context.episode !== 'undefined') {
+                                    const sNumTmp = Number(this.context.season);
+                                    const eIdxTmp = Number(this.context.episode);
+                                    const seasonArrTmp = (seriesDataTmp.seasons && seriesDataTmp.seasons[sNumTmp]) ? seriesDataTmp.seasons[sNumTmp] : [];
+                                    if (eIdxTmp + 1 >= seasonArrTmp.length) {
+                                        const nextSeasonNumTmp = String(sNumTmp + 1);
+                                        const nextSeasonArrTmp = seriesDataTmp.seasons && seriesDataTmp.seasons[nextSeasonNumTmp] ? seriesDataTmp.seasons[nextSeasonNumTmp] : null;
+                                        if (nextSeasonArrTmp && nextSeasonArrTmp.length > 0) {
+                                            const firstEpTmp = nextSeasonArrTmp[0];
+                                            const stableEpIdTmp = (firstEpTmp && firstEpTmp.id) ? firstEpTmp.id : `${seriesDataTmp.id}-s${nextSeasonNumTmp}-e0`;
+                                            nextContextTmp = { url: firstEpTmp.url, title: `T${nextSeasonNumTmp}:E1 - ${firstEpTmp.title}`, s: nextSeasonNumTmp, e: 0, id: stableEpIdTmp };
+                                        }
+                                    }
+                                }
+                            } catch (_) {}
+
+                            // If this was the absolute last episode of the series (no nextContextTmp), remove progress/history so it won't show in Continue Watching
+                            if (!nextContextTmp && this.context.type === 'serie') {
+                                try {
+                                    delete state.progress[this.context.id];
+                                    delete state.history[this.context.seriesId];
+                                    saveProgressData();
+                                } catch (_) {}
+                            } else {
+                                // Not the final series ep: mark as completed as before
+                                state.progress[this.context.id] = state.progress[this.context.id] || {};
+                                state.progress[this.context.id].time = safeTime;
+                                state.progress[this.context.id].duration = dur;
+                                state.progress[this.context.id].completed = true;
+                                state.progress[this.context.id].timestamp = Date.now();
+                                // update series history as completed
+                                if (this.context.type === 'serie' && this.context.seriesId) {
+                                    state.history[this.context.seriesId] = {
+                                        s: this.context.season,
+                                        e: this.context.episode,
+                                        epId: this.context.id,
+                                        timestamp: Date.now(),
+                                        completed: true
+                                    };
+                                }
+                                // persist (debounced)
+                                saveProgressData();
                             }
-                            // persist (debounced)
-                            saveProgressData();
                         }
                     } catch (e) {
                         // silent fallback - do not interrupt playback
