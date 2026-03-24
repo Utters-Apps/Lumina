@@ -1138,6 +1138,26 @@
                 url: 'https://dl.dropboxusercontent.com/scl/fi/gx0kl1kqo7gnyo71poid7/WONKA-drivesdublados.mp4?rlkey=no0w57exdacuaowkps9fkpkis'
             },
             {
+                id: 'salve-rosa-2025',
+                title: '#SalveRosa',
+                originalTitle: '#SalveRosa',
+                type: 'filme',
+                category: 'Drama / Suspense',
+                year: '2025',
+                cover: 'https://ingresso-a.akamaihd.net/b2b/production/uploads/article/image/4145/2b60c46236f953cec7e24206ba0c08b5.jpg',
+                description: 'Rosa é uma jovem influenciadora famosa na internet que vive sob forte controle da mãe; ao questionar sua vida, ela descobre segredos perturbadores por trás da fama e da família.',
+                ageRating: '16',
+                duration: '95 min',
+                country: 'Brasil',
+                language: 'Português',
+                director: 'Susanna Lira',
+                writer: 'Ângela Hirata Fabri e Mara Lobão',
+                producer: 'Panorâmica Filmes (coprodução com Elo Studios)',
+                releaseDate: '2025-10-23',
+                url: '', 
+                // url intentionally left empty (no playback link provided)
+            },
+            {
                 id: 'bob-esponja-2025',
                 title: 'Bob Esponja: Em Busca da Calça Quadrada',
                 type: 'filme',
