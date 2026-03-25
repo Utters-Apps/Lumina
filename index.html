@@ -437,10 +437,10 @@
                             <div class="relative" id="speed-control-wrapper">
                                 <button class="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-md transition-colors" id="speed-btn" aria-expanded="false" aria-haspopup="true">1x</button>
                                 <div id="speed-menu" class="absolute bottom-full right-0 mb-2 glass rounded-xl p-1.5 hidden flex-col w-24 shadow-lg" role="menu" aria-label="Velocidade de reprodução">
-                                    <button role="menuitem" data-speed="0.5" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">0.5x</button>
-                                    <button role="menuitem" data-speed="1" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md text-accent font-semibold">1x</button>
-                                    <button role="menuitem" data-speed="1.5" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">1.5x</button>
-                                    <button role="menuitem" data-speed="2" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">2x</button>
+                                    <button role="menuitem" data-speed="0.5" tabindex="-1" onclick="event.stopPropagation();" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">0.5x</button>
+                                    <button role="menuitem" data-speed="1" tabindex="-1" onclick="event.stopPropagation();" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md text-accent font-semibold">1x</button>
+                                    <button role="menuitem" data-speed="1.5" tabindex="-1" onclick="event.stopPropagation();" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">1.5x</button>
+                                    <button role="menuitem" data-speed="2" tabindex="-1" onclick="event.stopPropagation();" class="text-xs w-full text-left px-3 py-2 hover:bg-white/10 rounded-md">2x</button>
                                 </div>
                             </div>
 
@@ -1064,12 +1064,20 @@
     <!-- PWA: register service worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').then(reg => {
-                    console.log('SW registered:', reg.scope);
-                }).catch(err => {
-                    console.warn('SW registration failed:', err);
-                });
+            window.addEventListener('load', async () => {
+                // Try both absolute and relative service-worker paths to increase compatibility across hosts/serving setups.
+                try {
+                    const reg = await navigator.serviceWorker.register('/sw.js');
+                    console.log('SW registered (absolute):', reg.scope);
+                } catch (errAbs) {
+                    console.warn('SW registration for "/sw.js" failed:', errAbs);
+                    try {
+                        const regRel = await navigator.serviceWorker.register('sw.js');
+                        console.log('SW registered (relative):', regRel.scope);
+                    } catch (errRel) {
+                        console.warn('SW registration for "sw.js" failed:', errRel);
+                    }
+                }
             });
         }
 

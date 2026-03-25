@@ -1154,8 +1154,8 @@
                 writer: 'Ângela Hirata Fabri e Mara Lobão',
                 producer: 'Panorâmica Filmes (coprodução com Elo Studios)',
                 releaseDate: '2025-10-23',
-                url: '', 
-                // url intentionally left empty (no playback link provided)
+                url: 'https://dl.dropboxusercontent.com/scl/fi/f7nrm2b4urhv9m0lr7l4f/SalveRosa.mp4?rlkey=ek00i1p3hhvkmphff78k44h41&st=sjgw9awe', 
+                // playback link added
             },
             {
                 id: 'bob-esponja-2025',
@@ -1637,7 +1637,7 @@
                 distributor: 'Paramount Pictures',
                 production: ['Spyglass Media Group', 'Project X Entertainment', 'Outerbanks Entertainment'],
                 tags: ['Lançamento','Série Pânico'],
-                url: 'https://dl.dropboxusercontent.com/scl/fi/21zbjic9xs0vokhc5snzk/Fhyawatm6digkk9u-1.mp4?rlkey=bt52prmnce63y9v7wrr1mk8vq&st=r4as72fu'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/bejmw4l0oochwxvykb69a/Panico7.mp4?rlkey=hcurtp2yo28ybgs4qscmkkxww&st=ldtu1n1r'
             },
 
             {
@@ -2726,8 +2726,8 @@
                         try { const mInput = document.getElementById('mobile-search'); if (mInput && window.innerWidth < 768) mInput.focus(); } catch(_) {}
                     }, 120);
                 } else {
-                    // First: try an exact title match (ignores accents, case, multiple spaces) and return only that item if found.
-                    // This ensures searching an exact title yields a single precise result.
+                    // First: try an exact title match (ignores accents, case, multiple spaces) and if found include any obvious sequels/variants.
+                    // This makes an exact search return the matched title plus related numbered/variant entries available in the DB.
                     const exactMatch = db.find(item => {
                         try {
                             const t = normalizeText(item.title || item.originalTitle || '');
@@ -2738,9 +2738,68 @@
                         } catch (e) { return false; }
                     });
 
+                    // Helper: given a base normalized title, find likely sequels/variants in the DB (e.g., "Pânico 2", "Pânico 3", "Pânico: O Retorno", "Pânico II")
+                    function findSequels(baseNorm) {
+                        if (!baseNorm) return [];
+                        // candidate rules:
+                        // - title includes baseNorm but is not identical (covers "Title 2", "Title: Subtitle", "Title - Part 2")
+                        // - title ends with roman numerals or trailing digits after base (II, III, 2, 3)
+                        const romanPattern = '\\b(?:ii|iii|iv|v|vi|vii|viii|ix|x)\\b';
+                        const digitPattern = '\\b\\d{1,2}\\b';
+                        const sequels = [];
+                        const seen = new Set();
+                        db.forEach(d => {
+                            try {
+                                if (!d || !d.title) return;
+                                const cand = normalizeText(d.title || d.originalTitle || '');
+                                if (!cand) return;
+                                if (cand === baseNorm) return; // skip exact same
+                                // contains base (covers "Base 2", "Base: Subtitle")
+                                if (cand.indexOf(baseNorm) !== -1) {
+                                    if (!seen.has(d.id)) { sequels.push(d); seen.add(d.id); }
+                                    return;
+                                }
+                                // "Base II" or "Base 2" style matches
+                                const pattern = new RegExp('^' + baseNorm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '(?:[\\s:\\-–—]+(?:' + romanPattern + '|' + digitPattern + ')).*$', 'i');
+                                if (pattern.test(d.title || '')) {
+                                    if (!seen.has(d.id)) { sequels.push(d); seen.add(d.id); }
+                                    return;
+                                }
+                                // suffix matches like "(Year)" or " - Subtitle" where base appears at start
+                                const altPattern = new RegExp('^' + baseNorm.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '[\\s:\\-–—].*', 'i');
+                                if (altPattern.test(cand)) {
+                                    if (!seen.has(d.id)) { sequels.push(d); seen.add(d.id); }
+                                    return;
+                                }
+                            } catch (_) {}
+                        });
+                        return sequels;
+                    }
+
                     let results = [];
                     if (exactMatch) {
-                        results = [exactMatch];
+                        // include the exact match first
+                        results.push(exactMatch);
+                        try {
+                            const baseNorm = (normalizeText(exactMatch.title || exactMatch.originalTitle || exactMatch.id || ''));
+                            const sequels = findSequels(baseNorm);
+                            // append sequels (deduplicated) so user sees the original plus follow-ups
+                            sequels.forEach(s => {
+                                if (!results.find(r => r.id === s.id)) results.push(s);
+                            });
+                            // also include items that share clear tags (e.g., explicit franchise/tag) up to 8 total
+                            if (results.length < 8 && exactMatch.tags && exactMatch.tags.length) {
+                                const tagSet = new Set((exactMatch.tags||[]).map(t=>String(t||'').toLowerCase()));
+                                db.forEach(d => {
+                                    if (results.length >= 8) return;
+                                    if (d.id === exactMatch.id) return;
+                                    try {
+                                        const dtags = (d.tags||[]).map(t=>String(t||'').toLowerCase());
+                                        if (dtags.some(t => tagSet.has(t)) && !results.find(r=>r.id===d.id)) results.push(d);
+                                    } catch(_) {}
+                                });
+                            }
+                        } catch (_) {}
                     } else {
                         // Fuzzy / broad search: preserve previous tolerant behavior but slightly more forgiving:
                         // - ignore accents/case/spaces via normalizeText
@@ -3395,54 +3454,110 @@
 
                 if (!candidates || candidates.length === 0) return;
 
-                // Create related block using the same section/card layout as Home (so cards match catalog style)
+                // Create related block using responsive behavior: horizontal scroller on mobile to avoid overlap, grid on desktop
                 const wrap = document.createElement('div');
                 wrap.id = `related-section-${item.id}`;
-                wrap.className = 'px-6 md:px-16 mt-8 mb-12';
+                // smaller top margin on mobile (mt-4) and original spacing on md+ (md:mt-8)
+                wrap.className = 'px-6 md:px-16 mt-4 md:mt-8 mb-12 session-wrap';
                 wrap.innerHTML = `
                     <div class="flex items-center justify-between mb-4">
                         <h3 class="font-display text-lg font-medium text-white">Relacionados</h3>
-                        <span class="text-white/60 text-sm">Sugestões parecidas com ${item.title}</span>
+                        <!-- hide this helper text on small screens -->
+                        <span class="hidden md:inline text-white/60 text-sm">Sugestões parecidas com ${item.title}</span>
                     </div>
-                    <div id="related-grid-${item.id}" class="session-scroll grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+
+                    <div class="relative">
+                        <button class="session-arrow left md:hidden" aria-label="related-left-${item.id}" onclick="(function(){ const el=document.getElementById('related-grid-${item.id}'); if(el) el.scrollBy({left:-Math.max(240, el.clientWidth*0.7), behavior:'smooth'}); })()">
+                            <i class="ph ph-caret-left text-2xl"></i>
+                        </button>
+
+                        <div id="related-grid-${item.id}" class="session-scroll hide-scroll flex gap-3" role="list"></div>
+
+                        <button class="session-arrow right md:hidden" aria-label="related-right-${item.id}" onclick="(function(){ const el=document.getElementById('related-grid-${item.id}'); if(el) el.scrollBy({left:Math.max(240, el.clientWidth*0.7), behavior:'smooth'}); })()">
+                            <i class="ph ph-caret-right text-2xl"></i>
+                        </button>
+                    </div>
                 `;
 
-                // Insert near the end of details content, after episodes block if present
+                // Insert the related block immediately before the episodes container (so on mobile it appears closer to the play button);
+                // if episodes container isn't present, append at the end as before.
                 const episodesContainer = document.getElementById(`episodes-container-${item.id}`);
                 if (episodesContainer && episodesContainer.parentNode) {
-                    episodesContainer.parentNode.parentNode.insertBefore(wrap, episodesContainer.parentNode.nextSibling);
+                    // insert before the episodes parent so the related cards sit directly above the episodes list
+                    episodesContainer.parentNode.parentNode.insertBefore(wrap, episodesContainer.parentNode);
                 } else {
                     container.appendChild(wrap);
                 }
 
-                // Render cards using the same renderer as catalog so visual style matches exactly
+                // Choose layout based on viewport width: mobile => horizontal scroller, desktop => responsive grid
                 const grid = document.getElementById(`related-grid-${item.id}`);
                 if (!grid) return;
 
-                try {
-                    render16by9CatalogCards(candidates, grid);
-                } catch (err) {
-                    // Fallback: if helper fails, perform a minimal card render (shouldn't normally happen)
+                const isMobile = window.innerWidth <= 767;
+
+                if (isMobile) {
+                    // horizontal scroller: use existing session-scroll styles for touch-friendly swipe
+                    grid.className = 'session-scroll hide-scroll flex gap-3';
+                    // render as compact session-card items for consistent layout and non-overlapping stacking
                     candidates.forEach(c => {
                         try {
                             const card = document.createElement('div');
-                            card.className = 'cursor-pointer group session-card';
+                            card.className = 'w-56 shrink-0 hover-card cursor-pointer group session-card';
                             card.onclick = () => openDetails(c.id);
                             const cover = c.cover || 'fiveicon.png';
+                            const imgOnError = `this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');`;
                             card.innerHTML = `
                                 <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
-                                    <img loading="lazy" decoding="async" data-db-cover="1" src="${cover}" onerror="this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-400" onload="this.classList.add('loaded')">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    <img loading="lazy" decoding="async" data-db-cover="1" src="${cover}" onerror="${imgOnError}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 </div>
-                                <div class="mt-2">
-                                    <h4 class="text-white text-sm font-medium truncate">${c.title}</h4>
-                                    <p class="text-white/50 text-xs truncate mt-0.5">${c.year || ''} • ${c.type || ''}</p>
+                                <div class="px-1">
+                                    <h3 class="text-white font-medium text-sm truncate">${c.title}</h3>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        ${getAgeBadge(c.ageRating)}
+                                        <p class="text-white/40 text-[11px] truncate">${formatCategory(c.category)}</p>
+                                    </div>
                                 </div>
                             `;
                             grid.appendChild(card);
-                        } catch(_) {}
+                        } catch (_) {}
                     });
+                } else {
+                    // Desktop/tablet: use grid layout with up to 4 columns
+                    grid.className = 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3';
+                    try {
+                        render16by9CatalogCards(candidates, grid);
+                    } catch (err) {
+                        // fallback minimal render
+                        candidates.forEach(c => {
+                            try {
+                                const card = document.createElement('div');
+                                card.className = 'cursor-pointer group session-card';
+                                card.onclick = () => openDetails(c.id);
+                                const cover = c.cover || 'fiveicon.png';
+                                card.innerHTML = `
+                                    <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
+                                        <img loading="lazy" decoding="async" data-db-cover="1" src="${cover}" class="w-full h-full object-cover opacity-85 group-hover:scale-105 transition-transform duration-400" onload="this.classList.add('loaded')">
+                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                    </div>
+                                    <div class="mt-2">
+                                        <h4 class="text-white text-sm font-medium truncate">${c.title}</h4>
+                                        <p class="text-white/50 text-xs truncate mt-0.5">${c.year || ''} • ${c.type || ''}</p>
+                                    </div>
+                                `;
+                                grid.appendChild(card);
+                            } catch(_) {}
+                        });
+                    }
                 }
+
+                // Ensure no overlapping by forcing repaint and setting accessible attributes
+                try {
+                    grid.setAttribute('role', 'list');
+                    Array.from(grid.children || []).forEach(ch => ch.setAttribute('role', 'listitem'));
+                    // small reflow to prevent overlapping in some mobile engines
+                    void grid.offsetHeight;
+                } catch (_) {}
             } catch (e) {
                 // non-blocking: ignore related render failures
                 console.warn('renderRelatedItems failed', e);
@@ -4149,6 +4264,9 @@
                     this.isEmbed = false;
                     this.isYouTube = false;
                     this.preferredRate = this.preferredRate || 1;
+
+                    // Reset the one-time restore marker so subsequent player instances will attempt resume again
+                    try { this._restoredOnce = false; } catch(_) {}
 
                     // ensure skip-intro UI hidden between plays (guarded)
                     try {
@@ -5117,12 +5235,16 @@
                     }
 
                     if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
-                    saveProgressData();
+
+                    // Debounced save for common updates, but flush immediately so mobile/PC/PWA resume is reliable across closes/reopens
+                    try { saveProgressData(); } catch(_) {}
+                    try { flushProgressNow(); } catch(_) {}
                 } catch (e) {
                     // non-blocking fallback
                     try {
                         state.progress[this.context.id] = state.progress[this.context.id] || { embed: true, timestamp: Date.now() };
-                        saveProgressData();
+                        try { saveProgressData(); } catch(_) {}
+                        try { flushProgressNow(); } catch(_) {}
                     } catch(_) {}
                 }
             },
