@@ -1923,6 +1923,21 @@
                 yearBRNote: 'Lançamento em 12 de julho de 2024 no Disney+',
                 tags: ['Musical','Família'],
                 url: 'https://dl.dropboxusercontent.com/scl/fi/7ypz7e4092l5lhhf7r9ih/Theriseofred.mp4?rlkey=93gog1rlx8kbw55np0lu51993&st=xlkocn66'
+            },
+            {
+                id: 'south-park-end-obesity',
+                title: 'South Park: O Fim da Obesidade',
+                originalTitle: 'South Park: The End of Obesity',
+                type: 'filme',
+                category: 'Animação, Comédia, Sátira',
+                year: '2024',
+                cover: 'https://is1-ssl.mzstatic.com/image/thumb/KgQ2CD_uXR10aK0UZs1_yA/1200x675.jpg',
+                description: 'Cartman entra em conflito ao tentar conseguir acesso a medicamentos para perda de peso, enquanto a cidade de South Park se envolve em discussões absurdas sobre saúde, indústria farmacêutica e desigualdade, mantendo o humor ácido característico da série.',
+                ageRating: '18',
+                distributor: 'Paramount+ (BR)',
+                producer: 'South Park Studios',
+                tags: ['Especial','Sátira'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/wyhq9g6724d9yelu1jux9/Southparkobse.mp4?rlkey=fg3h96v5g4hzi84296vu1w5zz&st=1optvjgz'
             }
         ];
 
