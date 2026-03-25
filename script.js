@@ -1076,15 +1076,15 @@
                 ratings: { imdb: 8.0 },
                 seasons: {
                     1: [
-                        { title: "Batatinha Frita 1, 2, 3", url: "https://www.tokyvideo.com/br/embed/635210" },
-                        { title: "Inferno", url: "https://www.tokyvideo.com/br/embed/635240" },
-                        { title: "O Homem do Guarda-Chuva", url: "https://www.tokyvideo.com/br/embed/635259" },
-                        { title: "Fiquem Juntos", url: "https://www.tokyvideo.com/br/embed/635277" },
-                        { title: "Um Mundo Justo", url: "https://www.tokyvideo.com/br/embed/762428" },
-                        { title: "Gganbu", url: "https://www.tokyvideo.com/br/embed/638751" },
-                        { title: "VIPs", url: "https://www.tokyvideo.com/br/embed/762465" },
-                        { title: "O Líder", url: "https://www.tokyvideo.com/br/embed/635532" },
-                        { title: "Um Dia de Sorte", url: "https://www.tokyvideo.com/br/embed/635533" }
+                        { title: "Batatinha Frita 1, 2, 3", url: "https://dl.dropboxusercontent.com/scl/fi/2wia8737ddl46wbk2yy4z/1.mp4?rlkey=1x2si63e84uqb0my9r5gl808l&st=94t7ooin" },
+                        { title: "Inferno", url: "https://dl.dropboxusercontent.com/scl/fi/n4s6ot9bm7w44c62b24hp/2.mp4?rlkey=eya4cjt5d4dwpptjeam9fbcqd&st=vw5do2g2" },
+                        { title: "O Homem do Guarda-Chuva", url: "https://dl.dropboxusercontent.com/scl/fi/yl3pcztibwpwbvqw1y7hv/3.mp4?rlkey=s74e4rq795bvpvfqw4ztp6e53&st=qcxj458j" },
+                        { title: "Fiquem Juntos", url: "https://dl.dropboxusercontent.com/scl/fi/tsuafkxhrk13zc4xbm0x0/4.mp4?rlkey=ukdvs202dd512mmvu5fjzwb7y&st=voei6bx7" },
+                        { title: "Um Mundo Justo", url: "https://dl.dropboxusercontent.com/scl/fi/14y38cffvf02zgyif95k2/5.mp4?rlkey=lmfa8v2rz981rwp21urckbhmq&st=z77uswk3" },
+                        { title: "Gganbu", url: "https://dl.dropboxusercontent.com/scl/fi/qa11p6b7eaje03u4fewgc/6.mp4?rlkey=p3g7mr94n98o7jhyc0037xynj&st=hfu46uka" },
+                        { title: "VIPs", url: "https://dl.dropboxusercontent.com/scl/fi/y686xkskxx0w8rwzhem7q/7.mp4?rlkey=bw31offd0zcbbsw2bb5s0klkb&st=mezotntn" },
+                        { title: "O Líder", url: "https://dl.dropboxusercontent.com/scl/fi/i233zbrhenoxozqqwmf2w/8.mp4?rlkey=09yg23sjkjlq0k1pu2nbz1f8w&st=g9jnb8kx" },
+                        { title: "Um Dia de Sorte", url: "https://dl.dropboxusercontent.com/scl/fi/2oh9oc16uosxmfth4cxli/9.mp4?rlkey=pplwgvussm8hryntv5dkx06ft&st=v92nzpam" }
                     ],
                     2: [
                         { title: "Pão e Loteria", url: "https://www.tokyvideo.com/br/embed/635551" },
