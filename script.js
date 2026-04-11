@@ -1087,9 +1087,9 @@
                         { title: "Um Dia de Sorte", url: "https://dl.dropboxusercontent.com/scl/fi/2oh9oc16uosxmfth4cxli/9.mp4?rlkey=pplwgvussm8hryntv5dkx06ft&st=v92nzpam" }
                     ],
                     2: [
-                        { title: "Pão e Loteria", url: "https://www.tokyvideo.com/br/embed/635551" },
-                        { title: "Festa de Halloween", url: "https://www.tokyvideo.com/br/embed/635549" },
-                        { title: "001", url: "https://www.tokyvideo.com/br/embed/635563" },
+                        { title: "Pão e Loteria", url: "https://dl.dropboxusercontent.com/scl/fi/7zpab369amlviad9xcozz/1.mp4?rlkey=wo5etx5o1onxupqkbjx3qmh0y&st=akmlngpv" },
+                        { title: "Festa de Halloween", url: "https://dl.dropboxusercontent.com/scl/fi/55otaipvvtb690mn4yrqr/2.mp4?rlkey=zzde7wgzvbprlnags3fo1df0k&st=983dehy8" },
+                        { title: "001", url: "https://dl.dropboxusercontent.com/scl/fi/0nti0ppkhhomd4miypgz5/3.mp4?rlkey=ubv10t7cvosg159x3vzpqw95i&st=7hltvxkz" },
                         { title: "Seis Pernas", url: "https://www.tokyvideo.com/br/embed/635559" },
                         { title: "Mais um Jogo", url: "https://www.tokyvideo.com/br/embed/635565" },
                         { title: "O X", url: "https://www.tokyvideo.com/br/embed/635569" },
@@ -1938,6 +1938,22 @@
                 producer: 'South Park Studios',
                 tags: ['Especial','Sátira'],
                 url: 'https://dl.dropboxusercontent.com/scl/fi/wyhq9g6724d9yelu1jux9/Southparkobse.mp4?rlkey=fg3h96v5g4hzi84296vu1w5zz&st=1optvjgz'
+            },
+            {
+                id: 'ponyo',
+                title: 'Ponyo: Uma Amizade que Veio do Mar',
+                originalTitle: 'Gake no Ue no Ponyo',
+                type: 'filme',
+                category: 'Animação, Aventura, Família',
+                year: '2008',
+                yearBR: '2008-07-19',
+                cover: 'https://doramazine.com.br/wp-content/uploads/2024/12/ponyo.jpg',
+                description: 'Sosuke, um menino de 5 anos, encontra Ponyo, um peixinho-dourado que quer se tornar humana. A amizade dos dois desencadeia uma aventura mágica no mar e na terra.',
+                ageRating: 'L',
+                distributor: 'Netflix (BR) / Sato Company (exibições especiais)',
+                producer: 'Studio Ghibli',
+                tags: ['Animação','Família'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/aiu27bc9cubmgfvwlbg83/Ponyo.mp4?rlkey=tjd2ey3o4gn5ayupv1ie6m9a3&st=eplvrvmp'
             }
         ];
 
