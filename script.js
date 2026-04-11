@@ -4336,6 +4336,55 @@
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
                 document.body.style.overflow = 'hidden';
 
+                // Mobile-only: close player when user taps outside the player area while player is active (not idle).
+                // Attach a capture-phase touchstart so we see touches before embedded iframes/controls steal them.
+                try {
+                    // guard: only run on touch devices
+                    if (isMobileOS && typeof isMobileOS === 'function' && isMobileOS()) {
+                        // ensure we don't double-bind
+                        if (!player._outsideTouchBound) {
+                            player._outsideTouchBound = true;
+                            player._outsideTouchHandler = function(e) {
+                                try {
+                                    // ensure player object and wrapper exist
+                                    const wrapper = document.getElementById('player-media-wrapper');
+                                    const ui = document.querySelector('.player-ui');
+                                    const modalEl = document.getElementById('player-modal');
+                                    if (!modalEl || modalEl.classList.contains('hidden')) return;
+
+                                    // If UI is idle (controls hidden), do not trigger immediate close per spec
+                                    // idle is represented by wrapper having class 'player-idle' (used elsewhere)
+                                    const isIdle = (wrapper && wrapper.classList.contains && wrapper.classList.contains('player-idle'));
+                                    if (isIdle) return;
+
+                                    // If the touch target is inside the player area or UI controls, ignore
+                                    const tgt = e.target;
+                                    if (!tgt) return;
+                                    if (tgt.closest && (tgt.closest('#player-media-wrapper') || tgt.closest('.player-ui') || tgt.closest('#player-modal'))) {
+                                        // touched inside player or its UI; ignore
+                                        return;
+                                    }
+
+                                    // At this point this is a touch outside the player on mobile while player active+not idle -> close player
+                                    try {
+                                        // Small safeguard: stop propagation to avoid conflicting handlers
+                                        e.stopPropagation && e.stopPropagation();
+                                        e.preventDefault && e.preventDefault();
+                                    } catch(_) {}
+
+                                    // call player.close() safely
+                                    try { if (player && typeof player.close === 'function') player.close(); } catch(_) {}
+                                } catch (_) {}
+                            };
+                            // Use capture=true so this runs before other handlers and avoids interference with controls
+                            document.addEventListener('touchstart', player._outsideTouchHandler, { passive: false, capture: true });
+                        }
+                    }
+                } catch (err) {
+                    // non-fatal: don't break player on errors
+                    console.warn('outsideTouch handler bind failed', err);
+                }
+
                 // start hidden — visibility will be managed dynamically while playing (shown only during intro window)
                 try {
                     const skipBtn = document.getElementById('skip-intro-btn');
@@ -5339,6 +5388,15 @@
 
                 const wrapper = document.getElementById('player-media-wrapper');
                 if (wrapper) wrapper.innerHTML = '';
+
+                // remove mobile outside-touch listener if bound
+                try {
+                    if (player && player._outsideTouchBound && player._outsideTouchHandler) {
+                        document.removeEventListener('touchstart', player._outsideTouchHandler, true);
+                        player._outsideTouchBound = false;
+                        player._outsideTouchHandler = null;
+                    }
+                } catch (_) {}
 
                 // restore UI elements
                 const ui = document.querySelector('.player-ui');
