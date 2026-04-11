@@ -1090,10 +1090,10 @@
                         { title: "Pão e Loteria", url: "https://dl.dropboxusercontent.com/scl/fi/7zpab369amlviad9xcozz/1.mp4?rlkey=wo5etx5o1onxupqkbjx3qmh0y&st=akmlngpv" },
                         { title: "Festa de Halloween", url: "https://dl.dropboxusercontent.com/scl/fi/55otaipvvtb690mn4yrqr/2.mp4?rlkey=zzde7wgzvbprlnags3fo1df0k&st=983dehy8" },
                         { title: "001", url: "https://dl.dropboxusercontent.com/scl/fi/0nti0ppkhhomd4miypgz5/3.mp4?rlkey=ubv10t7cvosg159x3vzpqw95i&st=7hltvxkz" },
-                        { title: "Seis Pernas", url: "https://www.tokyvideo.com/br/embed/635559" },
-                        { title: "Mais um Jogo", url: "https://www.tokyvideo.com/br/embed/635565" },
-                        { title: "O X", url: "https://www.tokyvideo.com/br/embed/635569" },
-                        { title: "Amigos ou Inimigos?", url: "https://www.tokyvideo.com/br/embed/635572" }
+                        { title: "Seis Pernas", url: "https://dl.dropboxusercontent.com/scl/fi/ry07zrb9lq2leqhoq0jpa/4.mp4?rlkey=dzlg3jnetzxrkh8eg41vohniq&st=tw1wx51q" },
+                        { title: "Mais um Jogo", url: "https://dl.dropboxusercontent.com/scl/fi/w37af1lx0vngqdbc95gti/5.mp4?rlkey=lmlmmbq1j987us34vi9ja8ama&st=l7nl52ij" },
+                        { title: "O X", url: "https://dl.dropboxusercontent.com/scl/fi/afu8i0h5d5r0qu29y0p97/6.mp4?rlkey=utz2wxrsbmf7cv2bzn8or69rg&st=5fduzfeg" },
+                        { title: "Amigos ou Inimigos?", url: "https://dl.dropboxusercontent.com/scl/fi/spzh904m6ymp1kuniza60/7.mp4?rlkey=l1bus78xfxhrtblgh4vqp4sgc&st=su82u31g" }
                     ],
                     3: [
                         { title: "Chaves e Facas", url: "https://www.tokyvideo.com/br/embed/756099" },
@@ -1719,7 +1719,7 @@
                 description: 'No reino de Auradon, o filho do Rei e da Rainha convida os filhos dos vilões exilados a frequentarem sua escola, onde eles precisam decidir entre seguir o caminho dos pais ou descobrir seu próprio destino.',
                 ageRating: 'L',
                 distributor: 'Disney–ABC Domestic Television / Disney Channel',
-                url: 'https://dl.dropboxusercontent.com/scl/fi/y872rhf566v6n0vfed7m0/Descendentes-2015-Dublado-SeriesZoiudo.mp4?rlkey=7mkiqz5xvwj8zszezeoczhr8n&st=y5lp8btz'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/hre2r9ctwrofqrxl3inxw/D1.mp4?rlkey=h33z9ppkz2ncr02b0j6rkdrlh&st=4hx0gdk1'
             },
             {
                 id: 'descendentes-2',
@@ -1731,7 +1731,7 @@
                 description: 'Mal e seus amigos enfrentam novos desafios quando Uma, filha de Úrsula, e sua gangue começam a causar confusão, levando o grupo de volta à Ilha dos Perdidos para confrontar seus rivais.',
                 ageRating: 'L',
                 distributor: 'Disney Channel',
-                url: 'https://dl.dropboxusercontent.com/scl/fi/pgsfmge70fd9ak45hq345/Descendentes-2-2017-Dublado-SeriesZoiudo.mp4?rlkey=3curz4xr1jtrltr0ip1t4t6xh&st=1a4k5q44'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/ht1crrvgniym3jk6xacy8/D2.mp4?rlkey=78ofdvdnomcsusmp7ib5i0rv7&st=9wor7g30'
             },
             {
                 id: 'descendentes-3',
@@ -1743,7 +1743,7 @@
                 description: 'Enquanto Mal se prepara para se tornar rainha em Auradon, novas ameaças de vilões antigos e rivais pessoais obrigam o grupo a unir forças para proteger seu reino.',
                 ageRating: 'L',
                 distributor: 'Disney Channel',
-                url: 'https://dl.dropboxusercontent.com/scl/fi/qv3eo6uei4dy1h4wrd8eb/drivefilmesz_chat.dffdthcds.2019.mp4?rlkey=6pz7ye4jsmfkln8y4w1qsrdgq&st=x5tfh43r'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/dq4m9u2qe85u50r9en18j/D3.mp4?rlkey=ggos7ishn59hvz2a122bjxcmv&st=ejzymeu4'
             },
             {
                 id: 'sonic-2020',
@@ -4354,24 +4354,30 @@
                     // clear any previous load timeout
                     if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
 
-                    // Determine appropriate timeout: longer for Dropbox links (16s), otherwise 7s.
-                    // Special-case: episodes 2..8 (indices 1..7) of season 1 for series 'one-piece-live' get 15s.
+                    // Determine appropriate timeout: longer on mobile and for slow CDNs (Dropbox) to reduce premature failures.
+                    // Special-case: episodes 2..8 (indices 1..7) of season 1 for series 'one-piece-live' get an extended window.
+                    // Defaults: desktop 7s, mobile 20s; Dropbox/slow CDNs get larger multiples (30s mobile / 20s desktop).
                     let watchdogDelay = 7000;
                     try {
                         const lower = String(url || '').toLowerCase();
-                        // If this playback request targets one-piece-live S1 episodes 2..8, give 15s
+                        const isMobileDevice = (function(){ try { const ua = navigator.userAgent || navigator.vendor || ''; return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua); } catch(e){ return false; } })();
+
+                        // Base by device
+                        watchdogDelay = isMobileDevice ? 20000 : 7000;
+
+                        // One Piece S1 episodes 2..8 deserve extra time on both platforms
                         try {
                             const isOnePiece = this.context && this.context.seriesId === 'one-piece-live';
                             const seasonStr = this.context && (typeof this.context.season !== 'undefined') ? String(this.context.season) : null;
                             const episodeIdx = (typeof this.context !== 'undefined' && typeof this.context.episode !== 'undefined') ? Number(this.context.episode) : NaN;
                             if (isOnePiece && seasonStr === '1' && !isNaN(episodeIdx) && episodeIdx >= 1 && episodeIdx <= 7) {
-                                watchdogDelay = 15000;
-                            } else if (lower.includes('dropbox.com')) {
-                                // Dropbox links can be slow: 16s
-                                watchdogDelay = 16000;
+                                watchdogDelay = Math.max(watchdogDelay, 15000);
                             }
-                        } catch (inner) {
-                            if (lower.includes('dropbox.com')) watchdogDelay = 16000;
+                        } catch (inner) { /* ignore */ }
+
+                        // Dropbox and similar CDNs can be slow => bump further (mobile gets highest)
+                        if (lower.includes('dropbox.com') || lower.includes('odycdn.com') || lower.includes('player.odycdn.com')) {
+                            watchdogDelay = isMobileDevice ? 30000 : 20000;
                         }
                     } catch (e) { /* ignore and use default */ }
 
@@ -4788,12 +4794,31 @@
                             this.vid.id = 'main-video';
                             this.vid.className = 'w-full h-full object-contain';
                             this.vid.playsInline = true;
-                            this.vid.preload = 'metadata';
-                            // Try to autoplay with audio; if browser blocks autoplay with sound, fall back to muted autoplay
-                            this.vid.autoplay = true;
-                            this.vid.muted = false;
-                            this.vid.volume = 1;
-                            this.vid.src = url;
+
+                            // Adaptive preload decision: choose 'metadata' or 'none' based on heuristics
+                            (function applyAdaptivePreload(vid, srcUrl) {
+                                try {
+                                    const isMobile = (function(){ try { const ua = navigator.userAgent || navigator.vendor || ''; return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua); } catch(e){ return false; } })();
+                                    const slowHostHint = /dropbox\.com|odycdn\.com|player.odycdn\.com|drive\.google\.com/i.test(String(srcUrl||''));
+                                    // default strategy: mobile & slow host -> prefer 'none' (delay fetch); desktop & fast host -> 'metadata'
+                                    let choice = (isMobile && slowHostHint) ? 'none' : 'metadata';
+                                    // if connection API suggests poor network prefer 'none' to avoid heavy prefetch
+                                    try {
+                                        if (navigator.connection && typeof navigator.connection.effectiveType === 'string') {
+                                            const t = navigator.connection.effectiveType || '';
+                                            if (/2g|slow-2g|3g/.test(t)) choice = 'none';
+                                            if (/4g/.test(t) && !slowHostHint) choice = 'metadata';
+                                        }
+                                    } catch(_) {}
+                                    vid.preload = choice;
+                                    // Store chosen preload for later toggles
+                                    vid.dataset.luminaPreload = choice;
+                                    // attach src but do not force load beyond choice; browsers honor preload hint
+                                    vid.src = srcUrl;
+                                } catch (e) {
+                                    try { vid.preload = 'metadata'; vid.src = srcUrl; } catch(_) {}
+                                }
+                            })(this.vid, url);
 
                             // Attempt to play immediately; if blocked by autoplay policy, mute and retry, but tell the user.
                             (async () => {
@@ -4801,10 +4826,15 @@
                                     await this.vid.play();
                                 } catch (err) {
                                     try {
-                                        // Autoplay with sound was blocked — keep audio enabled and prompt the user to tap to enable sound
-                                        // We do not auto-mute; inform the user to interact to enable audio.
-                                        showToast('Toque na tela para ativar o áudio', 2800);
-                                    } catch (_) {}
+                                        // If autoplay with sound is blocked, try a muted autoplay fallback to start playback reliably,
+                                        // then ask the user to unmute (we unmute on first interaction).
+                                        this.vid.muted = true;
+                                        await this.vid.play().catch(()=>{});
+                                        showToast('Reprodução iniciada em modo silencioso. Toque para ativar o áudio.', 2800);
+                                    } catch (_) {
+                                        // Last-resort: inform user to interact
+                                        try { showToast('Toque na tela para ativar o áudio', 2800); } catch(_) {}
+                                    }
                                 }
                             })();
 
@@ -5425,18 +5455,17 @@
                 let interactionDebounce = null;
                 const onUserInteraction = (ev) => {
                     try {
-                        // if interaction is on UI controls, ignore as they are already interactive
+                        // Always show controls on any user interaction, but do NOT bail out when the target is a UI control.
+                        // This ensures that on mobile a "selected" control does not block the idle hide timer — controls
+                        // will still be auto-hidden after the configured idleTimeout.
                         const target = ev && ev.target;
-                        if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) {
-                            // still reset hide timer so UI doesn't disappear while interacting
-                            showControls();
-                            return;
-                        }
                         // show controls immediately on any pointer/touch/mouse event
                         showControls();
                         // small debounce to avoid thrashing on continuous pointermove
                         if (interactionDebounce) clearTimeout(interactionDebounce);
                         interactionDebounce = setTimeout(() => { interactionDebounce = null; }, 120);
+                        // Note: we intentionally do not return early when the target is inside the player UI,
+                        // so scheduleHide() will still run and trigger the idle hide even when a control appears focused.
                     } catch (err) { /* ignore */ }
                 };
 
