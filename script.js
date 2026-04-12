@@ -1955,6 +1955,35 @@
                 tags: ['Animação','Família'],
                 url: 'https://dl.dropboxusercontent.com/scl/fi/aiu27bc9cubmgfvwlbg83/Ponyo.mp4?rlkey=tjd2ey3o4gn5ayupv1ie6m9a3&st=eplvrvmp'
             }
+            ,
+            {
+                id: 'stranger-things-historias-85',
+                title: 'Stranger Things: Histórias de 85',
+                originalTitle: 'Stranger Things: Histórias de 85',
+                type: 'serie',
+                category: 'Ficção científica',
+                year: '2026',
+                cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/E8vDc_W8CLv7-yMQu8KMEC7Rrr8/AAAABWQ_ri6RwPcHL4-qPFUvmkiFE0f7qOrAB35_xs7pyOi9wuX9qk0oPcs2mDaDt1LvVHmXY63y-oMbPzYEXixG8AoftD5atVcpvMpj.jpg?r=1a5',
+                description: 'Em Hawkins, no inverno de 1985, os heróis de Stranger Things voltam a enfrentar novos mistérios e criaturas estranhas depois que algo terrível desperta sob a neve.',
+                ageRating: 'A10',
+                distributor: 'Netflix',
+                producer: 'Produzida e executiva com participação dos Duffer Brothers; showrunner Eric Robles',
+                tags: ['Animação','Ficção científica'],
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'Episódio 1', url: '' },
+                        { id: 's1-e2', title: 'Episódio 2', url: '' },
+                        { id: 's1-e3', title: 'Episódio 3', url: '' },
+                        { id: 's1-e4', title: 'Episódio 4', url: '' },
+                        { id: 's1-e5', title: 'Episódio 5', url: '' },
+                        { id: 's1-e6', title: 'Episódio 6', url: '' },
+                        { id: 's1-e7', title: 'Episódio 7', url: '' },
+                        { id: 's1-e8', title: 'Episódio 8', url: '' },
+                        { id: 's1-e9', title: 'Episódio 9', url: '' },
+                        { id: 's1-e10', title: 'Episódio 10', url: '' }
+                    ]
+                }
+            }
         ];
 
         // Official platform links for "Veja na ..." buttons (used in details modal)
