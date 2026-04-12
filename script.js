@@ -1553,7 +1553,7 @@
                 category: 'Terror / Suspense',
                 year: '1996',
                 ageRating: '16',
-                cover: 'https://occ-0-8407-90.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABccXgqXjgC0o-ud2hGqkysjV8V0ij3sXQxmmqZ99kxjKx94xoigeHgXolIeIiFQCgolwKcektQP-D30bVrHAl3q2PVwLOleXyUwf.jpg?r=f12',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/6c7fc517b1c0958fffcf44d05d526d0be39b78d3b01f2903de701ea99cbdd033.jpg',
                 description: 'Em uma pacata cidade da Califórnia, um assassino mascarado fanático por filmes de terror assombra estudantes com telefonemas e violência brutal.',
                 ratings: { imdb: 7.4, rottenTomatoes: 77 },
                 url: 'https://dl.dropboxusercontent.com/scl/fi/ioxcukt5h8le1pux4r75v/P-nico.mp4?rlkey=yonc6tmrclp5fc0ftxw113zf0&st=4nlu6974'
@@ -1566,7 +1566,7 @@
                 category: 'Terror / Suspense',
                 year: '1997',
                 ageRating: '14',
-                cover: 'https://static.ndmais.com.br/2022/01/panico-2.jpg',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/a38c98caa55afe6ab063e2d8c87fc252897923fa4042a5ae856ba6421ca15247._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/cbsaacf/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1334,885,507,117_kv2153391f34c41b5172a3022deb992c03_.jpg',
                 description: 'Dois anos após os assassinatos em Woodsboro, Sidney e seus aliados enfrentam um novo Ghostface numa universidade enquanto tentam reconstruir suas vidas.',
                 ratings: { imdb: 6.3, rottenTomatoes: 82 },
                 url: 'https://dl.dropboxusercontent.com/scl/fi/kbt9ru1h8rufqtddks33w/P-nico2.mp4?rlkey=7zs7n8a07ljqoxbek0xqmvqao&st=v61yzcoe'
@@ -1579,7 +1579,7 @@
                 category: 'Terror / Suspense',
                 year: '2000',
                 ageRating: '18',
-                cover: 'https://cinepop.com.br/wp-content/uploads/2020/05/p%C3%A2nico-3-1.png',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/1dd098f1d0f991f32c57dfd5e8a03e7ca9f01369033a3a846377bf80933b0183._UR1920,1080_CLs%7C1920,1080%7C/G/bundle/BottomRightCardGradient16x9.png,/G/01/digital/video/merch/subs/benefit-id/a-f/cbsaacf/logos/channels-logo-white.png%7C0,0,1920,1080+0,0,1920,1080+1334,885,507,117_kv2153391f34c41b5172a3022deb992c03_.jpg',
                 description: 'Sidney é atraída para Hollywood quando um novo Ghostface começa a matar o elenco de um filme baseado nos assassinatos de Woodsboro.',
                 ratings: { imdb: 5.6, rottenTomatoes: 44 },
                 url: 'https://dl.dropboxusercontent.com/scl/fi/txh34vnsmubgmxexnjtj3/Scream-3.mp4?rlkey=dk2q8s1omdrh031h06k07cwdz&st=b08mxbmp'
@@ -1592,7 +1592,7 @@
                 category: 'Terror / Suspense',
                 year: '2011',
                 ageRating: '16',
-                cover: 'https://cinepop.com.br/wp-content/uploads/2021/04/scream4-cinepop1.jpg',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/063d7843f89fd55b1a77a8bc17eb866faa7120956d1ec2e22aa38a076a42fe15.jpg',
                 description: 'Quinze anos depois, Sidney retorna a Woodsboro e, ao promover seu livro, enfrenta um novo assassino Ghostface que mira jovens fãs dos antigos crimes.',
                 ratings: { imdb: 6.2, rottenTomatoes: 61 },
                 url: 'https://dl.dropboxusercontent.com/scl/fi/7b1o67ky9v78pyk51osgx/SCREAM-4.mp4?rlkey=twiam2enfdqzmu3ezn0ar4exs&st=73zztlv7'
@@ -1605,7 +1605,7 @@
                 category: 'Terror / Suspense',
                 year: '2022',
                 ageRating: '16',
-                cover: 'https://tm.ibxk.com.br/2022/01/13/13093300424066.jpg',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/bd8780c91078585f5b453a9c055a0ac774cf3a6877a9867148ac9ed153134eb9.jpg',
                 description: 'Vinte e cinco anos após os crimes originais, um novo Ghostface persegue um grupo de adolescentes em Woodsboro, reacesando segredos do passado mortal da cidade.',
                 ratings: { imdb: 6.3, rottenTomatoes: 76 },
                 url: 'https://dl.dropboxusercontent.com/scl/fi/qygkl6a5orfkn4h9e1tmw/Scream-5.mp4?rlkey=9aujtyh9i5fmz2bhc0oqapvsq&st=e3vla0if'
@@ -1618,7 +1618,7 @@
                 category: 'Terror / Suspense',
                 year: '2023',
                 ageRating: '18',
-                cover: 'https://s2-techtudo.glbimg.com/hhNztmkaLms4ZRgVaaFqGgIwzpQ=/0x0:1440x750/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2023/C/I/XXlufbQK6zXbAijdbRNw/scream-6.webp',
+                cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/6AYY37jfdO6hpXcMjf9Yu5cnmO0/AAAABWEdas0lPWM7Yw2nMc1Pbrbbp_u9d4EZF8oZpnJQnYeRlQ1Docf5dQEHMz81-CoUvBtEIQLdG_MJMj-_olJdTtjLISs9WOFJSDEa.jpg?',
                 description: 'Os sobreviventes deixam Woodsboro e recomeçam em Nova York, mas um novo e mais brutal Ghostface os persegue pela metrópole.',
                 ratings: { imdb: 7.6, rottenTomatoes: 77 },
                 url: 'https://dl.dropboxusercontent.com/scl/fi/83pz2yzii8rr7zqv4v18h/Scream-6C-1.mp4?rlkey=72lge96kvpp673hit7gx47ee8&st=l1nc34de'
@@ -1632,7 +1632,7 @@
                 year: '2026',
                 yearBR: '2026',
                 ageRating: '18',
-                cover: 'https://rollingstone.com.br/wp-content/uploads/2026/02/Panico-7-com-o-retorno-de-Neve-Campbell-estreia-nos-cinemas-brasileiros-800x450.jpg',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/02380d206ec7eda0fa78a4412fd6811cd83fee717a881579b32ad98a3f27b09b.jpg',
                 description: 'Quando um novo assassino Ghostface surge na pacata cidade onde Sidney Prescott reconstruiu sua vida, seus medos mais sombrios tornam-se realidade enquanto sua filha se torna o novo alvo. Determinada a proteger sua família, Sidney deve enfrentar os horrores do passado e tentar pôr fim ao massacre.',
                 distributor: 'Paramount Pictures',
                 production: ['Spyglass Media Group', 'Project X Entertainment', 'Outerbanks Entertainment'],
@@ -1956,6 +1956,48 @@
                 url: 'https://dl.dropboxusercontent.com/scl/fi/aiu27bc9cubmgfvwlbg83/Ponyo.mp4?rlkey=tjd2ey3o4gn5ayupv1ie6m9a3&st=eplvrvmp'
             }
         ];
+
+        // Official platform links for "Veja na ..." buttons (used in details modal)
+        // Keys are db item ids -> public platform URL
+        window.externalLinks = {
+            'akame-ga-kill': 'https://www.netflix.com/br/title/80052714',
+            'espiritos-na-escola': 'https://www.paramountplus.com/br/shows/school-spirits/',
+            'my-melody-kuromi': 'https://www.netflix.com/br/title/81318403',
+            'stranger-things': 'https://www.netflix.com/br/title/80057281',
+            'miraculous-ladybug': 'https://globoplay.globo.com/miraculous-as-aventuras-de-ladybug/t/DzVqV1jn8Q/',
+            'heartstopper': 'https://www.netflix.com/br/title/81059939',
+            'one-piece-live': 'https://www.netflix.com/br/title/80217863',
+            'outer-banks': 'https://www.netflix.com/br/title/80236318',
+            'south-park-panderverso': 'https://www.primevideo.com/-/pt/detail/South-Park-Entrando-no-Panderverso/0TGVKVPRJ0740ZTO4VRBT4X8HE',
+            'it-bem-vindos-a-derry': 'https://www.primevideo.com/-/pt/detail/IT-Bem-Vindos-a-Derry/0T2UPTCY3I47TT6L321ZF1E03B',
+            'round-6': 'https://www.netflix.com/br/title/81040344',
+            'cassandra': 'https://www.netflix.com/br/title/81621534',
+            'georgie-mandy-primeiro-casamento': 'https://www.primevideo.com/-/pt/detail/Georgie-e-Mandy---Seu-Primeiro-Casamento/0SBGV1OL1ZVP1JK3AAFUEFGD5U',
+            'cuphead': 'https://www.netflix.com/br/title/80242531',
+            'amazing-digital-circus': 'https://www.netflix.com/br/title/81936142',
+            'subway-surfers-animated': 'https://www.youtube.com/playlist?list=PLMJCbUcidpbqoaR6VGgynUMWdMeuvpfkG',
+            'wandinha': 'https://www.netflix.com/br/title/81231974',
+            'diario-banana-1': 'https://www.disneyplus.com/pt-br/browse/entity-c3bf1cdf-764a-405a-ba15-124330c5c934',
+            'diario-banana-2': 'https://www.netflix.com/br/title/70170262',
+            'diario-banana-3': 'https://www.disneyplus.com/pt-br/browse/entity-3a4fef8b-3d17-41d4-ab1e-e606397b15e9',
+            'divertida-mente-2': 'https://www.disneyplus.com/pt-br/browse/entity-ec9f9fa3-fbae-4a25-b722-12c3b8ab0ef4',
+            'divertida-mente-1': 'https://www.disneyplus.com/pt-br/browse/entity-d4b87168-7d0b-49bc-b138-457ab7723feb',
+            'miraculous-movie-2023': 'https://www.netflix.com/br/title/81383247',
+            'miraculous-world-ny': 'https://www.primevideo.com/-/pt/detail/Miraculous-World-Nova-Iorque-Her%C3%B3is-Unidos/0FPVEPCYI0OWQUKIDG7YGOQ4RY',
+            'miraculous-world-shanghai': 'https://www.primevideo.com/-/pt/detail/Miraculous-World-Xangai-A-Lenda-de-LadyDragon/0H3CR6LNLE044ML1XCWNF51D44',
+            'miraculous-world-paris': 'https://globoplay.globo.com/miraculous-world-paris-as-aventuras-de-shadybug-e-claw-noir/t/JRkSyjtntT/',
+            'miraculous-world-london': 'https://www.primevideo.com/-/pt/detail/Miraculous-World-Londres---Corrida-Contra-o-Tempo/0S285P35EPEJW76KISQAQTU72L',
+            'miraculous-world-tokyo': 'https://globoplay.globo.com/miraculous-world-toquio-forca-estelar/t/HfvMPxtgHb/',
+            'zombies-4': 'https://www.disneyplus.com', // general guidance: Disney+
+            'zombies': 'https://www.disneyplus.com/pt-br/browse/entity-abc5ab6f-f893-4083-ba1c-20f75b1dfb2d',
+            'zombies-2': 'https://www.disneyplus.com/pt-br/browse/entity-f6ca8ebf-db28-44ce-9332-fe316cb6d545',
+            'zombies-3': 'https://www.disneyplus.com/pt-br/browse/entity-8f951d7a-0854-4fb9-b021-c0a0a174e123',
+            'super-mario-2023': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Bros-O-Filme/0LFW40Y2WKTL522MU5K4GGL1SC',
+            'luca': 'https://www.disneyplus.com/pt-br/browse/entity-f28b825f-c207-406b-923a-67f85e6d90e0',
+            'matilda-1996': 'https://www.netflix.com/br/title/70033005',
+            'soul': 'https://www.disneyplus.com/browse/entity-5f055dc5-cc07-43f2-839e-bf073b16a823',
+            'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen'
+        };
 
         // --- LINK OBFUSCATION (inline DB shielding) ---
         // Move any cleartext 'url' fields into 'url_enc' using a simple XOR+base64 encoder so links are not present in plain text
@@ -3766,6 +3808,32 @@
                 return lines.join('');
             })();
 
+            // Build an optional "Veja na ..." button when an official link exists for this item
+            let externalBtnHtml = '';
+            try {
+                const link = window.externalLinks && window.externalLinks[item.id];
+                if (link) {
+                    const detectService = (u) => {
+                        try {
+                            const l = (u || '').toLowerCase();
+                            if (l.includes('netflix.com')) return 'Netflix';
+                            if (l.includes('primevideo') || l.includes('primevideo.com')) return 'Prime Video';
+                            if (l.includes('disneyplus') || l.includes('disneyplus.com')) return 'Disney+';
+                            if (l.includes('globoplay')) return 'Globoplay';
+                            if (l.includes('paramountplus') || l.includes('paramountplus.com')) return 'Paramount+';
+                            if (l.includes('youtube.com')) return 'YouTube';
+                            if (l.includes('crunchyroll')) return 'Crunchyroll';
+                            // fallback: domain as label
+                            try { return new URL(u).hostname.replace('www.',''); } catch(_) { return 'Plataforma'; }
+                        } catch (_) { return 'Plataforma'; }
+                    };
+                    const svc = detectService(link);
+                    externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>Veja na ${svc}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+                }
+            } catch (err) {
+                externalBtnHtml = '';
+            }
+
             content.innerHTML = `
                 <button id="close-details-btn" class="fixed top-6 right-6 z-[100] w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                     <i class="ph ph-x text-lg"></i>
@@ -3786,6 +3854,7 @@
                             <span>${item.year}</span>
                             <span>•</span>
                             <span>${formatCategory(item.category)}</span>
+                            ${item.type === 'filme' ? externalBtnHtml : ''}
                         </div>
 
                         <p class="text-white/80 text-sm md:text-base leading-relaxed mb-4 font-light">${item.description}</p>
