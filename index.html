@@ -2210,5 +2210,121 @@
         })();
     </script>
     <script src="script.js" defer></script>
+
+    <!-- New Lumina Legal Modal (replaces legacy legal modals; legacy elements hidden) -->
+    <style>
+      /* Hide legacy legal modals if present */
+      #legal-modal, #legal-modal-2 { display: none !important; opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }
+
+      /* Modal specific transitions */
+      .modal-enter { opacity: 0; pointer-events: none; }
+      .modal-enter .modal-content { transform: translateY(15px) scale(0.95); }
+      .modal-active { opacity: 1; pointer-events: auto; }
+      .modal-active .modal-content { transform: translateY(0) scale(1); }
+      .transition-modal { transition: opacity 300ms ease; }
+      .transition-content { transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1); }
+    </style>
+
+    <!-- BEGIN: Custom Lumina Legal Modal -->
+    <div id="lumina-legal-modal" class="fixed inset-0 z-[130] flex items-center justify-center px-4 sm:px-6 transition-modal modal-enter" role="dialog" aria-modal="true" aria-labelledby="legal2-title" style="font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;">
+      <div id="lumina-backdrop" class="absolute inset-0 bg-black/70 cursor-pointer"></div>
+
+      <div class="modal-content transition-content relative w-full max-w-xl bg-zinc-900/90 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10">
+        <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#8b5cf6]/50 to-transparent"></div>
+
+        <div class="flex items-center gap-4 px-6 py-5 md:px-8 md:py-6 border-b border-white/5 bg-white/[0.02]">
+          <div class="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 shadow-[0_0_20px_rgba(139,92,246,0.15)]">
+            <i class="ph-fill ph-scales text-[#9f7aea] text-2xl" aria-hidden="true"></i>
+          </div>
+          <div>
+            <h3 id="legal2-title" class="font-semibold text-xl md:text-2xl text-white tracking-tight">Aviso Legal</h3>
+            <p class="text-zinc-400 text-sm mt-1 flex items-center gap-2">
+              <span>Lumina Project</span>
+              <span class="w-1 h-1 rounded-full bg-zinc-600" aria-hidden="true"></span>
+              <span>Mantido por fãs</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="p-6 md:p-8 space-y-6">
+          <p class="text-zinc-300 text-sm md:text-base leading-relaxed">O <strong>Lumina</strong> é um projeto criado para fins informativos e de demonstração. Não hospedamos conteúdo próprio; todos os links e embeds são fornecidos por terceiros e podem ser removidos a qualquer momento.</p>
+
+          <div class="space-y-3">
+            <div class="flex gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+              <i class="ph ph-copyright text-[#9f7aea] text-xl shrink-0 mt-0.5" aria-hidden="true"></i>
+              <div>
+                <strong class="text-zinc-100 block mb-1 text-sm md:text-base">Direitos autorais</strong>
+                <p class="text-zinc-400 text-sm leading-relaxed">Se você é titular de direitos sobre qualquer conteúdo e deseja a remoção, envie uma solicitação válida e agiremos prontamente.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+              <i class="ph ph-users text-[#9f7aea] text-xl shrink-0 mt-0.5" aria-hidden="true"></i>
+              <div>
+                <strong class="text-zinc-100 block mb-1 text-sm md:text-base">Natureza do projeto</strong>
+                <p class="text-zinc-400 text-sm leading-relaxed">Operamos sem fins comerciais. Não há nenhum tipo de monetização do conteúdo listado nesta plataforma.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors">
+              <i class="ph ph-envelope-simple text-[#9f7aea] text-xl shrink-0 mt-0.5" aria-hidden="true"></i>
+              <div>
+                <strong class="text-zinc-100 block mb-1 text-sm md:text-base">Contato direto</strong>
+                <a href="mailto:Luminacontents@gmail.com" class="inline-flex items-center gap-1.5 text-[#9f7aea] hover:text-[#b79df0] font-medium text-sm transition-colors">Luminacontents@gmail.com <i class="ph ph-arrow-up-right text-xs" aria-hidden="true"></i></a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 py-5 md:px-8 md:py-6 border-t border-white/5 bg-black/20 flex justify-end">
+          <button id="lumina-close-modal" class="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-sm transition-all border border-white/10 hover:border-white/20 active:scale-95 focus:outline-none focus:ring-2 focus:ring-[#8b5cf6]/50">Compreendi e Fechar</button>
+        </div>
+      </div>
+    </div>
+    <!-- END: Custom Lumina Legal Modal -->
+
+    <script>
+      (function(){
+        const modal = document.getElementById('lumina-legal-modal');
+        const openButtons = document.querySelectorAll('[onclick="openLegal2()"], [onclick="openLegal()"], #open-modal, #legal2-open, #legal-open');
+        const closeBtn = document.getElementById('lumina-close-modal');
+        const backdrop = document.getElementById('lumina-backdrop');
+
+        // Toggle function
+        function toggleModal() {
+          if (!modal) return;
+          if (modal.classList.contains('modal-enter')) {
+            modal.classList.remove('modal-enter');
+            modal.classList.add('modal-active');
+          } else {
+            modal.classList.add('modal-enter');
+            modal.classList.remove('modal-active');
+          }
+        }
+
+        // wire existing openLegal2 global to open this modal (safe override)
+        window.openLegal2 = function() { try { toggleModal(); } catch(e){} };
+        window.openLegal = function() { try { toggleModal(); } catch(e){} };
+
+        // Attach to any existing demo open button if present
+        try {
+          openButtons.forEach(btn => {
+            try { btn.addEventListener && btn.addEventListener('click', (e) => { e.preventDefault(); toggleModal(); }); } catch(_) {}
+          });
+        } catch(_) {}
+
+        if (closeBtn) closeBtn.addEventListener('click', toggleModal);
+        if (backdrop) backdrop.addEventListener('click', toggleModal);
+
+        // keyboard escape closes modal
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal && modal.classList.contains('modal-active')) toggleModal();
+        });
+
+        // ensure modal hidden initially (consistent)
+        modal.classList.add('modal-enter');
+      })();
+    </script>
+
 </body>
 </html>
