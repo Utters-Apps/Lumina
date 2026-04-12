@@ -2217,16 +2217,16 @@
       <div class="modal-content transition-content relative w-full max-w-xl bg-zinc-900/90 rounded-3xl overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10">
         <div class="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-[#8b5cf6]/50 to-transparent"></div>
 
-        <div class="flex items-center gap-4 px-6 py-5 md:px-8 md:py-6 border-b border-white/5 bg-white/[0.02]">
+        <div class="flex flex-col md:flex-row md:items-center items-start gap-4 px-6 py-5 md:px-8 md:py-6 border-b border-white/5 bg-white/[0.02]">
           <div class="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 shadow-[0_0_20px_rgba(139,92,246,0.15)]">
             <i class="ph-fill ph-scales text-[#9f7aea] text-2xl" aria-hidden="true"></i>
           </div>
-          <div>
+          <div class="min-w-0">
             <h3 id="legal2-title" class="font-semibold text-xl md:text-2xl text-white tracking-tight">Aviso Legal</h3>
             <p class="text-zinc-400 text-sm mt-1 flex items-center gap-2">
-              <span>Lumina Project</span>
+              <span class="truncate">Lumina Project</span>
               <span class="w-1 h-1 rounded-full bg-zinc-600" aria-hidden="true"></span>
-              <span>Mantido por fãs</span>
+              <span class="truncate">Mantido por fãs</span>
             </p>
           </div>
         </div>
@@ -2275,15 +2275,27 @@
         const closeBtn = document.getElementById('lumina-close-modal');
         const backdrop = document.getElementById('lumina-backdrop');
 
-        // Toggle function
+        // Toggle function with smooth close animation
         function toggleModal() {
           if (!modal) return;
+          // open
           if (modal.classList.contains('modal-enter')) {
             modal.classList.remove('modal-enter');
-            modal.classList.add('modal-active');
+            // ensure starting state for animation
+            modal.classList.add('transition-modal', 'modal-active');
+            // force reflow to trigger transition
+            void modal.offsetWidth;
           } else {
-            modal.classList.add('modal-enter');
+            // close: add a closing class, then revert to enter state after transition
             modal.classList.remove('modal-active');
+            modal.classList.add('modal-closing');
+            // after transition duration, fully hide and reset
+            setTimeout(() => {
+              try {
+                modal.classList.remove('modal-closing');
+                modal.classList.add('modal-enter');
+              } catch(_) {}
+            }, 320);
           }
         }
 
@@ -2301,7 +2313,7 @@
         if (closeBtn) closeBtn.addEventListener('click', toggleModal);
         if (backdrop) backdrop.addEventListener('click', toggleModal);
 
-        // keyboard escape closes modal
+        // keyboard escape closes modal with animation
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape' && modal && modal.classList.contains('modal-active')) toggleModal();
         });
