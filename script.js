@@ -572,10 +572,14 @@
                         { id: 's6-e17', title: 'A Fada dos Belos Sonhos', url: 'https://player.odycdn.com/api/v3/streams/free/fada/614b08606d6740eed5ae9d4a44fb26f2530c8f32/c19857.mp4' },
                         { id: 's6-e18', title: 'Os Quebra-Catástrofes', url: '' },
                         { id: 's6-e19', title: 'Regeneração', url: '' },
-                        { id: 's6-e20', title: 'Inverte-Corações', url: '' },
+                        { id: 's6-e20', title: 'Inverte-Corações', url: 'https://player.odycdn.com/api/v3/streams/free/620/e7f6bbce288ba2c42e3ae265cbd91bfba775d3a9/ceef00.mp4' },
                         { id: 's6-e21', title: 'Os Titãs da Corrente', url: '' },
-                        { id: 's6-e22', title: 'Lady Caos', url: '' },
-                        { id: 's6-e23', title: 'Tristanansi', url: '' },
+                        { id: 's6-e22', title: 'Lady Caos', url: 'https://player.odycdn.com/v6/streams/ee96b5a8415de70a7cf768194c3bfac413970d13/e5d2d3.mp4' },
+                        { id: 's6-e23', title: 'Tristanansi', url: 'https://player.odycdn.com/api/v3/streams/free/Tristanansi_Miraculous_Les_Aventures_De_Ladybug_Et_Chat_Noir_Play/37635eb5d089fb2d7af84c14e6ec5c55542507bc/5b2c0f.mp4',
+                            subtitles: [
+                                { src: 'https://cdn.cnbr.space/subtitles/623_br.vtt', kind: 'subtitles', srclang: 'pt-BR', label: 'Português (Brasil)', default: true }
+                            ]
+                        },
                         { id: 's6-e24', title: 'A Rainha da Terra do Medo', url: '' },
                         { id: 's6-e25', title: 'Protocolo Secreto', url: '' },
                         { id: 's6-e26', title: 'Nêmesis', url: '' }
@@ -5126,6 +5130,9 @@
                                             // attach to wrapper
                                             wrapper.appendChild(this.vid);
 
+                                            // attach subtitles if provided in context
+                                            try { attachSubtitlesToVideo(this.vid, (this.context && this.context.subtitles) ? this.context.subtitles : []); } catch(_) {}
+
                                             // hide loading when loaded and cancel watchdog
                                             this.vid.addEventListener('playing', () => {
                                                 try { const pl = document.getElementById('player-loading'); if (pl) pl.classList.add('hidden'); if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
@@ -5220,6 +5227,9 @@
                         this.vid.defaultPlaybackRate = this.vid.playbackRate;
                     } catch(_) {}
                     wrapper.appendChild(this.vid);
+
+                    // attach subtitles if provided in context
+                    try { attachSubtitlesToVideo(this.vid, (this.context && this.context.subtitles) ? this.context.subtitles : []); } catch(_) {}
 
                     // ensure UI visible and functional
                     const ui = document.querySelector('.player-ui');
@@ -6824,6 +6834,40 @@
             if (isNaN(s)) return "00:00";
             const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
             return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}` : `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        // Attach subtitle <track> elements to a video element from an array of subtitle descriptors.
+        // Each descriptor: { src, kind, srclang, label, default }
+        function attachSubtitlesToVideo(videoEl, subs) {
+            try {
+                if (!videoEl || !subs || !Array.isArray(subs)) return;
+                // Remove existing tracks first
+                try {
+                    const existing = Array.from(videoEl.querySelectorAll('track'));
+                    existing.forEach(t => t.remove());
+                } catch(_) {}
+                subs.forEach(s => {
+                    try {
+                        if (!s || !s.src) return;
+                        const tr = document.createElement('track');
+                        tr.kind = s.kind || 'subtitles';
+                        tr.src = s.src;
+                        if (s.srclang) tr.srclang = s.srclang;
+                        if (s.label) tr.label = s.label;
+                        if (s.default) tr.default = true;
+                        videoEl.appendChild(tr);
+                        // ensure track mode is 'showing' if default requested (some browsers set to 'disabled' initially)
+                        if (s.default) {
+                            try {
+                                // when track is loaded, set mode to showing
+                                tr.addEventListener('load', () => { try { tr.mode = 'showing'; } catch(_) {} });
+                                // also attempt immediate set (may be allowed)
+                                tr.mode = 'showing';
+                            } catch(_) {}
+                        }
+                    } catch(_) {}
+                });
+            } catch (_) {}
         }
 
         function dismissNextEp(instant = false) {
