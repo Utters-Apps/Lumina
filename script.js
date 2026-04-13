@@ -4593,92 +4593,95 @@
                         }
                     }, watchdogDelay);
 
-                    // If this is a Dropbox-hosted link, start a short retry loop during the watchdog window to attempt reloads.
+                    // If this is a Dropbox-hosted link, use an adaptive, Dropbox-tuned warmup + progressive-range fetch pipeline
                     try {
                         const lowerUrl = String(url || '').toLowerCase();
                         if (lowerUrl.includes('dropbox.com')) {
-                            // Max attempts spaced across the watchdog window (e.g., up to 3 attempts within watchdogDelay)
-                            const maxAttempts = 3;
-                            const intervalMs = Math.max(2200, Math.floor((Math.max(7000, (watchdogDelay || 7000)) - 800) / maxAttempts));
-                            this._loadAttempts = 0;
+                            // Dropbox has higher latency; use more attempts and exponential backoff tuned to ~150-160ms RTT.
+                            // Strategy:
+                            // 1) Try a small Range HEAD/GET (0-65535) to warm connections and prompt CDN to accept streaming.
+                            // 2) If a successful partial response arrives, create an object URL from the returned blob and set video.src to it.
+                            // 3) Retry with exponential backoff (baseDelay tuned to dropbox RTT) up to maxAttempts, then fall back to original src.
+                            const maxAttempts = 6;
+                            const baseRttMs = 160; // measured median RTT to Dropbox from Brazil
+                            const jitter = () => Math.floor(Math.random() * 80) - 40; // +/- 40ms jitter
+                            let attempts = 0;
+                            if (this._dropboxRetryTimer) { clearInterval(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
 
-                            // clear any previous retry timer
-                            if (this._loadRetryTimer) { clearInterval(this._loadRetryTimer); this._loadRetryTimer = null; }
-
-                            // retry function: try to reassign src and call play for native video; for iframe replace src to force reload.
-                            const attemptReload = () => {
+                            const tryRangeWarmup = async () => {
+                                attempts++;
+                                // best-effort range fetch of first 64KB
                                 try {
-                                    if (this._loadAttempts >= maxAttempts) return;
-                                    this._loadAttempts++;
-                                    // only attempt if playback hasn't started yet
-                                    let started = false;
-                                    try {
-                                        if (this.vid && !this.vid.paused && this.vid.currentTime > 0) started = true;
-                                        if (!started && this.isYouTube && this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function') {
-                                            started = (this.ytPlayer.getPlayerState() === YT.PlayerState.PLAYING);
-                                        }
-                                        if (!started && this.iframe) {
-                                            started = !!(this.iframe.src && !this.iframe.src.includes('about:blank'));
-                                        }
-                                    } catch(_) { started = false; }
+                                    const controller = new AbortController();
+                                    // adaptive timeout proportional to RTT and attempts (increase window each retry)
+                                    const timeoutMs = Math.min(45000, Math.round((baseRttMs * Math.pow(1.8, attempts)) + 800 + jitter()));
+                                    const to = setTimeout(() => controller.abort(), timeoutMs);
+                                    const res = await fetch(url, {
+                                        method: 'GET',
+                                        headers: { 'Range': 'bytes=0-65535' },
+                                        mode: 'cors',
+                                        credentials: 'omit',
+                                        cache: 'no-store',
+                                        signal: controller.signal
+                                    }).catch(()=>null);
+                                    clearTimeout(to);
 
-                                    if (started) {
-                                        // playback started — clear retry timer
-                                        if (this._loadRetryTimer) { clearInterval(this._loadRetryTimer); this._loadRetryTimer = null; }
-                                        return;
-                                    }
-
-                                    // perform reload attempt
-                                    if (this.vid) {
+                                    if (res && (res.status === 206 || res.status === 200 || res.type === 'opaque')) {
+                                        // prefer 206 partial content; for opaque/no-cors responses we still try to use blob if possible
                                         try {
-                                            // force reload by toggling src then reassigning (best-effort)
-                                            const curSrc = this.vid.currentSrc || this.vid.src || url;
-                                            this.vid.pause && this.vid.pause();
-                                            this.vid.removeAttribute && this.vid.removeAttribute('src');
-                                            // small micro-delay then reassign src to prompt the browser to re-init connection
-                                            setTimeout(() => {
+                                            const blob = await res.blob().catch(()=>null);
+                                            if (blob && blob.size > 16) {
+                                                // create objectURL and swap in the video element (this primes the player with a local URI
+                                                // that the browser can stream from while leaving the underlying connection warm)
                                                 try {
-                                                    this.vid.src = curSrc;
-                                                    // force load metadata and try play
-                                                    try { this.vid.load && this.vid.load(); } catch(_) {}
-                                                    const p = this.vid.play && this.vid.play();
-                                                    if (p && typeof p.catch === 'function') p.catch(()=>{});
-                                                } catch(_) {}
-                                            }, 140);
-                                        } catch(_) {}
-                                    } else if (this.iframe) {
-                                        try {
-                                            const cur = this.iframe.src || url;
-                                            // force replace to trigger reload (append a tiny cache-buster if necessary)
-                                            const sep = (cur.indexOf('?') === -1) ? '?' : '&';
-                                            const nb = cur + sep + '_r=' + Date.now();
-                                            this.iframe.src = nb;
-                                        } catch(_) {}
-                                    } else {
-                                        // If player hasn't created vid/iframe yet, attempt a gentle fetch to warm connection (best-effort)
-                                        try {
-                                            fetch(url, { method: 'GET', mode: 'cors', cache: 'no-store', credentials: 'omit' })
-                                                .then(r => {
-                                                    // no-op; fetch warms connection
-                                                }).catch(()=>{});
-                                        } catch(_) {}
+                                                    const objectUrl = URL.createObjectURL(blob);
+                                                    // If we already have a video element, assign and play; if not, store as initial src before element creation
+                                                    if (this.vid) {
+                                                        // Pause/manual reload to avoid race conditions
+                                                        try { this.vid.pause(); } catch(_) {}
+                                                        // assign object URL and call load to ensure buffered data is recognized
+                                                        try {
+                                                            this.vid.src = objectUrl;
+                                                            this.vid.load && this.vid.load();
+                                                        } catch(_) {
+                                                            // fallback: do nothing and let normal src be used
+                                                        }
+                                                    } else {
+                                                        // stash objectURL to be consumed when video element is created
+                                                        this.__dropbox_object_url = objectUrl;
+                                                    }
+                                                    // success: clear any retry timer and stop watchdog
+                                                    if (this._dropboxRetryTimer) { clearInterval(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
+                                                    if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+                                                    return true;
+                                                } catch (errInner) {
+                                                    // object URL creation failed, continue to retry
+                                                }
+                                            }
+                                        } catch (_) {}
                                     }
-
-                                    // if we've reached maxAttempts, keep one final watchdog to close if still not started (the loadTimeout will handle closure)
-                                } catch (e) {
-                                    // ignore retry errors
+                                } catch (err) {
+                                    // fetch failed or aborted; we'll retry until maxAttempts
                                 }
+
+                                // If we haven't succeeded and attempts remain, schedule the next try using exponential backoff
+                                if (attempts < maxAttempts) {
+                                    const delay = Math.round(baseRttMs * Math.pow(1.9, attempts) + 120 + jitter());
+                                    // schedule a one-off retry (do not stack intervals)
+                                    this._dropboxRetryTimer = setTimeout(() => { tryRangeWarmup().catch(()=>{}); }, delay);
+                                } else {
+                                    // Final fallback: give up trying warmup; clear timers and allow normal src assignment
+                                    if (this._dropboxRetryTimer) { clearTimeout(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
+                                }
+                                return false;
                             };
 
-                            // schedule interval attempts until watchdog finishes
-                            this._loadRetryTimer = setInterval(() => {
-                                try { attemptReload(); } catch(_) {}
-                            }, intervalMs);
-
-                            // also attempt first reload immediately (do not wait for first tick)
-                            attemptReload();
+                            // Start first attempt immediately and then rely on internal scheduling for retries
+                            tryRangeWarmup().catch(()=>{});
                         }
-                    } catch (_) {}
+                    } catch (err) {
+                        // non-blocking: continue without special Dropbox handling
+                    }
                 } catch (_) {}
 
                 // If it's an embed, attempt to detect YouTube and use the YT IFrame API to integrate with our custom UI.
