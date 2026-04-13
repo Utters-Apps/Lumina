@@ -2323,5 +2323,88 @@
       })();
     </script>
 
+    <style>
+      /* Mobile-friendly adaptations for the Lumina Legal Modal (bottom-sheet presentation) */
+      @media (max-width: 520px) {
+        /* Make the modal behave like a bottom sheet on small viewports */
+        #lumina-legal-modal {
+          align-items: flex-end !important;
+          padding: 0 !important;
+        }
+
+        /* Soften the backdrop and keep it tappable to dismiss comfortably */
+        #lumina-backdrop {
+          background: linear-gradient(0deg, rgba(0,0,0,0.68), rgba(0,0,0,0.32)) !important;
+        }
+
+        /* Expand modal-content full width and convert to a sheet with rounded top corners
+           Increase height to provide more vertical space on small devices. */
+        #lumina-legal-modal .modal-content {
+          width: 100% !important;
+          max-width: 100% !important;
+          margin: 0 !important;
+          border-bottom-left-radius: 0 !important;
+          border-bottom-right-radius: 0 !important;
+          border-top-left-radius: 18px !important;
+          border-top-right-radius: 18px !important;
+          height: 80vh !important; /* increased from 60vh to 80vh for more vertical room */
+          min-height: 50vh !important;
+          display: flex !important;
+          flex-direction: column !important;
+          overflow: hidden !important;
+          padding: 0 !important;
+        }
+
+        /* Make inner content scrollable and increase padding for touchability */
+        #lumina-legal-modal .modal-content > .p-6,
+        #lumina-legal-modal .modal-content > .p-6.md\:p-8 {
+          padding: 16px !important;
+          overflow: auto !important;
+          -webkit-overflow-scrolling: touch;
+          height: calc(80vh - 72px) !important; /* adjusted to match new sheet height */
+        }
+
+        /* Footer with action button stays fixed at bottom of sheet */
+        #lumina-legal-modal .modal-content > .px-6.md\:px-8 {
+          padding: 10px 16px !important;
+          background: linear-gradient(to top, rgba(0,0,0,0.06), transparent) !important;
+          border-top: 1px solid rgba(255,255,255,0.03) !important;
+        }
+
+        /* Make close button full-width and positioned relative inside footer so it never exits the viewport on small screens */
+        #lumina-close-modal {
+          position: relative !important;
+          top: auto !important;
+          right: auto !important;
+          width: 100% !important;
+          height: 48px !important;
+          margin: 0 !important;
+          border-radius: 12px !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+        }
+
+        /* Improve readable text sizes and spacing for mobile */
+        #lumina-legal-modal h3, #lumina-legal-modal p, #lumina-legal-modal .text-sm {
+          font-size: 15px !important;
+        }
+
+        /* Ensure the sheet enters from bottom with a gentle motion */
+        #lumina-legal-modal.modal-active .modal-content {
+          transform: translateY(0) !important;
+        }
+        #lumina-legal-modal.modal-enter .modal-content {
+          transform: translateY(18vh) scale(0.995);
+        }
+
+        /* Ensure backdrop covers full screen even when aligned at bottom */
+        #lumina-backdrop {
+          position: fixed !important;
+          inset: 0 !important;
+        }
+      }
+    </style>
+
 </body>
 </html>
