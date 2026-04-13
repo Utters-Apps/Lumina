@@ -1987,6 +1987,23 @@
                         { id: 's1-e10', title: 'Episódio 10', url: '' }
                     ]
                 }
+            },
+            {
+                id: 'super-mario-galaxy-2026',
+                title: 'Super Mario Galaxy: O Filme',
+                originalTitle: 'Super Mario Galaxy: The Movie',
+                type: 'filme',
+                category: 'Animação, Aventura, Ação, Comédia, Família',
+                year: '2026',
+                yearBR: '2026 — estreou em 1 de abril de 2026 nos cinemas',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/7e6b9a7a663256e8043521f7897fa90e92c80f030d23316a9426783d2bcfba42.jpg',
+                description: 'Uma nova aventura leva Mario a enfrentar um inédito e ameaçador super vilão; o bigodudo encanador italiano e seus aliados embarcam numa aventura galáctica repleta de ação e momentos emocionantes depois de salvar o Reino dos Cogumelos.',
+                ageRating: 'A6',
+                duration: '1h 39min',
+                distributor: 'Universal Pictures',
+                producer: 'Illumination / Nintendo',
+                tags: ['Lançamento','Animação','Família'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/ypvffyj9gedspif4tjn0i/smg.mp4?rlkey=pdocxakzszwxp60oaf4vp8osp&st=ostm2q09'
             }
         ];
 
@@ -2029,7 +2046,8 @@
             'luca': 'https://www.disneyplus.com/pt-br/browse/entity-f28b825f-c207-406b-923a-67f85e6d90e0',
             'matilda-1996': 'https://www.netflix.com/br/title/70033005',
             'soul': 'https://www.disneyplus.com/browse/entity-5f055dc5-cc07-43f2-839e-bf073b16a823',
-            'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen'
+            'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen',
+            'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO'
         };
 
         // --- LINK OBFUSCATION (inline DB shielding) ---
@@ -3841,30 +3859,46 @@
                 return lines.join('');
             })();
 
-            // Build an optional "Veja na ..." button when an official link exists for this item
+            // Build an optional "Veja na ..." button for films and series, and compute a mobile-friendly shortened category display.
             let externalBtnHtml = '';
+            let displayCategory = '';
             try {
-                const link = window.externalLinks && window.externalLinks[item.id];
-                if (link) {
-                    const detectService = (u) => {
-                        try {
-                            const l = (u || '').toLowerCase();
-                            if (l.includes('netflix.com')) return 'Netflix';
-                            if (l.includes('primevideo') || l.includes('primevideo.com')) return 'Prime Video';
-                            if (l.includes('disneyplus') || l.includes('disneyplus.com')) return 'Disney+';
-                            if (l.includes('globoplay')) return 'Globoplay';
-                            if (l.includes('paramountplus') || l.includes('paramountplus.com')) return 'Paramount+';
-                            if (l.includes('youtube.com')) return 'YouTube';
-                            if (l.includes('crunchyroll')) return 'Crunchyroll';
-                            // fallback: domain as label
-                            try { return new URL(u).hostname.replace('www.',''); } catch(_) { return 'Plataforma'; }
-                        } catch (_) { return 'Plataforma'; }
-                    };
-                    const svc = detectService(link);
-                    externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>Veja na ${svc}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+                const isMobileView = (typeof window !== 'undefined' && window.innerWidth <= 767);
+                // mobile: show first genre token then " / ..." (e.g. "Drama / ..."), desktop: full formatted category
+                const fullCat = formatCategory(item.category);
+                if (isMobileView) {
+                    const first = String(fullCat || '').split(' / ')[0] || '';
+                    displayCategory = first ? `${first} / ...` : '...';
+                } else {
+                    displayCategory = fullCat;
+                }
+
+                // Build "Veja na ..." for both films and series when an external link exists
+                if (item.type === 'filme' || item.type === 'serie') {
+                    const link = window.externalLinks && window.externalLinks[item.id];
+                    if (link) {
+                        const detectService = (u) => {
+                            try {
+                                const l = (u || '').toLowerCase();
+                                if (l.includes('netflix.com')) return 'Netflix';
+                                if (l.includes('primevideo') || l.includes('primevideo.com')) return 'Prime Video';
+                                if (l.includes('disneyplus') || l.includes('disneyplus.com')) return 'Disney+';
+                                if (l.includes('globoplay')) return 'Globoplay';
+                                if (l.includes('paramountplus') || l.includes('paramountplus.com')) return 'Paramount+';
+                                if (l.includes('youtube.com')) return 'YouTube';
+                                if (l.includes('crunchyroll')) return 'Crunchyroll';
+                                try { return new URL(u).hostname.replace('www.',''); } catch(_) { return 'Plataforma'; }
+                            } catch (_) { return 'Plataforma'; }
+                        };
+                        const svc = detectService(link);
+                        externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>Veja na ${svc}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+                    }
+                } else {
+                    externalBtnHtml = '';
                 }
             } catch (err) {
                 externalBtnHtml = '';
+                displayCategory = formatCategory(item.category);
             }
 
             content.innerHTML = `
@@ -3886,8 +3920,9 @@
                             ${getAgeBadge(item.ageRating)}
                             <span>${item.year}</span>
                             <span>•</span>
-                            <span>${formatCategory(item.category)}</span>
-                            ${item.type === 'filme' ? externalBtnHtml : ''}
+                            <span>${displayCategory}</span>
+                            <!-- place "Veja na ..." next to the genre for both filmes and series on mobile/desktop -->
+                            ${externalBtnHtml ? `<span class="ml-2 hidden md:inline">${externalBtnHtml}</span><span class="md:hidden ml-2">${externalBtnHtml}</span>` : ''}
                         </div>
 
                         <p class="text-white/80 text-sm md:text-base leading-relaxed mb-4 font-light">${item.description}</p>
@@ -3895,16 +3930,14 @@
                         ${metaHtml ? `<div class="mb-6 p-3 rounded-lg bg-black/30 border border-white/5">${metaHtml}</div>` : ''}
 
                         <div class="flex items-center gap-4">
-                            ${item.type === 'filme' || (item.type === 'serie' && item.seasons && item.seasons['1'] && item.seasons['1'][0] && item.seasons['1'][0].url) ? `
-                                <button id="play-btn-${item.id}" class="bg-white text-black px-8 py-3 rounded-full font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center gap-2 relative overflow-hidden group">
-                                    <i class="ph-fill ph-play text-lg"></i> ${playBtnText}
-                                    ${progressPct > 0 ? `
-                                        <div class="absolute bottom-0 left-0 h-1 bg-black/20 w-full">
-                                            <div class="h-full bg-accent" style="width: ${progressPct}%"></div>
-                                        </div>
-                                    ` : ''}
-                                </button>
-                            ` : ''}
+                            <button id="play-btn-${item.id}" class="bg-white text-black px-8 py-3 rounded-full font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center gap-2 relative overflow-hidden group">
+                                <i class="ph-fill ph-play text-lg"></i> ${playBtnText}
+                                ${progressPct > 0 ? `
+                                    <div class="absolute bottom-0 left-0 h-1 bg-black/20 w-full">
+                                        <div class="h-full bg-accent" style="width: ${progressPct}%"></div>
+                                    </div>
+                                ` : ''}
+                            </button>
                             <button id="fav-btn-${item.id}" onclick="toggleFav(event, '${item.id}')" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
                                 <i class="${isFav ? 'ph-fill ph-check text-accent' : 'ph ph-plus'} text-xl"></i>
                             </button>
