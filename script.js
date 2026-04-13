@@ -2004,6 +2004,57 @@
                 producer: 'Illumination / Nintendo',
                 tags: ['Lançamento','Animação','Família'],
                 url: 'https://dl.dropboxusercontent.com/scl/fi/ypvffyj9gedspif4tjn0i/smg.mp4?rlkey=pdocxakzszwxp60oaf4vp8osp&st=ostm2q09'
+            },
+
+            {
+                id: 'locke-and-key',
+                title: 'Locke & Key',
+                type: 'serie',
+                category: 'Fantasia, Drama, Terror, Aventura',
+                year: '2020',
+                yearBR: '2020 - 2022',
+                cover: 'https://blog.vidangel.com/wp-content/uploads/2022/08/LockeAndKey_Blog_Image.jpg',
+                description: 'Após a morte do pai, três irmãos se mudam com a mãe para uma antiga mansão onde descobrem chaves mágicas que concedem poderes especiais, mas também despertam uma entidade sombria que deseja controlá-las.',
+                ageRating: '14',
+                distributor: 'Netflix',
+                producer: 'Netflix / IDW Entertainment',
+                tags: ['Fantasia','Drama','Terror'],
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'Bem-vindos a Matheson', url: 'https://dl.dropboxusercontent.com/scl/fi/p0bltc5vru4ccl64j77xp/01.mp4?rlkey=453740iw9haqhzuxxwiw0ear7&st=qk2an3nl', duration: 56, synopsis: 'Depois que os Lockes se mudam para Key House, Bode faz uma nova amizade e uma surpreendente descoberta. Tyler e Kinsey buscam um recomeço em uma nova escola.' },
+                        { id: 's1-e2', title: 'Armadilha', url: 'https://dl.dropboxusercontent.com/scl/fi/sc1vq3imwda6nb7a5udlk/02.mp4?rlkey=ne7cwvql15hia11jxiqbmuo2k&st=qh0l4pu1', duration: 50, synopsis: 'Nina descobre detalhes sobre o passado de Rendell. Kinsey ajuda o Esquadrão Savini, Tyler se junta a uma turma duvidosa e Bode encontra outra chave.' },
+                        { id: 's1-e3', title: 'Viajando', url: 'https://dl.dropboxusercontent.com/scl/fi/7keyx0bjncc9qzv2p5rfs/3.mp4?rlkey=bpvyjl2cgompg89dqynplgs9p&st=oilqjcpl', duration: 44 },
+                        { id: 's1-e4', title: 'Os guardiões das chaves', url: 'https://dl.dropboxusercontent.com/scl/fi/s4p4h85n4auvoscdjnr0m/4.mp4?rlkey=0lg4e8qvr3j0pz4j2u6gdqopp&st=pnl3th44', duration: 43 },
+                        { id: 's1-e5', title: 'Árvore de lembranças', url: 'https://dl.dropboxusercontent.com/scl/fi/l8gtyplhtd59vn2la583d/5.mp4?rlkey=lkces0x8yokr9tuc35fdc2hws&st=68pf8qny', duration: 49 },
+                        { id: 's1-e6', title: 'A porta preta', url: 'https://dl.dropboxusercontent.com/scl/fi/fcfv6f09oner38rcad69a/6.mp4?rlkey=hx3hd7ewhqmm0wr9qsdeget6p&st=k4pz7e10', duration: 47 },
+                        { id: 's1-e7', title: 'Dissecação', url: 'https://dl.dropboxusercontent.com/scl/fi/s6kz1ukhph9g8i2dj0g8z/7.mp4?rlkey=q8y7usjf65nl4x5m87lj64ayl&st=rf23ycqq', duration: 43 },
+                        { id: 's1-e8', title: 'Caneca especial', url: 'https://dl.dropboxusercontent.com/scl/fi/2a08uq0xqgyaumfq933l9/8.mp4?rlkey=rkt5atcrkpqpr7dn7h9oeo16o&st=cpf0npsh', duration: 48 },
+                        { id: 's1-e9', title: 'Ecos', url: 'https://dl.dropboxusercontent.com/scl/fi/97hf54zuxjewqds1z8gx3/9.mp4?rlkey=rumc18h0g3zxd1bpiib4at2og&st=35n1tzz2', duration: 49 },
+                        { id: 's1-e10', title: 'Coroa das sombras', url: 'https://dl.dropboxusercontent.com/scl/fi/ltv9t7eo9k35a86tskvrs/10.mp4?rlkey=avnk42yklpm5h2vojqn1t4yhf&st=t02zhf03', duration: 40 }
+                    ],
+                    2: [
+                        { id: 's2-e1', title: 'A grande estreia', url: '', duration: 53 },
+                        { id: 's2-e2', title: 'Cabeça e coração', url: '', duration: 49 },
+                        { id: 's2-e3', title: 'A casa de bonecas', url: '', duration: 51 },
+                        { id: 's2-e4', title: 'Memórias', url: '', duration: 49 },
+                        { id: 's2-e5', title: 'O passado é um prólogo', url: '', duration: 52 },
+                        { id: 's2-e6', title: 'O labirinto', url: '', duration: 43 },
+                        { id: 's2-e7', title: 'O plano perfeito', url: '', duration: 46 },
+                        { id: 's2-e8', title: 'Tudo de uma vez', url: '', duration: 49 },
+                        { id: 's2-e9', title: 'Ômega', url: '', duration: 50 },
+                        { id: 's2-e10', title: 'Tensão final', url: '', duration: 46 }
+                    ],
+                    3: [
+                        { id: 's3-e1', title: 'O globo de neve', url: '', duration: 44 },
+                        { id: 's3-e2', title: 'Penetras no casamento', url: '', duration: 48 },
+                        { id: 's3-e3', title: 'Cinco minutos e o passado', url: '', duration: 47 },
+                        { id: 's3-e4', title: 'Disfarce', url: '', duration: 49 },
+                        { id: 's3-e5', title: 'Cerco', url: '', duration: 36 },
+                        { id: 's3-e6', title: 'Livre como um pássaro', url: '', duration: 33 },
+                        { id: 's3-e7', title: 'Cortina', url: '', duration: 35 },
+                        { id: 's3-e8', title: 'Despedida', url: '', duration: 40 }
+                    ]
+                }
             }
         ];
 
