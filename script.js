@@ -3915,14 +3915,10 @@
             let displayCategory = '';
             try {
                 const isMobileView = (typeof window !== 'undefined' && window.innerWidth <= 767);
-                // mobile: show first genre token then " / ..." (e.g. "Drama / ..."), desktop: full formatted category
+                // mobile: show only the first genre (no " / ..."), desktop: full formatted category
                 const fullCat = formatCategory(item.category);
-                if (isMobileView) {
-                    const first = String(fullCat || '').split(' / ')[0] || '';
-                    displayCategory = first ? `${first} / ...` : '...';
-                } else {
-                    displayCategory = fullCat;
-                }
+                const firstGenre = String(fullCat || '').split(' / ')[0] || '';
+                displayCategory = isMobileView ? (firstGenre || '') : fullCat;
 
                 // Build "Veja na ..." for both films and series when an external link exists
                 if (item.type === 'filme' || item.type === 'serie') {
@@ -3942,7 +3938,14 @@
                             } catch (_) { return 'Plataforma'; }
                         };
                         const svc = detectService(link);
-                        externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>Veja na ${svc}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+
+                        // Mobile: provide a larger, touch-friendly full-width pill below the title for easier tapping
+                        if (isMobileView) {
+                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="w-full block mt-3 text-center text-sm font-semibold px-4 py-3 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-black hover:opacity-95 transition-colors">${'Veja na ' + svc}</a>`;
+                        } else {
+                            // Desktop: compact inline pill
+                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>Veja na ${svc}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+                        }
                     }
                 } else {
                     externalBtnHtml = '';
@@ -6985,13 +6988,162 @@
             changeSeason(seriesData.id, nextCtx.s);
         }
 
-        // helper: scroll a session horizontally
+        // helper: scroll a session horizontally with clamping and center-snap on mobile
         function scrollCards(containerId, dir = 1) {
             const el = document.getElementById(containerId);
             if (!el) return;
-            const w = el.clientWidth || (window.innerWidth * 0.8);
-            el.scrollBy({ left: dir * (w * 0.8), behavior: 'smooth' });
+            const children = Array.from(el.children).filter(n => n.nodeType === 1);
+            if (!children.length) return;
+
+            // compute sizes and current index based on center alignment
+            const containerWidth = el.clientWidth || Math.max(window.innerWidth * 0.8, 320);
+            // find the child whose center is closest to container center
+            const centerX = el.scrollLeft + containerWidth / 2;
+            const childCenters = children.map(c => (c.offsetLeft + c.offsetWidth / 2));
+            // current centered index
+            let currentIdx = 0;
+            let bestDiff = Infinity;
+            for (let i = 0; i < childCenters.length; i++) {
+                const d = Math.abs(childCenters[i] - centerX);
+                if (d < bestDiff) { bestDiff = d; currentIdx = i; }
+            }
+
+            // target index after moving dir steps
+            let targetIdx = currentIdx + (dir > 0 ? 1 : -1);
+            // clamp within bounds
+            targetIdx = Math.max(0, Math.min(children.length - 1, targetIdx));
+
+            // compute target scrollLeft so the chosen child is centered
+            const child = children[targetIdx];
+            const targetScroll = Math.max(0, Math.round(child.offsetLeft + (child.offsetWidth - containerWidth) / 2));
+
+            // scroll smoothly to center the card
+            el.scrollTo({ left: targetScroll, behavior: 'smooth' });
+
+            // update arrows immediately (they reflect ability to move further)
+            updateSessionArrows(containerId);
+
+            // set up a snap-after-scroll for manual swipes too (debounced)
+            if (el.__snapTimer) clearTimeout(el.__snapTimer);
+            el.__snapTimer = setTimeout(() => {
+                try {
+                    snapContainerToNearest(el);
+                    updateSessionArrows(containerId);
+                } catch (_) {}
+            }, 260);
         }
+
+        // Snap the container to the nearest child so one card stays centered (used after manual scroll)
+        function snapContainerToNearest(el) {
+            if (!el) return;
+            const children = Array.from(el.children).filter(n => n.nodeType === 1);
+            if (!children.length) return;
+            const containerWidth = el.clientWidth || Math.max(window.innerWidth * 0.8, 320);
+            const centerX = el.scrollLeft + containerWidth / 2;
+            let bestIdx = 0; let bestDiff = Infinity;
+            children.forEach((c, i) => {
+                const cCenter = c.offsetLeft + c.offsetWidth / 2;
+                const d = Math.abs(cCenter - centerX);
+                if (d < bestDiff) { bestDiff = d; bestIdx = i; }
+            });
+            const target = children[bestIdx];
+            const targetScroll = Math.max(0, Math.round(target.offsetLeft + (target.offsetWidth - containerWidth) / 2));
+            el.scrollTo({ left: targetScroll, behavior: 'smooth' });
+        }
+
+        // Update left/right arrow visibility/interaction for a session scroller (disable when at ends)
+        function updateSessionArrows(containerId) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            const wrap = el.closest('.session-wrap') || document.getElementById(containerId + '-wrap') || el.parentElement;
+            if (!wrap) return;
+
+            const leftBtn = wrap.querySelector('.session-arrow.left');
+            const rightBtn = wrap.querySelector('.session-arrow.right');
+
+            const children = Array.from(el.children).filter(n => n.nodeType === 1);
+            if (!children.length) {
+                if (leftBtn) { leftBtn.style.pointerEvents = 'none'; leftBtn.style.opacity = '0.18'; }
+                if (rightBtn) { rightBtn.style.pointerEvents = 'none'; rightBtn.style.opacity = '0.18'; }
+                return;
+            }
+
+            // determine which child is currently centered
+            const containerWidth = el.clientWidth || Math.max(window.innerWidth * 0.8, 320);
+            const centerX = el.scrollLeft + containerWidth / 2;
+            let currentIdx = 0; let bestDiff = Infinity;
+            for (let i = 0; i < children.length; i++) {
+                const c = children[i];
+                const cCenter = c.offsetLeft + c.offsetWidth / 2;
+                const d = Math.abs(cCenter - centerX);
+                if (d < bestDiff) { bestDiff = d; currentIdx = i; }
+            }
+
+            // enable/disable
+            if (leftBtn) {
+                if (currentIdx <= 0) { leftBtn.style.pointerEvents = 'none'; leftBtn.style.opacity = '0.18'; }
+                else { leftBtn.style.pointerEvents = ''; leftBtn.style.opacity = ''; }
+            }
+            if (rightBtn) {
+                if (currentIdx >= children.length - 1) { rightBtn.style.pointerEvents = 'none'; rightBtn.style.opacity = '0.18'; }
+                else { rightBtn.style.pointerEvents = ''; rightBtn.style.opacity = ''; }
+            }
+        }
+
+        // attach scroll snapping listeners to dynamic session scrollers so manual swipes also snap and arrow states update
+        (function attachSessionScrollSnapObservers() {
+            try {
+                const observer = new MutationObserver((mutations) => {
+                    // whenever session-scroll nodes appear, attach listeners
+                    const candidates = Array.from(document.querySelectorAll('.session-scroll'));
+                    candidates.forEach(el => {
+                        if (el.__lumina_snap_attached) return;
+                        el.__lumina_snap_attached = true;
+                        // on scroll, debounce snap and update arrows
+                        let t = null;
+                        el.addEventListener('scroll', () => {
+                            if (t) clearTimeout(t);
+                            // update arrows live for better feedback
+                            try { updateSessionArrows(el.id || (el.getAttribute('id') || '')); } catch(_) {}
+                            t = setTimeout(() => {
+                                try { snapContainerToNearest(el); updateSessionArrows(el.id || (el.getAttribute('id') || '')); } catch(_) {}
+                            }, 220);
+                        }, { passive: true });
+
+                        // initialize arrow state for existing scrollers
+                        try { updateSessionArrows(el.id || (el.getAttribute('id') || '')); } catch(_) {}
+                    });
+                });
+
+                if (document && document.body) {
+                    observer.observe(document.body, { childList: true, subtree: true });
+                    // run once immediately to bind existing elements
+                    setTimeout(() => {
+                        const initial = Array.from(document.querySelectorAll('.session-scroll'));
+                        initial.forEach(el => {
+                            if (el.__lumina_snap_attached) return;
+                            el.__lumina_snap_attached = true;
+                            let t = null;
+                            el.addEventListener('scroll', () => {
+                                if (t) clearTimeout(t);
+                                try { updateSessionArrows(el.id || (el.getAttribute('id') || '')); } catch(_) {}
+                                t = setTimeout(() => {
+                                    try { snapContainerToNearest(el); updateSessionArrows(el.id || (el.getAttribute('id') || '')); } catch(_) {}
+                                }, 220);
+                            }, { passive: true });
+                            try { updateSessionArrows(el.id || (el.getAttribute('id') || '')); } catch(_) {}
+                        });
+                    }, 80);
+                }
+            } catch (e) {
+                // non-fatal
+            }
+
+            // Also update arrows on resize/orientation change
+            window.addEventListener('resize', () => {
+                try { Array.from(document.querySelectorAll('.session-scroll')).forEach(el => updateSessionArrows(el.id || (el.getAttribute('id') || ''))); } catch(_) {}
+            }, { passive: true });
+        })();
 
         // mobile: toggle collapse sections with smooth max-height + caret rotation animation
         function toggleSectionMobile(sectionId) {
