@@ -220,7 +220,7 @@
                 type: 'serie',
                 category: 'Mistério / Sobrenatural',
                 year: '2023',
-                cover: 'https://pbs.twimg.com/media/FzKWtbPWABwDiL0.jpg',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/90adb453dac383c93e39fc41a932505f63cbd73510797a8aa3e498430e48c2b3.jpg',
                 description: 'Maddie Nears, uma adolescente que morre misteriosamente e fica presa como fantasma em sua escola, junta-se a outros espíritos para investigar sua morte enquanto tenta se comunicar com os vivos.',
                 tags: ['Popular','Nova Temporada'],
                 ageRating: '16',
@@ -396,6 +396,38 @@
                 description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
                 ageRating: '10',
                 url: 'https://dl.dropboxusercontent.com/scl/fi/52txzjif5aydz9lhm0jpo/Divertida-Mente-2.mp4?rlkey=0qb4kpi7tlecwiu0oxngoxt0f&st=jv5n3jij'
+            },
+            {
+                id: 'detona-ralph',
+                title: 'Detona Ralph',
+                originalTitle: 'Wreck-It Ralph',
+                type: 'filme',
+                category: 'Animação, Aventura, Comédia, Família',
+                year: '2012',
+                yearBR: '2013 — estreia em 4 de janeiro de 2013 nos cinemas brasileiros',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/7dccc324-87a4-46d0-8af8-9b832bf1d40f/compose?aspectRatio=1.78&format=webp&width=1920',
+                description: 'Ralph é o vilão de um jogo de fliperama que se cansa de ser odiado e decide provar que pode ser um herói. Ao sair de seu jogo e explorar outros mundos, ele acaba causando um problema que ameaça todos os jogos do arcade e precisa consertar seus erros.',
+                ageRating: 'L',
+                duration: '101 minutos',
+                distributor: 'Walt Disney Studios Motion Pictures',
+                production: 'Walt Disney Animation Studios',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/k84xh67mpkzosjfmqxqen/Dt1.mp4?rlkey=zyg1sybtzuxsexku63ge8wsqy&st=kdpr53hd'
+            },
+            {
+                id: 'wifi-ralph',
+                title: 'WiFi Ralph: Quebrando a Internet',
+                originalTitle: 'Ralph Breaks the Internet',
+                type: 'filme',
+                category: 'Animação, Aventura, Comédia, Família, Fantasia',
+                year: '2019',
+                yearBR: '2019',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/955ee5e1-9908-4f66-b030-80f9bc6694b2/compose?aspectRatio=1.78&format=webp&width=1920',
+                description: 'Ralph e Vanellope entram na internet em busca de uma peça para salvar o jogo dela, Corrida Doce. No caminho, eles encaram o caos do mundo online e aprendem a lidar com mudanças e amizade.',
+                ageRating: 'L',
+                distributor: 'Walt Disney Studios Motion Pictures / Disney+',
+                production: 'Walt Disney Animation Studios',
+                tags: ['Animação','Família'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/cqm6url4lw9hzg1ioia1z/Dt2.mp4?rlkey=1n454dpwposm0bwg6fghe4c3r&st=cqkf5u73'
             },
             {
                 id: 'miraculous-ladybug',
@@ -714,7 +746,7 @@
                 type: 'filme',
                 category: 'Musical / Romance / Comédia / Fantasia / Família',
                 year: '2020',
-                cover: 'https://i.ytimg.com/vi/Spk0zJNqCKU/maxresdefault.jpg',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/019b3c3b-df5c-7055-9346-f61ff999c54f/compose?aspectRatio=1.78&format=webp&width=1920',
                 description: 'Após a convivência entre humanos e zumbis começar a se estabilizar, uma nova ameaça surge com a chegada dos lobisomens. Zed e Addison precisam unir os grupos rivais e evitar um novo conflito enquanto enfrentam desafios de identidade e pertencimento.',
                 ageRating: 'L',
                 distributor: 'Disney Channel / Disney+',
@@ -741,7 +773,7 @@
                 type: 'filme',
                 category: 'Animação / Aventura / Comédia',
                 year: '2023',
-                cover: 'https://img.odcdn.com.br/wp-content/uploads/2023/04/Super-Mario-Po%CC%81s-cre%CC%81ditos-1920x1080.jpeg',
+                cover: 'https://is1-ssl.mzstatic.com/image/thumb/Video116/v4/fc/9f/f4/fc9ff4af-2212-b37f-04e5-5634267efb4a/UNI_SUPER_MARIO_BROS_TH_ITUNES_PVOD_BR_ARTWORK_PT-BR_EN_3840x2160_3RFVZE000011NM.lsr/1200x675.jpg',
                 description: 'Dois irmãos encanadores do Brooklyn são sugados por um cano misterioso e acabam em um reino mágico; para salvar o novo mundo e reencontrar seu irmão, Mario precisa aprender que coragem é insistir mesmo tremendo.',
                 tags: ['Lançamento','Popular'],
                 duration: '92 minutos',
@@ -1813,7 +1845,7 @@
                 category: 'Animação, Aventura, Comédia, Família, Fantasia, Musical',
                 year: '2016',
                 yearBR: '2017',
-                cover: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiNe2EyzbxLQ7KZl7RBkJ6ryqePDFQz2hO3ZkQa0R53-btIickYd2aFx0LlKHP6BLfwJ19RFS9DhTWhLkk7xf-I8MRB352Z5aJQZwsJuLfFlH-yJ6cN0BHVov9Uim6htK1IS3I_gwI3lc8/w1200-h630-p-k-no-nu/painel-moana-1-00-x-0-70m-painel.jpg',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/2981f689-515d-45e8-addb-a8e30690ca42/compose?aspectRatio=1.78&format=webp&width=1920',
                 description: 'Moana, filha do chefe de uma tribo na Oceania, parte em uma jornada pelo oceano para salvar seu povo de uma antiga maldição. Ao lado do semideus Maui, ela enfrenta criaturas marinhas e descobre seu verdadeiro destino como navegadora.',
                 ageRating: 'L',
                 duration: 110,
@@ -2007,6 +2039,22 @@
             },
 
             {
+                id: 'a-legend-of-aang',
+                title: 'A Lenda de Aang: O Último Mestre do Ar',
+                type: 'filme',
+                category: 'Animação, Fantasia, Aventura',
+                year: '2026',
+                yearBR: '2026 — estreia prevista para 9 de outubro de 2026 no Paramount+',
+                cover: 'https://pbs.twimg.com/media/HF5WSNnXMAA35hF?format=jpg&name=4096x4096',
+                description: 'Anos após a derrota de Ozai, Aang já adulto descobre um poder antigo que pode salvar sua cultura da extinção. Ao lado de seus amigos, ele embarca em uma jornada pelo mundo para encontrá-lo antes que caia em mãos erradas.',
+                ageRating: '12',
+                distributor: 'Paramount+',
+                production: 'Avatar Studios / Nickelodeon Movies / Paramount Pictures',
+                tags: ['Animação','Fantasia','Aventura'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/m3616s2qdbuztqkmrwppd/Lendaaang.mp4?rlkey=9pjilws2wqprikb505umnv4na&st=lra5a8fe',
+                externalLink: 'https://www.paramountplus.com'
+            },
+            {
                 id: 'locke-and-key',
                 title: 'Locke & Key',
                 type: 'serie',
@@ -2033,16 +2081,16 @@
                         { id: 's1-e10', title: 'Coroa das sombras', url: 'https://dl.dropboxusercontent.com/scl/fi/ltv9t7eo9k35a86tskvrs/10.mp4?rlkey=avnk42yklpm5h2vojqn1t4yhf&st=t02zhf03', duration: 40 }
                     ],
                     2: [
-                        { id: 's2-e1', title: 'A grande estreia', url: '', duration: 53 },
-                        { id: 's2-e2', title: 'Cabeça e coração', url: '', duration: 49 },
-                        { id: 's2-e3', title: 'A casa de bonecas', url: '', duration: 51 },
-                        { id: 's2-e4', title: 'Memórias', url: '', duration: 49 },
-                        { id: 's2-e5', title: 'O passado é um prólogo', url: '', duration: 52 },
-                        { id: 's2-e6', title: 'O labirinto', url: '', duration: 43 },
-                        { id: 's2-e7', title: 'O plano perfeito', url: '', duration: 46 },
-                        { id: 's2-e8', title: 'Tudo de uma vez', url: '', duration: 49 },
-                        { id: 's2-e9', title: 'Ômega', url: '', duration: 50 },
-                        { id: 's2-e10', title: 'Tensão final', url: '', duration: 46 }
+                        { id: 's2-e1', title: 'A grande estreia', url: 'https://dl.dropboxusercontent.com/scl/fi/syulcnwpyquu3fmyr6uc2/1.mp4?rlkey=36g5lzh8onlxlkjd2d8jgyqvq&st=htgtcbzg', duration: 53 },
+                        { id: 's2-e2', title: 'Cabeça e coração', url: 'https://dl.dropboxusercontent.com/scl/fi/sv4exbku5rodgaha2la4b/2.mp4?rlkey=sy6bsu3rnisit6zdn0n7qdife&st=zdn22pxw', duration: 49 },
+                        { id: 's2-e3', title: 'A casa de bonecas', url: 'https://dl.dropboxusercontent.com/scl/fi/ytrqhg5lds1d3x9bixn7m/3.mp4?rlkey=gk5xp20qnj2zsl6y0d7p0cr54&st=mkii9hu2', duration: 51 },
+                        { id: 's2-e4', title: 'Memórias', url: 'https://dl.dropboxusercontent.com/scl/fi/srgre2tx83kq61xewdvez/4.mp4?rlkey=gtj59ft1nposod8pa1hkn13og&st=nz5p2049', duration: 49 },
+                        { id: 's2-e5', title: 'O passado é um prólogo', url: 'https://dl.dropboxusercontent.com/scl/fi/2z0ukru54nkofol8bcjgm/5.mp4?rlkey=vc7oc0qni170dey7oy2m85u2w&st=4w6d14od', duration: 52 },
+                        { id: 's2-e6', title: 'O labirinto', url: 'https://dl.dropboxusercontent.com/scl/fi/2m6jdtx33yba0ml7eetxm/Locke-Key-S02e06.mp4?rlkey=jk7z8wmmnhc91vyi8jm75665n&st=m81bfb16', duration: 43 },
+                        { id: 's2-e7', title: 'O plano perfeito', url: 'https://dl.dropboxusercontent.com/scl/fi/vvua1jrkh8r8oadjgwj71/Locke-Key-S02e07.mp4?rlkey=ll1z5yrqkqm3ccmm9khil3cup&st=8jt9wszu', duration: 46 },
+                        { id: 's2-e8', title: 'Tudo de uma vez', url: 'https://dl.dropboxusercontent.com/scl/fi/gygo9ddaow8srd76mef7q/Locke-Key-S02e08.mp4?rlkey=5p0x7n2kimjoj0fvmp461l084&st=qec56oll', duration: 49 },
+                        { id: 's2-e9', title: 'Ômega', url: 'https://dl.dropboxusercontent.com/scl/fi/r95x2n5jjhw072qhts81r/Locke-Key-S02e09.mp4?rlkey=sqisexiybxxyxxj5jkmago00c&st=l4efqib2', duration: 50 },
+                        { id: 's2-e10', title: 'Tensão final', url: 'https://dl.dropboxusercontent.com/scl/fi/ojypphpnuwm4mop5x3hc0/Locke-Key-S02e10.mp4?rlkey=83nmpl12u8gcwkr1uh99sx332&st=sqrph2l4', duration: 46 }
                     ],
                     3: [
                         { id: 's3-e1', title: 'O globo de neve', url: '', duration: 44 },
@@ -5895,17 +5943,49 @@
                             const dur = this.vid.duration || 0;
                             const targetTime = (!isNaN(dur) && dur > 0) ? (pct / 100) * dur : 0;
 
-                            // perform the seek in a defensive way
-                            try {
-                                // Attempt direct set; if it fails, schedule a tiny retry
-                                this.vid.currentTime = targetTime;
-                            } catch (err) {
-                                setTimeout(() => {
-                                    try { if (this.vid) this.vid.currentTime = targetTime; } catch(_) {}
-                                }, 60);
+                            // Pause to create a stable seek environment
+                            let wasPlayingBeforeScrub = false;
+                            try { wasPlayingBeforeScrub = !this.vid.paused; } catch(_) { wasPlayingBeforeScrub = false; }
+                            try { if (wasPlayingBeforeScrub) this.vid.pause(); } catch(_) {}
+
+                            // Single guarded seek: listen for 'seeked' and fallback to timeout
+                            let settled = false;
+                            const cleanupSeek = () => {
+                                try { this.vid.removeEventListener('seeked', onSeeked); } catch(_) {}
+                                try { this.vid.removeEventListener('error', onError); } catch(_) {}
+                                if (seekWatchdog) clearTimeout(seekWatchdog);
+                            };
+                            const onSeeked = () => {
+                                if (settled) return;
+                                settled = true;
+                                cleanupSeek();
+                                afterSeek(true);
+                            };
+                            const onError = () => {
+                                if (settled) return;
+                                settled = true;
+                                cleanupSeek();
+                                afterSeek(false);
+                            };
+                            const SEEK_WATCHDOG = 9000;
+                            const seekWatchdog = setTimeout(() => {
+                                if (settled) return;
+                                settled = true;
+                                cleanupSeek();
+                                // best-effort check: treat as success if currentTime close to target
+                                const now = (this.vid && typeof this.vid.currentTime === 'number') ? this.vid.currentTime : 0;
+                                afterSeek(Math.abs(now - targetTime) <= 1.5);
+                            }, SEEK_WATCHDOG);
+
+                            this.vid.addEventListener('seeked', onSeeked);
+                            this.vid.addEventListener('error', onError);
+
+                            try { this.vid.currentTime = targetTime; } catch (err) {
+                                // micro retry if initial assignment fails
+                                setTimeout(() => { try { if (this.vid) this.vid.currentTime = targetTime; } catch(_) {} }, 60);
                             }
 
-                            // small UI update to ensure times reflect the new position quickly
+                            // Immediate UI feedback
                             requestAnimationFrame(() => {
                                 try {
                                     const tc = document.getElementById('time-current');
@@ -5916,20 +5996,38 @@
                                 } catch (_) {}
                             });
 
-                            // reset seeking flag and resume playback only if it was playing before scrub
-                            this.isSeeking = false;
-                            const resumeIfNeeded = () => {
+                            // finalize: update progress and resume if appropriate
+                            const afterSeek = (ok) => {
                                 try {
-                                    if (wasPlayingBeforeScrub) {
-                                        // swallow promise rejections to avoid unhandledRejection (play interrupted by pause)
-                                        this.vid.play().catch(() => {});
-                                    }
+                                    this.isSeeking = false;
+                                    pendingTargetPct = null;
+
+                                    // update progress atomically
+                                    try {
+                                        if (player.context && player.context.id) {
+                                            const pid = player.context.id;
+                                            state.progress[pid] = state.progress[pid] || {};
+                                            state.progress[pid].time = ok ? targetTime : (state.progress[pid].time || targetTime);
+                                            state.progress[pid].duration = (!isNaN(dur) && dur > 0) ? dur : (state.progress[pid].duration || 0);
+                                            state.progress[pid].timestamp = Date.now();
+                                            if (player.context.type === 'serie' && player.context.seriesId) {
+                                                state.history[player.context.seriesId] = { s: player.context.season, e: player.context.episode, epId: player.context.id, timestamp: Date.now() };
+                                            }
+                                            saveProgressData();
+                                        }
+                                    } catch (_) {}
+
+                                    // resume only if it was playing before the scrub
+                                    setTimeout(() => {
+                                        try {
+                                            if (wasPlayingBeforeScrub && this.vid) {
+                                                const p = this.vid.play();
+                                                if (p && typeof p.catch === 'function') p.catch(()=>{});
+                                            }
+                                        } catch (_) {}
+                                    }, 80);
                                 } catch (_) {}
                             };
-
-                            // Some browsers restrict immediate play after setting currentTime; do resume on next tick
-                            setTimeout(resumeIfNeeded, 30);
-                            pendingTargetPct = null;
 
                             try { if (e && e.target && typeof e.target.releasePointerCapture === 'function') e.target.releasePointerCapture(e.pointerId); } catch(_) {}
                         } catch (_) {
