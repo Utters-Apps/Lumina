@@ -2406,5 +2406,92 @@
       }
     </style>
 
+    <script>
+      (function(){
+        // Force a lightweight player repaint/recovery after navigation (back/forward) or auxiliary mouse button presses.
+        // This addresses cases where the player UI becomes visually black while media continues playing.
+        function restorePlayerVisual() {
+          try {
+            const pm = document.getElementById('player-modal');
+            // only act when player is visible
+            if (!pm || pm.classList.contains('hidden')) return;
+
+            // prefer video element but support iframe or main-video fallback
+            const media = document.querySelector('#player-media-wrapper video, #player-media-wrapper iframe, #main-video, #player-media-wrapper > *');
+            if (media) {
+              // temporarily toggle visibility to force repaint without disrupting playback
+              try {
+                const prevVis = media.style.visibility || '';
+                media.style.visibility = 'hidden';
+                // force reflow
+                void media.offsetHeight;
+                media.style.visibility = prevVis;
+              } catch (_) {}
+
+              // ensure the loading overlay is hidden and UI is visible
+              try {
+                const loading = document.getElementById('player-loading');
+                if (loading) loading.classList.add('hidden');
+                const ui = document.querySelector('.player-ui');
+                if (ui) ui.style.pointerEvents = '';
+              } catch(_) {}
+
+              // nudge the player-modal to repaint (no visual jump)
+              try {
+                pm.style.willChange = 'transform, opacity';
+                void pm.offsetWidth;
+                setTimeout(()=> { try { pm.style.willChange = ''; } catch(_) {} }, 60);
+              } catch(_) {}
+            } else {
+              // fallback: if no media node found, still hide loading overlay and reset modal opacity to ensure visibility
+              try {
+                const loading = document.getElementById('player-loading');
+                if (loading) loading.classList.add('hidden');
+                pm.style.opacity = pm.style.opacity || '';
+              } catch(_) {}
+            }
+          } catch (e) {
+            // swallow errors to avoid breaking navigation
+            console.warn && console.warn('restorePlayerVisual error', e);
+          }
+        }
+
+        // Listen to history navigation events (back/forward)
+        window.addEventListener('popstate', function(){ 
+          try { setTimeout(restorePlayerVisual, 40); } catch(_) {}
+        }, { passive: true });
+
+        // pageshow covers bfcache restores (when navigating back/forward from cache)
+        window.addEventListener('pageshow', function(ev){ 
+          try { 
+            // If the page is persisted from bfcache, attempt immediate recovery
+            setTimeout(restorePlayerVisual, ev && ev.persisted ? 20 : 60); 
+          } catch(_) {}
+        }, { passive: true });
+
+        // Handle auxiliary mouse buttons (side/back/forward buttons): some devices fire 'auxclick' with button 3/4.
+        document.addEventListener('auxclick', function(e){
+          try {
+            if (e && (e.button === 3 || e.button === 4 || e.button === 8 || e.button === 9)) {
+              // small delay to allow navigation state to settle then repaint player if still visible
+              setTimeout(restorePlayerVisual, 40);
+            }
+          } catch(_) {}
+        }, { passive: true });
+
+        // Also guard against very rapid repeated navigation via keyboard shortcuts
+        window.addEventListener('keydown', function(e){
+          try {
+            // Back/forward may be triggered by Alt+Arrow or Meta+Arrow; watch those combos and schedule a recover tick
+            if ((e.altKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) || ((e.metaKey || e.ctrlKey) && (e.key === '[' || e.key === ']'))) {
+              setTimeout(restorePlayerVisual, 40);
+            }
+          } catch(_) {}
+        }, { passive: true });
+
+        // Expose for debugging if needed
+        window.__lumina_restore_player_visual = restorePlayerVisual;
+      })();
+    </script>
 </body>
 </html>
