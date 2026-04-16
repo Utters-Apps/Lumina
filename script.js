@@ -1758,6 +1758,22 @@
                 url: 'https://dl.dropboxusercontent.com/scl/fi/hre2r9ctwrofqrxl3inxw/D1.mp4?rlkey=h33z9ppkz2ncr02b0j6rkdrlh&st=4hx0gdk1'
             },
             {
+                id: 'under-the-sea-descendants',
+                title: 'Aqui no Mar: Descendentes 2.5',
+                originalTitle: 'Under the Sea: A Descendants Story',
+                type: 'filme',
+                category: 'Fantasia, Musical, Thriller',
+                year: '2018',
+                cover: 'https://pbs.twimg.com/media/GRmG-E3XYAAxntC.jpg',
+                description: 'Mal sai de uma floresta mística e chega a uma costa sombria, onde seu caminho cruza com o de Dizzy em uma história ligada ao universo de Descendentes.',
+                ageRating: '10',
+                distributor: 'Disney+',
+                production: 'Disney Channel / Disney',
+                duration: '9-10 minutos',
+                tags: ['Curta','Descendentes','Especial'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/0p4j9tsgcng52tvoq3p7x/anm.mp4?rlkey=en831k2xy6xp126smn0sc1rg2&st=hq7h5xf8'
+            },
+            {
                 id: 'descendentes-2',
                 title: 'Descendentes 2',
                 type: 'filme',
