@@ -1795,7 +1795,7 @@
                 description: 'Enquanto Mal se prepara para se tornar rainha em Auradon, novas ameaças de vilões antigos e rivais pessoais obrigam o grupo a unir forças para proteger seu reino.',
                 ageRating: 'L',
                 distributor: 'Disney Channel',
-                url: 'https://dl.dropboxusercontent.com/scl/fi/dq4m9u2qe85u50r9en18j/D3.mp4?rlkey=ggos7ishn59hvz2a122bjxcmv&st=ejzymeu4'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/445qz1v5j9c1hqwwkyxbo/D3.mp4?rlkey=3pyajeeg03mxx7mch5auurl8e&st=6ijape86'
             },
             {
                 id: 'sonic-2020',
