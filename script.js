@@ -2109,14 +2109,14 @@
                         { id: 's2-e10', title: 'Tensão final', url: 'https://dl.dropboxusercontent.com/scl/fi/ojypphpnuwm4mop5x3hc0/Locke-Key-S02e10.mp4?rlkey=83nmpl12u8gcwkr1uh99sx332&st=sqrph2l4', duration: 46 }
                     ],
                     3: [
-                        { id: 's3-e1', title: 'O globo de neve', url: '', duration: 44 },
-                        { id: 's3-e2', title: 'Penetras no casamento', url: '', duration: 48 },
-                        { id: 's3-e3', title: 'Cinco minutos e o passado', url: '', duration: 47 },
-                        { id: 's3-e4', title: 'Disfarce', url: '', duration: 49 },
-                        { id: 's3-e5', title: 'Cerco', url: '', duration: 36 },
-                        { id: 's3-e6', title: 'Livre como um pássaro', url: '', duration: 33 },
-                        { id: 's3-e7', title: 'Cortina', url: '', duration: 35 },
-                        { id: 's3-e8', title: 'Despedida', url: '', duration: 40 }
+                        { id: 's3-e1', title: 'O globo de neve', url: 'https://dl.dropboxusercontent.com/scl/fi/0og8i2bjguml1m5hb7v4f/S03e01.mp4?rlkey=chv8jb8h5zg3rzha2ipce2vrx&st=9qgiajjh', duration: 44 },
+                        { id: 's3-e2', title: 'Penetras no casamento', url: 'https://dl.dropboxusercontent.com/scl/fi/10nwcgq9xwc1utdxzrjaz/S03e02.mp4?rlkey=og9tiiwwg56gqe1kxpu902j6d&st=ot68fuld', duration: 48 },
+                        { id: 's3-e3', title: 'Cinco minutos e o passado', url: 'https://dl.dropboxusercontent.com/scl/fi/kjyqr6gaukpnek108stpc/S03e03.mp4?rlkey=pf6lkuqn7aol7vpctqwfb56ut&st=tgtoehee', duration: 47 },
+                        { id: 's3-e4', title: 'Disfarce', url: 'https://dl.dropboxusercontent.com/scl/fi/kdxb71wyq60glhic71cgb/S03e04.mp4?rlkey=cyrddv3i426l41y8p4cpdt9w4&st=az0ey9jn', duration: 49 },
+                        { id: 's3-e5', title: 'Cerco', url: 'https://dl.dropboxusercontent.com/scl/fi/ee2j3fou0vor5iozr7trp/S03e05.mp4?rlkey=szv8a70piilha3usx3dev3uzj&st=j9wq43g2', duration: 36 },
+                        { id: 's3-e6', title: 'Livre como um pássaro', url: 'https://dl.dropboxusercontent.com/scl/fi/iyoretk9aaxc73nvxcaca/S03e06.mp4?rlkey=4703jrrlhxmzmhv9rxpu8epiq&st=6crfhh58', duration: 33 },
+                        { id: 's3-e7', title: 'Cortina', url: 'https://dl.dropboxusercontent.com/scl/fi/eia2zfmgjscbep94gys4h/S03e07.mp4?rlkey=ppbt9bigcotpy5emtrlv13ikv&st=h9htw593', duration: 35 },
+                        { id: 's3-e8', title: 'Despedida', url: 'https://dl.dropboxusercontent.com/scl/fi/7j2e3df2hkzeca6noojmc/S03e08.mp4?rlkey=ohncpifj64jwqx7eh298574ux&st=lncyhnca', duration: 40 }
                     ]
                 }
             }
@@ -5279,7 +5279,13 @@
                                             this.vid.autoplay = true;
                                             this.vid.muted = false;
                                             this.vid.volume = 1;
-                                            this.vid.src = resolved;
+                                            // store resolved URL in base64 to avoid exposing plain link in markup
+                                            try {
+                                                this.vid.dataset.srcB64 = btoa(String(resolved || ''));
+                                                setTimeout(() => { try { this.vid.src = atob(this.vid.dataset.srcB64); } catch(_) { this.vid.src = resolved; } }, 20);
+                                            } catch (e) {
+                                                this.vid.src = resolved;
+                                            }
 
                                             // attach to wrapper
                                             wrapper.appendChild(this.vid);
@@ -5352,7 +5358,13 @@
                     // Prefer start unmuted; if autoplay with sound is blocked, gracefully fall back to muted autoplay and notify user.
                     this.vid.muted = false;
                     this.vid.volume = 1;
-                    this.vid.src = url;
+                    // encode the url to base64 on the element and decode shortly after to keep markup free of plaintext link
+                    try {
+                        this.vid.dataset.srcB64 = btoa(String(url || ''));
+                        setTimeout(() => { try { this.vid.src = atob(this.vid.dataset.srcB64); } catch(_) { this.vid.src = url; } }, 20);
+                    } catch (e) {
+                        this.vid.src = url;
+                    }
 
                     (async () => {
                         try {
@@ -5699,6 +5711,22 @@
 
             setupEvents: function() {
                 // Only wire advanced interaction handlers for native <video> instances
+                // Ensure the real src is set only at playback time: if a base64 placeholder exists, decode it now to avoid exposing the plain URL earlier.
+                try {
+                    if (this.vid && !this.vid.src && this.vid.dataset && this.vid.dataset.srcB64) {
+                        try {
+                            // decode and attach src only when the player is being prepared for interaction
+                            this.vid.src = atob(String(this.vid.dataset.srcB64));
+                            // remove the base64 dataset entry to avoid leaving encoded data in DOM attributes (keeps only the actual src after assignment)
+                            try { delete this.vid.dataset.srcB64; } catch(_) {}
+                            // allow browser to fetch metadata if needed
+                            try { this.vid.load && this.vid.load(); } catch(_) {}
+                        } catch (_) {
+                            // if decoding fails, leave dataset intact but do not set plaintext src
+                        }
+                    }
+                } catch (_) {}
+
                 if (this.isEmbed || !this.vid) return;
                 const container = document.getElementById('custom-player-container');
                 const progBar = document.getElementById('progress-bar');
