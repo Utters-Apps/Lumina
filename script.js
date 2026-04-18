@@ -668,7 +668,7 @@
             {
                 id: 'miraculous-world-paris',
                 title: 'Miraculous World: Paris, As Aventuras de Shadybug e Claw Noir',
-                originalTitle: 'Miraculous World: Paris — Shadybug & Claw Noir Adventures',
+                originalTitle: 'Miraculous World: Paris, Shadybug & Claw Noir Adventures',
                 type: 'filme',
                 category: 'Animação, Ação, Aventura, Fantasia, Super-herói',
                 year: '2023',
@@ -682,7 +682,7 @@
             },
             {
                 id: 'miraculous-world-london',
-                title: 'Miraculous World: Londres - Corrida Contra o Tempo',
+                title: 'Miraculous World: Londres, Corrida Contra o Tempo',
                 originalTitle: 'Miraculous World: London - At the Edge of Time',
                 type: 'filme',
                 category: 'Animação, Ação, Aventura, Fantasia, Heróis',
@@ -696,7 +696,7 @@
             },
             {
                 id: 'miraculous-world-tokyo',
-                title: 'Miraculous World - Tóquio: Força Estelar',
+                title: 'Miraculous World, Tóquio: Força Estelar',
                 originalTitle: 'Miraculous World: Tokyo – Stellar Force',
                 type: 'filme',
                 category: 'Ação, Aventura, Animação, Heroicos, Fantasia',
@@ -715,7 +715,7 @@
                 type: 'filme',
                 category: 'Musical / Aventura / Comédia / Família / Romance',
                 year: '2025',
-                cover: 'https://cadernopop.com.br/wp-content/uploads/2025/07/Zombies-4-A-Era-dos-Vampiros-1024x575.webp',
+                cover: 'https://cdn.discordapp.com/attachments/1494862606186582088/1494863122291491007/compose.png?ex=69e42745&is=69e2d5c5&hm=90350ab3fa4d31e0c04eeb88568f45c4c6e8b85bb144f37e2ecd67a14e318a1d',
                 description: 'Zed e Addison embarcam em uma viagem de verão que os leva a um acampamento onde surge um conflito entre Daywalkers e Vampiros. Para evitar uma nova guerra, eles precisam unir os grupos e manter a paz.',
                 ageRating: 'L',
                 distributor: 'Disney Channel',
@@ -1796,6 +1796,23 @@
                 ageRating: 'L',
                 distributor: 'Disney Channel',
                 url: 'https://dl.dropboxusercontent.com/scl/fi/445qz1v5j9c1hqwwkyxbo/D3.mp4?rlkey=3pyajeeg03mxx7mch5auurl8e&st=6ijape86'
+            },
+
+            {
+                id: 'descendentes-o-casamento-real',
+                title: 'Descendentes: O Casamento Real',
+                originalTitle: 'Descendants: The Royal Wedding',
+                type: 'filme',
+                category: 'Animação, Musical, Fantasia, Família',
+                year: '2021',
+                cover: 'https://cdn.discordapp.com/attachments/1494862606186582088/1494862669553991710/Descendentes-O-Casamento-Real.png?ex=69e426d9&is=69e2d559&hm=16745a6bf7aeb9e7d403db017bcc6be62bb86b05ddc061ea2a0d9df6d98d9381',
+                description: 'Mal e Ben se preparam para seu casamento real em Auradon, reunindo amigos e aliados. No entanto, eventos inesperados ameaçam atrapalhar a cerimônia, exigindo união e coragem para que tudo aconteça como planejado.',
+                ageRating: 'L',
+                distributor: 'Disney Channel / Disney+',
+                production: 'Disney Branded Television',
+                duration: 'curta-metragem',
+                tags: ['Curta','Descendentes','Especial'],
+                url: 'https://dl.dropboxusercontent.com/scl/fi/6zlwnsxuesaoy5shdat1w/cr.mp4?rlkey=yu32011715z0z38tc6ftdfvnh&st=q8nlfuz9'
             },
             {
                 id: 'sonic-2020',
