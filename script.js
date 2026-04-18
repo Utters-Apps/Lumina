@@ -227,7 +227,7 @@
                 nextEpisodeTrigger: 30,
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", introStart: 173, introDuration: 55 },
+                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", primaryUrl: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", introStart: 173, introDuration: 55 },
                         { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://dl.dropboxusercontent.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os", introStart: 230, introDuration: 55 },
                         { id: 's1-e3', title: "Morta e Confusa", url: "https://dl.dropboxusercontent.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux", introStart: 109, introDuration: 55 },
                         { id: 's1-e4', title: "Intenções Mórbidas", url: "https://dl.dropboxusercontent.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc", introStart: 119, introDuration: 55 },
@@ -607,7 +607,7 @@
                         { id: 's6-e20', title: 'Inverte-Corações', url: 'https://player.odycdn.com/api/v3/streams/free/620/e7f6bbce288ba2c42e3ae265cbd91bfba775d3a9/ceef00.mp4' },
                         { id: 's6-e21', title: 'Os Titãs da Corrente', url: '' },
                         { id: 's6-e22', title: 'Lady Caos', url: 'https://player.odycdn.com/v6/streams/ee96b5a8415de70a7cf768194c3bfac413970d13/e5d2d3.mp4' },
-                        { id: 's6-e23', title: 'Tristanansi', url: 'https://player.odycdn.com/api/v3/streams/free/Tristanansi_Miraculous_Les_Aventures_De_Ladybug_Et_Chat_Noir_Play/37635eb5d089fb2d7af84c14e6ec5c55542507bc/5b2c0f.mp4',
+                        { id: 's6-e23', title: 'Frianansi', url: 'https://player.odycdn.com/v6/streams/8d83c8876896e53e96009563c5033581cfa86326/2c35f3.mp4',
                             subtitles: [
                                 { src: 'https://cdn.cnbr.space/subtitles/623_br.vtt', kind: 'subtitles', srclang: 'pt-BR', label: 'Português (Brasil)', default: true }
                             ]
@@ -2134,6 +2134,78 @@
                         { id: 's3-e6', title: 'Livre como um pássaro', url: 'https://dl.dropboxusercontent.com/scl/fi/iyoretk9aaxc73nvxcaca/S03e06.mp4?rlkey=4703jrrlhxmzmhv9rxpu8epiq&st=6crfhh58', duration: 33 },
                         { id: 's3-e7', title: 'Cortina', url: 'https://dl.dropboxusercontent.com/scl/fi/eia2zfmgjscbep94gys4h/S03e07.mp4?rlkey=ppbt9bigcotpy5emtrlv13ikv&st=h9htw593', duration: 35 },
                         { id: 's3-e8', title: 'Despedida', url: 'https://dl.dropboxusercontent.com/scl/fi/7j2e3df2hkzeca6noojmc/S03e08.mp4?rlkey=ohncpifj64jwqx7eh298574ux&st=lncyhnca', duration: 40 }
+                    ]
+                }
+            },
+            {
+                id: 'steven-universe',
+                title: 'Steven Universo',
+                originalTitle: 'Steven Universe',
+                type: 'serie',
+                category: 'Animação, Aventura, Fantasia, Comédia, Drama',
+                year: '2013',
+                yearBR: '2013 (exibição original; exibida no Brasil a partir de 2014)',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/d7f9f30bec10f0d4523eb9be85353785edb5d9f42cdae9cd1ec6a89110651659.jpg',
+                description: 'Steven é um garoto metade humano, metade Gem, que vive com as Crystal Gems — Garnet, Amethyst e Pérola. Juntos, eles defendem a Terra de ameaças enquanto Steven aprende a controlar seus poderes e entende seu papel no universo.',
+                ageRating: '10',
+                distributor: 'Cartoon Network / HBO Max',
+                producer: 'Cartoon Network Studios',
+                tags: ['Animação','Família','Fantasia'],
+                nextEpisodeTrigger: 11,
+                seasons: {
+                    1: [
+                        { title: 'O Brilho da Pedra', url: 'https://player.odycdn.com/v6/streams/1165ece2ea824ce9f81c8b3d09384c71faaf7bd8/ca0c8f.mp4' },
+                        { title: 'O Canhão de Laser', url: 'https://player.odycdn.com/v6/streams/8934246c3cead3701563a5b86a9294109b49b6c0/a355be.mp4' },
+                        { title: 'A Mochila Cheeseburger', url: 'https://player.odycdn.com/v6/streams/e444dcf1713d3015aa405b2d055580d4f737680a/521311.mp4' },
+                        { title: 'O Café da Manhã', url: 'https://player.odycdn.com/v6/streams/743a20c28c26a85eb3ecbe050b583da830cafefb/a2a882.mp4' },
+                        { title: 'Frybo', url: 'https://player.odycdn.com/v6/streams/bd0ba78816a572a1efcaf1fc8ad53da7cc798fa8/11bf6d.mp4' },
+                        { title: 'Dedos de Gato', url: 'https://player.odycdn.com/v6/streams/e4778b5da100414440f2c128f2299761cd078f86/1ab886.mp4' },
+                        { title: 'Amigos de Bolha', url: 'https://player.odycdn.com/v6/streams/817a24a808649087e60d72935c83dc1ad3ac8a11/ae6427.mp4' },
+                        { title: 'Steven Muito Sério', url: 'https://player.odycdn.com/v6/streams/ef198344286ed1990d7c5e05085a9ccecad9f6d0/28eee7.mp4' },
+                        { title: 'Tigre Milionário', url: 'https://player.odycdn.com/v6/streams/d8aad6fd72884c4a8d65fd28f23d19c5dbd4cb07/872dbb.mp4' },
+                        { title: 'O Leão de Steven', url: 'https://player.odycdn.com/v6/streams/af95c3b6fa717d6991260e3fb8a19bf573a80013/0c0f6c.mp4' },
+                        { title: 'Jogos Eletrônicos' },
+                        { title: 'A Mulher Gigante' },
+                        { title: 'Tantos Aniversários' },
+                        { title: 'Lars e os Descolados' },
+                        { title: 'Negociando com o Cebola' },
+                        { title: 'Samurai Steven' },
+                        { title: 'Leão 2: O Filme' },
+                        { title: 'Um Dia na Praia' },
+                        { title: 'O Quarto de Rose' },
+                        { title: 'Treinador Steven' },
+                        { title: 'A Vítima da Pegadinha' },
+                        { title: 'Steven e os Stevens' },
+                        { title: 'Amigo Monstro' },
+                        { title: 'Um Beijo Indireto' },
+                        { title: 'Espelho Gem (Parte 1)' },
+                        { title: 'Gem Oceano (Parte 2)' },
+                        { title: 'O Hóspede (Parte 3)' },
+                        { title: 'Corrida Espacial' },
+                        { title: 'Equipe Secreta' },
+                        { title: 'Aventura na Ilha' },
+                        { title: 'O Estranho Mundo de Beach City' },
+                        { title: 'Jantar em Família' },
+                        { title: 'O Universo de Garnet' },
+                        { title: 'Steven Melancia' },
+                        { title: 'Leão 3: Direto pro Vídeo' },
+                        { title: 'Transportadores' },
+                        { title: 'Juntos e Sozinhos' },
+                        { title: 'O Teste' },
+                        { title: 'Visão do Futuro' },
+                        { title: 'Sem Destino' },
+                        { title: 'Clube de Horror' },
+                        { title: 'Previsão do Tempo: Inverno' },
+                        { title: 'Capacidade Máxima' },
+                        { title: 'Ataque de Mármore' },
+                        { title: 'A Espada de Rose' },
+                        { title: 'Livro Aberto' },
+                        { title: 'O Clube da Camiseta' },
+                        { title: 'Uma História para Steven' },
+                        { title: 'A Mensagem' },
+                        { title: 'Poder Político' },
+                        { title: 'O Retorno (Parte 1)' },
+                        { title: 'Libertador (Parte 2)' }
                     ]
                 }
             }
@@ -4392,94 +4464,126 @@
 
         // --- PLAYER LOGIC (supports direct video files and embed URLs) ---
         function requestPlay(url, title, context) {
-            // If the site has been sanitized (media/urls removed) do not allow playing until a full reload
+            // Guard: do not play if sanitized
             try {
                 if (window.__lumina_sanitized) {
-                    try { showToast('Mídia removida por segurança. Recarregue a página para restaurar.'); } catch(_) {}
+                    showToast('Mídia removida por segurança. Recarregue a página para restaurar.');
                     return;
                 }
-            } catch (_) {}
+            } catch (e) {}
 
-            // If we already have saved progress for this content, resume immediately (skip warmup/orientation delays)
+            // Helper to resolve stable context id
+            const resolveContextId = (ctx) => {
+                if (!ctx) return null;
+                if (ctx.id) return ctx.id;
+                if (ctx.type === 'filme' && ctx.id) return ctx.id;
+                if (ctx.type === 'serie' && ctx.seriesId != null && typeof ctx.season !== 'undefined' && typeof ctx.episode !== 'undefined') {
+                    return `${ctx.seriesId}-s${ctx.season}-e${ctx.episode}`;
+                }
+                return null;
+            };
+
+            // Fast-resume if we already have meaningful saved progress
             try {
-                const resolveContextId = (ctx) => {
-                    if (!ctx) return null;
-                    // prefer explicit stable id provided by context, fallback to series/film id or derived url key
-                    if (ctx.id) return ctx.id;
-                    if (ctx.type === 'filme' && ctx.id) return ctx.id;
-                    if (ctx.type === 'serie' && ctx.seriesId && typeof ctx.season !== 'undefined' && typeof ctx.episode !== 'undefined') {
-                        return `${ctx.seriesId}-s${ctx.season}-e${ctx.episode}`;
-                    }
-                    return null;
-                };
-
                 const ctxId = resolveContextId(context);
                 if (ctxId && state.progress && state.progress[ctxId] && typeof state.progress[ctxId].time === 'number' && state.progress[ctxId].time > 1) {
-                    // fast resume path: directly open player so it can restore and seek without extra warmup delays
-                    // This prevents starting from 0 when we already have meaningful saved position.
                     openPlayer(url, title, context);
                     return;
                 }
-            } catch (e) {
-                // fallback to normal flow on any error
-            }
+            } catch (e) {}
 
-            const isPortrait = window.innerHeight > window.innerWidth;
-
-            // On mobile and for direct video files, perform a small range "warmup" fetch to prime the CDN/host
-            // which often reduces initial buffering and startup latency on flaky mobile networks.
-            const shouldWarmup = (function() {
+            // New dual-source fallback flow:
+            // Primary first (context.primaryUrl or episode.primaryUrl), then fallback to the provided 'url' (secondary).
+            const primary = (function(){
                 try {
-                    // warmup only for mobile OS, not desktop-sized windows
-                    if (!isMobileOS()) return false;
-                    // only for direct video files (mp4/webm/etc.)
-                    if (!isDirectVideo(url)) return false;
-                    // avoid warming up for extremely short clips or opaque embed providers
-                    return true;
-                } catch (e) { return false; }
-            })();
-
-            if (shouldWarmup) {
-                // queue the pending video but warm the connection in background
-                state.pendingVideo = { url, title, context };
-
-                // attempt a lightweight range request for the first 64KB to warm connections
-                (async () => {
-                    try {
-                        const controller = new AbortController();
-                        const timeout = setTimeout(() => controller.abort(), 9000);
-                        const res = await fetch(url, {
-                            method: 'GET',
-                            headers: { 'Range': 'bytes=0-65535' },
-                            mode: 'cors',
-                            credentials: 'omit',
-                            signal: controller.signal,
-                            cache: 'no-store'
-                        }).catch(() => null);
-                        clearTimeout(timeout);
-
-                        // slight delay to let handshake stay warm
-                        await new Promise(r => setTimeout(r, 160));
-                    } catch (e) {
-                        // ignore errors; warmup is best-effort
-                    } finally {
-                        try {
-                            if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
-                                const modal = document.getElementById('orientation-modal');
-                                modal.classList.remove('hidden');
-                                modal.classList.add('flex');
-                                setTimeout(() => modal.classList.remove('opacity-0'), 10);
-                                window.addEventListener('resize', handleOrientation);
-                            } else {
-                                openPlayer(url, title, context);
-                            }
-                        } catch (_) {
-                            try { openPlayer(url, title, context); } catch(_) {}
+                    // 1) Prefer an explicit primaryUrl supplied in the runtime context (highest priority).
+                    if (context && context.primaryUrl) return context.primaryUrl;
+                    // 2) If this is a series context, try to find the episode object in DB and use its primaryUrl when present.
+                    if (context && context.type === 'serie' && context.seriesId) {
+                        const series = db.find(d => d.id === context.seriesId);
+                        if (series) {
+                            const seasonArr = series.seasons && series.seasons[context.season] ? series.seasons[context.season] : [];
+                            const ep = seasonArr[context.episode] || null;
+                            if (ep && ep.primaryUrl) return ep.primaryUrl;
                         }
                     }
-                })();
+                } catch (_) {}
+                // none found
+                return null;
+            })();
 
-            } else {
+            // small helper to attempt a warm HEAD/Range request with timeout to verify a host is reachable and responsive
+            const probeUrl = async (testUrl, timeoutMs) => {
+                if (!testUrl) return false;
+                try {
+                    const controller = new AbortController();
+                    const t = setTimeout(() => controller.abort(), timeoutMs || 7000);
+                    // attempt a lightweight ranged GET to warm connections
+                    const res = await fetch(testUrl, {
+                        method: 'GET',
+                        headers: { 'Range': 'bytes=0-65535' },
+                        mode: 'cors',
+                        credentials: 'omit',
+                        cache: 'no-store',
+                        signal: controller.signal
+                    }).catch(() => null);
+                    clearTimeout(t);
+                    if (!res) return false;
+                    // treat 206/200/opaque as success
+                    if (res.status === 206 || res.status === 200 || res.type === 'opaque') return true;
+                    return false;
+                } catch (e) {
+                    return false;
+                }
+            };
+
+            // Orchestrator: tries primary then fallback
+            (async () => {
+                try {
+                    // If no primary available, go straight to fallback url
+                    if (!primary) {
+                        // attempt fallback probe with moderately generous timeout (Dropbox may be slower)
+                        const ok = await probeUrl(url, 15000);
+                        if (ok) { openPlayer(url, title, context); return; }
+                        // both attempts failed -> close with message
+                        showToast('Falha ao carregar o vídeo. Fechando player...');
+                        // small delay then ensure no pending player state remains
+                        setTimeout(() => { try { closePlayerAnimated(); } catch(_) { try { closePlayer(); } catch(_) {} } }, 900);
+                        return;
+                    }
+
+                    // Try primary first (shorter timeout for faster CDN)
+                    const primaryOk = await probeUrl(primary, 7000);
+                    if (primaryOk) {
+                        // Use primary URL for playback
+                        const ctxCopy = Object.assign({}, context);
+                        ctxCopy.originalUrl = url; // preserve fallback
+                        ctxCopy.url = primary;
+                        openPlayer(primary, title, ctxCopy);
+                        return;
+                    }
+
+                    // primary failed within its timeout -> try fallback (dropbox) with longer timeout
+                    const fallbackOk = await probeUrl(url, 15000);
+                    if (fallbackOk) {
+                        const ctxCopy = Object.assign({}, context);
+                        ctxCopy.triedPrimary = true;
+                        openPlayer(url, title, ctxCopy);
+                        return;
+                    }
+
+                    // neither worked -> inform and close
+                    showToast('Nenhuma fonte carregou — fechando player.');
+                    setTimeout(() => { try { closePlayerAnimated(); } catch(_) { try { closePlayer(); } catch(_) {} } }, 900);
+                } catch (e) {
+                    // On unexpected error fallback to opening the fallback url directly then let player watchdog handle failures
+                    try { openPlayer(url, title, context); } catch (_) {}
+                }
+            })();
+
+            // Also keep orientation modal path for mobile as before when not warming up
+            try {
+                const isPortrait = window.innerHeight > window.innerWidth;
                 if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
                     state.pendingVideo = { url, title, context };
                     const modal = document.getElementById('orientation-modal');
@@ -4487,10 +4591,8 @@
                     modal.classList.add('flex');
                     setTimeout(() => modal.classList.remove('opacity-0'), 10);
                     window.addEventListener('resize', handleOrientation);
-                } else {
-                    openPlayer(url, title, context);
                 }
-            }
+            } catch (_) {}
         }
 
         function handleOrientation() {
@@ -5957,6 +6059,10 @@
                             }
                         }
                         // fallback: no next episode found
+                        // wait 2s then close with a subtle animation when there is truly no next episode
+                        setTimeout(() => {
+                            try { closePlayerAnimated(); } catch (_) { try { closePlayer(); } catch (_) {} }
+                        }, 2000);
                     } catch (e) {
                         // ignore errors and do nothing
                     }
@@ -6298,6 +6404,28 @@
         };
 
         function openPlayer(url, title, context) { player.init(url, title, context); }
+        // New: subtle animated close helper — applies a gentle transform/opacity before calling the actual close routine.
+        function closePlayerAnimated() {
+            try {
+                const modal = document.getElementById('player-modal');
+                if (!modal) {
+                    try { closePlayer(); } catch (_) {}
+                    return;
+                }
+                try {
+                    modal.style.transition = 'opacity 420ms ease, transform 320ms cubic-bezier(0.16,1,0.3,1)';
+                    modal.style.transform = 'scale(0.995)';
+                    modal.style.opacity = '0';
+                } catch (_) {}
+                setTimeout(() => {
+                    try { closePlayer(); } catch (_) {}
+                    try { modal.style.transition = ''; modal.style.transform = ''; modal.style.opacity = ''; } catch (_) {}
+                }, 520);
+            } catch (e) {
+                try { closePlayer(); } catch (_) {}
+            }
+        }
+
         function closePlayer() {
             // Close player cleanup (safe-guarded)
             try {
