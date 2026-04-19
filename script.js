@@ -227,34 +227,34 @@
                 nextEpisodeTrigger: 30,
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", primaryUrl: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", introStart: 173, introDuration: 55 },
-                        { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://dl.dropboxusercontent.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os", introStart: 230, introDuration: 55 },
-                        { id: 's1-e3', title: "Morta e Confusa", url: "https://dl.dropboxusercontent.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux", introStart: 109, introDuration: 55 },
-                        { id: 's1-e4', title: "Intenções Mórbidas", url: "https://dl.dropboxusercontent.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc", introStart: 119, introDuration: 55 },
-                        { id: 's1-e5', title: "O Passado Entra em Campo", url: "https://dl.dropboxusercontent.com/scl/fi/eajat75t4zeeq1usv7ifa/S_S_1_5_D.mp4?rlkey=dlaqabp1m3g9o2ankaa7okhsk", introStart: 83, introDuration: 55 },
-                        { id: 's1-e6', title: "Os Fantasmas se Divertem no Baile", url: "https://dl.dropboxusercontent.com/scl/fi/1uk571r9d12h0otsasdnp/S_S_1_6_D.mp4?rlkey=xp4z4l5dv4zj210ohyc53fj58", introStart: 196, introDuration: 55 },
-                        { id: 's1-e7', title: "A Última Sessão Mediúnica", url: "https://dl.dropboxusercontent.com/scl/fi/8h4lqdo5f1daf4zxc6yeh/S_S_1_7_D.mp4?rlkey=0bt8rn6wquag21y7iwpaj06r5", introStart: 386, introDuration: 55 },
-                        { id: 's1-e8', title: "O Corpo de Madison", url: "https://dl.dropboxusercontent.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq", introStart: 211, introDuration: 55 }
+                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", primaryUrl: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", introStart: 173, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197007939691/NLAS_SCHOOLSPIRITS_101_2173358_1920x1080.jpg" },
+                        { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://dl.dropboxusercontent.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os", introStart: 230, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197289539935/NLAS_SCHOOLSPIRITS_102_2173900_1920x1080.jpg" },
+                        { id: 's1-e3', title: "Morta e Confusa", url: "https://dl.dropboxusercontent.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux", introStart: 109, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197336643939/NLAS_SCHOOLSPIRITS_103_2174052_1920x1080.jpg" },
+                        { id: 's1-e4', title: "Intenções Mórbidas", url: "https://dl.dropboxusercontent.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc", introStart: 119, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197010499856/NLAS_SCHOOLSPIRITS_104_2173371_1920x1080.jpg" },
+                        { id: 's1-e5', title: "O Passado Entra em Campo", url: "https://dl.dropboxusercontent.com/scl/fi/eajat75t4zeeq1usv7ifa/S_S_1_5_D.mp4?rlkey=dlaqabp1m3g9o2ankaa7okhsk", introStart: 83, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197338691563/NLAS_SCHOOLSPIRITS_105_2174051_1920x1080.jpg" },
+                        { id: 's1-e6', title: "Os Fantasmas se Divertem no Baile", url: "https://dl.dropboxusercontent.com/scl/fi/1uk571r9d12h0otsasdnp/S_S_1_6_D.mp4?rlkey=xp4z4l5dv4zj210ohyc53fj58", introStart: 196, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/05/25/2212819011702/NLAS_SCHOOLSPIRITS_106_2221434_1920x1080.jpg" },
+                        { id: 's1-e7', title: "A Última Sessão Mediúnica", url: "https://dl.dropboxusercontent.com/scl/fi/8h4lqdo5f1daf4zxc6yeh/S_S_1_7_D.mp4?rlkey=0bt8rn6wquag21y7iwpaj06r5", introStart: 386, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/05/27/2215082051766/NLAS_SCHOOLSPIRITS_107_2223361_1920x1080.jpg" },
+                        { id: 's1-e8', title: "O Corpo de Madison", url: "https://dl.dropboxusercontent.com/scl/fi/in5mqnt7qhr34tyxlo9zt/S_S_1_8_D.mp4?rlkey=q7nowznikoj38lnvad9g4jwbq", introStart: 211, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/05/27/2215084611890/NLAS_SCHOOLSPIRITS_108_2223355_1920x1080.jpg" }
                     ],
                     2: [
-                        { id: 's2-e1', title: "O Que Terá Acontecido a Maddie Nears?", url: "https://dl.dropboxusercontent.com/scl/fi/erfoa38zyjkll3z252pox/SSPRTS_2_1.mp4?rlkey=96tmhe507k8tsqueakqd6b9oo" },
-                        { id: 's2-e2', title: "Campo dos Gritos", url: "https://dl.dropboxusercontent.com/scl/fi/g50i68mjnp63fky9ww2lq/SSPRTS_2_2.mp4?rlkey=6gy3g6laqgwa3qw6s4un9c5qp" },
-                        { id: 's2-e3', title: "Mal Posso Assombrar", url: "https://dl.dropboxusercontent.com/scl/fi/8gcuxbsr0cmm3u8oqmp5r/SSPRTS_2_3.mp4?rlkey=tlsg1vc089sr3oq5d0rk1z9tt" },
-                        { id: 's2-e4', title: "Uma Troca de Corpos Para Recordar", url: "https://dl.dropboxusercontent.com/scl/fi/cka8c8cjwq77a7cyir9h2/SPRTSNSCL_2_4.mp4?rlkey=to8417he1echsb0yyakq4msrb" },
-                        { id: 's2-e5', title: "Adivinhe Quem Vem Para Assombrar", url: "https://dl.dropboxusercontent.com/scl/fi/bo40mxke2dd0ua5j6i2mz/ESPRTSNESCL_2_5.mp4?rlkey=jn1opprduik1yycb33y8hqf78" },
-                        { id: 's2-e6', title: "Assombração em Conflito", url: "https://dl.dropboxusercontent.com/scl/fi/4ad5lshp9nayiyvpd43h1/SCHLSPRTS_2_6.mp4?rlkey=cilch3l3un75nw0cgg0qyl6t2" },
-                        { id: 's2-e7', title: "Anatomia de um Abrigo Nuclear", url: "https://dl.dropboxusercontent.com/scl/fi/pwu7ta12jqnw9atmzgzha/SCHLSPRTS_2_7.mp4?rlkey=9mpeejrebfa90uayg1wzf7gwn" },
-                        { id: 's2-e8', title: "Fogo, Fale Comigo", url: "https://dl.dropboxusercontent.com/scl/fi/8slbpn2laeflspv59k6i4/SCHLSPRT_2_8.mp4?rlkey=m2f8kzp3crv1q07374qpay2gi" }
+                        { id: 's2-e1', title: "O Que Terá Acontecido a Maddie Nears?", url: "https://dl.dropboxusercontent.com/scl/fi/erfoa38zyjkll3z252pox/SSPRTS_2_1.mp4?rlkey=96tmhe507k8tsqueakqd6b9oo", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/01/13/2401266755736/PPNIK_SCHOOLSPIRITS_201_UHD_3062712_1920x1080.jpg" },
+                        { id: 's2-e2', title: "Campo dos Gritos", url: "https://dl.dropboxusercontent.com/scl/fi/g50i68mjnp63fky9ww2lq/SSPRTS_2_2.mp4?rlkey=6gy3g6laqgwa3qw6s4un9c5qp", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/01/13/2401268291652/PPNIK_SCHOOLSPIRITS_202_UHD_3062682_1920x1080.jpg" },
+                        { id: 's2-e3', title: "Mal Posso Assombrar", url: "https://dl.dropboxusercontent.com/scl/fi/8gcuxbsr0cmm3u8oqmp5r/SSPRTS_2_3.mp4?rlkey=tlsg1vc089sr3oq5d0rk1z9tt", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/01/13/2401266243696/PPNIK_SCHOOLSPIRITS_203_UHD_3062664_1920x1080.jpg" },
+                        { id: 's2-e4', title: "Uma Troca de Corpos Para Recordar", url: "https://dl.dropboxusercontent.com/scl/fi/cka8c8cjwq77a7cyir9h2/SPRTSNSCL_2_4.mp4?rlkey=to8417he1echsb0yyakq4msrb", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/01/20/2402955843629/PPNIK_SCHOOLSPIRITS_204_UHD_3381899_1920x1080.jpg" },
+                        { id: 's2-e5', title: "Adivinhe Quem Vem Para Assombrar", url: "https://dl.dropboxusercontent.com/scl/fi/bo40mxke2dd0ua5j6i2mz/ESPRTSNESCL_2_5.mp4?rlkey=jn1opprduik1yycb33y8hqf78", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/01/27/2404546115848/PPNIK_SCHOOLSPIRITS_205_UHD_V2_3085642_1920x1080.jpg" },
+                        { id: 's2-e6', title: "Assombração em Conflito", url: "https://dl.dropboxusercontent.com/scl/fi/4ad5lshp9nayiyvpd43h1/SCHLSPRTS_2_6.mp4?rlkey=cilch3l3un75nw0cgg0qyl6t2", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/01/29/2405079107965/PPNIK_SCHOOLSPIRITS_206_UHD_V3_3194963_1920x1080.jpg" },
+                        { id: 's2-e7', title: "Anatomia de um Abrigo Nuclear", url: "https://dl.dropboxusercontent.com/scl/fi/pwu7ta12jqnw9atmzgzha/SCHLSPRTS_2_7.mp4?rlkey=9mpeejrebfa90uayg1wzf7gwn", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/02/03/2406138435932/PPNIK_SCHOOLSPIRITS_207_UHD_3085747_1920x1080.jpg" },
+                        { id: 's2-e8', title: "Fogo, Fale Comigo", url: "https://dl.dropboxusercontent.com/scl/fi/8slbpn2laeflspv59k6i4/SCHLSPRT_2_8.mp4?rlkey=m2f8kzp3crv1q07374qpay2gi", cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2025/02/12/2408259651666/PPNIK_SCHOOLSPIRITS_208_UHD_3098980_1920x1080.jpg" }
                     ],
                     3: [
-                        { id: 's3-e1', title: "É uma Maravilhosa Vida Após a Morte", url: "https://dl.dropboxusercontent.com/scl/fi/mfbd64a59ylslnn0az6lz/SCHLSPRTS31D.mp4?rlkey=tq0vwqkeqjzzchlp46z06ts0d" },
-                        { id: 's3-e2', title: "Fantasmas Malvados", url: "https://dl.dropboxusercontent.com/scl/fi/md68ne26zj5l2smw94e1y/SCHLSPRTS32D.mp4?rlkey=b27e35a8ybnad8udf9x0h75rz" },
-                        { id: 's3-e3', title: "Olhos nos Corredores", url: "https://dl.dropboxusercontent.com/scl/fi/wg1s89w8orupcg4rmzyk8/SCHLSPRTS33D.mp4?rlkey=fwjxi5vtvsfgtmkw9q9wad6yu" },
-                        { id: 's3-e4', title: "O Clube dos Desamparados", url: "https://dl.dropboxusercontent.com/scl/fi/y52g4ul1ao26a1shif84x/SCHLSPRTS34D.mp4?rlkey=gvjm36rehhxoooe7jku2kvlfp" },
-                        { id: 's3-e5', title: "Em Busca da Cicatriz Perdida", url: "https://dl.dropboxusercontent.com/scl/fi/km38h1xiy6awc4jhv88jb/SCHLSPRTS35D.mp4?rlkey=zqqorxpvkrt94qvclik28pdmb" },
-                        { id: 's3-e6', title: "Filhos do Desprezo", url: "https://dl.dropboxusercontent.com/scl/fi/j1dbnj5olclc2suow7qng/SCHLSPRTS36D.mp4?rlkey=c4or26clmgkxsq7jbi1l4dmr4" },
-                        { id: 's3-e7', title: "Meio do Semestre", url: "https://dl.dropboxusercontent.com/scl/fi/3erg54smh5zd761ln3uxx/SCHLSPRTS37D.mp4?rlkey=xa3zz1bqk19pf7x6ykj8cbfsi&st=gymsyj7k" },
-                        { id: 's3-e8', title: "O Despertar da Debutante", url: "https://dl.dropboxusercontent.com/scl/fi/gpvao0x30e7oqgz2wnwg3/SCHLSPRTS38D.mp4?rlkey=vxrxl5dmu6mtknsobnbdwoqc0&st=9nywbe3d" }
+                        { id: 's3-e1', title: "É uma Maravilhosa Vida Após a Morte", url: "https://dl.dropboxusercontent.com/scl/fi/mfbd64a59ylslnn0az6lz/SCHLSPRTS31D.mp4?rlkey=tq0vwqkeqjzzchlp46z06ts0d", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/01/13/2481113155936/PPNIK_SCHOOLSPIRITS_301_UHD_V1_3619084_1920x1080.jpg" },
+                        { id: 's3-e2', title: "Fantasmas Malvados", url: "https://dl.dropboxusercontent.com/scl/fi/md68ne26zj5l2smw94e1y/SCHLSPRTS32D.mp4?rlkey=b27e35a8ybnad8udf9x0h75rz", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/01/13/2481114179949/PPNIK_SCHOOLSPIRITS_302_UHD_V1_3619080_1920x1080.jpg" },
+                        { id: 's3-e3', title: "Olhos nos Corredores", url: "https://dl.dropboxusercontent.com/scl/fi/wg1s89w8orupcg4rmzyk8/SCHLSPRTS33D.mp4?rlkey=fwjxi5vtvsfgtmkw9q9wad6yu", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/01/13/2481114691553/PPNIK_SCHOOLSPIRITS_303_UHD_V1_3619023_1920x1080.jpg" },
+                        { id: 's3-e4', title: "O Clube dos Desamparados", url: "https://dl.dropboxusercontent.com/scl/fi/y52g4ul1ao26a1shif84x/SCHLSPRTS34D.mp4?rlkey=gvjm36rehhxoooe7jku2kvlfp", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/01/30/2484412995506/PPNIK_SCHOOLSPIRITS_304_UHD_V1_3675410_1920x1080.jpg" },
+                        { id: 's3-e5', title: "Em Busca da Cicatriz Perdida", url: "https://dl.dropboxusercontent.com/scl/fi/km38h1xiy6awc4jhv88jb/SCHLSPRTS35D.mp4?rlkey=zqqorxpvkrt94qvclik28pdmb", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/02/04/2485325891634/PPNIK_SCHOOLSPIRITS_305_UHD_V1_3703255_1920x1080.jpg" },
+                        { id: 's3-e6', title: "Filhos do Desprezo", url: "https://dl.dropboxusercontent.com/scl/fi/j1dbnj5olclc2suow7qng/SCHLSPRTS36D.mp4?rlkey=c4or26clmgkxsq7jbi1l4dmr4", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/02/11/2486584899536/PPNIK_SCHOOLSPIRITS_306_UHD_V1_3718214_1920x1080.jpg" },
+                        { id: 's3-e7', title: "Meio do Semestre", url: "https://dl.dropboxusercontent.com/scl/fi/3erg54smh5zd761ln3uxx/SCHLSPRTS37D.mp4?rlkey=xa3zz1bqk19pf7x6ykj8cbfsi&st=gymsyj7k", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/02/18/2487851075954/PPNIK_SCHOOLSPIRITS_307_UHD_V1_3726833_1920x1080.jpg" },
+                        { id: 's3-e8', title: "O Despertar da Debutante", url: "https://dl.dropboxusercontent.com/scl/fi/gpvao0x30e7oqgz2wnwg3/SCHLSPRTS38D.mp4?rlkey=vxrxl5dmu6mtknsobnbdwoqc0&st=9nywbe3d", cover: "https://thumbnails.cbsig.net/CBS_Production_Entertainment_VMS/2026/02/25/2489131075970/PPNIK_SCHOOLSPIRITS_308_UHD_V1_3739631_1920x1080.jpg" }
                     ]
                 }
             },
@@ -271,18 +271,18 @@
                 producer: 'Sanrio',
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: 'O que é isso? Meu coração tá acelerado', url: 'https://dl.dropboxusercontent.com/scl/fi/7278mc0sibg5ko5z0bgt3/Mk01.mp4?rlkey=4deo3a56872q0dwsnywq1pkco&st=bq7iw7ps' },
-                        { id: 's1-e2', title: 'Macio e felpudinho', url: 'https://dl.dropboxusercontent.com/scl/fi/cmfib1v50bqq1pfwv0cgh/Mk02.mp4?rlkey=kapifjjla053widwoll69q203&st=ht2648jq' },
-                        { id: 's1-e3', title: 'O grande roubo de receita da Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/d4v2lfccg9ta862eawyvx/Mk03.mp4?rlkey=wfu6l3h4s7lfcge8utyaorpu7&st=bavou65n' },
-                        { id: 's1-e4', title: 'Perseguição ao carrinho de mel', url: 'https://dl.dropboxusercontent.com/scl/fi/1m1kxmbgmwjcd3txgzsyi/Mk04.mp4?rlkey=xj489k2sh3rxuis2fz0y5qhpp&st=c0wo9h6c' },
-                        { id: 's1-e5', title: 'Começa o concurso de doces', url: 'https://dl.dropboxusercontent.com/scl/fi/a94crxzdmljfgm5hj0qz4/Mk05.mp4?rlkey=iezuixz3v6q9ltclwenjir4hi&st=svgdwzrk' },
-                        { id: 's1-e6', title: 'O segredo do dorayaki da Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/q14kjvbmykm9urlohqmyq/mk06.mp4?rlkey=buoywwl64xu6cm2l9tztptphd&st=hmp9kcae' },
-                        { id: 's1-e7', title: 'E agora?', url: 'https://dl.dropboxusercontent.com/scl/fi/q1hplw790jiwpmdcmsbl5/mk07.mp4?rlkey=iyi5bk8kfw4ebrhm4np1saqd0&st=gb6dbap5' },
-                        { id: 's1-e8', title: 'Hora de trabalhar em equipe', url: 'https://dl.dropboxusercontent.com/scl/fi/1nu141eyod38i8a9cf31n/Mk08.mp4?rlkey=691tfpdx8tjhu8f0tg77ty9ao&st=exbpeoc5' },
-                        { id: 's1-e9', title: 'Para o País das Nuvens!', url: 'https://dl.dropboxusercontent.com/scl/fi/2puj59zvxc0h28ckic0gi/Mk09.mp4?rlkey=zkqtjfbt5xxn0jgk1ymh7k27s&st=5re9zzbb' },
-                        { id: 's1-e10', title: 'O passado de Pistachio', url: 'https://dl.dropboxusercontent.com/scl/fi/kyopkc5ncuwaw9vvznh69/Mk10.mp4?rlkey=uyzv1vsitfhw31db0rnrkl4oy&st=64xft11m' },
-                        { id: 's1-e11', title: 'Tudo pelos amigos', url: 'https://dl.dropboxusercontent.com/scl/fi/6akjy0vn8f4y62wnwqx2k/Mk11.mp4?rlkey=e4dsli41nxekicr8ckk365ii8&st=q8pi6m38' },
-                        { id: 's1-e12', title: 'My Melody & Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/fp7c5u7hpv541t2l2d8v5/mk12.mp4?rlkey=en0pd7q5auv3ak2b7yfl3m4mq&st=p4jq50d8' }
+                        { id: 's1-e1', title: 'O que é isso? Meu coração tá acelerado', url: 'https://dl.dropboxusercontent.com/scl/fi/7278mc0sibg5ko5z0bgt3/Mk01.mp4?rlkey=4deo3a56872q0dwsnywq1pkco&st=bq7iw7ps', cover: 'https://media.themoviedb.org/t/p/original/hFrZbyzfIQyfiCYU76pLGG233Gj.jpg' },
+                        { id: 's1-e2', title: 'Macio e felpudinho', url: 'https://dl.dropboxusercontent.com/scl/fi/cmfib1v50bqq1pfwv0cgh/Mk02.mp4?rlkey=kapifjjla053widwoll69q203&st=ht2648jq', cover: 'https://media.themoviedb.org/t/p/original/jyjzeGTxYUYPEF3ZNPDYCWDxGCj.jpg' },
+                        { id: 's1-e3', title: 'O grande roubo de receita da Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/d4v2lfccg9ta862eawyvx/Mk03.mp4?rlkey=wfu6l3h4s7lfcge8utyaorpu7&st=bavou65n', cover: 'https://media.themoviedb.org/t/p/original/zI52ifVdloKrGDK82xoxVDnEnmk.jpg' },
+                        { id: 's1-e4', title: 'Perseguição ao carrinho de mel', url: 'https://dl.dropboxusercontent.com/scl/fi/1m1kxmbgmwjcd3txgzsyi/Mk04.mp4?rlkey=xj489k2sh3rxuis2fz0y5qhpp&st=c0wo9h6c', cover: 'https://media.themoviedb.org/t/p/original/5YvZgxFQdPWdpFKjDfFJJCWwFXK.jpg' },
+                        { id: 's1-e5', title: 'Começa o concurso de doces', url: 'https://dl.dropboxusercontent.com/scl/fi/a94crxzdmljfgm5hj0qz4/Mk05.mp4?rlkey=iezuixz3v6q9ltclwenjir4hi&st=svgdwzrk', cover: 'https://media.themoviedb.org/t/p/original/40NZICcGGrJQgLHqsG3ZyOsvoEK.jpg' },
+                        { id: 's1-e6', title: 'O segredo do dorayaki da Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/q14kjvbmykm9urlohqmyq/mk06.mp4?rlkey=buoywwl64xu6cm2l9tztptphd&st=hmp9kcae', cover: 'https://media.themoviedb.org/t/p/original/kLEbEYvq5S6asiZiLh5cuNDTMWs.jpg' },
+                        { id: 's1-e7', title: 'E agora?', url: 'https://dl.dropboxusercontent.com/scl/fi/q1hplw790jiwpmdcmsbl5/mk07.mp4?rlkey=iyi5bk8kfw4ebrhm4np1saqd0&st=gb6dbap5', cover: 'https://media.themoviedb.org/t/p/original/u5Zyf4ZzhcL6eGwbo4FV3ilwK5I.jpg' },
+                        { id: 's1-e8', title: 'Hora de trabalhar em equipe', url: 'https://dl.dropboxusercontent.com/scl/fi/1nu141eyod38i8a9cf31n/Mk08.mp4?rlkey=691tfpdx8tjhu8f0tg77ty9ao&st=exbpeoc5', cover: 'https://media.themoviedb.org/t/p/original/9Al5Ck0XI83onHI90J4gdqOLOVH.jpg' },
+                        { id: 's1-e9', title: 'Para o País das Nuvens!', url: 'https://dl.dropboxusercontent.com/scl/fi/2puj59zvxc0h28ckic0gi/Mk09.mp4?rlkey=zkqtjfbt5xxn0jgk1ymh7k27s&st=5re9zzbb', cover: 'https://media.themoviedb.org/t/p/original/xsyp4JVV1dRJxID9gvCyGrlJT5F.jpg' },
+                        { id: 's1-e10', title: 'O passado de Pistachio', url: 'https://dl.dropboxusercontent.com/scl/fi/kyopkc5ncuwaw9vvznh69/Mk10.mp4?rlkey=uyzv1vsitfhw31db0rnrkl4oy&st=64xft11m', cover: 'https://media.themoviedb.org/t/p/original/8NZgDzCfXr4Mm6qlOBUJxuH0aRk.jpg' },
+                        { id: 's1-e11', title: 'Tudo pelos amigos', url: 'https://dl.dropboxusercontent.com/scl/fi/6akjy0vn8f4y62wnwqx2k/Mk11.mp4?rlkey=e4dsli41nxekicr8ckk365ii8&st=q8pi6m38', cover: 'https://media.themoviedb.org/t/p/original/xNDqcTrkrFQztwGeDs2WaTvmL13.jpg' },
+                        { id: 's1-e12', title: 'My Melody & Kuromi', url: 'https://dl.dropboxusercontent.com/scl/fi/fp7c5u7hpv541t2l2d8v5/mk12.mp4?rlkey=en0pd7q5auv3ak2b7yfl3m4mq&st=p4jq50d8', cover: 'https://media.themoviedb.org/t/p/original/6CXsz1jBng4UbinFBkGkAwwDYKC.jpg' }
                     ]
                 }
             },
@@ -4325,7 +4325,7 @@
                          class="group flex gap-4 p-3 rounded-2xl transition-colors duration-300 ${isAvailable ? 'cursor-pointer hover:bg-elevated' : 'opacity-50'}">
                         
                         <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-surface shrink-0 border border-white/5">
-                            <img loading="lazy" decoding="async" src="${item.cover}" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                            <img loading="lazy" decoding="async" data-db-cover="1" data-src="${ep.cover || item.cover}" src="${ep.cover || item.cover}" onerror="this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                             <div class="absolute inset-0 flex items-center justify-center">
                                 ${isAvailable ? `
                                     <div class="w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity scale-90 group-hover:scale-100 shadow-md">
@@ -4376,7 +4376,7 @@
                          class="group flex gap-4 p-3 rounded-2xl transition-colors duration-300 ${isAvailable ? 'cursor-pointer hover:bg-elevated' : 'opacity-50'}">
                         
                         <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-surface shrink-0 border border-white/5">
-                            <img src="${item.cover}" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                            <img src="${ep.cover || item.cover}" class="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                             <div class="absolute inset-0 flex items-center justify-center">
                                 ${isAvailable ? `
                                     <div class="w-10 h-10 rounded-full glass flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity scale-90 group-hover:scale-100 shadow-md">
@@ -7475,7 +7475,7 @@
             }
         }
 
-        // When rendering card lists, ensure items are wrapped as session-card to keep side-by-side layout
+                // When rendering card lists, ensure items are wrapped as session-card to keep side-by-side layout
         const origRender16by9 = render16by9CatalogCards;
         render16by9CatalogCards = function(data, container) {
             if (!container) return;
@@ -7535,9 +7535,10 @@
                 const coverSrc = (item.cover && item.cover.trim()) ? item.cover : 'fiveicon.png';
                 const imgOnError = `this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');this.style.objectFit='cover';`;
 
+                // Provide both src and data-src so the resilient loader and browsers have a stable source to fetch from.
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
-                        <img loading="lazy" decoding="async" data-db-cover="1" src="${coverSrc}" onerror="${imgOnError}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
+                        <img loading="lazy" decoding="async" data-db-cover="1" data-src="${coverSrc}" src="${coverSrc}" onerror="${imgOnError}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         
                         <!-- Play Icon Hover -->
