@@ -878,6 +878,22 @@
                 url: 'https://dl.dropboxusercontent.com/scl/fi/7sbohwhegt2pl0x46vamb/Luca.2021.1080p.WEB-DL.DUAL.5.1.COMANDO.TO.mp4?rlkey=y0n75i1dectwu3lw1rcwibvul&st=kp56wmqc'
             },
             {
+                id: 'hotel-transilvania',
+                title: 'Hotel Transilvânia',
+                originalTitle: 'Hotel Transylvania',
+                type: 'filme',
+                category: 'Animação / Ação / Comédia',
+                year: '2012',
+                yearBR: '2012 — estreia nos cinemas brasileiros em 5 de outubro de 2012',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/4905873d8f3d7d995c6368c7cda10a33b13f644a9dba8b1a24b9a010483b80ee.jpg',
+                description: 'Drácula administra um hotel secreto para monstros, longe dos humanos, e tenta proteger a filha Mavis. Tudo muda quando um jovem humano aparece no local e se apaixona por ela, causando uma confusão no hotel.',
+                ageRating: 'L',
+                distributor: 'Sony Pictures',
+                production: 'Sony Pictures Animation / Columbia Pictures',
+                tags: ['Animação','Família','Comédia'],
+                url: 'https://player.odycdn.com/v6/streams/8f8f33593f3cb3c20498598c8be45ceb706e85aa/68079c.mp4'
+            },
+            {
                 id: 'matilda-1996',
                 title: 'Matilda',
                 originalTitle: 'Matilda',
@@ -2168,7 +2184,7 @@
                         { title: 'A Mulher Gigante', url: 'https://player.odycdn.com/v6/streams/65e25df72fe31f2a76f72cb950b590579861051a/5c854a.mp4' },
                         { title: 'Tantos Aniversários', url: 'https://player.odycdn.com/v6/streams/1a39812cae1a26b0265ff6499f388a217739d973/222c5e.mp4' },
                         { title: 'Lars e os Descolados', url: 'https://player.odycdn.com/v6/streams/ec94d09cfdbddfffe9cc9ec3b20d922e0ffb4716/9e5201.mp4' },
-                        { title: 'Negociando com o Cebola', url: 'https://player.odycdn.com/v6/streams/2a5b064cb761d8dd4fe018d0804f2dddc9a9e27c/d7423c.mp4' },
+                        { title: 'Negociando com o Cebola', url: 'https://player.odycdn.com/v6/streams/2a5b064cb761d8dd4fe018d0804f2dddc9a9e27c/d7423c.mp4', primaryUrl: 'https://player.odycdn.com/v6/streams/2a5b064cb761d8dd4fe018d0804f2dddc9a9e27c/d7423c.mp4' },
                         { title: 'Samurai Steven' },
                         { title: 'Leão 2: O Filme' },
                         { title: 'Um Dia na Praia' },
@@ -3375,6 +3391,19 @@
             if (rating === 'A6') color = 'badge-a6'; // A6 = não recomendado para menores de 6 anos
             if(['16','18'].includes(rating)) color = 'bg-red-600/20 text-red-400 border border-red-600/30';
             return `<span class="${color} text-[10px] font-bold px-1.5 py-0.5 rounded-sm">${rating}</span>`;
+        }
+
+        // Tag appearance probability: each tag has a 25% chance to be hidden when rendering cards,
+        // creating a subtle dynamic effect where tags sometimes appear/disappear.
+        // Use a per-render pseudo-random decision (no persistent seed) so flipping feels dynamic.
+        function tagShouldShow(tag) {
+            try {
+                if (!tag) return false;
+                // 25% chance to hide => show when random >= 0.25
+                return Math.random() >= 0.25;
+            } catch (e) {
+                return true;
+            }
         }
 
         // Format category strings: replace commas with " / " and normalize multiple separators
@@ -7522,13 +7551,15 @@
                 let tagsHtml = '';
                 try {
                     const suppressBadges = container && (container.id === 'fav-grid' || container.closest && container.closest('#fav-grid'));
-                    if (!suppressBadges && tag) {
+                    if (!suppressBadges && tag && tagShouldShow(tag)) {
                         tagsHtml = `<div class="card-badge ${tagToClass(tag)}">${String(tag)}</div>`;
                     } else {
                         tagsHtml = '';
                     }
                 } catch (e) {
-                    tagsHtml = tag ? `<div class="card-badge ${tagToClass(tag)}">${String(tag)}</div>` : '';
+                    // On any error default to showing the tag (but still obey chance)
+                    if (tag && tagShouldShow(tag)) tagsHtml = `<div class="card-badge ${tagToClass(tag)}">${String(tag)}</div>`;
+                    else tagsHtml = '';
                 }
 
                 // ensure stable cover and onerror fallback that preserves aspect ratio/size
