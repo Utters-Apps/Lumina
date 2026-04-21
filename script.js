@@ -4574,11 +4574,17 @@
                         // attempt fallback probe with moderately generous timeout (Dropbox may be slower)
                         const ok = await probeUrl(url, 15000);
                         if (ok) { openPlayer(url, title, context); return; }
-                        // both attempts failed -> close with message
-                        showToast('Falha ao carregar o vídeo. Fechando player...');
-                        // small delay then ensure no pending player state remains
-                        setTimeout(() => { try { closePlayerAnimated(); } catch(_) { try { closePlayer(); } catch(_) {} } }, 900);
-                        return;
+                        // If probe failed, still attempt to open the provided fallback URL instead of closing immediately.
+                        try {
+                            showToast('Fonte principal indisponível — tentando abrir fallback...', 2600);
+                            openPlayer(url, title, context);
+                            return;
+                        } catch (err) {
+                            // If opening fallback also fails, fallback to graceful close with message
+                            showToast('Falha ao carregar o vídeo. Fechando player...', 1400);
+                            setTimeout(() => { try { closePlayerAnimated(); } catch(_) { try { closePlayer(); } catch(_) {} } }, 900);
+                            return;
+                        }
                     }
 
                     // Try primary first (shorter timeout for faster CDN)
@@ -5041,60 +5047,79 @@
                                     fs: 0,
                                     iv_load_policy: 3,
                                     playsinline: 1,
-                                    enablejsapi: 1
+                                    enablejsapi: 1,
+                                    // do not force muted start; prefer audible playback when allowed
+                                    mute: 0
                                 },
                                 events: {
                                     onReady: (e) => {
-                                        // Hide loading ui first
+                                        // Hide loading ui
                                         const loadingEl = document.getElementById('player-loading');
                                         if (loadingEl) loadingEl.classList.add('hidden');
 
-                                        // Cancel any load watchdog now that player is ready
+                                        // cancel any load watchdog
                                         try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
 
-                                        // Ensure initial volume state is consistent and try a robust autoplay sequence:
-                                        // 1) start muted autoplay attempt immediately
-                                        // 2) if autoplay is blocked, retry a couple of times with short backoff
-                                        // 3) unmute on the first user gesture to restore audio
+                                        // Ensure iframe allow attributes include autoplay & playsinline for better autoplay compatibility
                                         try {
-                                            const tryPlay = async (attempt = 0) => {
-                                                try {
-                                                    // attempt play (do not forcibly mute here); set volume if supported
-                                                    if (e && e.target) {
-                                                        try { if (typeof e.target.setVolume === 'function') e.target.setVolume(100); } catch(_) {}
-                                                        // try play; autoplay may succeed muted or with user gesture
-                                                        try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
-                                                    }
-                                                    // after a short delay check if playing; if not, attempt again (limited retries)
-                                                    setTimeout(() => {
-                                                        try {
-                                                            const stateYT = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
-                                                            // YT playing state is 1
-                                                            if (stateYT !== 1 && attempt < 3) {
-                                                                tryPlay(attempt + 1);
-                                                            }
-                                                        } catch(_) {}
-                                                    }, 650 + (attempt * 300));
-                                                } catch (_) {}
-                                            };
-                                            tryPlay(0);
+                                            const iframeNode = document.querySelector('#yt-player iframe');
+                                            if (iframeNode) {
+                                                const allow = (iframeNode.getAttribute('allow') || '');
+                                                const needed = ['autoplay', 'playsinline', 'picture-in-picture', 'fullscreen'];
+                                                let combined = allow;
+                                                needed.forEach(flag => { if (!new RegExp(flag, 'i').test(combined)) combined += '; ' + flag; });
+                                                iframeNode.setAttribute('allow', combined.replace(/;;+/g,';'));
+                                                iframeNode.setAttribute('allowfullscreen', '');
+                                            }
+                                        } catch(_) {}
 
-                                            // Unmute on first user interaction (pointerdown/touchstart) to restore audio
-                                            const unmuteHandler = () => {
+                                        // Robust muted autoplay attempt:
+                                        // 1) ensure the player is muted before trying play (many browsers allow muted autoplay)
+                                        // 2) attempt play and retry a few times with backoff if necessary
+                                        // 3) unmute on first user gesture
+                                        try {
+                                            if (e && e.target) {
                                                 try {
-                                                    if (player && player.ytPlayer) {
-                                                        try { player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
-                                                        try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
-                                                    }
+                                                    // Ensure the YouTube player is unmuted and at a sensible volume so audio is audible on start.
+                                                    e.target.unMute && e.target.unMute();
+                                                    e.target.setVolume && e.target.setVolume(100);
                                                 } catch(_) {}
-                                                document.removeEventListener('pointerdown', unmuteHandler);
-                                                document.removeEventListener('touchstart', unmuteHandler);
-                                            };
-                                            document.addEventListener('pointerdown', unmuteHandler, { once: true, passive: true });
-                                            document.addEventListener('touchstart', unmuteHandler, { once: true, passive: true });
-                                        } catch (_) {}
+                                            }
+                                        } catch(_) {}
 
-                                        // apply preferred playback rate when available (defer small amount to ensure player ready)
+                                        const tryPlay = (attempt = 0) => {
+                                            try {
+                                                if (e && e.target) {
+                                                    try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
+                                                }
+                                                // verify play state after a short delay; retry a few times if not playing
+                                                setTimeout(() => {
+                                                    try {
+                                                        const stateYT = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
+                                                        if (stateYT !== 1 && attempt < 4) {
+                                                            tryPlay(attempt + 1);
+                                                        }
+                                                    } catch(_) {}
+                                                }, 600 + attempt * 300);
+                                            } catch(_) {}
+                                        };
+                                        tryPlay(0);
+
+                                        // Unmute on first user interaction to restore audio
+                                        const unmuteHandler = () => {
+                                            try {
+                                                if (player && player.ytPlayer) {
+                                                    try { player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
+                                                    try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
+                                                }
+                                            } catch(_) {}
+                                            document.removeEventListener('pointerdown', unmuteHandler);
+                                            document.removeEventListener('touchstart', unmuteHandler);
+                                        };
+                                        document.addEventListener('pointerdown', unmuteHandler, { once: true, passive: true });
+                                        document.addEventListener('touchstart', unmuteHandler, { once: true, passive: true });
+
+                                        // apply preferred playback rate when available (defer slightly)
                                         try {
                                             if (player && typeof player.preferredRate === 'number' && e.target.setPlaybackRate) {
                                                 setTimeout(() => {
@@ -5105,7 +5130,7 @@
 
                                         updatePlayBtns(false);
 
-                                        // restore saved progress if present (seek after ready)
+                                        // restore saved progress if present
                                         try {
                                             if (player && player.context && player.context.id) {
                                                 const prog = state.progress[player.context.id];
@@ -5134,35 +5159,18 @@
                                             }
                                             // manage skip-intro visibility while playing YouTube
                                             try { if (typeof player.updateSkipIntroVisibility === 'function') player.updateSkipIntroVisibility(cur); } catch(_) {}
-                                            // persist progress periodically (now every 500ms)
+                                            // persist progress periodically
                                             if (this.context && this.context.id && typeof cur === 'number' && !isNaN(cur)) {
                                                 state.progress[this.context.id] = { time: cur, duration: this.ytPlayer.getDuration() || 0, timestamp: Date.now() };
                                                 if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
                                                 saveProgressData();
                                             }
                                         }, 500);
-
-                                        // Ensure the iframe created by YT has PiP & autoplay allow attributes (some browsers require it)
-                                        setTimeout(() => {
-                                            try {
-                                                const iframeNode = document.querySelector('#yt-player iframe');
-                                                if (iframeNode) {
-                                                    const allow = (iframeNode.getAttribute('allow') || '');
-                                                    const needed = ['picture-in-picture', 'autoplay', 'fullscreen'];
-                                                    let combined = allow;
-                                                    needed.forEach(flag => { if (!new RegExp(flag, 'i').test(combined)) combined += '; ' + flag; });
-                                                    iframeNode.setAttribute('allow', combined.replace(/;;+/g,';'));
-                                                    iframeNode.setAttribute('allowfullscreen', '');
-                                                }
-                                            } catch(_) {}
-                                        }, 500);
                                     },
                                     onStateChange: (e) => {
                                         // map YT states: 1 playing, 2 paused, 0 ended
                                         if (e.data === YT.PlayerState.PLAYING) {
-                                            // If the player started muted for autoplay, restore volume icon state.
                                             updatePlayBtns(false);
-                                            // playback confirmed — cancel load watchdog if active
                                             try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
                                         }
                                         if (e.data === YT.PlayerState.PAUSED) updatePlayBtns(true);
@@ -5275,19 +5283,53 @@
 
                             // Attempt to play immediately; if blocked by autoplay policy, mute and retry, but tell the user.
                             (async () => {
-                                try {
-                                    await this.vid.play();
-                                } catch (err) {
+                                // Try to start audible playback using several fallbacks:
+                                // 1) direct play()
+                                // 2) resume AudioContext and retry play()
+                                // 3) muted fallback only as last resort (but we won't rely on it)
+                                const tryPlayUnmuted = async (attempt = 0) => {
                                     try {
-                                        // If autoplay with sound is blocked, try a muted autoplay fallback to start playback reliably,
-                                        // then ask the user to unmute (we unmute on first interaction).
-                                        this.vid.muted = true;
-                                        await this.vid.play().catch(()=>{});
-                                        showToast('Reprodução iniciada em modo silencioso. Toque para ativar o áudio.', 2800);
-                                    } catch (_) {
-                                        // Last-resort: inform user to interact
-                                        try { showToast('Toque na tela para ativar o áudio', 2800); } catch(_) {}
+                                        // ensure playsInline & autoplay hints are present
+                                        try { this.vid.playsInline = true; this.vid.setAttribute && this.vid.setAttribute('playsinline',''); } catch(_) {}
+                                        // attempt to play normally (unmuted)
+                                        this.vid.muted = false;
+                                        const p = this.vid.play();
+                                        if (p && typeof p.then === 'function') {
+                                            await p;
+                                        }
+                                        return true;
+                                    } catch (e) {
+                                        // attempt to resume Web Audio context (some browsers allow audio after AC resume on user gesture)
+                                        try {
+                                            if (window.AudioContext || window.webkitAudioContext) {
+                                                const C = window.AudioContext || window.webkitAudioContext;
+                                                if (!window.__lumina_audio_ctx) window.__lumina_audio_ctx = new C();
+                                                try { await window.__lumina_audio_ctx.resume(); } catch(_) {}
+                                            }
+                                        } catch(_) {}
+                                        // small exponential backoff retry a few times
+                                        if (attempt < 3) {
+                                            await new Promise(r => setTimeout(r, 300 + attempt * 250));
+                                            return tryPlayUnmuted(attempt + 1);
+                                        }
+                                        return false;
                                     }
+                                };
+
+                                try {
+                                    const ok = await tryPlayUnmuted(0);
+                                    if (!ok) {
+                                        // last-resort: attempt muted autoplay only to get playback started, but notify user we prefer audible playback
+                                        try {
+                                            this.vid.muted = true;
+                                            await this.vid.play().catch(()=>{});
+                                            showToast('Reprodução iniciada; toque na tela para ativar o áudio.', 3000);
+                                        } catch (_) {
+                                            try { showToast('Toque na tela para ativar o áudio', 2800); } catch(_) {}
+                                        }
+                                    }
+                                } catch (_) {
+                                    try { showToast('Toque na tela para ativar o áudio', 2800); } catch(_) {}
                                 }
                             })();
 
@@ -8123,4 +8165,74 @@
                     if (modal && !modal.classList.contains('hidden')) window.closeLegal();
                 }
             });
+        })();
+
+        // Runtime unmute enforcement: ensure no playback instance remains muted (native video or YouTube iframe)
+        (function(){
+            // Try to unmute any player as soon as it appears, and again briefly after initialization.
+            function ensureUnmuted() {
+                try {
+                    // Native video element used by Lumina player
+                    const vid = (window.player && window.player.vid) ? window.player.vid : document.querySelector('#main-video');
+                    if (vid) {
+                        try {
+                            // If browser forbids autoplay with sound, do not force-enabled audio; but ensure muted flag is false
+                            if (vid.muted) vid.muted = false;
+                            // restore a reasonable default volume if at zero
+                            if (typeof vid.volume === 'number' && vid.volume === 0) vid.volume = 1;
+                        } catch(_) {}
+                    }
+
+                    // YouTube API player: unmute via API when available
+                    try {
+                        if (window.player && window.player.isYouTube && window.player.ytPlayer) {
+                            const ytp = window.player.ytPlayer;
+                            try { if (typeof ytp.unMute === 'function') ytp.unMute(); } catch(_) {}
+                            try { if (typeof ytp.setVolume === 'function') ytp.setVolume(100); } catch(_) {}
+                        } else {
+                            // If YT iframe exists, attempt to set allow attributes and unmute via postMessage when possible
+                            const ytIframe = document.querySelector('#yt-player iframe, #player-media-wrapper iframe[src*="youtube.com"]');
+                            if (ytIframe) {
+                                try {
+                                    // request that the iframe include autoplay/playsinline and picture-in-picture allowances
+                                    const allow = (ytIframe.getAttribute('allow') || '');
+                                    if (!/autoplay/i.test(allow) || !/playsinline/i.test(allow)) {
+                                        ytIframe.setAttribute('allow', (allow + '; autoplay; playsinline; picture-in-picture; fullscreen').replace(/;;+/g,';'));
+                                    }
+                                } catch(_) {}
+                            }
+                        }
+                    } catch(_) {}
+                } catch(_) {}
+            }
+
+            // Run immediately and several times shortly after load to catch late-initialized players
+            try {
+                ensureUnmuted();
+                // schedule retries to catch players created a bit later
+                setTimeout(ensureUnmuted, 300);
+                setTimeout(ensureUnmuted, 1200);
+                setTimeout(ensureUnmuted, 4200);
+            } catch(_) {}
+
+            // Also react to DOM mutations for dynamic player insertion: unmute when relevant nodes appear
+            try {
+                const mo = new MutationObserver((mutations) => {
+                    for (const m of mutations) {
+                        if (m.addedNodes && m.addedNodes.length) {
+                            for (const n of m.addedNodes) {
+                                try {
+                                    if (n && n.nodeType === 1) {
+                                        const tag = (n.tagName || '').toLowerCase();
+                                        if (tag === 'video' || tag === 'iframe' || n.id === 'yt-player' || n.id === 'main-video' || n.querySelector && (n.querySelector('video') || n.querySelector('iframe'))) {
+                                            try { ensureUnmuted(); } catch(_) {}
+                                        }
+                                    }
+                                } catch(_) {}
+                            }
+                        }
+                    }
+                });
+                mo.observe(document.body, { childList: true, subtree: true });
+            } catch(_) {}
         })();
