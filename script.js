@@ -891,7 +891,7 @@
                 distributor: 'Sony Pictures',
                 production: 'Sony Pictures Animation / Columbia Pictures',
                 tags: ['Animação','Família','Comédia'],
-                url: 'https://player.odycdn.com/v6/streams/8f8f33593f3cb3c20498598c8be45ceb706e85aa/68079c.mp4'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/dj7a5jt24iei1qmadj0s9/ht.mp4?rlkey=28fqpr95vvpx3niifvwsyaec9&st=lzm5zcyy'
             },
             {
                 id: 'matilda-1996',
@@ -2050,22 +2050,22 @@
                 year: '2026',
                 cover: 'https://occ-0-8407-2219.1.nflxso.net/dnm/api/v6/E8vDc_W8CLv7-yMQu8KMEC7Rrr8/AAAABWQ_ri6RwPcHL4-qPFUvmkiFE0f7qOrAB35_xs7pyOi9wuX9qk0oPcs2mDaDt1LvVHmXY63y-oMbPzYEXixG8AoftD5atVcpvMpj.jpg?r=1a5',
                 description: 'Em Hawkins, no inverno de 1985, os heróis de Stranger Things voltam a enfrentar novos mistérios e criaturas estranhas depois que algo terrível desperta sob a neve.',
-                ageRating: 'A10',
+                ageRating: '10',
                 distributor: 'Netflix',
                 producer: 'Produzida e executiva com participação dos Duffer Brothers; showrunner Eric Robles',
                 tags: ['Animação','Ficção científica'],
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: 'Episódio 1', url: '' },
-                        { id: 's1-e2', title: 'Episódio 2', url: '' },
-                        { id: 's1-e3', title: 'Episódio 3', url: '' },
-                        { id: 's1-e4', title: 'Episódio 4', url: '' },
-                        { id: 's1-e5', title: 'Episódio 5', url: '' },
-                        { id: 's1-e6', title: 'Episódio 6', url: '' },
-                        { id: 's1-e7', title: 'Episódio 7', url: '' },
-                        { id: 's1-e8', title: 'Episódio 8', url: '' },
-                        { id: 's1-e9', title: 'Episódio 9', url: '' },
-                        { id: 's1-e10', title: 'Episódio 10', url: '' }
+                        { id: 's1-e1', title: 'Bem-vinda a Hawkins, novata', url: 'https://dl.dropboxusercontent.com/scl/fi/rnn895rw3wl23esqp2ew3/01.mp4?rlkey=x910iix2m08ewlm9zwnhifn0i&st=vat9uoed', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABXH6CRwzQMLK3i9SgY1LMrZJRqea6AV5ywtLYGRsmltSrfUrNEFey1KTWZmivYoONmcMxh-RR4rYdfWPayKELXI05VbFIWxzzHOmolvdfNt_tO25CItzgihA8jGJ8w.jpg?r=ce0' },
+                        { id: 's1-e2', title: 'Colheita ruim', url: 'https://dl.dropboxusercontent.com/scl/fi/qw38ftyevhql15ys8b7n4/02.mp4?rlkey=jmgrumq48syzt1j7bxrsh21a8&st=rr7pdmco', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABXRQ1wgZZ7mxOmt3O3rQq5KK8vqhA_T-NJXk5DwZ9P_pGuMMpWxF18K_LU95jVRdtL0MiAPgZbV9lH2EaSW6ZOSYr3uW1Nxr58lPgGeBBt97-SOIBVeVsYCDa7cW5Q.jpg?r=d88' },
+                        { id: 's1-e3', title: 'Evolução', url: 'https://dl.dropboxusercontent.com/scl/fi/qzmu13xecntcn85ooy4pk/03.mp4?rlkey=0v5wlpf6q0hm6vvjco909q06b&st=m17stmre', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABW-vzQ85rkriTxOK88AKhYP1ddCSEFR1C5hZWxdNoZ8GK-iu52OLuDiYiynkfbr2k3QiNV-ZhwGrJvOwEeqXd60Shh1DxH0bdV3epzIHh9IfbxwIAAzB-NxSebDnxg.jpg?r=108' },
+                        { id: 's1-e4', title: 'A confissão', url: 'https://dl.dropboxusercontent.com/scl/fi/3rgbyq6odf9w7p583qr62/04.mp4?rlkey=fb5vr20sz79ewi9w6dlnw7dyx&st=8bph49ye', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABbP44j9MoE2x_R9AoBfR2lEvDSghlX4tpE3ajZ5dsunLb1N_bRa4kdiXCLsj3bHacmHmNiPBpotTH_ZZ2dj0alqzts6S9MTMq9HzJjrPRmbsf5MhWUrSej9d-h33cQ.jpg?r=2da' },
+                        { id: 's1-e5', title: 'Tabloide', url: 'https://dl.dropboxusercontent.com/scl/fi/hzmglps7qlq8m4q88ld8p/05.mp4?rlkey=azjdh932vtd0sm87qvjoix80y&st=hlojeb70', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABYWN2vEydanIzJWJ0AS0YmM4NCbcAtMAgtUb8upS8zVXe3D4pW-fxzccvXsFZ2Vcr-owx_5fA1STcWGiqnc0Xc2BE6OmYVgqZHBnutwq.jpg?r=cbb' },
+                        { id: 's1-e6', title: 'Tempestade a caminho', url: 'https://dl.dropboxusercontent.com/scl/fi/n8d100nghpp3t4dn2v1g8/06.mp4?rlkey=os14of5ffpdw0a0zaxh66wsqd&st=7lbetrce', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABRXxLATDwsX3JHk5Fi0pUcn3ppBuQzlG6zRN3czueSc9DsUSac9aoH9NMqO-BVuTbLxGEYPCCFPAw_hKHhJGYsd-EZ6MKOjidIViIatV_HE9QirYmECT67P43c1PqA.jpg?r=a44' },
+                        { id: 's1-e7', title: 'No meio da tempestade', url: 'https://dl.dropboxusercontent.com/scl/fi/28zqzo48m7vpl56kwqi85/07.mp4?rlkey=x8h0rzh8vgqqp17sr3tvh6lf9&st=d4yf6fxs', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABVtPu9hs62BIVqRNQECL6r1q7CsOrM1aDyqzSiiQJfNmK_wP2br1XMCAWVqujPzzeMvQ3c3zCH9qJwfoRa9ahabvBVjDYnrKBsM8-lr-vIETelMwo08zSevW90w8Ew.jpg?r=f52' },
+                        { id: 's1-e8', title: 'A festa', url: 'https://dl.dropboxusercontent.com/scl/fi/ggn9trygk1zdjm1xikw7e/08.mp4?rlkey=fygfula0dj9ruuiw9k1heh1w3&st=7dvdicn6', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABdfpAFqPUAaJEsMmWahOp1OstjaDgVbipNwc6DrEvczhjCB-TG4kGVho8wouOSae6ZL89d_JO46_vChgIa0vf4Z1O9-tBQ2W0PCPkyS6SrYkm-E9baSpSN_sRdq2Iw.jpg?r=23d' },
+                        { id: 's1-e9', title: 'Pessoa suspeita', url: 'https://dl.dropboxusercontent.com/scl/fi/h67rzd4b8o28o8h7fzjdk/09.mp4?rlkey=qcf98ldpq05dtsk4ky4xvlh32&st=eo9ss1hb', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABTsJmGTXZAIjOWvhxJEW2ai-ZgpkF2RWfJa2YwqwETHgtMlGvGcq7ENiBvwQfsM1x3ETs4VxY6Vfj3YsFPD3vNti17CY9nvNLzO7G5ROfINi_C0u9Gmu4WnJnnOO0Q.jpg?r=57d' },
+                        { id: 's1-e10', title: 'Contagem regressiva', url: 'https://dl.dropboxusercontent.com/scl/fi/gefjuuxgebonylipho7tn/10.mp4?rlkey=fse5jvzd2j1mbc1c41hp665t7&st=7tiohffn', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABdaUvfdyucR0pSKocFiY9FgCwgMHRLzX5MYDu118AiABdSOweNurRTNrLhMgqZae_g9yuBQenY9EsfF28n8fY0ZLqx4TMv7C7RZLImuAQ28dY6al3ymzml9a0zaekQ.jpg?r=8d9' }
                     ]
                 }
             },
@@ -5105,19 +5105,9 @@
                                         };
                                         tryPlay(0);
 
-                                        // Unmute on first user interaction to restore audio
-                                        const unmuteHandler = () => {
-                                            try {
-                                                if (player && player.ytPlayer) {
-                                                    try { player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
-                                                    try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
-                                                }
-                                            } catch(_) {}
-                                            document.removeEventListener('pointerdown', unmuteHandler);
-                                            document.removeEventListener('touchstart', unmuteHandler);
-                                        };
-                                        document.addEventListener('pointerdown', unmuteHandler, { once: true, passive: true });
-                                        document.addEventListener('touchstart', unmuteHandler, { once: true, passive: true });
+                                        // Try to ensure YouTube plays with audio enabled immediately (best-effort)
+                                        try { player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
+                                        try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
 
                                         // apply preferred playback rate when available (defer slightly)
                                         try {
