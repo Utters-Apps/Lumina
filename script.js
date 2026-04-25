@@ -603,7 +603,7 @@
                         { id: 's6-e16', title: 'Noe', url: 'https://player.odycdn.com/v6/streams/9cede011109fb452793f589640917b00cfa1e9a3/685cbb.mp4' },
                         { id: 's6-e17', title: 'A Fada dos Belos Sonhos', url: 'https://player.odycdn.com/api/v3/streams/free/fada/614b08606d6740eed5ae9d4a44fb26f2530c8f32/c19857.mp4' },
                         { id: 's6-e18', title: 'Os Quebra-Catástrofes', url: '' },
-                        { id: 's6-e19', title: 'Regeneração', url: '' },
+                        { id: 's6-e19', title: 'Rigina Razione', url: 'https://player.odycdn.com/v6/streams/aa650c9a5a852b4f8f2677c8d581bf445871b8ac/b2994e.mp4' },
                         { id: 's6-e20', title: 'Inverte-Corações', url: 'https://player.odycdn.com/api/v3/streams/free/620/e7f6bbce288ba2c42e3ae265cbd91bfba775d3a9/ceef00.mp4' },
                         { id: 's6-e21', title: 'Os Titãs da Corrente', url: '' },
                         { id: 's6-e22', title: 'Lady Caos', url: 'https://player.odycdn.com/v6/streams/ee96b5a8415de70a7cf768194c3bfac413970d13/e5d2d3.mp4' },
