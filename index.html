@@ -1064,19 +1064,58 @@
     <!-- PWA: register service worker -->
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                // Try both absolute and relative service-worker paths to increase compatibility across hosts/serving setups.
+            // Register service worker with a resilient flow and periodic update checks to keep PWA assets fresh.
+            async function registerSW() {
                 try {
-                    const reg = await navigator.serviceWorker.register('/sw.js');
-                    console.log('SW registered (absolute):', reg.scope);
-                } catch (errAbs) {
-                    console.warn('SW registration for "/sw.js" failed:', errAbs);
+                    // Try absolute path first, fallback to relative.
+                    let registration = null;
                     try {
-                        const regRel = await navigator.serviceWorker.register('sw.js');
-                        console.log('SW registered (relative):', regRel.scope);
-                    } catch (errRel) {
-                        console.warn('SW registration for "sw.js" failed:', errRel);
+                        registration = await navigator.serviceWorker.register('/sw.js');
+                        console.log('SW registered (absolute):', registration.scope);
+                    } catch (errAbs) {
+                        console.warn('SW registration for "/sw.js" failed:', errAbs);
+                        try {
+                            registration = await navigator.serviceWorker.register('sw.js');
+                            console.log('SW registered (relative):', registration.scope);
+                        } catch (errRel) {
+                            console.warn('SW registration for "sw.js" failed:', errRel);
+                        }
                     }
+
+                    if (!registration) return;
+
+                    // Claim clients ASAP so the SW controls pages without requiring a reload.
+                    try { await navigator.serviceWorker.ready; await registration.update(); await registration.active?.postMessage?.({ type: 'SW_INIT' }); } catch (_) {}
+
+                    try { await registration.update(); } catch (_) {}
+
+                    // Periodic update check: every 6 hours try to update the SW (keeps caches fresh on mobile PWAs).
+                    const UPDATE_INTERVAL = 6 * 60 * 60 * 1000;
+                    setInterval(() => {
+                        try { registration.update(); } catch (_) {}
+                    }, UPDATE_INTERVAL);
+
+                    // Also listen for a message from the SW to skip waiting if needed
+                    navigator.serviceWorker.addEventListener('message', (ev) => {
+                        try {
+                            if (!ev.data) return;
+                            if (ev.data.type === 'SKIP_WAITING_ACK') {
+                                console.log('SW requested skipWaiting acknowledged');
+                            }
+                        } catch (_) {}
+                    });
+                } catch (e) {
+                    console.warn('Service worker registration failed:', e);
+                }
+            }
+
+            // Register on load but keep it resilient to errors and timeouts
+            window.addEventListener('load', () => {
+                try {
+                    registerSW();
+                } catch (e) {
+                    // swallow so page still loads normally
+                    console.warn('registerSW threw', e);
                 }
             });
         }
