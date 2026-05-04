@@ -42,8 +42,13 @@ const PRECACHE_URLS = [
 // resources considered "static" for stale-while-revalidate
 const STATIC_EXT = /\.(?:js|css|png|jpg|jpeg|webp|svg|gif|woff2?|ttf|ico)$/i;
 
-// resources considered "media" (prefer network)
-const MEDIA_HOSTS = ['dl.dropboxusercontent.com', 'player.odycdn.com', 'drive.google.com', 'odycdn.com', 'tokyvideo.com', 'playerflixapi.com'];
+/*
+ * Media detection: prefer network-first streaming with Range support for:
+ * - Known media CDN hosts (Dropbox, Odycdn, Drive, etc.)
+ * - Any request that looks like a direct media file (.mp4, .webm, .m3u8, .mov, .ogg)
+ * This improves mobile playback and seeking for CDN-hosted videos and tokenized links.
+ */
+const MEDIA_HOSTS = ['dl.dropboxusercontent.com', 'player.odycdn.com', 'drive.google.com', 'odycdn.com', 'tokyvideo.com', 'playerflixapi.com', 'player.odycdn.com', 'blogger.com'];
 
 // Install: pre-cache core shell
 self.addEventListener('install', (event) => {
@@ -177,29 +182,16 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Media / CDN hosts -> network-first, with Range-aware handler for streaming/ranged requests
-  const isMediaHost = MEDIA_HOSTS.some(h => url.hostname.includes(h));
-
-  // Treat query-containing URLs cautiously: many media CDNs use query params for tokens; prefer handling when host matches media list.
-  // If request targets a known media host (Dropbox, Odycdn, drive.google, etc.) use a range-capable network-first handler to allow
-  // byte-range streaming for mobile players (important for .mp4 dropbox links). For other cross-origin query URLs, fallback to letting
-  // the browser handle them directly to avoid breaking non-media endpoints.
+  // Determine if the request targets media we should handle specially.
   const hasQuery = Boolean(url.search);
   const looksLikeMediaExt = /\.(mp4|webm|m3u8|mov|ogg)$/i.test(url.pathname) || /\.(mp4|webm|m3u8|mov|ogg)$/i.test((url.pathname + (url.search || '')));
+  const isMediaHost = MEDIA_HOSTS.some(h => url.hostname.includes(h));
+  const isMediaRequest = isMediaHost || looksLikeMediaExt;
 
-  if (isMediaHost) {
-    // For known media hosts we intercept and use a Range-aware network-first strategy so mobile players can seek/stream reliably.
+  // For known media hosts or direct media file requests (e.g. .mp4/.m3u8), use a Range-aware network-first strategy so mobile players can seek/stream reliably.
+  if (isMediaRequest) {
     event.respondWith(networkFirstRange(req));
     return;
-  }
-
-  // If the URL has query tokens and looks like a media file but host isn't recognized, attempt Range-aware fetch as best-effort.
-  if (!isMediaHost && hasQuery && looksLikeMediaExt) {
-    try {
-      event.respondWith(networkFirstRange(req));
-      return;
-    } catch (e) {
-      // fall through to default handling below on error
-    }
   }
 
   // Default: try cache, then network, then precache fallback
