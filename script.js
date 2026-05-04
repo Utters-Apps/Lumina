@@ -227,7 +227,7 @@
                 nextEpisodeTrigger: 30,
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", primaryUrl: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", introStart: 173, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197007939691/NLAS_SCHOOLSPIRITS_101_2173358_1920x1080.jpg" },
+                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", primaryUrl: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", introStart: 173, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197007939691/NLAS_SCHOOLSPIRITS_101_2173358_1920x1080.jpg" },
                         { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://dl.dropboxusercontent.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os", introStart: 230, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197289539935/NLAS_SCHOOLSPIRITS_102_2173900_1920x1080.jpg" },
                         { id: 's1-e3', title: "Morta e Confusa", url: "https://dl.dropboxusercontent.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux", introStart: 109, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197336643939/NLAS_SCHOOLSPIRITS_103_2174052_1920x1080.jpg" },
                         { id: 's1-e4', title: "Intenções Mórbidas", url: "https://dl.dropboxusercontent.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc", introStart: 119, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197010499856/NLAS_SCHOOLSPIRITS_104_2173371_1920x1080.jpg" },
@@ -2169,61 +2169,92 @@
                 tags: ['Animação','Família','Fantasia'],
                 nextEpisodeTrigger: 11,
                 seasons: {
-                    1: [
-                        { title: 'O Brilho da Pedra', url: 'https://player.odycdn.com/v6/streams/1165ece2ea824ce9f81c8b3d09384c71faaf7bd8/ca0c8f.mp4' },
-                        { title: 'O Canhão de Laser', url: 'https://player.odycdn.com/v6/streams/8934246c3cead3701563a5b86a9294109b49b6c0/a355be.mp4' },
-                        { title: 'A Mochila Cheeseburger', url: 'https://player.odycdn.com/v6/streams/e444dcf1713d3015aa405b2d055580d4f737680a/521311.mp4' },
-                        { title: 'O Café da Manhã', url: 'https://player.odycdn.com/v6/streams/743a20c28c26a85eb3ecbe050b583da830cafefb/a2a882.mp4' },
-                        { title: 'Frybo', url: 'https://player.odycdn.com/v6/streams/bd0ba78816a572a1efcaf1fc8ad53da7cc798fa8/11bf6d.mp4' },
-                        { title: 'Dedos de Gato', url: 'https://player.odycdn.com/v6/streams/e4778b5da100414440f2c128f2299761cd078f86/1ab886.mp4' },
-                        { title: 'Amigos de Bolha', url: 'https://player.odycdn.com/v6/streams/817a24a808649087e60d72935c83dc1ad3ac8a11/ae6427.mp4' },
-                        { title: 'Steven Muito Sério', url: 'https://player.odycdn.com/v6/streams/ef198344286ed1990d7c5e05085a9ccecad9f6d0/28eee7.mp4' },
-                        { title: 'Tigre Milionário', url: 'https://player.odycdn.com/v6/streams/d8aad6fd72884c4a8d65fd28f23d19c5dbd4cb07/872dbb.mp4' },
-                        { title: 'O Leão de Steven', url: 'https://player.odycdn.com/v6/streams/af95c3b6fa717d6991260e3fb8a19bf573a80013/0c0f6c.mp4' },
-                        { title: 'Jogos Eletrônicos', url: 'https://player.odycdn.com/v6/streams/ee8b5bce8bc881bebb7e147956bd7292b176aa48/f35a1c.mp4' },
-                        { title: 'A Mulher Gigante', url: 'https://player.odycdn.com/v6/streams/65e25df72fe31f2a76f72cb950b590579861051a/5c854a.mp4' },
-                        { title: 'Tantos Aniversários', url: 'https://player.odycdn.com/v6/streams/1a39812cae1a26b0265ff6499f388a217739d973/222c5e.mp4' },
-                        { title: 'Lars e os Descolados', url: 'https://player.odycdn.com/v6/streams/ec94d09cfdbddfffe9cc9ec3b20d922e0ffb4716/9e5201.mp4' },
-                        { title: 'Negociando com o Cebola', url: 'https://player.odycdn.com/v6/streams/2a5b064cb761d8dd4fe018d0804f2dddc9a9e27c/d7423c.mp4', primaryUrl: 'https://player.odycdn.com/v6/streams/2a5b064cb761d8dd4fe018d0804f2dddc9a9e27c/d7423c.mp4' },
-                        { title: 'Samurai Steven' },
-                        { title: 'Leão 2: O Filme' },
-                        { title: 'Um Dia na Praia' },
-                        { title: 'O Quarto de Rose' },
-                        { title: 'Treinador Steven' },
-                        { title: 'A Vítima da Pegadinha' },
-                        { title: 'Steven e os Stevens' },
-                        { title: 'Amigo Monstro' },
-                        { title: 'Um Beijo Indireto' },
-                        { title: 'Espelho Gem (Parte 1)' },
-                        { title: 'Gem Oceano (Parte 2)' },
-                        { title: 'O Hóspede (Parte 3)' },
-                        { title: 'Corrida Espacial' },
-                        { title: 'Equipe Secreta' },
-                        { title: 'Aventura na Ilha' },
-                        { title: 'O Estranho Mundo de Beach City' },
-                        { title: 'Jantar em Família' },
-                        { title: 'O Universo de Garnet' },
-                        { title: 'Steven Melancia' },
-                        { title: 'Leão 3: Direto pro Vídeo' },
-                        { title: 'Transportadores' },
-                        { title: 'Juntos e Sozinhos' },
-                        { title: 'O Teste' },
-                        { title: 'Visão do Futuro' },
-                        { title: 'Sem Destino' },
-                        { title: 'Clube de Horror' },
-                        { title: 'Previsão do Tempo: Inverno' },
-                        { title: 'Capacidade Máxima' },
-                        { title: 'Ataque de Mármore' },
-                        { title: 'A Espada de Rose' },
-                        { title: 'Livro Aberto' },
-                        { title: 'O Clube da Camiseta' },
-                        { title: 'Uma História para Steven' },
-                        { title: 'A Mensagem' },
-                        { title: 'Poder Político' },
-                        { title: 'O Retorno (Parte 1)' },
-                        { title: 'Libertador (Parte 2)' }
-                    ]
-                }
+    1: [
+        { title: 'O Brilho da Pedra', url: 'https://dl.dropboxusercontent.com/scl/fi/nv5akb8k55z00wjndfl5f/Su1.mp4?rlkey=jvbx8g8vyxl9br51915xmuwba&st=7qp4dy0r' },
+        { title: 'O Canhão de Laser', url: 'https://dl.dropboxusercontent.com/scl/fi/06da5iyisegd1rrgt1zhu/Su2.mp4?rlkey=bf89l6kd80g4s8msjv9zko193&st=wylefa56' },
+        { title: 'A Mochila Cheeseburger', url: 'https://dl.dropboxusercontent.com/scl/fi/28zr7r9zr3f0rep47qfys/Su3.mp4?rlkey=cf2s4xajkt8du8ihijx7rw9g0&st=3qo9vqnh' },
+        { title: 'O Café da Manhã', url: 'https://dl.dropboxusercontent.com/scl/fi/s83tr3hjapfoheevius54/Su4.mp4?rlkey=m8tmlhxe8h6g2r0icklfzmz8u&st=7bopa6g4' },
+        { title: 'Frybo', url: 'https://dl.dropboxusercontent.com/scl/fi/8oekryuyi3w3blb8xcplm/Su5.mp4?rlkey=bznhtjbmn6wuv45nax2u224tk&st=0ut6iacb' },
+        { title: 'Dedos de Gato', url: 'https://dl.dropboxusercontent.com/scl/fi/1n84ur0maa9shvz8u1b01/Su6.mp4?rlkey=a5z72881gyquyqc89gf2u36p6&st=pcetqq2i' },
+        { title: 'Amigos de Bolha', url: 'https://dl.dropboxusercontent.com/scl/fi/0isfl2kkd7p8blca9h7dc/Su7.mp4?rlkey=sq7kpsi5c9a033unxg046whfs&st=8dd5wacx' },
+        { title: 'Steven Muito Sério', url: 'https://dl.dropboxusercontent.com/scl/fi/j7uilwkylkcyhwzqcoyif/Su8.mp4?rlkey=jsfcgawfis1ltuesttnuja3xc&st=qddz98rl' },
+        { title: 'Tigre Milionário', url: 'https://dl.dropboxusercontent.com/scl/fi/0rpfygowa6mmkw5ktqitx/Su9.mp4?rlkey=271dy4eo0ohotjruf8r3z4fy4&st=k5eanzgp' },
+        { title: 'O Leão de Steven', url: 'https://dl.dropboxusercontent.com/scl/fi/ckfn1m6h3crx67cxci28n/Su10.mp4?rlkey=i0maf53gz2ou36414w59oycqe&st=oslfo1iv' },
+        { title: 'Jogos Eletrônicos', url: 'https://dl.dropboxusercontent.com/scl/fi/fclp7270gpwkiqjcvpwop/Su11.mp4?rlkey=8dcnh5yecgk56vv9f4ftcfmm3&st=88ov8r5l' },
+        { title: 'A Mulher Gigante', url: 'https://dl.dropboxusercontent.com/scl/fi/scvpqxf61ki6w5qidqvff/Su12.mp4?rlkey=kddvvtnm0183hxzg6zpzu8b3n&st=egr9a4q0' },
+        { title: 'Tantos Aniversários', url: 'https://dl.dropboxusercontent.com/scl/fi/tqq7um42tj93h9c4pouzg/Su13.mp4?rlkey=qscvno3lml31ovf7yormffgt8&st=x2256e2e' },
+        { title: 'Lars e os Descolados', url: 'https://dl.dropboxusercontent.com/scl/fi/nzpg3zivgklcdfl6n6cov/Su14.mp4?rlkey=2lx6arw2wjgphiv10z3u56sc8&st=6ua92dak' },
+        { title: 'Negociando com o Cebola', url: 'https://dl.dropboxusercontent.com/scl/fi/jyprgs872lp1hs2rqfbew/Su15.mp4?rlkey=0hrp8yzk6un0nmzd98mkb223o&st=3nat5env' },
+
+        { title: 'Samurai Steven', url: 'https://www.blogger.com/video.g?token=AD6v5dzKXCDHtenDVyTnK2v8ziaOuVrsgjE6ENQ1COfbHNqpuuZwoQYoJY1s9XH63jhwIykT0EZNRZWevvE1ZnUJ8BKaiUwUQ8RVetPGdxHyyJG9RvCvEqAwmsL3nrEBv42LxaPNpY-h' },
+        { title: 'Leão 2: O Filme', url: 'https://www.blogger.com/video.g?token=AD6v5dzHpedQ1Qy3I7HzIN-XIj4AoJYYZGIwSLWL0BTjJr30FgQRd11AyPBIHtVAxnZVqjeaoT_mS5P1WdNmFUWxVYO4dswxaNzHINkMLCm0JwO3hVm87RyPX26Ty4iBUPcaBbviEWKm' },
+        { title: 'Um Dia na Praia', url: 'https://www.blogger.com/video.g?token=AD6v5dwdqNLpU3ppX-zvrUR-2mx5SXGxtos8Bx_HD3eLPhwwSFa6LJsfTzv0UlN5FYws8YnBNoUCy0bgp_T8_SxptF3ynZaLawVfsXQoEWkrIcgpp8MVmF6SIhWjF5YQZkLqvmXzs6yJ' },
+        { title: 'O Quarto de Rose', url: 'https://www.blogger.com/video.g?token=AD6v5dwUHGbhErpEy82AdApSJbISVdNnPwCxFIzZEZSPhrY6huGUCERFR2JVVwET9zCbiACnfE924xm79Da1tcN3z-vSD_VQ58NQ37RW1QZMUr9dOki3uq4LLVcMYc9rpG92eGuCag' },
+        { title: 'Treinador Steven', url: 'https://www.blogger.com/video.g?token=AD6v5dyKtcd88ViVAuzLkvEV3Zx827K7JkzMyTiC10HOKsx_dyjb4jHRhpmDdNA1FJr4BOKxUlmk8Hg9efduPgmo9PCc3EJSSE6v7UjA99CShNeonZ6w7ZjUTAKOfCKHOaewPE79ETs' },
+
+        { title: 'A Vítima da Pegadinha', url: 'https://www.blogger.com/video.g?token=AD6v5dyIqmRuXgCcIDZsqzzLYA6OHUYvk9IX0s4Z2WGyQ9pByJKpFvfdSc0N4Wgn2Xh6s1iTEUwaxsvPzuf2VqP17VVicZqvMCMJDir5SUoeC5xXqr5ko3SuPh1eb9z3Jr87VNuA0kuk' },
+        { title: 'Steven e os Stevens', url: 'https://www.blogger.com/video.g?token=AD6v5dyciwZ75qCy0OgWOQEV-oqtumo1MKV_GimagcPTURd3IC9124FA9kSf4DEU8i6iVbMvuhgLPNIzHn_UmaCPe536_-TG6xvhEm-irK8GBAbqoy1ZFh8gu0ZeNEfxjo2bECwHmFw' },
+        { title: 'Amigo Monstro', url: 'https://www.blogger.com/video.g?token=AD6v5dyKK0v-psk7xBFmZUBXgWCOR25x9Ne3iNZBPNSkHfBAeg0vO7Bn_2cnIdd1iWh6ozQaIBN-5gYDJB0cQZTc12TBFSBMlVLdpjhBLqpsOvzry3dwY6Kl4OpE5ZiFPF6Y-bHHvZ7Y' },
+
+        { title: 'Um Beijo Indireto', url: 'https://www.blogger.com/video.g?token=AD6v5dzIV2Us5uNwYrNn_a7gtD8X3D1l2yEu0IgLaGcEgYb9RY3_-2Zd56j4rjtObUJRRax6-8tUGFV9lZHs9FPnC8vqesBmZLgOlOWSZUctru6R8-pKCcUB3fMZEDQ-rUmGghW9gH8' },
+
+        { title: 'Espelho Gem (Parte 1)', url: 'https://www.blogger.com/video.g?token=AD6v5dwvRvAPPS6wU_gJRNvacIJIZabHFeJTdv_fDGaQdo8efr296sSGKF3kwgkBiKq15oft5l2VhomFJXuWT-YD2Z5fmKBV6uXbzknAsNi9ElGIXiQYKOj0ZpajpTA996qjUY3PDuwG' },
+        { title: 'Gem Oceano (Parte 2)', url: 'https://www.blogger.com/video.g?token=AD6v5dzBYDSv7ORNY-e5eJjAx1XGlIFLtyiff-DhXMho03E7YBNGAUel67us6SxQCSn-LXmvmlzw_FCf7tuhKCBBGDA9H5eXHQuJwAwOERtCE9RyFCUuinS_R_5zufQjdsL40tzY5CpQ' },
+        { title: 'O Hóspede (Parte 3)', url: 'https://www.blogger.com/video.g?token=AD6v5dwDxZNHW-WMoeno_8tPzGY-1FwOEHFi09wSBVAd75hMrsLHDNXVmhwZkvkFhReOR-fBBfeyS3EapuRBAREw1MrYShT70168AdVk_bt95nIgJ8bWWe8KxtT0JR3wsXGjsTkhP2s0' },
+
+        { title: 'Corrida Espacial', url: 'https://www.blogger.com/video.g?token=AD6v5dwsUHEg69B2_WNGgJstJg94t9Fg8wjITeFU17HkF4Qtg1nQwlACsRqDnuAtH1qvH8yLoFdpyWxkEdgs6B0sQEh2M8dUIsuV7Z9vmnYUV1PlMcFT1mAAzuOeVZehKZ4XClNt08s' },
+
+        { title: 'Equipe Secreta', url: 'https://www.blogger.com/video.g?token=AD6v5dyrLzhbZNtpdMp6Xaa0ZyPzhWyl_AH_ZGy7BmAxRgHwCQwedVr99kVeZAu5n4tgXdgi9DwMp2kkpyD4tKbCYojAsK0Zoo9Lmz0S0mkgJ8Beffb5G5pNdWty_CHt01vigwHJfD8' },
+
+        { title: 'Aventura na Ilha', url: 'https://www.blogger.com/video.g?token=AD6v5dzZ5WgwPamtnX89y1HNmsC1i3PUy1uI-B9pGCkBRpWwErvQ365ekB5ACAD5b66ezrK82io5-u2JzuoMBBxo5fuebtNlH5AjsKmn-WX3YMYcIo-H7b5Bw4ODledZvQ_u8jCxbrUP' },
+
+        { title: 'O Estranho Mundo de Beach City', url: 'https://www.blogger.com/video.g?token=AD6v5dyQIeGUB8UNkBgNUBxCqQV9a7Fv5nZjLJ_PxB6-Ircy70HAzcSYEqin2RE6eVChAeiPOchCSbAiF5fyoVg65wN0MRWvTt86RG9etm2U-qkRQ4t_M2Iivi3rl3MT4hy0VeWVk2Ha' },
+
+        { title: 'Jantar em Família', url: 'https://www.blogger.com/video.g?token=AD6v5dyv374fRqIY3BPTLZ1L-GzRpYYQN4CebJl5yugTXf_pFRRoRFLwbksLiOAB4SrByrZJZpE8plrSFSu3wiER1-LgA4iYk0_XyftqUqh2XL5qCNc51j9ZWTs2YmX6slOYJGpQHuwO' },
+
+        { title: 'O Universo de Garnet', url: 'https://www.blogger.com/video.g?token=AD6v5dzKhGYvCAht5MKRIp_bEOVal03Ma08fjTPt96nIXfeu1U-GglAkdZRYwn99eZp75pa4PkSn5NOYooSuewuz0Cr11m0aQdAQl53ISnN_YHNWm54mijBfWaT9lA81pZEy8wHF_Dto' },
+
+        { title: 'Steven Melancia', url: 'https://www.blogger.com/video.g?token=AD6v5dzy79qTwAXt9fPrODwSfxmA9Y_9Gix5Kzp3WOSKOwITLIrpd1HiJE9RT08zN-f-HylacBS0VV1CMqD7v_GZ6p-WW_Jah0yb6MOgjv599RG8ZWRePSFoifGJE6wHCcMP_0jcEzk' },
+
+        { title: 'Leão 3: Direto pro Vídeo', url: 'https://www.blogger.com/video.g?token=AD6v5dycIDXYmxkcW7_8D2JCdc3-_3LSB_yocLxwr4WM0s1X8pI9r-hPLxV-6e7u1LKpaVK5XZtimfvZ92XuvYep6iNv0MYrTY85AzAj0MNFUfvlFO0TRaZMt5PupvwHxwN6BsXyNyKH' },
+
+        { title: 'Transportadores', url: 'https://www.blogger.com/video.g?token=AD6v5dzqN6OVNELCEeNBMOQm6oCpovdhME-njeNge122IL4GfFndrlgWWqo6o6Eh1vMKUVW_N1s9IUbd2vcPf3ChkhPx0yh-FKdUGR-5h94v2zFY_VI_-1YcvzjAnxiAwSI1BHzrl60' },
+
+        { title: 'Juntos e Sozinhos', url: 'https://www.blogger.com/video.g?token=AD6v5dyRe6bA6654Qlj8Cpy2JuUsGezbFDpc_A17siV4nJiWnAB5Sk2HJ1sAK_alO_pGQRHTigpfNMA8GNRP4wSLmi5fhv_BjWpEuxM3YG2S7Rs2FeJMStq_rxHjYNmP3TrNyGYVpGPm' },
+
+        { title: 'O Teste', url: 'https://www.blogger.com/video.g?token=AD6v5dzBb2KIsb9GIl71WC7eQ88Gc5sDDMXnxeHxeRTaQU67I03N8VC-UxwTrgWAWDgz5eXEqE91VznjYNGZibT8eYglqM_U1Jcj6MM-S_Ztk76IBo7d3V_da32LpTShc1-Z6NzCh9w' },
+
+        { title: 'Visão do Futuro', url: 'https://www.blogger.com/video.g?token=AD6v5dwLv1O0Tw06ysY0OMiiVTRag0WcU7eWXGe1lRB43juawajsg1dg3Bo1c35luC-tjLh749QiznFouGaM9DM-TpX1heMrFrpg2XMBTMxuVtjp3q1PU9UnrRaIYI9MXaU_UZCFR5I' },
+
+        { title: 'Sem Destino', url: 'https://www.blogger.com/video.g?token=AD6v5dztq0Rsmtcklc975I2_aW3rQhzIP-2OYsCZJFUG8FrYgOhIxcTtZi-D_7rRGdGl5vOjZpgif7Bn9UnuluYW_BVL3bcS2zme4SiMB3DCBmwmBRh_NpAMq0LKKGrw1FtsF6vqT-0' },
+
+        { title: 'Clube de Horror', url: 'https://www.blogger.com/video.g?token=AD6v5dzDwsdQhJ_EzXd3vywKwH1wka21Pj04jID2A9l0xjPlLrscXfKtBPVSpjM6TL-TeUopUlAcmmE5i5qh4fvY7XrzY2WD7qy9lJ9w0NXo8-2Pb57kjQVtde16PQdsxE7f2sxh7xg' },
+
+        { title: 'Previsão do Tempo: Inverno', url: 'https://www.blogger.com/video.g?token=AD6v5dyVqGT1gLOyGEUkYuVBObbjGokhL8UfrkQCA-qofL08hmCKWNqjRdWixGEBZLNZ8J6OcxyPcsfNhF5XZ1KdloIZMEg5o7ueybkatrJ6YGEUykK7KHGiEtSY9ZASNXmL6MbsOxte' },
+
+        { title: 'Capacidade Máxima', url: 'https://www.blogger.com/video.g?token=AD6v5dwq1uHXtSmqJmxikkIDwgWmcQSrQwtmhiPiUuuJMAd0PkZmkme-Nq6lAGmJp5uQlkUddXIPkglcNUt9qFwlIPWvXo3qVpncrBhfbNP0ROW_ChsPOJmMtTw_fFip24qAbXZvrubE' },
+
+        { title: 'Ataque de Mármore', url: 'https://www.blogger.com/video.g?token=AD6v5dwyUr_nbhOK4ZUEhWqAPp7T--yk3oKpRADHGDyHRGFjLUlVHJzG1HB1nhPt8e3Q-wdwBTNFftJp8Evxvz9C2PToP4eAU7uJo5n2ravmZU6ePJ9sJEh_IwYGlSKI7WqCaoVKA-31' },
+
+        { title: 'A Espada de Rose', url: 'https://www.blogger.com/video.g?token=AD6v5dyEItGgrxqkWsZYnGrDuWZs101jDY0wcwaVuUBSwvd5HjJXUqKmuSBM0_HMt_JXYq0VBjjl7gVehzOxsDX25alMVqyJ5H4PfKY_nKWnfyrqExRnT9J-BSK1345ZHxXYz2j21J8' },
+
+        { title: 'Livro Aberto', url: 'https://www.blogger.com/video.g?token=AD6v5dy_e-YGj2BO9NT6ZLpmZMgfMqOTr-66nOCRItcLzOkUPQlOgMJWGV13qM-o_4sPxGA4xWFZD6j7-Ka2KkF5YI3ISVmG6fwW5xJWHepSDIoY6devmLACGlf5pNoP-oQ1uKVyS9c' },
+
+        { title: 'O Clube da Camiseta', url: 'https://www.blogger.com/video.g?token=AD6v5dy3bDTKhR4IJTXWepwHNwer-CMoa_diZvp1R8PrnoFewZcLXKFqRgYenqRQ5kiKmaBvu31biCA0nLlgzXXkU6W2Dr5QlRyDlbc9aRo38r5TO6KWcJ85OFT-XVPNVeshdO14RX8' },
+
+        { title: 'Diga Tio', url: 'https://www.blogger.com/video.g?token=AD6v5dxWV8y8et80FooCEs5jUHs-YpBrkRwIqRiEbhdC9CHWFglcnL8R2ZYas_nV9M5qorXV7vX5LkrLEEpZTQAOWsyD0WNkoU8PbJ6EeyRvqJVciSkastgrQXj5DohFQbNXBfNz53w' },
+
+        { title: 'Uma História para Steven', url: 'https://www.blogger.com/video.g?token=AD6v5dyM7FLF3cb2Dr74fgDUE3xR-r4mDN1in8XukSwaXTcNKpNRJ7k6MCzm_-FOF1mL3t5Qz5_R1-ARCx9E5HDqNUbLeNWGP28_XbiygB7QM7DxRhFDfJQjfgLcRZwD99sdta5pj18' },
+
+        { title: 'A Mensagem', url: 'https://www.blogger.com/video.g?token=AD6v5dxdih8NFgR15gu12nCYa25ptdHrSZuWKw6QrwqLlsYD0fqMiw2Sp90IzN7cNzU8gBWPLLcO57A0j6rciMWDFpj0I3vYot08RBWsBV4iiypwNz4wCjKj1xmaqHp0s06GVuRqIw' },
+
+        { title: 'Poder Político', url: 'https://www.blogger.com/video.g?token=AD6v5dy6C9xLJ_5TQ6OElK7tptvr7NLauz1X6ZRgqDEQOOt81YQzQhvFAmdhopVco2Zob6Q57K4NQlGkd4weX0mBoqrEO4QEM1owUuDJxjfgltLOnBrKExuLv5vW04_yABPHX5nmNR4' },
+
+        { title: 'O Retorno (Parte 1)', url: 'https://www.blogger.com/video.g?token=AD6v5dyON2ZYtC_cq7Panus4BdNAkE9wskSwk-E8ruhQjqJq5QjeTSQiTSI1hX5I8-hX83cODPCj_jfmAEzuFVHKf4zlomCf5Tkm9W2kA_VuYtNHK2RM03FlbO3hzJv-3PDlfYMYA0o' },
+
+        { title: 'Libertador (Parte 2)', url: 'https://www.blogger.com/video.g?token=AD6v5dz-Fm146--se-71sYt3rvfL17teY5eSMK8-1FSyDQwG4UGoFi6j06G8JXY3kaBFCu-FBMBv5es61EKWoPHYqai5fDTwyVvVwYV610k77PJbC7xmpGgXcPFJXalI3A3FeBhVI5jz' }
+                  ]
+               }
             }
         ];
 
@@ -8225,4 +8256,140 @@
                 });
                 mo.observe(document.body, { childList: true, subtree: true });
             } catch(_) {}
+        })();
+
+        // --- Blogger links: prevent opening new tabs and allow in-page interactive full-screen iframe ---
+        (function(){
+            // Create an overlay iframe container for blogger interactions
+            function ensureBloggerOverlay() {
+                let ov = document.getElementById('blogger-overlay');
+                if (ov) return ov;
+                ov = document.createElement('div');
+                ov.id = 'blogger-overlay';
+                ov.style.position = 'fixed';
+                ov.style.inset = '0';
+                ov.style.zIndex = '999999';
+                ov.style.background = 'rgba(0,0,0,0.92)';
+                ov.style.display = 'none';
+                ov.style.justifyContent = 'center';
+                ov.style.alignItems = 'center';
+                ov.innerHTML = `
+                    <div style="position:relative;width:100%;height:100%;">
+                        <button id="blogger-overlay-close" aria-label="Fechar" style="position:absolute;z-index:60;right:14px;top:14px;background:rgba(255,255,255,0.06);border:none;color:#fff;padding:10px;border-radius:10px;backdrop-filter:blur(6px);">Fechar</button>
+                        <iframe id="blogger-overlay-iframe" src="about:blank" style="width:100%;height:100%;border:0;border-radius:0;" allow="camera; microphone; autoplay; clipboard-read; clipboard-write; geolocation; encrypted-media;"></iframe>
+                    </div>
+                `;
+                document.body.appendChild(ov);
+                document.getElementById('blogger-overlay-close').addEventListener('click', closeBloggerOverlay, { passive: true });
+                // allow ESC to close
+                document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeBloggerOverlay(); }, { passive: true });
+                return ov;
+            }
+
+            function openBloggerOverlay(url) {
+                try {
+                    const ov = ensureBloggerOverlay();
+                    const iframe = document.getElementById('blogger-overlay-iframe');
+                    // set src in a safe way (assign only when opening)
+                    try { iframe.src = url; } catch(_) { iframe.src = url; }
+                    ov.style.display = 'flex';
+                    // prevent background scroll
+                    document.body.style.overflow = 'hidden';
+                } catch (e) {}
+            }
+            function closeBloggerOverlay() {
+                try {
+                    const ov = document.getElementById('blogger-overlay');
+                    if (!ov) return;
+                    const iframe = document.getElementById('blogger-overlay-iframe');
+                    try { iframe.src = 'about:blank'; } catch(_) {}
+                    ov.style.display = 'none';
+                    document.body.style.overflow = '';
+                } catch (e) {}
+            }
+
+            // Intercept all blogger links and convert them to in-page opens; also prevent target blank
+            function processBloggerAnchors(root = document) {
+                try {
+                    const anchors = Array.from(root.querySelectorAll('a[href*="blogger.com"]'));
+                    anchors.forEach(a => {
+                        try {
+                            // mark processed
+                            if (a.dataset.__luminaBlogger === '1') return;
+                            a.dataset.__luminaBlogger = '1';
+
+                            // force same-window navigation prevention and remove target=_blank
+                            try { a.removeAttribute('target'); } catch(_) {}
+                            try { a.setAttribute('rel','noopener'); } catch(_) {}
+
+                            // Allow pointer interactions but intercept default navigation to open in overlay
+                            a.addEventListener('click', function(ev){
+                                try {
+                                    ev.preventDefault();
+                                    ev.stopPropagation();
+                                    const href = a.getAttribute('href');
+                                    if (!href) return;
+                                    // normalize blogger video path suggestions: allow direct video endpoints too
+                                    const allowed = href;
+                                    // open overlay iframe so the user can interact with the entire page in-place
+                                    openBloggerOverlay(allowed);
+                                } catch (e) {}
+                            }, { passive: false });
+
+                            // also prevent any middle-click / auxclick from opening new tab
+                            a.addEventListener('auxclick', function(ev){
+                                try {
+                                    // button 1 = middle click; prevent new tab
+                                    if (ev.button === 1) {
+                                        ev.preventDefault(); ev.stopPropagation();
+                                        const href = a.getAttribute('href');
+                                        if (href) openBloggerOverlay(href);
+                                    }
+                                } catch (e) {}
+                            }, { passive: false });
+
+                            // ensure links remain keyboard accessible: Enter opens overlay
+                            a.addEventListener('keydown', function(ev){
+                                try {
+                                    if (ev.key === 'Enter') {
+                                        ev.preventDefault(); ev.stopPropagation();
+                                        const href = a.getAttribute('href');
+                                        if (href) openBloggerOverlay(href);
+                                    }
+                                } catch (e) {}
+                            }, { passive: false });
+
+                        } catch (inner) {}
+                    });
+                } catch (e) {}
+            }
+
+            // Observe DOM changes to bind to dynamically inserted blogger links
+            const moB = new MutationObserver((mutations) => {
+                for (const m of mutations) {
+                    if (m.type === 'childList' && m.addedNodes && m.addedNodes.length) {
+                        m.addedNodes.forEach(node => {
+                            try {
+                                if (node.nodeType !== 1) return;
+                                if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href && node.href.includes('blogger.com')) {
+                                    processBloggerAnchors(document);
+                                } else {
+                                    // scan subtree
+                                    processBloggerAnchors(node);
+                                }
+                            } catch(_) {}
+                        });
+                    } else if (m.type === 'attributes' && m.target && m.target.tagName && m.target.tagName.toLowerCase() === 'a') {
+                        try { processBloggerAnchors(document); } catch(_) {}
+                    }
+                }
+            });
+            try { moB.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] }); } catch(e){}
+
+            // Initial pass
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', () => setTimeout(() => processBloggerAnchors(document), 80));
+            } else {
+                setTimeout(() => processBloggerAnchors(document), 80);
+            }
         })();
