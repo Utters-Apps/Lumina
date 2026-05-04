@@ -2532,5 +2532,75 @@
         window.__lumina_restore_player_visual = restorePlayerVisual;
       })();
     </script>
+
+    <script>
+      // Override / fix: only show the rotate-to-vertical prompt when device is actually in landscape (width > height).
+      // This override is appended late to ensure it replaces earlier definitions and runs reliably.
+      (function(){
+        function isPortrait() {
+          try { return window.innerHeight > window.innerWidth; } catch (e) { return true; }
+        }
+        // safe mobile detector already present; reuse if available
+        function mobileCheck() {
+          try { return typeof isMobileOS === 'function' ? isMobileOS() : (/android|iphone|ipad|ipod/i.test(navigator.userAgent)); } catch(e){ return false; }
+        }
+
+        // New robust showRotateAfterClose that guards against showing when already vertical
+        window.showRotateAfterClose = function() {
+          try {
+            // Respect global orientation-disable toggle
+            if (getOrientationDisabled && getOrientationDisabled()) {
+              if (document.getElementById('player-modal')?.classList.contains('hidden') && document.getElementById('details-modal')?.classList.contains('hidden')) {
+                document.body.style.overflow = '';
+              }
+              return;
+            }
+
+            // Only for mobile platforms
+            if (!mobileCheck()) {
+              if (document.getElementById('player-modal')?.classList.contains('hidden') && document.getElementById('details-modal')?.classList.contains('hidden')) {
+                document.body.style.overflow = '';
+              }
+              return;
+            }
+
+            // Do not show if device is already portrait (vertical)
+            if (window.innerWidth <= window.innerHeight) {
+              if (document.getElementById('player-modal')?.classList.contains('hidden') && document.getElementById('details-modal')?.classList.contains('hidden')) {
+                document.body.style.overflow = '';
+              }
+              return;
+            }
+
+            const modal = document.getElementById('rotate-vertical-modal');
+            if (!modal) return;
+
+            const hint = modal.querySelector('.rotate-hint');
+            if (hint) {
+              const portrait = isPortrait();
+              hint.innerText = portrait ? 'Você está em modo retrato — gire para assistir em tela cheia.' : 'Fechou o player — gire seu dispositivo para voltar à navegação vertical.';
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+              modal.classList.remove('opacity-0');
+              modal.classList.add('scale-100');
+            }, 12);
+
+            document.body.style.overflow = 'hidden';
+
+            const onRotateBack = () => {
+              if (window.innerHeight > window.innerWidth) {
+                try { dismissRotateVertical(); } catch(_) {}
+                window.removeEventListener('resize', onRotateBack);
+              }
+            };
+            window.addEventListener('resize', onRotateBack);
+          } catch (e) { /* silent */ }
+        };
+
+      })();
+    </script>
 </body>
 </html>
