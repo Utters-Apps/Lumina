@@ -173,6 +173,30 @@
         // --- DATABASE ---
         const db = [
             {
+                id: 'turma-da-monica-a-serie',
+                title: 'Turma da Mônica: A Série',
+                type: 'serie',
+                category: 'Comédia / Mistério / Aventura / Família',
+                year: '2022',
+                cover: 'https://i0.wp.com/anmtv.com.br/wp-content/uploads/2022/07/turma-da-monica-a-serie.png?resize=800%2C400&ssl=1',
+                description: 'Mônica, Cebolinha, Magali e Cascão investigam a sabotagem na festa de Carminha Frufru enquanto lidam com mudanças na adolescência.',
+                ageRating: 'L',
+                distributor: 'Globoplay',
+                producer: 'Estúdios Globo / Biônica Filmes / Mauricio de Sousa Produções',
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'Mônica', url: 'https://dl.dropboxusercontent.com/scl/fi/duxbc88i0l60axl0qgbwu/1.mp4?rlkey=c9ljq21tbuj4vzm2amt3oe38u&st=r7akj1l2' },
+                        { id: 's1-e2', title: 'Magali', url: 'https://dl.dropboxusercontent.com/scl/fi/as7324nnbkkszqw106a8v/2.mp4?rlkey=lxkjs9p9i034yafl4g0megmyc&st=qgl9in3n', duration: 1260 },
+                        { id: 's1-e3', title: 'Cebolinha', url: 'https://dl.dropboxusercontent.com/scl/fi/7b5ymnyj2ool54xstrvvb/3.mp4?rlkey=6iv567b5e4eix40vxofkl1qdx&st=ri8vnvbd' },
+                        { id: 's1-e4', title: 'Cascão', url: 'https://dl.dropboxusercontent.com/scl/fi/wgej1laj21tiv3vljv0qw/4.mp4?rlkey=iz9louzh8aoux21zi4kyu26h4&st=ygdr7rs8' },
+                        { id: 's1-e5', title: 'Milena', url: 'https://dl.dropboxusercontent.com/scl/fi/2nkbp9pu29bk4g4pxfhpr/5.mp4?rlkey=tgfpf2zgxl0uapc8w5oy0oa9e&st=d5pc1p0p' },
+                        { id: 's1-e6', title: 'Perfeição', url: 'https://dl.dropboxusercontent.com/scl/fi/x5inhpsxel6w65qzi5x1z/6.mp4?rlkey=bw7360crn1gfjonj6x3wk72s8&st=rwj2q7xq' },
+                        { id: 's1-e7', title: 'Segredo', url: 'https://dl.dropboxusercontent.com/scl/fi/7bfah4oywlv56s86eso05/7.mp4?rlkey=fz8gvps4irb976js7kweo1qc9&st=27lvvvup' },
+                        { id: 's1-e8', title: 'Lama', url: 'https://dl.dropboxusercontent.com/scl/fi/69s8mc97nrlf55lsboe8k/8.mp4?rlkey=md72d6xcidqpgad5ywlmgjvxz&st=y8gdi3q4' }
+                    ]
+                }
+            },
+            {
                 id: 'akame-ga-kill',
                 title: 'Akame ga Kill!',
                 originalTitle: 'Akame ga Kill!',
@@ -5669,7 +5693,8 @@
                 if (!this.context || !this.context.id) return;
                 if (this._restoredOnce) return;
                 const prog = state.progress[this.context.id];
-                if (!prog || typeof prog.time !== 'number' || prog.time <= 0) return;
+                // Only restore when there's meaningful saved progress (>5s) to avoid jumping on first play
+                if (!prog || typeof prog.time !== 'number' || prog.time <= 5) return;
 
                 // Helper to perform a defensive seek and return a Promise that resolves when seek is reflected.
                 const performSeek = (targetSeconds) => {
