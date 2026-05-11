@@ -1,6 +1,33 @@
         // Ensure non-DB images load eagerly and use async decoding; DB cover images (movie/series) will be lazy-loaded.
         (function(){
-            const PLACEHOLDER_LOCAL = 'fiveicon.png'; // keep relative path so images resolve in nested scopes
+            // Dynamic placeholder generator: returns a placehold.co URL with title text and a stable color per id.
+            // Produces predictable readable placeholders (background + foreground) and URL-encodes text.
+            function luminaPlaceholder(title, id) {
+                try {
+                    const palette = [
+                        '0b132b','1f2833','0f1720','041726','101820',
+                        '7c3aed','f97316','06b6d4','34d399','f59e0b',
+                        'ef4444','db2777','06b6d4','f59e0b','60a5fa'
+                    ];
+                    // stable pick based on id/title hash
+                    const key = String(id || title || '').toLowerCase();
+                    let h = 0;
+                    for (let i = 0; i < key.length; i++) h = (h * 31 + key.charCodeAt(i)) >>> 0;
+                    const bg = palette[h % palette.length] || '000000';
+                    // choose foreground for contrast: dark backgrounds -> FFFFFF, lighter -> 000000
+                    const darkCandidates = new Set(['0b132b','1f2833','0f1720','041726','101820','7c3aed','0b132b']);
+                    const fg = darkCandidates.has(bg) ? 'FFFFFF' : '000000';
+                    const safeTitle = String(title || 'Lumina').slice(0, 32).replace(/\s+/g, '+');
+                    const txt = encodeURIComponent(safeTitle);
+                    // return placehold.co image URL (600x400)
+                    return `https://placehold.co/600x400/${bg}/${fg}?text=${txt}`;
+                } catch (e) {
+                    return 'fiveicon.png';
+                }
+            }
+
+            // keep legacy constant for code paths that expect a simple name; prefer using luminaPlaceholder when possible
+            const PLACEHOLDER_LOCAL = luminaPlaceholder('Lumina','placeholder');
 
             function setEagerForExistingImgs() {
                 try {
@@ -629,7 +656,7 @@
                         { id: 's6-e18', title: 'Os Quebra-Catástrofes', url: '' },
                         { id: 's6-e19', title: 'Rigina Razione', url: 'https://player.odycdn.com/v6/streams/aa650c9a5a852b4f8f2677c8d581bf445871b8ac/b2994e.mp4' },
                         { id: 's6-e20', title: 'Inverte-Corações', url: 'https://player.odycdn.com/api/v3/streams/free/620/e7f6bbce288ba2c42e3ae265cbd91bfba775d3a9/ceef00.mp4' },
-                        { id: 's6-e21', title: 'Os Titãs da Corrente', url: '' },
+                        { id: 's6-e21', title: 'Os Titãs da Corrente', url: 'https://player.odycdn.com/v6/streams/318325372fbdfc78e6229191da2887cbcb027ba8/b29bbd.mp4' },
                         { id: 's6-e22', title: 'Lady Caos', url: 'https://player.odycdn.com/v6/streams/ee96b5a8415de70a7cf768194c3bfac413970d13/e5d2d3.mp4' },
                         { id: 's6-e23', title: 'Frianansi', url: 'https://player.odycdn.com/v6/streams/8d83c8876896e53e96009563c5033581cfa86326/2c35f3.mp4',
                             subtitles: [
@@ -739,7 +766,7 @@
                 type: 'filme',
                 category: 'Musical / Aventura / Comédia / Família / Romance',
                 year: '2025',
-                cover: 'https://cdn.discordapp.com/attachments/1494862606186582088/1494863122291491007/compose.png?ex=69e42745&is=69e2d5c5&hm=90350ab3fa4d31e0c04eeb88568f45c4c6e8b85bb144f37e2ecd67a14e318a1d',
+                cover: 'https://media.discordapp.net/attachments/1494862606186582088/1494863122291491007/compose.png?ex=6a0279c5&is=6a012845&hm=c5b4ea2e38faf45bc84c8aae53c06e2e988fdb494cea0902bfdc90e592cc8a00&=&format=webp&quality=lossless',
                 description: 'Zed e Addison embarcam em uma viagem de verão que os leva a um acampamento onde surge um conflito entre Daywalkers e Vampiros. Para evitar uma nova guerra, eles precisam unir os grupos e manter a paz.',
                 ageRating: 'L',
                 distributor: 'Disney Channel',
@@ -1845,7 +1872,7 @@
                 type: 'filme',
                 category: 'Animação, Musical, Fantasia, Família',
                 year: '2021',
-                cover: 'https://cdn.discordapp.com/attachments/1494862606186582088/1494862669553991710/Descendentes-O-Casamento-Real.png?ex=69e426d9&is=69e2d559&hm=16745a6bf7aeb9e7d403db017bcc6be62bb86b05ddc061ea2a0d9df6d98d9381',
+                cover: 'https://media.discordapp.net/attachments/1494862606186582088/1494862669553991710/Descendentes-O-Casamento-Real.png?ex=6a027959&is=6a0127d9&hm=87e0c268f8175f612e1c2bbebd83d6286314a9a5f7180aabe8b24afeb850c826&=&format=webp&quality=lossless&width=1522&height=856',
                 description: 'Mal e Ben se preparam para seu casamento real em Auradon, reunindo amigos e aliados. No entanto, eventos inesperados ameaçam atrapalhar a cerimônia, exigindo união e coragem para que tudo aconteça como planejado.',
                 ageRating: 'L',
                 distributor: 'Disney Channel / Disney+',
@@ -2794,6 +2821,41 @@
         let __saveProgressTimer = null;
 
         // Immediate flush helper: writes current state.progress and state.history to localStorage synchronously.
+        // Trim a localStorage JSON-object-like entry by removing oldest items based on timestamp,
+        // keeping the newest `keepCount` entries. Returns true if trimming performed.
+        function trimLocalStorageByTimestamp(key, keepCount = 150) {
+            try {
+                const raw = localStorage.getItem(key);
+                if (!raw) return false;
+                const obj = JSON.parse(raw || '{}');
+                if (!obj || typeof obj !== 'object') return false;
+                const entries = Object.entries(obj);
+                if (entries.length <= keepCount) return false;
+
+                // Sort by timestamp (desc) then keep the newest keepCount entries
+                entries.sort((a, b) => {
+                    const ta = (a[1] && a[1].timestamp) || 0;
+                    const tb = (b[1] && b[1].timestamp) || 0;
+                    return tb - ta;
+                });
+                const kept = Object.fromEntries(entries.slice(0, keepCount));
+                try {
+                    localStorage.setItem(key, JSON.stringify(kept));
+                    return true;
+                } catch (e) {
+                    // If still fails, attempt to delete even more aggressively (keepCount halved) once
+                    try {
+                        const smaller = Object.fromEntries(entries.slice(0, Math.floor(keepCount / 2)));
+                        localStorage.setItem(key, JSON.stringify(smaller));
+                        return true;
+                    } catch (_) { return false; }
+                }
+            } catch (e) {
+                return false;
+            }
+        }
+
+        // Flush current in-memory progress/history into localStorage with quota-aware trimming.
         function flushProgressNow() {
             try {
                 // read current stored snapshot to merge safely (best-effort)
@@ -2840,7 +2902,7 @@
                     }
                 });
 
-                // Cap entries to most recent 200
+                // Cap entries to most recent 200 in-memory
                 const entries = Object.entries(merged || {});
                 let final = merged;
                 if (entries.length > 200) {
@@ -2852,9 +2914,43 @@
                     final = Object.fromEntries(entries.slice(0, 200));
                 }
 
-                // Synchronously write both progress and history
-                try { localStorage.setItem('lumina_v2_prog', JSON.stringify(final)); } catch (e) { /* ignore write errors */ }
-                try { localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {})); } catch (e) { /* ignore */ }
+                // Attempt to write progress + history to localStorage; on quota errors trim older entries and retry.
+                try {
+                    localStorage.setItem('lumina_v2_prog', JSON.stringify(final));
+                } catch (e) {
+                    // If quota exceeded, attempt to trim existing stored entries first
+                    try {
+                        const trimmed = trimLocalStorageByTimestamp('lumina_v2_prog', 120);
+                        if (trimmed) {
+                            // try again
+                            localStorage.setItem('lumina_v2_prog', JSON.stringify(final));
+                        } else {
+                            // last resort: try to write a reduced snapshot with only the most recent 100 entries
+                            try {
+                                const reduced = Object.fromEntries(entries.slice(0, 100));
+                                localStorage.setItem('lumina_v2_prog', JSON.stringify(reduced));
+                                final = reduced;
+                            } catch (_) {
+                                // give up gracefully (don't clear everything)
+                            }
+                        }
+                    } catch (_) {
+                        // give up gracefully
+                    }
+                }
+
+                try {
+                    localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {}));
+                } catch (e) {
+                    // histogram/history may be large; try trimming progress first and retry history
+                    try {
+                        trimLocalStorageByTimestamp('lumina_v2_prog', 120);
+                        localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {}));
+                    } catch (_) {
+                        // As a last fallback try to write a minimal empty history (avoid removing progress)
+                        try { localStorage.setItem('lumina_v2_hist', JSON.stringify({})); } catch (_) {}
+                    }
+                }
 
                 // reflect the merged snapshot back into memory so subsequent operations use same data
                 state.progress = final;
@@ -4631,7 +4727,7 @@
                         if (ok) { openPlayer(url, title, context); return; }
                         // If probe failed, still attempt to open the provided fallback URL instead of closing immediately.
                         try {
-                            showToast('Fonte principal indisponível — tentando abrir fallback...', 2600);
+                            
                             openPlayer(url, title, context);
                             return;
                         } catch (err) {
