@@ -6470,7 +6470,16 @@
                 }
 
                 // require a valid numeric duration and a positive trigger value
-                const trigger = Number(this.context.trigger) || 0;
+                // If context.trigger is missing (common for YouTube embeds), fall back to the series' configured nextEpisodeTrigger.
+                let trigger = Number(this.context && this.context.trigger) || 0;
+                try {
+                    if ((!trigger || trigger <= 0) && this.context && this.context.seriesId) {
+                        const seriesForTrigger = (window.db || []).find(d => d && d.id === this.context.seriesId);
+                        if (seriesForTrigger && typeof seriesForTrigger.nextEpisodeTrigger !== 'undefined') {
+                            trigger = Number(seriesForTrigger.nextEpisodeTrigger) || trigger;
+                        }
+                    }
+                } catch (_) { /* ignore fallback errors */ }
                 if (isNaN(dur) || dur <= 0 || trigger <= 0) return;
 
                 if (dur - cur <= trigger) {
@@ -6976,17 +6985,32 @@
                 });
             }
 
-            // apply to YouTube player if present (guarded)
+            // apply to YouTube player if present (guarded) — ensure we try even when setSpeed is called before YT ready
             try {
-                if (player.isYouTube && player.ytPlayer && typeof player.ytPlayer.setPlaybackRate === 'function') {
-                    try { player.ytPlayer.setPlaybackRate(player.preferredRate); } catch(_) {}
+                if (player && player.isYouTube) {
+                    // attempt to set on the API player if available
+                    if (player.ytPlayer && typeof player.ytPlayer.setPlaybackRate === 'function') {
+                        try { player.ytPlayer.setPlaybackRate(player.preferredRate); } catch (err) { /* ignore */ }
+                    } else {
+                        // if API not yet ready, schedule a short retry to apply rate when it arrives
+                        const retryId = setInterval(() => {
+                            try {
+                                if (player.ytPlayer && typeof player.ytPlayer.setPlaybackRate === 'function') {
+                                    try { player.ytPlayer.setPlaybackRate(player.preferredRate); } catch(_) {}
+                                    clearInterval(retryId);
+                                }
+                            } catch (_) { clearInterval(retryId); }
+                        }, 250);
+                        // safety clear after a few attempts
+                        setTimeout(() => clearInterval(retryId), 5000);
+                    }
                 }
             } catch (e) { /* ignore */ }
 
             // apply to native video if present
             try {
                 if (player.vid) {
-                    player.vid.playbackRate = player.preferredRate;
+                    try { player.vid.playbackRate = player.preferredRate; } catch (_) {}
                 }
             } catch (e) { /* ignore */ }
         }
@@ -7145,18 +7169,41 @@
                     }
                 }
 
-                // 2) Try iframe-based PiP (works for many embed providers and some YouTube cases)
-                // Look for known iframe containers rendered by the player (YouTube container or generic iframe)
-                const possibleIframes = Array.from(document.querySelectorAll('#player-media-wrapper iframe, #yt-player iframe'));
+                // 2) If playing via YouTube API, try the YT iframe node for PiP (best-effort)
+                try {
+                    if (player && player.isYouTube) {
+                        const ytIframe = document.querySelector('#yt-player iframe, #player-media-wrapper iframe[src*="youtube.com"]');
+                        if (ytIframe) {
+                            // ensure allow attribute includes picture-in-picture for best compatibility
+                            const cur = (ytIframe.getAttribute('allow') || '');
+                            if (!/picture-in-picture/i.test(cur)) {
+                                try { ytIframe.setAttribute('allow', (cur + '; autoplay; picture-in-picture; fullscreen').replace(/;;+/g,';')); } catch(_) {}
+                            }
+                            if (typeof ytIframe.requestPictureInPicture === 'function') {
+                                try {
+                                    if (document.pictureInPictureElement === ytIframe) await document.exitPictureInPicture();
+                                    else await ytIframe.requestPictureInPicture();
+                                    return;
+                                } catch (err) {
+                                    // some browsers block cross-origin iframe PiP; fallback below
+                                    console.warn('YT iframe.requestPictureInPicture failed', err);
+                                }
+                            }
+                        }
+                    }
+                } catch (ytErr) {
+                    console.warn('YT iframe PiP attempt failed', ytErr);
+                }
+
+                // 3) Try iframe-based PiP for other embeds (generic)
+                const possibleIframes = Array.from(document.querySelectorAll('#player-media-wrapper iframe'));
                 for (const ifr of possibleIframes) {
                     try {
                         if (!ifr) continue;
-                        // Ensure allow attribute includes picture-in-picture for best compatibility
                         const curAllow = (ifr.getAttribute('allow') || '');
                         if (!/picture-in-picture/i.test(curAllow)) {
                             try { ifr.setAttribute('allow', (curAllow + '; picture-in-picture').replace(/;;+/g,';')); } catch(_) {}
                         }
-                        // Some browsers support requestPictureInPicture on iframe elements
                         if (typeof ifr.requestPictureInPicture === 'function') {
                             if (document.pictureInPictureElement === ifr) {
                                 await document.exitPictureInPicture();
@@ -7166,40 +7213,15 @@
                             return;
                         }
                     } catch (inner) {
-                        // try next iframe
                         console.warn('iframe PiP attempt failed for one iframe, trying next', inner);
                     }
                 }
 
-                // 3) If we have a YouTube player via API we can try to access its internal iframe (best-effort)
-                try {
-                    if (player && player.isYouTube) {
-                        const ytIframe = document.querySelector('#yt-player iframe');
-                        if (ytIframe) {
-                            // ensure allow attribute is present
-                            const cur = (ytIframe.getAttribute('allow') || '');
-                            if (!/picture-in-picture/i.test(cur)) {
-                                try { ytIframe.setAttribute('allow', (cur + '; autoplay; picture-in-picture; fullscreen').replace(/;;+/g,';')); } catch(_) {}
-                            }
-                            if (typeof ytIframe.requestPictureInPicture === 'function') {
-                                if (document.pictureInPictureElement === ytIframe) {
-                                    await document.exitPictureInPicture();
-                                } else {
-                                    await ytIframe.requestPictureInPicture();
-                                }
-                                return;
-                            }
-                        }
-                    }
-                } catch (ytErr) {
-                    console.warn('YT iframe PiP attempt failed', ytErr);
-                }
-
-                // 4) Generic fallback: inform the user PiP isn't available
+                // 4) Fallback: inform the user PiP isn't available for this embed (clear guidance)
                 if (document.pictureInPictureEnabled) {
-                    showToast('Nenhum vídeo compatível encontrado para PiP.');
+                    showToast('PiP não disponível para este tipo de embed (alguns iframes/YouTube não permitem PiP).', 3200);
                 } else {
-                    showToast('Picture-in-Picture não suportado neste navegador.');
+                    showToast('Picture-in-Picture não suportado neste navegador.', 2200);
                 }
             } catch (e) {
                 console.warn('togglePiP overall failed', e);
