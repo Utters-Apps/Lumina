@@ -1541,7 +1541,7 @@
             }
         })();
 
-        // Hide fullscreen button in PWA standalone on iOS devices only; keep fullscreen control available for Android PWAs.
+        // Hide fullscreen button in PWA standalone on iOS devices only; keep it visible for Android PWAs.
         (function(){
             try {
                 const isPWAStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) 
@@ -1569,10 +1569,21 @@
                 if (isPWAStandalone && isMobile && isIOS) {
                     const fs = document.getElementById('fullscreen-btn');
                     if (fs) {
+                        // explicit inline hide (redundant-safe)
                         fs.style.display = 'none';
                         fs.setAttribute('aria-hidden', 'true');
                         fs.tabIndex = -1;
                     }
+
+                    // Also inject a CSS rule with !important to ensure the control is not visible in stubborn UAs.
+                    try {
+                        if (!document.getElementById('lumina-hide-fs-ios-style')) {
+                            const s = document.createElement('style');
+                            s.id = 'lumina-hide-fs-ios-style';
+                            s.textContent = '#fullscreen-btn{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;padding:0!important;margin:0!important;border:0!important}';
+                            document.head.appendChild(s);
+                        }
+                    } catch(_) {}
                 }
             } catch (e) { /* silent */ }
         })();
