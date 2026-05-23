@@ -267,6 +267,157 @@
             text-transform: none;
         }
 
+        /* Enhanced circular glass controls: speed / captions / fullscreen / pip / mute + play buttons */
+        /* Base control circle */
+        .player-control-circle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            padding: 6px;
+            border-radius: 14px; /* slightly rounded pill so it's softer than perfect circle on touch */
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 6px 20px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.03);
+            transition: transform 180ms cubic-bezier(0.2,0.9,0.2,1), box-shadow 220ms ease, background 180ms ease, opacity 180ms ease;
+            will-change: transform, box-shadow, background;
+            backdrop-filter: blur(8px) saturate(120%);
+            -webkit-backdrop-filter: blur(8px) saturate(120%);
+            cursor: pointer;
+        }
+
+        /* Ensure icon elements inside player control buttons are perfectly centered */
+        .player-control-circle *,
+        .player-control-circle > i,
+        .player-control-circle > svg,
+        .player-control-circle > img,
+        .player-control-circle > span {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            vertical-align: middle !important;
+            pointer-events: none;
+        }
+
+        /* Also ensure the common player buttons (ids) use the same centering rules */
+        #speed-btn, #lumina-captions-btn, #fullscreen-btn, #pip-btn, #mute-btn, #center-play-btn, #bottom-play-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0.45rem 0.65rem !important;
+        }
+
+        /* Specific control id mappings adopt the generic class for consistent visuals */
+        #speed-btn, #lumina-captions-btn, #fullscreen-btn, #pip-btn, #mute-btn, #center-play-btn, #bottom-play-btn {
+            border-radius: 9999px;
+            padding: 0.45rem 0.65rem;
+        }
+        #speed-btn, #lumina-captions-btn, #fullscreen-btn, #pip-btn, #mute-btn {
+            /* apply glass base */
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 26px rgba(12,10,20,0.55), inset 0 1px 0 rgba(255,255,255,0.03);
+            color: #fff;
+        }
+
+        /* Play buttons get a stronger gradient and halo */
+        #center-play-btn {
+            width: 84px;
+            height: 84px;
+            min-width: 84px;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(124,58,237,0.14));
+            border: 1px solid rgba(139,92,246,0.18);
+            box-shadow:
+                0 18px 50px rgba(124,58,237,0.12),
+                inset 0 2px 6px rgba(255,255,255,0.02);
+            transition: transform 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 260ms ease;
+        }
+        #center-play-btn i { color: #fff; font-size: 1.45rem; }
+
+        #bottom-play-btn {
+            width: 44px;
+            height: 44px;
+            min-width: 44px;
+            border-radius: 9999px;
+            background: linear-gradient(90deg,#8b5cf6,#7c3aed);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: black;
+            box-shadow: 0 12px 40px rgba(124,58,237,0.12);
+            transition: transform 180ms ease, box-shadow 220ms ease;
+        }
+
+        /* Hover/Focus/Active effects: unified, richer glow */
+        #speed-btn:hover, #lumina-captions-btn:hover, #fullscreen-btn:hover, #pip-btn:hover, #mute-btn:hover,
+        #speed-btn:focus, #lumina-captions-btn:focus, #fullscreen-btn:focus, #pip-btn:focus, #mute-btn:focus {
+            transform: translateY(-4px) scale(1.06);
+            box-shadow:
+                0 22px 60px rgba(124,58,237,0.18),
+                0 6px 20px rgba(124,58,237,0.10),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            background: linear-gradient(180deg, rgba(139,92,246,0.14), rgba(124,58,237,0.12));
+            color: #fff !important;
+            outline: none;
+        }
+
+        /* Play hover state stronger */
+        #center-play-btn:hover {
+            transform: translateY(-6px) scale(1.08);
+            box-shadow:
+                0 34px 90px rgba(124,58,237,0.18),
+                0 10px 36px rgba(124,58,237,0.10),
+                inset 0 2px 8px rgba(255,255,255,0.04);
+        }
+
+        #bottom-play-btn:hover {
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 24px 60px rgba(124,58,237,0.12);
+        }
+
+        /* Muted / Volume states */
+        #mute-btn { background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+        #mute-btn.muted { background: linear-gradient(180deg, rgba(255,80,80,0.06), rgba(255,80,80,0.03)); box-shadow: 0 8px 30px rgba(255,80,80,0.08); color: #fff; }
+
+        /* Volume bar styled as a glass track with animated accent fill */
+        #volume-bar {
+            width: 84px;
+            height: 8px;
+            -webkit-appearance: none;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
+            transition: box-shadow 180ms ease, transform 160ms ease;
+        }
+        #volume-bar::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: linear-gradient(180deg, #fff, #eae6ff);
+            box-shadow: 0 6px 18px rgba(124,58,237,0.16);
+            border: 2px solid rgba(255,255,255,0.9);
+            margin-top: -3px;
+            transition: transform 120ms ease;
+        }
+        #volume-bar:hover::-webkit-slider-thumb { transform: scale(1.08); }
+
+        /* Progress fill accent tweak when controls are active */
+        #progress-fill { background: linear-gradient(90deg,#a78bfa,#7c3aed); box-shadow: 0 6px 24px rgba(124,58,237,0.12); }
+
+        /* Speed menu & captions button keep consistent rounded glass */
+        #speed-menu { border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(17,17,19,0.8)); border: 1px solid rgba(255,255,255,0.04); box-shadow: 0 12px 36px rgba(2,6,23,0.6); padding: 8px; }
+
+        /* Accessibility: focus ring for keyboard users */
+        #speed-btn:focus-visible, #lumina-captions-btn:focus-visible, #fullscreen-btn:focus-visible, #pip-btn:focus-visible, #mute-btn:focus-visible, #center-play-btn:focus-visible, #bottom-play-btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.18), 0 14px 40px rgba(124,58,237,0.12);
+        }
+
         /* New thematic badges: Curta & Musical (distinctive), Classic, Remake and Live Action — slightly larger glass, subtle rim and soft glow */
         .badge-curta {
             /* short-film: compact elegant pill with soft oceanic gradient and subtle glow */
@@ -477,4 +628,87 @@
             .pt-24.md\:pt-32 {
                 padding-top: 1.5rem !important;
             }
+        }
+
+        /* Ensure WebVTT / HTML5 captions are readable and positioned above player controls/progress.
+           Uses ::cue to style text and translate it upward so it does not overlap the progress bar area. */
+        video::cue {
+            background: rgba(0,0,0,0.78);
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+            white-space: pre-wrap;
+            backface-visibility: hidden;
+            /* push captions upward so they appear above the bottom progress/UI */
+            transform: translateY(-56px);
+            /* ensure high enough z-order in some UA implementations */
+            z-index: 99999;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+        }
+
+        /* Slightly smaller captions on narrow viewports */
+        @media (max-width: 520px) {
+            video::cue {
+                font-size: 0.95rem;
+                transform: translateY(-48px);
+                padding: 0.2rem 0.45rem;
+            }
+        }
+
+        /* For browsers that expose track DOM <track> styling, also ensure track text overlay uses same visible style */
+        ::cue {
+            background: rgba(0,0,0,0.78);
+            color: #ffffff;
+            font-size: 1rem;
+            line-height: 1.2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            text-align: center;
+            white-space: pre-wrap;
+            transform: translateY(-56px);
+            z-index: 99999;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+        }
+
+        /* Custom caption overlay used by Lumina when browser-native cues are intercepted and rendered in-page */
+        #lumina-captions-overlay.custom-captions {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 110px; /* sits above player controls/progress */
+            z-index: 120;
+            pointer-events: none;
+            max-width: min(92%, 980px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 10px;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            transition: opacity 220ms ease, transform 200ms cubic-bezier(0.16,1,0.3,1);
+        }
+        #lumina-captions-overlay.hidden { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(6px); }
+        #lumina-captions-overlay:not(.hidden) { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+
+        #lumina-captions-overlay .custom-captions-line {
+            background: rgba(0,0,0,0.78);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 15px;
+            line-height: 1.25;
+            text-align: center;
+            max-width: 100%;
+            white-space: pre-wrap;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            pointer-events: none;
+        }
+
+        @media (max-width: 520px) {
+            #lumina-captions-overlay { bottom: 120px; }
+            #lumina-captions-overlay .custom-captions-line { font-size: 13px; padding: 6px 10px; }
         }

@@ -11,6 +11,8 @@
 
       <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preload" href="style.css" as="style">
+    <link rel="preload" href="script.js" as="script">
+    <link rel="preload" href="fiveicon-512.png" as="image">
     <link rel="stylesheet" href="style.css">
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -2602,5 +2604,537 @@
 
       })();
     </script>
+<script>
+/* Lumina: on-screen captions overlay + cue renderer (reliable binding + polling fallback) */
+(function(){
+  function targetContainer(){
+    return document.getElementById('player-media-wrapper') || document.body;
+  }
+
+  function ensureOverlay(){
+    let o = document.getElementById('lumina-captions-overlay');
+    if(o) return o;
+    o = document.createElement('div');
+    o.id = 'lumina-captions-overlay';
+    o.className = 'custom-captions hidden';
+    Object.assign(o.style, {
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      bottom: '96px',
+      zIndex: '9999',
+      pointerEvents: 'none',
+      maxWidth: 'min(92%,980px)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '6px 12px',
+      borderRadius: '10px',
+      backdropFilter: 'blur(6px)'
+    });
+    // attach to player container so overlay sits above player controls and within same stacking context
+    try { targetContainer().appendChild(o); } catch(e){ document.body.appendChild(o); }
+    return o;
+  }
+
+  function showCaption(text){
+    const ov = ensureOverlay();
+    ov.innerHTML = '';
+    if(!text || !text.trim()){ ov.classList.add('hidden'); return; }
+    ov.classList.remove('hidden');
+    const line = document.createElement('div');
+    line.className = 'custom-captions-line';
+    Object.assign(line.style, {
+      background:'rgba(0,0,0,0.78)',
+      color:'#fff',
+      padding:'8px 12px',
+      borderRadius:'8px',
+      fontSize:'15px',
+      lineHeight:'1.25',
+      textAlign:'center',
+      maxWidth:'100%',
+      whiteSpace:'pre-wrap',
+      boxShadow:'0 10px 30px rgba(0,0,0,0.6)'
+    });
+    line.innerText = text;
+    ov.appendChild(line);
+    // keep visible for a bit; reset timeout if new captions arrive
+    if (ov._hideTimer) clearTimeout(ov._hideTimer);
+    ov._hideTimer = setTimeout(()=>{ try{ ov.classList.add('hidden'); }catch(e){} }, 4000);
+  }
+
+  function bindCues(video){
+    if(!video) return;
+    const attach = () => {
+      try{
+        const tracks = video.textTracks || [];
+        if(!tracks || tracks.length===0) return;
+        // pick preferred Portuguese track or the first one
+        let track = null;
+        for(let i=0;i<tracks.length;i++){
+          if(tracks[i].language && /pt/i.test(tracks[i].language)){ track = tracks[i]; break; }
+        }
+        if(!track) track = tracks[0];
+        if(!track) return;
+
+        // ensure we can read activeCues even when browser doesn't reliably fire cuechange: set mode hidden and poll
+        try{ track.mode = 'hidden'; }catch(_){}
+        let lastCueTexts = '';
+        const onCueChange = () => {
+          try{
+            const active = Array.from(track.activeCues || []);
+            if(!active.length){ lastCueTexts = ''; showCaption(''); return; }
+            const txt = active.map(c => (c.text || c.payload || '')).join('\n').trim();
+            if(txt !== lastCueTexts){ lastCueTexts = txt; showCaption(txt); }
+          }catch(e){}
+        };
+
+        track.removeEventListener && track.removeEventListener('cuechange', onCueChange);
+        track.addEventListener && track.addEventListener('cuechange', onCueChange);
+
+        // polling fallback: some engines (or cross-origin blobs) don't fire cuechange reliably; poll activeCues periodically
+        if (!track.__lumina_poll) {
+          track.__lumina_poll = setInterval(() => {
+            try { onCueChange(); } catch(_) {}
+          }, 250);
+        }
+        // clean up when video removed
+        const mo = new MutationObserver((muts)=>{
+          muts.forEach(m=>{
+            m.removedNodes && m.removedNodes.forEach(n=>{
+              if(n === video){
+                try{ track.removeEventListener && track.removeEventListener('cuechange', onCueChange); }catch(_){}
+                try{ clearInterval(track.__lumina_poll); track.__lumina_poll = null; }catch(_){}
+                mo.disconnect();
+              }
+            });
+          });
+        });
+        mo.observe(video.parentNode || targetContainer(), { childList: true });
+      }catch(e){
+        setTimeout(attach, 300);
+      }
+    };
+    attach();
+  }
+
+  function observeWrapper(){
+    try{
+      const wrapper = document.getElementById('player-media-wrapper') || document.body;
+      Array.from(wrapper.querySelectorAll('video')).forEach(v=>bindCues(v));
+      const mo = new MutationObserver(muts=>{
+        for(const m of muts){
+          if(m.addedNodes && m.addedNodes.length){
+            m.addedNodes.forEach(n=>{
+              try{
+                if(n.nodeType!==1) return;
+                if(n.tagName && n.tagName.toLowerCase()==='video'){ bindCues(n); }
+                else { const nv = n.querySelector && n.querySelector('video'); if(nv) bindCues(nv); }
+              }catch(_){} });
+          }
+        }
+      });
+      mo.observe(wrapper, { childList: true, subtree: true });
+    }catch(e){}
+  }
+
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeWrapper);
+  else observeWrapper();
+})();
+</script>
+
+<!-- LEGENDAS MELHORADAS - Lumina: tenta nativo primeiro e usa overlay como fallback -->
+<script>
+(function(){
+  function ensureOverlay(){
+    let ov = document.getElementById('lumina-captions-overlay');
+    if(ov) return ov;
+    ov = document.createElement('div');
+    ov.id = 'lumina-captions-overlay';
+    Object.assign(ov.style, {
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      bottom: '110px',
+      zIndex: '99999',
+      pointerEvents: 'none',
+      maxWidth: '90%',
+      textAlign: 'center',
+      padding: '8px 16px',
+      background: 'rgba(0,0,0,0.75)',
+      color: '#fff',
+      borderRadius: '8px',
+      fontSize: '17px',
+      lineHeight: '1.35',
+      backdropFilter: 'blur(4px)',
+      display: 'none'
+    });
+    const wrapper = document.getElementById('player-media-wrapper') || document.body;
+    wrapper.appendChild(ov);
+    return ov;
+  }
+
+  function showOverlay(text){
+    const ov = ensureOverlay();
+    if(!text || !String(text).trim()){
+      ov.style.display = 'none';
+      ov.innerHTML = '';
+      return;
+    }
+    ov.innerHTML = `<div style="display:inline-block; white-space:pre-wrap;">${String(text).replace(/\n/g,'<br>')}</div>`;
+    ov.style.display = 'block';
+  }
+
+  function hideOverlay(){
+    const ov = document.getElementById('lumina-captions-overlay');
+    if(ov) { ov.style.display = 'none'; ov.innerHTML = ''; }
+  }
+
+  // decide whether to rely on native rendering: returns true if at least one track is in 'showing' and UA likely renders cues
+  function hasNativeRendering(tracks){
+    try {
+      for(const t of Array.from(tracks || [])){
+        if((t.kind === 'subtitles' || t.kind === 'captions') && t.mode === 'showing'){
+          // best-effort: assume UA will render native cues when mode === 'showing'
+          return true;
+        }
+      }
+    }catch(e){}
+    return false;
+  }
+
+  function setupCaptionsForVideo(video){
+    if(!video) return;
+    const tracks = video.textTracks || [];
+
+    // Prefer browser native: set first matching track mode to 'showing' to let UA render it.
+    try {
+      for (let i=0;i<tracks.length;i++){
+        const t = tracks[i];
+        if(t.kind === 'subtitles' || t.kind === 'captions'){
+          try { t.mode = 'showing'; } catch(_) {}
+        }
+      }
+    } catch(e){}
+
+    // primary handler tries native first; overlay only when native not visible/usable
+    function renderActiveCue(){
+      try {
+        // find any active cues across tracks
+        let activeText = '';
+        for (const t of Array.from(tracks || [])){
+          try {
+            const active = t.activeCues && t.activeCues.length ? Array.from(t.activeCues).map(c=>c.text).join('\n') : '';
+            if(active) {
+              activeText = active;
+              // if UA is rendering natively (we set mode showing), do nothing with overlay
+              if (t.mode === 'showing' && hasNativeRendering(tracks)) {
+                hideOverlay();
+                return;
+              }
+              break;
+            }
+          } catch(_) {}
+        }
+        if(activeText) showOverlay(activeText);
+        else hideOverlay();
+      } catch(e){}
+    }
+
+    // Attach cuechange listeners for all textTracks (works when cuechange fires)
+    try {
+      for (const t of Array.from(tracks || [])){
+        try {
+          t.removeEventListener && t.removeEventListener('cuechange', renderActiveCue);
+          t.addEventListener && t.addEventListener('cuechange', renderActiveCue);
+        } catch(_) {}
+      }
+    } catch(e){}
+
+    // Robust polling fallback (some engines don't fire cuechange reliably or tracks are slow to appear)
+    const pollId = setInterval(() => {
+      try {
+        // stop polling when video removed from DOM
+        if (!document.body.contains(video)) { clearInterval(pollId); hideOverlay(); return; }
+        renderActiveCue();
+      } catch(e){}
+    }, 400);
+
+    // Ensure we stop polling when video is removed or ends
+    const mo = new MutationObserver((muts) => {
+      for(const m of muts){
+        m.removedNodes && m.removedNodes.forEach(n=>{
+          if(n === video){
+            try { clearInterval(pollId); hideOverlay(); mo.disconnect(); } catch(_) {}
+          }
+        });
+      }
+    });
+    try { mo.observe(video.parentNode || document.body, { childList: true, subtree: false }); } catch(_) {}
+
+    // also run once immediately and shortly after to catch delayed track loads
+    setTimeout(renderActiveCue, 120);
+    setTimeout(renderActiveCue, 700);
+  }
+
+  // Observe player wrapper for native <video> elements (and handle already-present)
+  function observeWrapper(){
+    const root = document.getElementById('player-media-wrapper') || document.body;
+    const existing = root.querySelector('video');
+    if(existing) setupCaptionsForVideo(existing);
+
+    const observer = new MutationObserver(muts => {
+      for(const m of muts){
+        if(m.addedNodes && m.addedNodes.length){
+          m.addedNodes.forEach(n=>{
+            try {
+              if(n.nodeType !== 1) return;
+              if(n.tagName && n.tagName.toLowerCase() === 'video') setupCaptionsForVideo(n);
+              else {
+                const v = n.querySelector && n.querySelector('video');
+                if(v) setupCaptionsForVideo(v);
+              }
+            } catch(_) {}
+          });
+        }
+      }
+    });
+    try { observer.observe(root, { childList: true, subtree: true }); } catch(_) {}
+  }
+
+  // Start
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeWrapper);
+  else setTimeout(observeWrapper, 60);
+})();
+</script>
+
+<script>
+(function(){
+  // Hide captions button when there are no subtitle tracks or context subtitles, and keep it updated as player/video changes.
+  function hasSubtitlesForVideo(video) {
+    try {
+      if (!video) return false;
+      const tracks = Array.from(video.querySelectorAll('track')).filter(t => t.src && t.src.trim());
+      if (tracks.length) return true;
+      // also check ready textTracks (some browsers populate there)
+      const txt = (video.textTracks && video.textTracks.length) ? Array.from(video.textTracks).some(t => (t.kind==='subtitles' || t.kind==='captions')) : false;
+      if (txt) return true;
+    } catch(_) {}
+    try {
+      // fallback: check runtime player.context for subtitles metadata (episode-level subtitles provided in DB)
+      if (window.player && window.player.context && Array.isArray(window.player.context.subtitles) && window.player.context.subtitles.length) return true;
+      // also check a more global context location used by some flows (episode passed directly)
+      if (window.player && Array.isArray(window.player.subtitles) && window.player.subtitles.length) return true;
+    } catch(_) {}
+    return false;
+  }
+
+  function ensureCaptionsVisibility() {
+    try {
+      const btn = document.getElementById('lumina-captions-btn');
+      const wrapper = document.getElementById('player-media-wrapper');
+      const video = wrapper ? wrapper.querySelector('video') : document.querySelector('video');
+      const has = hasSubtitlesForVideo(video);
+      if (!has && btn) {
+        // remove button if no subtitles available
+        btn.remove();
+        return;
+      }
+      // if has subtitles but button missing, create minimal button re-use existing helper if present
+      if (has && !btn) {
+        try {
+          // attempt to call existing ensureCaptionsButton with current video element
+          if (typeof ensureCaptionsButton === 'function') {
+            ensureCaptionsButton(video || wrapper);
+            return;
+          }
+          // otherwise create a simple button (fallback)
+          const playerUi = document.querySelector('.player-ui .flex.items-center.gap-6, .player-ui');
+          if (!playerUi) return;
+          const b = document.createElement('button');
+          b.id = 'lumina-captions-btn';
+          b.className = 'w-10 h-10 rounded-full glass flex items-center justify-center text-white transition-colors';
+          b.title = 'Legendas';
+          b.style.minWidth = '40px';
+          b.style.marginLeft = '6px';
+          b.innerHTML = '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M7 10h10M7 14h6\"/></svg>';
+          playerUi.insertBefore(b, playerUi.firstChild);
+          b.addEventListener('click', function(e){
+            e.stopPropagation();
+            try {
+              // toggle first available track
+              const v = document.querySelector('#player-media-wrapper video') || document.querySelector('video');
+              const tr = v && v.textTracks && v.textTracks.length ? v.textTracks[0] : null;
+              if (tr) { tr.mode = (tr.mode === 'showing') ? 'disabled' : 'showing'; b.style.background = (tr.mode==='showing') ? 'linear-gradient(90deg,#8b5cf6,#7c3aed)' : ''; }
+            } catch(_) {}
+          }, { passive:true });
+        } catch(_) {}
+      }
+    } catch(_) {}
+  }
+
+  // Apply unified hover styling on relevant controls (speed, captions, fullscreen) by ensuring they exist — CSS handles visuals.
+  function applyHoverSetup() {
+    try {
+      ['speed-btn','lumina-captions-btn','fullscreen-btn'].forEach(id=>{
+        const el = document.getElementById(id);
+        if (!el) return;
+        // ensure pointer cursor and will-change for smooth hover
+        el.style.cursor = 'pointer';
+        el.style.willChange = 'transform, box-shadow';
+      });
+    } catch(_) {}
+  }
+
+  // Observe mutations in player wrapper to update captions button presence dynamically
+  function observePlayerForCaptions() {
+    try {
+      const wrapper = document.getElementById('player-media-wrapper');
+      if (!wrapper) {
+        // fallback: poll occasionally until wrapper exists
+        let tries = 0;
+        const poll = setInterval(()=> {
+          tries++;
+          const w = document.getElementById('player-media-wrapper');
+          if (w || tries > 40) { clearInterval(poll); if (w) { observePlayerForCaptions(); ensureCaptionsVisibility(); applyHoverSetup(); } return; }
+        }, 250);
+        return;
+      }
+      // initial run
+      ensureCaptionsVisibility();
+      applyHoverSetup();
+
+      const mo = new MutationObserver(muts => {
+        try {
+          let needs = false;
+          for (const m of muts) {
+            if (m.addedNodes && m.addedNodes.length) needs = true;
+            if (m.removedNodes && m.removedNodes.length) needs = true;
+            if (m.attributeName && (m.attributeName === 'src' || m.attributeName === 'data-src')) needs = true;
+          }
+          if (needs) {
+            setTimeout(()=>{ ensureCaptionsVisibility(); applyHoverSetup(); }, 80);
+          }
+        } catch(_) {}
+      });
+      mo.observe(wrapper, { childList: true, subtree: true, attributes: true, attributeFilter: ['src','data-src'] });
+
+      // Also watch global player.context changes every second to catch runtime subtitle metadata updates
+      setInterval(()=>{ try { ensureCaptionsVisibility(); applyHoverSetup(); } catch(_) {} }, 1200);
+    } catch(_) {}
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observePlayerForCaptions);
+  else setTimeout(observePlayerForCaptions, 50);
+})();
+</script>
+<script>
+/* Override ensureCaptionsButton to robustly insert & bind a single captions toggle for any video element.
+   This runs late and will replace any earlier definition by assigning to window.ensureCaptionsButton. */
+(function(){
+  function _ensure(videoEl) {
+    try {
+      if (!videoEl) return;
+      // If a button already exists, rebind it to this video element and avoid duplicates
+      var existing = document.getElementById('lumina-captions-btn');
+      if (existing) {
+        if (!existing.__boundToVideo || existing.__boundToVideo !== videoEl) {
+          existing.__boundToVideo = videoEl;
+          existing.onclick = function(e){
+            e.stopPropagation();
+            try {
+              var v = existing.__boundToVideo || videoEl;
+              var tracks = Array.from((v && v.querySelectorAll) ? v.querySelectorAll('track') : []);
+              if (!tracks.length) {
+                attachSRTasVTT(v, typeof LUMINA_SRT_URL !== 'undefined' ? LUMINA_SRT_URL : '').then(function(track){
+                  if (!track) { showToast && showToast('Falha ao carregar legendas.'); return; }
+                  try { track.mode = 'showing'; existing.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch(_) {}
+                });
+                return;
+              }
+              var target = tracks.find(function(t){ return /pt/i.test(t.srclang); }) || tracks[0];
+              if (!target) return;
+              try {
+                if (target.mode === 'showing') { target.mode = 'disabled'; existing.style.background = ''; }
+                else { target.mode = 'showing'; existing.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; }
+              } catch (err) {
+                setTimeout(function(){ try { target.mode = (target.mode === 'showing') ? 'disabled' : 'showing'; } catch(_){} }, 120);
+              }
+            } catch (err) { console.warn('captions toggle failed', err); }
+          };
+        }
+        return;
+      }
+
+      // create button
+      var btn = document.createElement('button');
+      btn.id = 'lumina-captions-btn';
+      btn.className = 'w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors';
+      btn.title = 'Legendas';
+      btn.style.minWidth = '40px';
+      btn.style.marginLeft = '6px';
+      btn.__boundToVideo = videoEl;
+      btn.innerHTML = '<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z\"/><path d=\"M7 10h10M7 14h6\"/></svg>';
+
+      var insertionCandidates = [
+        function(){ return document.querySelector('.player-ui .flex.items-center.gap-6'); },
+        function(){ return document.getElementById('speed-control-wrapper'); },
+        function(){ return document.querySelector('.player-ui .flex.justify-between'); },
+        function(){ return document.querySelector('.player-ui'); },
+        function(){ return document.querySelector('#player-modal .player-ui'); },
+        function(){ return document.body; }
+      ];
+      var placed = false;
+      for (var i=0;i<insertionCandidates.length;i++){
+        try {
+          var parent = insertionCandidates[i]();
+          if (!parent) continue;
+          if (parent.querySelector && parent.querySelector('#speed-control-wrapper')) {
+            parent.querySelector('#speed-control-wrapper').insertAdjacentElement('afterend', btn);
+            placed = true; break;
+          }
+          parent.insertBefore(btn, parent.firstChild);
+          placed = true; break;
+        } catch(_) { continue; }
+      }
+      if (!placed) document.body.appendChild(btn);
+
+      btn.addEventListener('click', function(e){
+        e.stopPropagation();
+        try {
+          var v = btn.__boundToVideo || videoEl;
+          var tracks = Array.from((v && v.querySelectorAll) ? v.querySelectorAll('track') : []);
+          if (!tracks.length) {
+            attachSRTasVTT(v, typeof LUMINA_SRT_URL !== 'undefined' ? LUMINA_SRT_URL : '').then(function(track){
+              if (!track) { showToast && showToast('Falha ao carregar legendas.'); return; }
+              try { track.mode = 'showing'; btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch(_) {}
+            });
+            return;
+          }
+          var target = tracks.find(function(t){ return /pt/i.test(t.srclang); }) || tracks[0];
+          if (!target) return;
+          try {
+            if (target.mode === 'showing') { target.mode = 'disabled'; btn.style.background = ''; }
+            else { target.mode = 'showing'; btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; }
+          } catch (err) {
+            setTimeout(function(){ try { target.mode = (target.mode === 'showing') ? 'disabled' : 'showing'; } catch(_){} }, 120);
+          }
+        } catch (err) { console.warn('captions toggle failed', err); }
+      }, { passive: true });
+
+      try {
+        var tracksNow = Array.from(videoEl.querySelectorAll('track'));
+        if (tracksNow.length) {
+          var anyShowing = tracksNow.some(function(t){ return t.mode === 'showing' || t.default === true || /pt/i.test(t.srclang); });
+          if (anyShowing) btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)';
+        }
+      } catch(_) {}
+    } catch (e) { console.warn('ensureCaptionsButton failed', e); }
+  }
+
+  // expose/override global
+  window.ensureCaptionsButton = _ensure;
+})();
+</script>
 </body>
 </html>

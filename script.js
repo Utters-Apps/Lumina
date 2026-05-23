@@ -278,7 +278,10 @@
                 nextEpisodeTrigger: 30,
                 seasons: {
                     1: [
-                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", primaryUrl: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", introStart: 173, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197007939691/NLAS_SCHOOLSPIRITS_101_2173358_1920x1080.jpg" },
+                        { id: 's1-e1', title: "Minha Pseudomorte", url: "https://dl.dropboxusercontent.com/scl/fi/htknkiialy93hzraetpcd/S_S_1_1_D.mp4?rlkey=ty47sz6y2ej2qravzldnx99wm", primaryUrl: "https://player.odycdn.com/v6/streams/069f179eab4e0d35176d1a67f844d9b52d4688ae/28afd0.mp4", introStart: 173, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197007939691/NLAS_SCHOOLSPIRITS_101_2173358_1920x1080.jpg",
+                            subtitles: [
+                                { src: 'https://dl.dropboxusercontent.com/scl/fi/iy33rhl8mw842wdkxyg24/School.Spirits.2023.S01E01.My.So-Called.Death.720p.AMZN.WEB-DL.DDP5.1.H.264-NTb.srt?rlkey=ox1hy2off0e71dewl0pb35fgp&st=afgxax3r', kind: 'subtitles', srclang: 'pt-BR', label: 'Português (BR) - SRT' }
+                            ] },
                         { id: 's1-e2', title: "Cicatrizes Antigas", url: "https://dl.dropboxusercontent.com/scl/fi/jav89oume4akjlk8qjwwg/S_S_1_2_D.mp4?rlkey=gljyx2b9iy91ykig9bwowx2os", introStart: 230, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197289539935/NLAS_SCHOOLSPIRITS_102_2173900_1920x1080.jpg" },
                         { id: 's1-e3', title: "Morta e Confusa", url: "https://dl.dropboxusercontent.com/scl/fi/9cn2dfxkoqfcest7t1qs1/S_S_1_3_D.mp4?rlkey=p1vkpf7b6d84sughzwfmosoux", introStart: 109, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/23/2197336643939/NLAS_SCHOOLSPIRITS_103_2174052_1920x1080.jpg" },
                         { id: 's1-e4', title: "Intenções Mórbidas", url: "https://dl.dropboxusercontent.com/scl/fi/gwjr3n3jp7y0i3bg7y1w2/S_S_1_4_D-1.mp4?rlkey=xkqye3296xnjc0y955z7eqedc", introStart: 119, introDuration: 55, cover: "https://thumbnails.cbsig.net/_x/CBS_Production_Entertainment_VMS/2023/04/22/2197010499856/NLAS_SCHOOLSPIRITS_104_2173371_1920x1080.jpg" },
@@ -766,7 +769,7 @@
                 type: 'filme',
                 category: 'Musical / Aventura / Comédia / Família / Romance',
                 year: '2025',
-                cover: 'https://media.discordapp.net/attachments/1494862606186582088/1494863122291491007/compose.png?ex=6a0279c5&is=6a012845&hm=c5b4ea2e38faf45bc84c8aae53c06e2e988fdb494cea0902bfdc90e592cc8a00&=&format=webp&quality=lossless',
+                cover: 'https://files.catbox.moe/xgn3jx.png',
                 description: 'Zed e Addison embarcam em uma viagem de verão que os leva a um acampamento onde surge um conflito entre Daywalkers e Vampiros. Para evitar uma nova guerra, eles precisam unir os grupos e manter a paz.',
                 ageRating: 'L',
                 distributor: 'Disney Channel',
@@ -1199,12 +1202,12 @@
                         { title: "Amigos ou Inimigos?", url: "https://dl.dropboxusercontent.com/scl/fi/spzh904m6ymp1kuniza60/7.mp4?rlkey=l1bus78xfxhrtblgh4vqp4sgc&st=su82u31g" }
                     ],
                     3: [
-                        { title: "Chaves e Facas", url: "https://www.tokyvideo.com/br/embed/756099" },
-                        { title: "Noite Estrelada", url: "https://www.tokyvideo.com/br/embed/756102" },
-                        { title: "Não é Culpa Sua", url: "https://www.tokyvideo.com/br/embed/756106" },
-                        { title: "222", url: "https://www.tokyvideo.com/br/embed/756109" },
-                        { title: "○△□", url: "https://www.tokyvideo.com/br/embed/756118" },
-                        { title: "Humanos", url: "https://www.tokyvideo.com/br/embed/756126" }
+                        { title: "Chaves e Facas", url: "https://dl.dropboxusercontent.com/scl/fi/adcoazrlktjesqq68qhco/1.mp4?rlkey=fachwtd94ob795h8yt80whdy9&st=4xkoot1y" },
+                        { title: "Noite Estrelada", url: "https://dl.dropboxusercontent.com/scl/fi/tohp8z1lxjciktmbj0sy4/2.mp4?rlkey=5egz1eez6xzv0qlyfikt3wb01&st=1hk4l2h1" },
+                        { title: "Não é Culpa Sua", url: "https://dl.dropboxusercontent.com/scl/fi/nh6d7oz3audrpo1d1y5j1/3.mp4?rlkey=2oy38cwntwpfeduyr3j8ki5g9&st=ho5mszxx" },
+                        { title: "222", url: "https://dl.dropboxusercontent.com/scl/fi/jwzeesae6s13iel25g2xy/4.mp4?rlkey=zcct7p5gisoclimlb5fwhgre7&st=xp1r0sbx" },
+                        { title: "○△□", url: "https://dl.dropboxusercontent.com/scl/fi/4yv7dneggep37r4urp0m2/5.mp4?rlkey=gxi3ss7zkg71gbpnp7ffqomk0&st=07dbcizv" },
+                        { title: "Humanos", url: "https://dl.dropboxusercontent.com/scl/fi/dmuk46zzbb33xiv8g8ol0/6.mp4?rlkey=pklwijehq6hnohxjr1peilf78&st=azlupmq2" }
                     ]
                 }
             },
@@ -1872,7 +1875,7 @@
                 type: 'filme',
                 category: 'Animação, Musical, Fantasia, Família',
                 year: '2021',
-                cover: 'https://media.discordapp.net/attachments/1494862606186582088/1494862669553991710/Descendentes-O-Casamento-Real.png?ex=6a027959&is=6a0127d9&hm=87e0c268f8175f612e1c2bbebd83d6286314a9a5f7180aabe8b24afeb850c826&=&format=webp&quality=lossless&width=1522&height=856',
+                cover: 'https://files.catbox.moe/klka94.png',
                 description: 'Mal e Ben se preparam para seu casamento real em Auradon, reunindo amigos e aliados. No entanto, eventos inesperados ameaçam atrapalhar a cerimônia, exigindo união e coragem para que tudo aconteça como planejado.',
                 ageRating: 'L',
                 distributor: 'Disney Channel / Disney+',
@@ -2307,6 +2310,33 @@
                   ]
                }
             }
+        ,
+            {
+                id: 'rivalidade-ardente',
+                title: 'Rivalidade Ardente',
+                type: 'serie',
+                category: 'Romance / Drama / LGBT+',
+                year: '2025',
+                cover: 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj0sA5yZrpri3ArAAEL-4KcaK61kwgO5PMsikePcAFx2sUe_gdhBZIRj9CzGcD_a8YE4r2lEqC8yuQnaqv1E-jxXJfA99RpNmZYJiFF4nKCFs2NSWV6YsE4tvOV1VL8jD7t6ND8JapLjSzlQGNTpKqDi7QUjk9sxgJ7hytCZ95BdHzXcsw0HGI3BHUaM0ox/s3840/heated-rivalry-capa.jpg',
+                description: 'Dois astros do hóquei vivem uma rivalidade que se transforma em um romance secreto ao longo dos anos, enquanto tentam equilibrar carreira, fama e sentimentos.',
+                ageRating: '16',
+                distributor: 'HBO Max (BR)',
+                producer: 'Crave Original / Bell Media',
+                creator: 'Jacob Tierney',
+                yearBR: 'Estreou em 28 de novembro de 2025 na Crave',
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'Novatos', url: 'https://dl.dropboxusercontent.com/scl/fi/8eq4azvuet9q4wlvk2iak/01.mp4?rlkey=fdb6hegmco8vlmgihlb6kb9vr&st=goieur17' },
+                        { id: 's1-e2', title: 'Olímpicos', url: 'https://dl.dropboxusercontent.com/scl/fi/9vbih9tm7vj1z07b9crk5/02.mp4?rlkey=8pu0upfbz8chg2173vmva1yqr&st=jezsi6pr' },
+                        { id: 's1-e3', title: 'Hunter', url: 'https://dl.dropboxusercontent.com/scl/fi/zl8t4ptrqize2kcvy86dk/03.mp4?rlkey=raj6iq5oq0qlp4pq7jmz9crp3&st=urjnqc28' },
+                        { id: 's1-e4', title: 'Rose', url: 'https://dl.dropboxusercontent.com/scl/fi/3zg3e47uak5xuk0tudmjt/04.mp4?rlkey=ibinwescvhu8a2g0tft9jmdy7&st=sa2w74zd' },
+                        { id: 's1-e5', title: 'Vou Acreditar em Qualquer Coisa', url: 'https://dl.dropboxusercontent.com/scl/fi/g381dgnlatqjnzwqunt27/05.mp4?rlkey=825tpd6tj50fbwraios3zveqh&st=2jpuytic' },
+                        { id: 's1-e6', title: 'A Cabana', url: 'https://dl.dropboxusercontent.com/scl/fi/753co9wa4foxg9niyt7ma/06.mp4?rlkey=2dte1chtgs6vbag6lk920q5t7&st=wzkmjfxw' }
+                    ]
+                },
+                tags: ['Romance','Drama','LGBT+'],
+                shortSynopsis: 'Dois astros do hóquei, Shane Hollander e Ilya Rozanov, vivem uma rivalidade que se transforma em um romance secreto ao longo dos anos.'
+            }
         ];
 
         // Official platform links for "Veja na ..." buttons (used in details modal)
@@ -2349,7 +2379,8 @@
             'matilda-1996': 'https://www.netflix.com/br/title/70033005',
             'soul': 'https://www.disneyplus.com/browse/entity-5f055dc5-cc07-43f2-839e-bf073b16a823',
             'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen',
-            'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO'
+            'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO',
+            'rivalidade-ardente': 'https://www.hbomax.com/br/pt/shows/rivalidade-ardente/50cd4e99-04ee-427b-a3b4-da721ed05d9c'
         };
 
         // --- LINK OBFUSCATION (inline DB shielding) ---
@@ -2400,23 +2431,40 @@
                 function obfuscateItemUrls(item) {
                     try {
                         if (!item || typeof item !== 'object') return;
+                        // top-level url -> url_enc
                         if (item.url && typeof item.url === 'string' && item.url.trim()) {
                             try { item.url_enc = encodeStr(item.url, ENCKEY); } catch(_) { item.url_enc = ''; }
                             try { delete item.url; } catch(_) {}
                         }
+
+                        // seasons -> episodes -> url and subtitles[].src
                         if (item.seasons && typeof item.seasons === 'object') {
                             Object.keys(item.seasons).forEach(s => {
                                 const arr = item.seasons[s] || [];
                                 if (Array.isArray(arr)) {
                                     arr.forEach(ep => {
-                                        if (ep && ep.url) {
+                                        if (!ep || typeof ep !== 'object') return;
+                                        // episode url
+                                        if (ep.url && typeof ep.url === 'string' && ep.url.trim()) {
                                             try { ep.url_enc = encodeStr(ep.url, ENCKEY); } catch(_) { ep.url_enc = ''; }
                                             try { delete ep.url; } catch(_) {}
+                                        }
+                                        // subtitles array: obfuscate each subtitle.src -> src_enc
+                                        if (Array.isArray(ep.subtitles)) {
+                                            ep.subtitles.forEach(sub => {
+                                                try {
+                                                    if (sub && typeof sub.src === 'string' && sub.src.trim()) {
+                                                        try { sub.src_enc = encodeStr(sub.src, ENCKEY); } catch(_) { sub.src_enc = ''; }
+                                                        try { delete sub.src; } catch(_) {}
+                                                    }
+                                                } catch(_) {}
+                                            });
                                         }
                                     });
                                 }
                             });
                         }
+
                         // also obfuscate any nested url fields (defensive)
                         Object.keys(item).forEach(k => {
                             try {
@@ -2553,7 +2601,16 @@
             history: JSON.parse(localStorage.getItem('lumina_v2_hist')) || {}, 
             tab: 'home',
             searchQuery: '',
-            pendingVideo: null
+            pendingVideo: null,
+            // persisted global volume (0.0 - 1.0)
+            volume: (function(){
+                try {
+                    var v = localStorage.getItem('lumina_volume_v1');
+                    if (v === null || typeof v === 'undefined') return 1;
+                    var n = Number(v);
+                    return isNaN(n) ? 1 : Math.max(0, Math.min(1, n));
+                } catch (e) { return 1; }
+            })()
         };
 
         // Background timer control helpers:
@@ -2986,6 +3043,57 @@
                 __youtubeApiLoading = false;
             };
         }
+        // Best-effort helper: try to click YouTube's "Pular anúncio" or similar skip buttons inside any iframe we can access.
+        // This will silently fail on cross-origin iframes (most YouTube embeds), but for same-origin or permissive hosts
+        // it will attempt to click `.ytp-ad-skip-button` or other common selectors. Called periodically only while a YT player is active.
+        function attemptClickYTSkip() {
+            try {
+                // Look for any iframes that look like YouTube embeds
+                const iframes = Array.from(document.querySelectorAll('#player-media-wrapper iframe, iframe[src*="youtube.com"], iframe[src*="youtu.be"], #yt-player iframe'));
+                for (const ifr of iframes) {
+                    try {
+                        // try to access contentWindow.document; if cross-origin this will throw and be caught
+                        const doc = ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document);
+                        if (!doc) continue;
+                        // common selectors for skip ad / skip button and for other skip affordances
+                        const selCandidates = [
+                            '.ytp-ad-skip-button.ytp-button',
+                            '.ytp-ad-skip-button',
+                            '.ytp-ad-overlay-close-button',
+                            '.ytp-ad-overlay-toggle-button',
+                            '.ytp-player-content .ytp-ad-skip-button'
+                        ];
+                        for (const s of selCandidates) {
+                            try {
+                                const btn = doc.querySelector(s);
+                                if (btn) {
+                                    // attempt to click and provide lightweight feedback
+                                    try { btn.click(); } catch(_) { try { btn.dispatchEvent(new MouseEvent('click', { bubbles: true })); } catch(_) {} }
+                                    try { showToast('Tentando pular anúncio...', 1400); } catch(_) {}
+                                    return true;
+                                }
+                            } catch(_) {}
+                        }
+                        // also try to send a generic click to known region (bottom-right ad overlay) if selector fails
+                        try {
+                            const region = doc.querySelector('.ytp-ad-player-overlay, .ytp-ad-overlay-slot');
+                            if (region) {
+                                try { region.click(); } catch(_) {}
+                                try { showToast('Interagindo com anúncio (tentativa)...', 1200); } catch(_) {}
+                                return true;
+                            }
+                        } catch(_) {}
+                    } catch (_) {
+                        // cross-origin iframe - ignore
+                        continue;
+                    }
+                }
+            } catch (e) {
+                // silent
+            }
+            return false;
+        }
+
         function isDirectVideo(url) {
             if(!url) return false;
             try {
@@ -3468,8 +3576,7 @@
             // Helper: decide if a film/prog entry is meaningful to show
             const filmShouldShow = (prog) => {
                 if (!prog) return false;
-                // always show completed markers or embeds
-                if (prog.completed === true) return true;
+                // show embeds (external/iframe) and started progress (>= 2s); do NOT rely on a 'completed' flag for UI visibility
                 if (prog.embed) return true;
                 // show short progress that indicates user started (>= 2s) and not already at EOF
                 if (typeof prog.time === 'number' && prog.time >= 2) {
@@ -4158,6 +4265,8 @@
                     trigger: item.nextEpisodeTrigger || 0,
                     nextEp: nextContext,
                     url: ep.url,
+                    // include subtitles from episode metadata so the player can attach them
+                    subtitles: (ep && Array.isArray(ep.subtitles)) ? ep.subtitles : [],
                     // pass intro metadata (if present) so the player can show skip button for the full intro window
                     introStart: (ep && typeof ep.introStart !== 'undefined') ? Number(ep.introStart) : 0,
                     introDuration: (ep && typeof ep.introDuration !== 'undefined') ? Number(ep.introDuration) : 0
@@ -4265,19 +4374,26 @@
                                 if (l.includes('disneyplus') || l.includes('disneyplus.com')) return 'Disney+';
                                 if (l.includes('globoplay')) return 'Globoplay';
                                 if (l.includes('paramountplus') || l.includes('paramountplus.com')) return 'Paramount+';
-                                if (l.includes('youtube.com')) return 'YouTube';
+                                if (l.includes('youtube.com') || l.includes('youtu.be')) return 'YouTube';
+                                if (l.includes('hbomax') || l.includes('hbomax.com')) return 'HBO Max';
                                 if (l.includes('crunchyroll')) return 'Crunchyroll';
                                 try { return new URL(u).hostname.replace('www.',''); } catch(_) { return 'Plataforma'; }
                             } catch (_) { return 'Plataforma'; }
                         };
                         const svc = detectService(link);
 
+                        // choose correct preposition: use 'no' for YouTube (masculine), 'na' for others by default (HBO Max stays 'na')
+                        const preposition = svc === 'YouTube' ? 'no' : 'na';
+
                         // Mobile: provide a larger, touch-friendly full-width pill below the title for easier tapping
                         if (isMobileView) {
-                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="w-full block mt-3 text-center text-sm font-semibold px-4 py-3 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-black hover:opacity-95 transition-colors">${'Veja na ' + svc}</a>`;
+                            // For YouTube we want "Veja no YouTube", for HBO Max "Veja na HBO Max", others default to "Veja na X"
+                            const label = svc === 'YouTube' ? `Veja no ${svc}` : `Veja na ${svc}`;
+                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="w-full block mt-3 text-center text-sm font-semibold px-4 py-3 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-black hover:opacity-95 transition-colors">${label}</a>`;
                         } else {
                             // Desktop: compact inline pill
-                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>Veja na ${svc}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+                            const label = svc === 'YouTube' ? `Veja no ${svc}` : `Veja na ${svc}`;
+                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>${label}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
                         }
                     }
                 } else {
@@ -5127,8 +5243,23 @@
 
                         // create a small YT wrapper object; actual player created when API ready
                         this.isYouTube = true;
+                        // hide PiP button for YouTube embeds to avoid offering PiP where it doesn't work reliably
+                        try { const pipBtn = document.getElementById('pip-btn'); if (pipBtn) { pipBtn.style.display = 'none'; pipBtn.setAttribute('aria-hidden','true'); } } catch(_) {}
                         this.ytPlayer = null;
                         this.ytSaveInterval = null;
+
+                        // start a periodic, best-effort skip-attempt loop while YT player is active (cleared on teardown)
+                        try {
+                            if (this._ytSkipInterval) { clearInterval(this._ytSkipInterval); this._ytSkipInterval = null; }
+                            this._ytSkipInterval = setInterval(() => {
+                                try {
+                                    // only run attempts while player modal visible and YT flagged
+                                    const pm = document.getElementById('player-modal');
+                                    if (pm && pm.classList.contains('hidden')) return;
+                                    attemptClickYTSkip();
+                                } catch(_) {}
+                            }, 800);
+                        } catch(_) {}
 
                          // decide autoplay behavior: allow autoplay on desktop, require user interaction on mobile
  const allowAutoplay = !isMobileOS();
@@ -5688,7 +5819,7 @@
                     this.vid.autoplay = true;
                     // Prefer start unmuted; if autoplay with sound is blocked, gracefully fall back to muted autoplay and notify user.
                     this.vid.muted = false;
-                    this.vid.volume = 1;
+                    this.vid.volume = (typeof state.volume === 'number') ? state.volume : 1;
                     // encode the url to base64 on the element and decode shortly after to keep markup free of plaintext link
                     try {
                         this.vid.dataset.srcB64 = btoa(String(url || ''));
@@ -6510,28 +6641,37 @@
                                 }
                             } catch (_) {}
 
-                            // If this was the absolute last episode of the series (no nextContextTmp), remove progress/history so it won't show in Continue Watching
+                            // If this was the absolute last episode of the series (no nextContextTmp), keep stored progress/history but avoid removing it;
+                            // instead just update the last-seen timestamp so Continue-watching entries are not auto-removed.
                             if (!nextContextTmp && this.context.type === 'serie') {
                                 try {
-                                    delete state.progress[this.context.id];
-                                    delete state.history[this.context.seriesId];
+                                    // update timestamp only, do NOT delete progress/history or mark as "completed"
+                                    if (state.progress && state.progress[this.context.id]) {
+                                        state.progress[this.context.id].timestamp = Date.now();
+                                    } else {
+                                        state.progress[this.context.id] = { time: safeTime, duration: dur, timestamp: Date.now() };
+                                    }
+                                    if (state.history && state.history[this.context.seriesId]) {
+                                        state.history[this.context.seriesId].timestamp = Date.now();
+                                    } else {
+                                        state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
+                                    }
                                     saveProgressData();
                                 } catch (_) {}
                             } else {
-                                // Not the final series ep: mark as completed as before
+                                // Not the final series ep: update last time/duration/timestamp but do NOT set a 'completed' flag.
                                 state.progress[this.context.id] = state.progress[this.context.id] || {};
                                 state.progress[this.context.id].time = safeTime;
                                 state.progress[this.context.id].duration = dur;
-                                state.progress[this.context.id].completed = true;
+                                // DO NOT set a 'completed' flag so the UI never treats items as fully watched automatically.
                                 state.progress[this.context.id].timestamp = Date.now();
-                                // update series history as completed
+                                // update series history timestamp (do not set history.completed)
                                 if (this.context.type === 'serie' && this.context.seriesId) {
                                     state.history[this.context.seriesId] = {
                                         s: this.context.season,
                                         e: this.context.episode,
                                         epId: this.context.id,
-                                        timestamp: Date.now(),
-                                        completed: true
+                                        timestamp: Date.now()
                                     };
                                 }
                                 // persist (debounced)
@@ -7450,7 +7590,8 @@
 
         // Attach subtitle <track> elements to a video element from an array of subtitle descriptors.
         // Each descriptor: { src, kind, srclang, label, default }
-        function attachSubtitlesToVideo(videoEl, subs) {
+        // Improved: create VTT blobs when needed and ensure textTracks mode is set reliably once tracks are ready.
+        async function attachSubtitlesToVideo(videoEl, subs) {
             try {
                 if (!videoEl || !subs || !Array.isArray(subs)) return;
                 // Remove existing tracks first
@@ -7458,27 +7599,72 @@
                     const existing = Array.from(videoEl.querySelectorAll('track'));
                     existing.forEach(t => t.remove());
                 } catch(_) {}
-                subs.forEach(s => {
+
+                for (const s of subs) {
                     try {
-                        if (!s || !s.src) return;
+                        if (!s || !s.src) continue;
+
+                        // If the incoming src looks like .srt, convert it to VTT blob and use an object URL
+                        let trackSrc = s.src;
+                        try {
+                            if (/\.srt(\?|$)/i.test(s.src)) {
+                                // fetch SRT and convert to VTT in-memory
+                                const res = await fetch(s.src, { cache: 'no-store' }).catch(()=>null);
+                                if (res && res.ok) {
+                                    const srtText = await res.text().catch(()=>'');
+                                    const vtt = 'WEBVTT\n\n' + srtText.replace(/\r+/g,'').replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
+                                    const blob = new Blob([vtt], { type: 'text/vtt' });
+                                    trackSrc = URL.createObjectURL(blob);
+                                }
+                            }
+                        } catch(_) {
+                            // fallback: use original src
+                            trackSrc = s.src;
+                        }
+
                         const tr = document.createElement('track');
                         tr.kind = s.kind || 'subtitles';
-                        tr.src = s.src;
+                        tr.src = trackSrc;
                         if (s.srclang) tr.srclang = s.srclang;
                         if (s.label) tr.label = s.label;
                         if (s.default) tr.default = true;
+                        // append track; many browsers only populate textTracks after adding to DOM
                         videoEl.appendChild(tr);
-                        // ensure track mode is 'showing' if default requested (some browsers set to 'disabled' initially)
-                        if (s.default) {
+
+                        // Wait until the browser has processed the track element, then ensure the mode on the textTrack is set.
+                        const ensureMode = () => {
                             try {
-                                // when track is loaded, set mode to showing
-                                tr.addEventListener('load', () => { try { tr.mode = 'showing'; } catch(_) {} });
-                                // also attempt immediate set (may be allowed)
-                                tr.mode = 'showing';
+                                const tracks = videoEl.textTracks || [];
+                                for (let i = 0; i < tracks.length; i++) {
+                                    const tt = tracks[i];
+                                    // match by label or srclang or kind
+                                    if ((s.label && tt.label === s.label) || (s.srclang && tt.language && tt.language.toLowerCase().indexOf(String(s.srclang).toLowerCase())!==-1) || tt.kind === (s.kind || 'subtitles')) {
+                                        try {
+                                            // set showing if default requested, otherwise leave disabled
+                                            tt.mode = s.default ? 'showing' : 'disabled';
+                                        } catch(_) {
+                                            // some engines require setting on the track element after a tiny delay
+                                            setTimeout(() => { try { tt.mode = s.default ? 'showing' : 'disabled'; } catch(_) {} }, 120);
+                                        }
+                                    }
+                                }
                             } catch(_) {}
+                        };
+
+                        // If track.readyState available, wait for load; otherwise schedule short fallback
+                        try {
+                            if (typeof tr.readyState !== 'undefined') {
+                                tr.addEventListener('load', () => { try { ensureMode(); } catch(_) {} }, { once: true });
+                                // small timeout fallback
+                                setTimeout(() => { try { ensureMode(); } catch(_) {} }, 300);
+                            } else {
+                                setTimeout(() => { try { ensureMode(); } catch(_) {} }, 350);
+                            }
+                        } catch(_) {
+                            setTimeout(() => { try { ensureMode(); } catch(_) {} }, 350);
                         }
                     } catch(_) {}
-                });
+                }
             } catch (_) {}
         }
 
@@ -7502,7 +7688,8 @@
             const fullContext = {
                 type: 'serie', seriesId: seriesData.id, seriesTitle: seriesData.title,
                 season: nextCtx.s, episode: nextCtx.e, id: epData.id,
-                trigger: seriesData.nextEpisodeTrigger || 0, nextEp: newNextCtx, url: epData.url
+                trigger: seriesData.nextEpisodeTrigger || 0, nextEp: newNextCtx, url: epData.url,
+                subtitles: (epData && Array.isArray(epData.subtitles)) ? epData.subtitles : []
             };
 
             dismissNextEp(true); if(player.vid) player.vid.pause();
@@ -8088,7 +8275,7 @@
                         ep = found.ep;
                     }
                     const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : `${chosen.id}-s${s}-e${e}`;
-                    const ctx = { type: 'serie', seriesId: chosen.id, seriesTitle: chosen.title, season: s, episode: e, id: stableEpId, trigger: chosen.nextEpisodeTrigger || 0, url: ep.url, introStart: ep.introStart || 0, introDuration: ep.introDuration || 0 };
+                    const ctx = { type: 'serie', seriesId: chosen.id, seriesTitle: chosen.title, season: s, episode: e, id: stableEpId, trigger: chosen.nextEpisodeTrigger || 0, url: ep.url, subtitles: (ep && Array.isArray(ep.subtitles)) ? ep.subtitles : [], introStart: ep.introStart || 0, introDuration: ep.introDuration || 0 };
                     switchTab('home', false);
                     setTimeout(() => requestPlay(ep.url, `T${s}:E${Number(e)+1} - ${ep.title}`, ctx), 220);
                     return;
@@ -8535,4 +8722,186 @@
             } else {
                 setTimeout(() => processBloggerAnchors(document), 80);
             }
+        })();
+
+        /* ======= Subtitles helper: auto-convert SRT -> VTT, attach track and show captions toggle when video element appears ======= */
+        (function(){
+            // URL for the SRT provided (Espíritos na Escola - S01E01)
+            const LUMINA_SRT_URL = 'https://raw.githubusercontent.com/Utters-Apps/Captions/9ac0d1b142f6c2f77af7f300af1dd279a323cf61/School.Spirits.2023.S01E01.My.So-Called.Death.720p.AMZN.WEB-DL.DDP5.1.H.264-NTb.srt';
+
+            // Convert SRT text to VTT
+            function convertSRTtoVTT(srt) {
+                if (!srt) return 'WEBVTT\n\n';
+                return 'WEBVTT\n\n' + srt.replace(/\r+/g,'').replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
+            }
+
+            // Create and attach VTT track to a video element; returns the created track element
+            async function attachSRTasVTT(videoEl, srtUrl, label = 'Português (BR)') {
+                if (!videoEl || !srtUrl) return null;
+                try {
+                    const res = await fetch(srtUrl, { cache: 'no-store' });
+                    if (!res.ok) return null;
+                    const srtText = await res.text();
+                    const vttText = convertSRTtoVTT(srtText);
+                    const blob = new Blob([vttText], { type: 'text/vtt' });
+                    const vttUrl = URL.createObjectURL(blob);
+                    // remove any existing similar track for safety
+                    const existing = Array.from(videoEl.querySelectorAll('track')).find(t => t.label === label || t.srclang === 'pt-BR');
+                    if (existing) existing.remove();
+                    const track = document.createElement('track');
+                    track.kind = 'subtitles';
+                    track.label = label;
+                    track.srclang = 'pt-BR';
+                    track.src = vttUrl;
+                    // do not force default; user toggles
+                    track.default = false;
+                    videoEl.appendChild(track);
+                    // ensure loaded mode is disabled initially
+                    try { track.mode = 'disabled'; } catch(_) {}
+                    return track;
+                } catch (e) {
+                    console.warn('attachSRTasVTT failed', e);
+                    return null;
+                }
+            }
+
+            // Add a captions toggle button into the player UI near other controls (if not already present)
+            function ensureCaptionsButton(videoEl) {
+                try {
+                    if (!videoEl) return;
+                    const playerUi = document.querySelector('.player-ui .flex.justify-between') || document.querySelector('.player-ui');
+                    if (!playerUi) return;
+
+                    // don't duplicate button
+                    if (document.getElementById('lumina-captions-btn')) return;
+
+                    // build button element
+                    const btn = document.createElement('button');
+                    btn.id = 'lumina-captions-btn';
+                    btn.className = 'w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors';
+                    btn.title = 'Legendas';
+                    btn.style.minWidth = '40px';
+                    btn.style.marginLeft = '6px';
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 10h10M7 14h6"/></svg>';
+
+                    // find controls container (right side) and insert before fullscreen button if present
+                    const controlsRow = document.querySelector('.player-ui .flex.justify-between') || document.querySelector('.player-ui');
+                    if (controlsRow) {
+                        // try insert near bottom-right controls container
+                        const rightGroup = document.querySelector('.player-ui .flex.items-center.gap-6') || document.querySelector('.player-ui .flex.justify-between > div:last-child');
+                        if (rightGroup) rightGroup.insertBefore(btn, rightGroup.firstChild);
+                        else playerUi.appendChild(btn);
+                    } else document.querySelector('.player-ui').appendChild(btn);
+
+                    // Toggle behavior: enable/disable first available PT-BR track
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        try {
+                            const tracks = Array.from(videoEl.querySelectorAll('track'));
+                            if (!tracks.length) {
+                                // no track present: try to attach default SRT source (only for the known ep)
+                                attachSRTasVTT(videoEl, LUMINA_SRT_URL).then(track => {
+                                    if (!track) { showToast && showToast('Falha ao carregar legendas.'); return; }
+                                    try { track.mode = 'showing'; btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch(_) {}
+                                });
+                                return;
+                            }
+                            // prefer Portuguese track if present
+                            let target = tracks.find(t => /pt/i.test(t.srclang)) || tracks[0];
+                            if (!target) return;
+                            // toggle between showing and disabled
+                            try {
+                                if (target.mode === 'showing') { target.mode = 'disabled'; btn.style.background = ''; }
+                                else { target.mode = 'showing'; btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; }
+                            } catch (err) {
+                                // some browsers require setting mode after track is ready, try after short delay
+                                setTimeout(() => {
+                                    try { target.mode = (target.mode === 'showing') ? 'disabled' : 'showing'; } catch(_) {}
+                                }, 120);
+                            }
+                        } catch (err) {
+                            console.warn('captions toggle failed', err);
+                        }
+                    }, { passive: true });
+                } catch (e) { console.warn('ensureCaptionsButton failed', e); }
+            }
+
+            // Observe #player-media-wrapper for video elements being inserted and auto-attach subtitles & button for Espíritos na Escola S01E01
+            const observeWrapper = () => {
+                try {
+                    const wrapper = document.getElementById('player-media-wrapper');
+                    if (!wrapper) return;
+                    const mo = new MutationObserver((mutations) => {
+                        for (const m of mutations) {
+                            if (m.addedNodes && m.addedNodes.length) {
+                                m.addedNodes.forEach(async node => {
+                                    try {
+                                        if (node.nodeType !== 1) return;
+                                        if (node.tagName && node.tagName.toLowerCase() === 'video') {
+                                            const videoEl = node;
+                                            // If the current player.context references espíritos-na-escola S01E1, attach subtitles automatically
+                                            try {
+                                                const ctx = window.player && window.player.context;
+                                                const matchEp = ctx && ((ctx.seriesId === 'espiritos-na-escola' && String(ctx.season) === '1' && Number(ctx.episode) === 0) || (ctx.id && String(ctx.id).includes('S_S_1_1')));
+                                                if (matchEp) {
+                                                    // Attach and ensure captions toggle
+                                                    const tr = await attachSRTasVTT(videoEl, LUMINA_SRT_URL, 'Português (BR)');
+                                                    ensureCaptionsButton(videoEl);
+                                                    // Show captions automatically (nice UX) after track loads
+                                                    if (tr) {
+                                                        try { tr.mode = 'showing'; document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'); } catch(_) {}
+                                                    }
+                                                } else {
+                                                    // For any other video, still provide captions button if tracks appear later by observing track additions
+                                                    ensureCaptionsButton(videoEl);
+                                                }
+                                            } catch (e) { console.warn('auto-attach subtitle logic error', e); }
+                                        }
+                                        // Also handle cases where an iframe is replaced by a resolved mp4 and a <video> is nested inside
+                                        if (node.querySelectorAll) {
+                                            const nestedVideo = node.querySelector('video');
+                                            if (nestedVideo) {
+                                                const videoEl = nestedVideo;
+                                                ensureCaptionsButton(videoEl);
+                                                // also attempt to auto-attach for espirits first ep if player context matches
+                                                try {
+                                                    const ctx = window.player && window.player.context;
+                                                    const matchEp = ctx && ((ctx.seriesId === 'espiritos-na-escola' && String(ctx.season) === '1' && Number(ctx.episode) === 0) || (ctx.id && String(ctx.id).includes('S_S_1_1')));
+                                                    if (matchEp) {
+                                                        await attachSRTasVTT(videoEl, LUMINA_SRT_URL, 'Português (BR)');
+                                                        try { videoEl.querySelector && (document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)')); } catch(_) {}
+                                                    }
+                                                } catch (e) {}
+                                            }
+                                        }
+                                    } catch (_) {}
+                                });
+                            }
+                        }
+                    });
+                    mo.observe(wrapper, { childList: true, subtree: true });
+
+                    // also do a quick pass for any video already present
+                    const existing = wrapper.querySelector('video');
+                    if (existing) {
+                        ensureCaptionsButton(existing);
+                        // attach automatically if current context is the specific episode
+                        (async () => {
+                            try {
+                                const ctx = window.player && window.player.context;
+                                const matchEp = ctx && ((ctx.seriesId === 'espiritos-na-escola' && String(ctx.season) === '1' && Number(ctx.episode) === 0) || (ctx.id && String(ctx.id).includes('S_S_1_1')));
+                                if (matchEp) {
+                                    await attachSRTasVTT(existing, LUMINA_SRT_URL, 'Português (BR)');
+                                    try { document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'); } catch(_) {}
+                                }
+                            } catch(_) {}
+                        })();
+                    }
+                } catch (e) { console.warn('observeWrapper failed', e); }
+            };
+
+            // run when DOM ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', observeWrapper);
+            } else observeWrapper();
         })();
