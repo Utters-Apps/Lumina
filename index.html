@@ -477,15 +477,8 @@
         <button onclick="cancelPlay()" class="px-6 py-2.5 rounded-full bg-white/10 hover:bg-white/20 text-white font-medium text-sm transition-colors">Cancelar</button>
     </div>
 
-    <!-- Rotate To Vertical Prompt (minimal text; hides automatically on correct orientation) -->
-    <div id="rotate-vertical-modal" class="fixed inset-0 z-[75] bg-background/95 backdrop-blur-xl hidden flex-col items-center justify-center px-6 text-center transition-all duration-220 opacity-0">
-        <div class="w-24 h-24 rounded-3xl glass flex items-center justify-center mb-4 shadow-lg">
-            <i class="ph ph-device-mobile text-4xl text-white animate-[pulse_1.6s_infinite]"></i>
-        </div>
-
-        <h3 id="rotate-vertical-title" class="font-display text-lg font-semibold text-white mb-1">Gire o aparelho</h3>
-        <p id="rotate-vertical-sub" class="text-white/60 text-sm max-w-[260px]">Volte para a orientação vertical.</p>
-    </div>
+    <!-- Rotate To Vertical Prompt removed per configuration: permanently hidden in PWA builds. -->
+    <div id="rotate-vertical-modal" style="display:none!important; visibility:hidden!important;" aria-hidden="true"></div>
 
     <!-- Legal / Fan Disclaimer Modal (upgraded: non-monetization + contact + animations) -->
     <div id="legal-modal" class="fixed inset-0 z-[120] hidden items-center justify-center px-6" role="dialog" aria-modal="true" aria-labelledby="legal-title" aria-hidden="true">
@@ -2547,72 +2540,24 @@
     </script>
 
     <script>
-      // Override / fix: only show the rotate-to-vertical prompt when device is actually in landscape (width > height).
-      // This override is appended late to ensure it replaces earlier definitions and runs reliably.
+      // Rotate-to-vertical prompt intentionally disabled: replace showRotateAfterClose with a no-op to ensure it never appears.
       (function(){
-        function isPortrait() {
-          try { return window.innerHeight > window.innerWidth; } catch (e) { return true; }
-        }
-        // safe mobile detector already present; reuse if available
-        function mobileCheck() {
-          try { return typeof isMobileOS === 'function' ? isMobileOS() : (/android|iphone|ipad|ipod/i.test(navigator.userAgent)); } catch(e){ return false; }
-        }
-
-        // New robust showRotateAfterClose that guards against showing when already vertical
         window.showRotateAfterClose = function() {
           try {
-            // Respect global orientation-disable toggle
-            if (getOrientationDisabled && getOrientationDisabled()) {
-              if (document.getElementById('player-modal')?.classList.contains('hidden') && document.getElementById('details-modal')?.classList.contains('hidden')) {
-                document.body.style.overflow = '';
+            // Force-hide any existing rotate-vertical modal, restore scrolling and avoid registering listeners.
+            try {
+              const modal = document.getElementById('rotate-vertical-modal');
+              if (modal) {
+                try { modal.classList.add('hidden'); } catch(_) {}
+                try { modal.classList.remove('flex'); } catch(_) {}
+                try { modal.classList.remove('opacity-0'); } catch(_) {}
+                try { modal.style.display = 'none'; modal.style.visibility = 'hidden'; } catch(_) {}
               }
-              return;
-            }
-
-            // Only for mobile platforms
-            if (!mobileCheck()) {
-              if (document.getElementById('player-modal')?.classList.contains('hidden') && document.getElementById('details-modal')?.classList.contains('hidden')) {
-                document.body.style.overflow = '';
-              }
-              return;
-            }
-
-            // Do not show if device is already portrait (vertical)
-            if (window.innerWidth <= window.innerHeight) {
-              if (document.getElementById('player-modal')?.classList.contains('hidden') && document.getElementById('details-modal')?.classList.contains('hidden')) {
-                document.body.style.overflow = '';
-              }
-              return;
-            }
-
-            const modal = document.getElementById('rotate-vertical-modal');
-            if (!modal) return;
-
-            const hint = modal.querySelector('.rotate-hint');
-            if (hint) {
-              const portrait = isPortrait();
-              hint.innerText = portrait ? 'Você está em modo retrato — gire para assistir em tela cheia.' : 'Fechou o player — gire seu dispositivo para voltar à navegação vertical.';
-            }
-
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            setTimeout(() => {
-              modal.classList.remove('opacity-0');
-              modal.classList.add('scale-100');
-            }, 12);
-
-            document.body.style.overflow = 'hidden';
-
-            const onRotateBack = () => {
-              if (window.innerHeight > window.innerWidth) {
-                try { dismissRotateVertical(); } catch(_) {}
-                window.removeEventListener('resize', onRotateBack);
-              }
-            };
-            window.addEventListener('resize', onRotateBack);
-          } catch (e) { /* silent */ }
+            } catch(_) {}
+            try { if (document && document.body) document.body.style.overflow = ''; } catch(_) {}
+          } catch (e) {}
+          // Intentionally do nothing else so the prompt never appears.
         };
-
       })();
     </script>
 <script>
@@ -3145,6 +3090,245 @@
 
   // expose/override global
   window.ensureCaptionsButton = _ensure;
+})();
+</script>
+<script>
+/* Lumina runtime hardening override
+   - Prevents automatic "completed" marking and avoids setting time = duration when nearing end.
+   - Improves flushProgressNow with quota-safe trimming that removes oldest entries first.
+   - Replaces player.checkNextTrigger with a safer implementation that only updates timestamps (no auto-complete)
+     and shows the next-episode prompt without overwriting progress times.
+   This block intentionally runs late so it can safely override previously defined functions.
+*/
+(function() {
+  // Safe JSON parse helper
+  function safeParse(str, fallback) {
+    try { return JSON.parse(str); } catch (e) { return fallback; }
+  }
+
+  // Quota-aware trim helper (keep newest N entries by timestamp)
+  function trimStorageKeyByTimestamp(key, keepCount) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return;
+      const obj = safeParse(raw, {});
+      const entries = Object.entries(obj || {});
+      if (entries.length <= keepCount) return;
+      entries.sort((a,b) => ((b[1] && b[1].timestamp)||0) - ((a[1] && a[1].timestamp)||0));
+      const kept = Object.fromEntries(entries.slice(0, keepCount));
+      localStorage.setItem(key, JSON.stringify(kept));
+    } catch (e) {
+      try { localStorage.removeItem(key); } catch(_) {}
+    }
+  }
+
+  // Robust flushProgressNow override
+  window.flushProgressNow = function() {
+    try {
+      // Merge in-memory safely into persisted store with protection against quota
+      const progKey = 'lumina_v2_prog';
+      const histKey = 'lumina_v2_hist';
+      // Load existing safely
+      const storedProg = safeParse(localStorage.getItem(progKey), {});
+      const storedHist = safeParse(localStorage.getItem(histKey), {});
+
+      // Merge function that prefers newer timestamp, and doesn't regress time values
+      function mergeProgress(existing, incoming) {
+        try {
+          const out = Object.assign({}, existing || {});
+          Object.keys(incoming || {}).forEach(id => {
+            try {
+              const inc = incoming[id] || {};
+              const prev = out[id] || {};
+              const prevTs = prev.timestamp || 0;
+              const incTs = inc.timestamp || Date.now();
+              // Choose the entry with the greatest timestamp; for equal timestamps prefer larger time value
+              if (incTs > prevTs) {
+                out[id] = Object.assign({}, prev, inc, { timestamp: incTs });
+              } else if (incTs === prevTs) {
+                const prevTime = typeof prev.time === 'number' ? prev.time : -1;
+                const incTime = typeof inc.time === 'number' ? inc.time : prevTime;
+                out[id] = Object.assign({}, prev, inc, { time: Math.max(prevTime, incTime), timestamp: incTs });
+              } else {
+                // keep prev (newer)
+                out[id] = prev;
+              }
+            } catch(_) {}
+          });
+          return out;
+        } catch (e) { return incoming || existing || {}; }
+      }
+
+      // Merge and attempt to write with trimming on quota error
+      try {
+        const mergedProg = mergeProgress(storedProg, window.state && window.state.progress ? window.state.progress : {});
+        try {
+          localStorage.setItem(progKey, JSON.stringify(mergedProg));
+        } catch (e) {
+          // quota exceeded -> trim existing stored by keeping most recent 150, then retry
+          try {
+            trimStorageKeyByTimestamp(progKey, 150);
+            localStorage.setItem(progKey, JSON.stringify(mergedProg));
+          } catch (ee) {
+            // final fallback: reduce to the most recent 100 entries from mergedProg
+            try {
+              const entries = Object.entries(mergedProg || {});
+              entries.sort((a,b) => ((b[1] && b[1].timestamp)||0) - ((a[1] && a[1].timestamp)||0));
+              const reduced = Object.fromEntries(entries.slice(0, 100));
+              localStorage.setItem(progKey, JSON.stringify(reduced));
+            } catch (eee) {
+              // give up gracefully
+            }
+          }
+        }
+      } catch (e) {}
+
+      try {
+        const mergedHist = mergeProgress(storedHist, window.state && window.state.history ? window.state.history : {});
+        try {
+          localStorage.setItem(histKey, JSON.stringify(mergedHist));
+        } catch (e) {
+          // trim history similarly
+          try {
+            trimStorageKeyByTimestamp(histKey, 150);
+            localStorage.setItem(histKey, JSON.stringify(mergedHist));
+          } catch (ee) {
+            try {
+              const entries = Object.entries(mergedHist || {});
+              entries.sort((a,b) => ((b[1] && b[1].timestamp)||0) - ((a[1] && a[1].timestamp)||0));
+              const reduced = Object.fromEntries(entries.slice(0, 100));
+              localStorage.setItem(histKey, JSON.stringify(reduced));
+            } catch (eee) {}
+          }
+        }
+      } catch (e) {}
+    } catch (err) {
+      console.warn('flushProgressNow override error', err);
+    }
+  };
+
+  // Safer next-episode trigger: update only timestamps and never set time = duration or completed flags automatically
+  function safeCheckNextTrigger() {
+    try {
+      if (!window.player || !window.player.context) return;
+      const ctx = window.player.context;
+      let cur = 0, dur = 0;
+      try {
+        if (window.player.isYouTube && window.player.ytPlayer && typeof window.player.ytPlayer.getCurrentTime === 'function') {
+          cur = Number(window.player.ytPlayer.getCurrentTime()) || 0;
+          dur = Number(window.player.ytPlayer.getDuration()) || 0;
+        } else if (window.player.vid) {
+          cur = Number(window.player.vid.currentTime) || 0;
+          dur = Number(window.player.vid.duration) || 0;
+        } else {
+          return;
+        }
+      } catch (e) { return; }
+
+      // determine trigger
+      let trigger = Number(ctx && ctx.trigger) || 0;
+      if ((!trigger || trigger <= 0) && ctx && ctx.seriesId) {
+        const s = (window.db || []).find(x => x && x.id === ctx.seriesId);
+        if (s && typeof s.nextEpisodeTrigger !== 'undefined') trigger = Number(s.nextEpisodeTrigger) || trigger;
+      }
+      if (isNaN(dur) || dur <= 0 || trigger <= 0) return;
+      // only act when within trigger window
+      if (dur - cur <= trigger) {
+        // mark prompt shown
+        window.player.nextPromptShown = true;
+
+        // update progress timestamp only, do NOT set time = duration (prevents unintended "watched" marks)
+        try {
+          if (ctx && ctx.id) {
+            const pid = ctx.id;
+            state.progress[pid] = state.progress[pid] || {};
+            // Preserve existing time/duration if present; update timestamp to show recency
+            state.progress[pid].timestamp = Date.now();
+            if (typeof cur === 'number' && (typeof state.progress[pid].time !== 'number' || cur > state.progress[pid].time)) {
+              // update to latest observed time but never force-equal to duration
+              state.progress[pid].time = cur;
+            }
+            if (typeof dur === 'number' && dur > 0 && (!state.progress[pid].duration || state.progress[pid].duration < dur)) {
+              state.progress[pid].duration = dur;
+            }
+            // persist safely
+            try { saveProgressData(); } catch (_) {}
+          }
+          if (ctx && ctx.type === 'serie' && ctx.seriesId) {
+            state.history[ctx.seriesId] = state.history[ctx.seriesId] || {};
+            state.history[ctx.seriesId].timestamp = Date.now();
+            // keep s/e/epId if present; do not mark completed
+            if (typeof ctx.season !== 'undefined') state.history[ctx.seriesId].s = ctx.season;
+            if (typeof ctx.episode !== 'undefined') state.history[ctx.seriesId].e = ctx.episode;
+            if (ctx.id) state.history[ctx.seriesId].epId = ctx.id;
+            try { saveProgressData(); } catch (_) {}
+          }
+        } catch (e) { /* ignore progress update errors */ }
+
+        // Build next context safely; do not mutate original player.context
+        let nextContext = ctx.nextEp || null;
+        try {
+          if (!nextContext && ctx.type === 'serie' && ctx.seriesId && typeof ctx.season !== 'undefined' && typeof ctx.episode !== 'undefined') {
+            const seriesData = (window.db || []).find(d => d && d.id === ctx.seriesId);
+            if (seriesData) {
+              const sNum = Number(ctx.season);
+              const eIdx = Number(ctx.episode);
+              const seasonArr = (seriesData.seasons && seriesData.seasons[sNum]) ? seriesData.seasons[sNum] : [];
+              if (eIdx + 1 >= seasonArr.length) {
+                const nextSeasonNum = String(sNum + 1);
+                const nextSeasonArr = seriesData.seasons && seriesData.seasons[nextSeasonNum] ? seriesData.seasons[nextSeasonNum] : null;
+                if (nextSeasonArr && nextSeasonArr.length > 0) {
+                  const firstEp = nextSeasonArr[0];
+                  const stableEpId = (firstEp && firstEp.id) ? firstEp.id : `${seriesData.id}-s${nextSeasonNum}-e0`;
+                  nextContext = { url: firstEp.url, title: `T${nextSeasonNum}:E1 - ${firstEp.title}`, s: nextSeasonNum, e: 0, id: stableEpId };
+                }
+              }
+            }
+          }
+        } catch (e) { nextContext = nextContext || null; }
+
+        // Show next-ep prompt if nextContext exists and has a usable url
+        if (nextContext && nextContext.url) {
+          const prompt = document.getElementById('next-ep-prompt');
+          if (prompt) {
+            try {
+              document.getElementById('next-ep-title').innerText = (nextContext.title || '').split(' - ').slice(1).join(' - ') || nextContext.title || '';
+              // use series cover if available
+              const seriesData = (window.db || []).find(d => d && d.id === ctx.seriesId);
+              if (seriesData && seriesData.cover) document.getElementById('next-ep-img').src = seriesData.cover;
+              prompt.classList.remove('hidden');
+              requestAnimationFrame(() => prompt.classList.remove('opacity-0', 'translate-y-4'));
+            } catch (e) {}
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('safeCheckNextTrigger error', err);
+    }
+  }
+
+  // Replace function if player exists, otherwise schedule replacement after ready
+  function installSafeOverride() {
+    try {
+      if (window.player) {
+        window.player.checkNextTrigger = safeCheckNextTrigger;
+      }
+      // Also ensure flushProgressNow exists globally (we replaced above)
+      if (typeof window.flushProgressNow !== 'function') {
+        window.flushProgressNow = window.flushProgressNow || function() {};
+      }
+    } catch (e) { console.warn('installSafeOverride failed', e); }
+  }
+
+  // Install now or on a short delay to ensure runtime definitions are present
+  if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    setTimeout(installSafeOverride, 80);
+  } else {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(installSafeOverride, 80));
+  }
+
+
+
 })();
 </script>
 </body>
