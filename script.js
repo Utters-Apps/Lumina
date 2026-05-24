@@ -1,3 +1,4 @@
+        "use strict";
         // Ensure non-DB images load eagerly and use async decoding; DB cover images (movie/series) will be lazy-loaded.
         (function(){
             // Dynamic placeholder generator: returns a placehold.co URL with title text and a stable color per id.
@@ -2331,11 +2332,26 @@
                         { id: 's1-e3', title: 'Hunter', url: 'https://dl.dropboxusercontent.com/scl/fi/zl8t4ptrqize2kcvy86dk/03.mp4?rlkey=raj6iq5oq0qlp4pq7jmz9crp3&st=urjnqc28' },
                         { id: 's1-e4', title: 'Rose', url: 'https://dl.dropboxusercontent.com/scl/fi/3zg3e47uak5xuk0tudmjt/04.mp4?rlkey=ibinwescvhu8a2g0tft9jmdy7&st=sa2w74zd' },
                         { id: 's1-e5', title: 'Vou Acreditar em Qualquer Coisa', url: 'https://dl.dropboxusercontent.com/scl/fi/g381dgnlatqjnzwqunt27/05.mp4?rlkey=825tpd6tj50fbwraios3zveqh&st=2jpuytic' },
-                        { id: 's1-e6', title: 'A Cabana', url: 'https://dl.dropboxusercontent.com/scl/fi/753co9wa4foxg9niyt7ma/06.mp4?rlkey=2dte1chtgs6vbag6lk920q5t7&st=wzkmjfxw' }
+                        { id: 's1-e6', title: 'A Cabana', url: 'https://dl.dropboxusercontent.com/scl/fi/0z95htsxua07a0kx66g4c/06.mp4?rlkey=5gj8cgveiri4qi1hvs77jdn2g&st=psdbta70' }
                     ]
                 },
                 tags: ['Romance','Drama','LGBT+'],
                 shortSynopsis: 'Dois astros do hóquei, Shane Hollander e Ilya Rozanov, vivem uma rivalidade que se transforma em um romance secreto ao longo dos anos.'
+            },
+            {
+                id: 'coracoes-jovens',
+                title: 'Corações Jovens',
+                type: 'filme',
+                category: 'Drama / Romance / Amadurecimento',
+                year: '2024',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/0dc3bff5a6e111deb3951bed78bcd5069403bf4ca45da004d03b59a6872e3061.png',
+                description: 'Elias, um garoto de 14 anos, desenvolve sentimentos pelo novo vizinho, Alexander, da mesma idade. Enquanto lida com sua descoberta amorosa, ele também enfrenta o medo do que outras pessoas podem pensar.',
+                ageRating: '12',
+                distributor: 'Mares Filmes',
+                production: 'Polar Bear, Family Affair Films, Kwassa Films',
+                releaseDate: '2025-11-13',
+                yearBR: '2025 — estreia em cinemas no Brasil em 13 de novembro de 2025',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/7xoewob7uo3249sk252qp/Young-Hearts-2024.mp4?rlkey=a1phxo8abmfe7vsbac0dhqhob&st=p08eaqsz'
             }
         ];
 
@@ -2971,28 +2987,64 @@
                     final = Object.fromEntries(entries.slice(0, 200));
                 }
 
-                // Attempt to write progress + history to localStorage; on quota errors trim older entries and retry.
+                // SANITIZE: ensure we never persist progress that effectively equals or exceeds the duration
+                // (this prevents accidental auto-marking as "completed" when players report near-EOF transiently).
                 try {
-                    localStorage.setItem('lumina_v2_prog', JSON.stringify(final));
-                } catch (e) {
-                    // If quota exceeded, attempt to trim existing stored entries first
-                    try {
-                        const trimmed = trimLocalStorageByTimestamp('lumina_v2_prog', 120);
-                        if (trimmed) {
-                            // try again
-                            localStorage.setItem('lumina_v2_prog', JSON.stringify(final));
-                        } else {
-                            // last resort: try to write a reduced snapshot with only the most recent 100 entries
-                            try {
-                                const reduced = Object.fromEntries(entries.slice(0, 100));
-                                localStorage.setItem('lumina_v2_prog', JSON.stringify(reduced));
-                                final = reduced;
-                            } catch (_) {
-                                // give up gracefully (don't clear everything)
+                    const sanitized = Object.assign({}, final || {});
+                    Object.keys(sanitized).forEach(k => {
+                        try {
+                            const entry = sanitized[k];
+                            if (!entry || typeof entry !== 'object') return;
+                            // If we have both time and duration, clamp time to strictly less than duration by a safety margin.
+                            const dur = (typeof entry.duration === 'number' && entry.duration > 0) ? Number(entry.duration) : null;
+                            const tim = (typeof entry.time === 'number') ? Number(entry.time) : null;
+                            if (dur !== null && tim !== null) {
+                                // keep at most (duration - 1s) to avoid accidental completed states; preserve sub-second precision
+                                const safeMax = Math.max(0, dur - 1);
+                                if (tim >= dur || tim > safeMax) {
+                                    entry.time = Math.min(tim, safeMax);
+                                }
                             }
+                            // Remove any legacy/computed "completed" flag so UI determines completion from clear user action
+                            if (Object.prototype.hasOwnProperty.call(entry, 'completed')) {
+                                try { delete entry.completed; } catch(_) {}
+                            }
+                            sanitized[k] = entry;
+                        } catch(_) {}
+                    });
+                    // Attempt to write sanitized progress + history to localStorage; on quota errors trim older entries and retry.
+                    try {
+                        localStorage.setItem('lumina_v2_prog', JSON.stringify(sanitized));
+                    } catch (e) {
+                        // If quota exceeded, attempt to trim existing stored entries first
+                        try {
+                            const trimmed = trimLocalStorageByTimestamp('lumina_v2_prog', 120);
+                            if (trimmed) {
+                                // try again
+                                localStorage.setItem('lumina_v2_prog', JSON.stringify(sanitized));
+                            } else {
+                                // last resort: try to write a reduced snapshot with only the most recent 100 entries
+                                try {
+                                    const reduced = Object.fromEntries(entries.slice(0, 100));
+                                    localStorage.setItem('lumina_v2_prog', JSON.stringify(reduced));
+                                    final = reduced;
+                                } catch (_) {
+                                    // give up gracefully (don't clear everything)
+                                }
+                            }
+                        } catch (_) {
+                            // give up gracefully
                         }
-                    } catch (_) {
-                        // give up gracefully
+                    }
+                } catch (sanitizeErr) {
+                    // If sanitization unexpectedly fails, fall back to original write attempt (best-effort)
+                    try {
+                        localStorage.setItem('lumina_v2_prog', JSON.stringify(final));
+                    } catch (e) {
+                        try {
+                            trimLocalStorageByTimestamp('lumina_v2_prog', 120);
+                            localStorage.setItem('lumina_v2_prog', JSON.stringify(final));
+                        } catch (_) {}
                     }
                 }
 
@@ -3572,68 +3624,108 @@
         }
 
         function getContinueWatching() {
+            // Return a stable, deterministic list of items the user actually started watching.
+            // Rules:
+            //  - Only include films/episodes with a reliable progress record (time >= 2s) OR explicit embed marker.
+            //  - Do not treat entries as "watched" just because duration exists; require an explicit completed flag if caller set it.
+            //  - For series prefer an explicit history entry (most-recent episode) and fall back to per-episode progress only when it clearly indicates started playback.
             const items = [];
-            // Helper: decide if a film/prog entry is meaningful to show
-            const filmShouldShow = (prog) => {
-                if (!prog) return false;
-                // show embeds (external/iframe) and started progress (>= 2s); do NOT rely on a 'completed' flag for UI visibility
-                if (prog.embed) return true;
-                // show short progress that indicates user started (>= 2s) and not already at EOF
+            const now = Date.now();
+
+            // Helper: decide if a per-item progress is meaningful to surface
+            const meaningfulProgress = (prog) => {
+                if (!prog || typeof prog !== 'object') return false;
+                // Embed markers are meaningful (iframe/embedded player started)
+                if (prog.embed === true) return true;
+                // Must have a numeric time (seconds) and be beyond a tiny threshold to avoid false positives
                 if (typeof prog.time === 'number' && prog.time >= 2) {
-                    // if duration available, avoid showing tiny fraction near zero or already finished
+                    // If duration is known, require that time is at least 2s and not equal to duration (avoid auto-complete)
                     if (typeof prog.duration === 'number' && prog.duration > 0) {
-                        if (prog.time < prog.duration - 6) return true;
-                        // allow near-complete entries if not explicitly marked completed
-                        return prog.time < prog.duration;
+                        // treat as meaningful if not essentially at EOF; small epsilon for safety
+                        return prog.time < (prog.duration - 3) || Math.abs(prog.time - prog.duration) > 0.5;
                     }
                     return true;
                 }
                 return false;
             };
 
-            // Films: include when filmShouldShow is true
-            db.filter(i => i.type === 'filme').forEach(f => {
-                const filmKey = f.id_ep || f.id;
-                const prog = state.progress[filmKey];
-                if (!prog) return;
-                if (filmShouldShow(prog)) {
-                    // ensure we expose a timestamp for sorting, falling back to now if absent
-                    const safeProg = Object.assign({}, prog, { timestamp: prog.timestamp || Date.now() });
-                    items.push(Object.assign({}, f, { _prog: safeProg }));
-                }
-            });
+            // Films: only surface when film progress is meaningful
+            try {
+                db.forEach(i => {
+                    if (!i || i.type !== 'filme') return;
+                    const key = (i.id_ep && String(i.id_ep).trim()) ? i.id_ep : (i.id || null);
+                    if (!key) return;
+                    const prog = state.progress && state.progress[key] ? state.progress[key] : null;
+                    if (!prog) return;
+                    if (!meaningfulProgress(prog)) return;
+                    const safeProg = Object.assign({}, prog);
+                    safeProg.timestamp = Number(safeProg.timestamp) || now;
+                    items.push(Object.assign({}, i, { _prog: safeProg }));
+                });
+            } catch (e) {
+                // defensive: ignore film pass errors
+            }
 
-            // Series: include when there is history or progress; prefer progress timestamps but fall back to history timestamp
-            db.filter(i => i.type === 'serie').forEach(s => {
-                const hist = state.history[s.id];
-                const histTs = hist && hist.timestamp ? hist.timestamp : 0;
-                if (hist) {
-                    const epProg = state.progress[hist.epId];
-                    const safeProg = epProg ? Object.assign({}, epProg, { timestamp: epProg.timestamp || histTs || Date.now() }) : { timestamp: histTs || Date.now(), embed: true };
-                    items.push(Object.assign({}, s, { _prog: safeProg, _hist: hist }));
-                } else {
-                    // also include if there exists per-episode progress even without top-level history
-                    // look for any progress keys that reference this series id pattern
+            // Series: prefer explicit history entry (most-recent watched ep); include only if history timestamp or episode progress meaningful
+            try {
+                db.forEach(series => {
+                    if (!series || series.type !== 'serie') return;
+                    const hist = (state.history && state.history[series.id]) ? state.history[series.id] : null;
+                    if (hist && hist.timestamp) {
+                        // if history points to an episode id that has meaningful progress, prefer that progress record
+                        const progFromHist = (hist.epId && state.progress && state.progress[hist.epId]) ? state.progress[hist.epId] : null;
+                        const safeProg = progFromHist && meaningfulProgress(progFromHist)
+                            ? Object.assign({}, progFromHist, { timestamp: Number(progFromHist.timestamp) || Number(hist.timestamp) || now })
+                            : { timestamp: Number(hist.timestamp) || now, embed: !!(progFromHist && progFromHist.embed) };
+                        items.push(Object.assign({}, series, { _prog: safeProg, _hist: hist }));
+                        return;
+                    }
+
+                    // No explicit history entry: scan for any per-episode progress that clearly indicates a started episode
                     try {
-                        const keys = Object.keys(state.progress || {});
-                        for (const k of keys) {
-                            if (String(k).indexOf(`${s.id}-s`) === 0) {
-                                const p = state.progress[k];
-                                if (p && (p.time >= 2 || p.completed)) {
-                                    const safeP = Object.assign({}, p, { timestamp: p.timestamp || Date.now() });
-                                    items.push(Object.assign({}, s, { _prog: safeP, _hist: { s: null, e: null, epId: k, timestamp: safeP.timestamp } }));
+                        const seasonKeys = Object.keys(series.seasons || {});
+                        let found = null;
+                        for (const s of seasonKeys) {
+                            const eps = Array.isArray(series.seasons[s]) ? series.seasons[s] : [];
+                            for (let idx = 0; idx < eps.length; idx++) {
+                                const ep = eps[idx];
+                                if (!ep) continue;
+                                // stable episode id fallback if ep.id missing
+                                const epId = (ep.id && String(ep.id).trim()) ? ep.id : `${series.id}-s${s}-e${idx}`;
+                                const prog = (state.progress && state.progress[epId]) ? state.progress[epId] : null;
+                                if (!prog) continue;
+                                if (meaningfulProgress(prog)) {
+                                    found = { epId, prog: Object.assign({}, prog) };
                                     break;
                                 }
                             }
+                            if (found) break;
                         }
-                    } catch (e) { /* ignore */ }
-                }
-            });
+                        if (found) {
+                            found.prog.timestamp = Number(found.prog.timestamp) || now;
+                            items.push(Object.assign({}, series, { _prog: found.prog, _hist: { s: null, e: null, epId: found.epId, timestamp: found.prog.timestamp } }));
+                        }
+                    } catch (inner) {
+                        // ignore per-series scanning errors
+                    }
+                });
+            } catch (e) {
+                // ignore series pass errors
+            }
 
-            // Sort by most-recent activity (timestamp) descending; ensure numeric fallback to zero
+            // Sort deterministically by timestamp desc; items without timestamp treated as oldest
             items.sort((a, b) => {
                 const ta = (a._prog && Number(a._prog.timestamp)) || 0;
                 const tb = (b._prog && Number(b._prog.timestamp)) || 0;
+                if (tb === ta) {
+                    // tie-breaker: prefer series over films (so continuing shows stays prominent), then title alphabetical
+                    const taType = a.type || '';
+                    const tbType = b.type || '';
+                    if (taType !== tbType) return (tbType === 'serie') ? 1 : -1;
+                    const aTitle = (a.title || '').toLowerCase();
+                    const bTitle = (b.title || '').toLowerCase();
+                    return aTitle < bTitle ? -1 : (aTitle > bTitle ? 1 : 0);
+                }
                 return tb - ta;
             });
 
@@ -4887,12 +4979,20 @@
             try {
                 const isPortrait = window.innerHeight > window.innerWidth;
                 if (isMobileOS() && isPortrait && !getOrientationDisabled() && !isInPWA()) {
+                    // store pending video before showing modal so rotation handlers can act
                     state.pendingVideo = { url, title, context };
+
                     const modal = document.getElementById('orientation-modal');
-                    modal.classList.remove('hidden');
-                    modal.classList.add('flex');
-                    setTimeout(() => modal.classList.remove('opacity-0'), 10);
-                    window.addEventListener('resize', handleOrientation);
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                        // ensure visible transition runs
+                        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                    }
+
+                    // Listen for both resize and orientationchange to reliably detect device rotation
+                    try { window.addEventListener('resize', handleOrientation, { passive: true }); } catch(_) {}
+                    try { window.addEventListener('orientationchange', handleOrientation, { passive: true }); } catch(_) {}
                 }
             } catch (_) {}
         }
@@ -4907,14 +5007,65 @@
         }
 
         function cancelPlay(clear = true) {
-            if(clear) state.pendingVideo = null;
-            const modal = document.getElementById('orientation-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-            window.removeEventListener('resize', handleOrientation);
+            try {
+                // mark that the user explicitly cancelled orientation prompt so we won't re-show it immediately
+                try { window.__lumina_orientation_cancelled = Date.now(); } catch(_) {}
+
+                // clear any pending video request only when explicitly requested
+                if (clear) state.pendingVideo = null;
+
+                // hide orientation prompt cleanly (do NOT close any player)
+                const modal = document.getElementById('orientation-modal');
+                if (modal) {
+                    modal.classList.add('opacity-0');
+                    setTimeout(() => {
+                        try {
+                            modal.classList.add('hidden');
+                            modal.classList.remove('flex');
+                        } catch(_) {}
+                    }, 300);
+                }
+
+                // ensure rotate-vertical prompt (the other modal) is hidden when cancelling
+                try {
+                    const rot = document.getElementById('rotate-vertical-modal');
+                    if (rot && !rot.classList.contains('hidden')) {
+                        rot.classList.add('opacity-0');
+                        setTimeout(() => {
+                            try { rot.classList.add('hidden'); rot.classList.remove('flex'); } catch(_) {}
+                        }, 260);
+                    }
+                } catch(_) {}
+
+                // remove orientation listeners (resize + orientationchange) so pendingVideo won't be reopened after cancel
+                try { window.removeEventListener('resize', handleOrientation); } catch(_) {}
+                try { window.removeEventListener('orientationchange', handleOrientation); } catch(_) {}
+
+                // Do NOT close or stop any active player here. cancelPlay's role is now only to dismiss orientation prompt.
+                // restore page scrolling if nothing else blocks it
+                try {
+                    const playerOpen = document.getElementById('player-modal') && !document.getElementById('player-modal').classList.contains('hidden');
+                    const detailsOpen = document.getElementById('details-modal') && !document.getElementById('details-modal').classList.contains('hidden');
+                    if (!playerOpen && !detailsOpen) document.body.style.overflow = '';
+                } catch(_) {}
+
+                // gentle feedback so user knows their cancel took effect
+                try { showToast && showToast('Reprodução cancelada.', 1200); } catch(_) {}
+            } catch (e) {
+                // fallback: ensure pendingVideo cleared and UI hidden
+                try {
+                    if(clear) state.pendingVideo = null;
+                    const modal = document.getElementById('orientation-modal');
+                    if (modal) {
+                        modal.classList.add('opacity-0');
+                        setTimeout(() => {
+                            modal.classList.add('hidden');
+                            modal.classList.remove('flex');
+                        }, 300);
+                    }
+                    window.removeEventListener('resize', handleOrientation);
+                } catch(_) {}
+            }
         }
 
         const player = {
