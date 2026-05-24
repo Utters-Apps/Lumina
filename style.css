@@ -572,10 +572,56 @@
 
         /* Session horizontal scroller + arrows */
         .session-row { display: flex; gap: 1rem; align-items: stretch; }
-        .session-scroll { display: flex; gap: 1rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scroll-behavior: smooth; }
+        /* session scroller: tuned spacing for denser, cleaner layouts across breakpoints */
+        .session-scroll { display: flex; gap: 0.75rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scroll-behavior: smooth; }
+
+        /* Specific tweaks for Related (horizontal on mobile) and Search (grid) to reduce overly large gaps
+           and make cards sit closer together on wide screens while keeping comfortable touch spacing on mobile. */
+        /* Related lists rendered into #related-grid-<id> should use a tighter gap and slightly smaller card min-width */
+        [id^="related-grid-"] {
+            display: flex;
+            gap: 0.6rem;
+            align-items: stretch;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-bottom: 6px;
+        }
+        /* Make search results denser on wide viewports and more consistent on narrow ones */
+        #search-grid {
+            display: grid;
+            gap: 0.75rem;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+        @media (min-width: 520px) {
+            #search-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.9rem; }
+        }
+        @media (min-width: 900px) {
+            #search-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+        }
+        @media (min-width: 1200px) {
+            #search-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+        }
+
+        /* Ensure related cards are slightly narrower so more items fit in one row on large screens */
+        [id^="related-grid-"] .session-card { min-width: 11.5rem; max-width: 14.5rem; }
+
+        /* Slightly reduce outer paddings for the related/search sections on very large screens to avoid feeling sparse */
+        @media (min-width: 1400px) {
+            .px-6.md\:px-16 { padding-left: 3.5rem; padding-right: 3.5rem; }
+        }
+
+        /* Reduce horizontal gap on very large viewports so related/search sessions feel tighter on PC */
+        @media (min-width: 1200px) {
+            .session-scroll { gap: 0.6rem; }
+        }
         .session-scroll::-webkit-scrollbar { height: 8px; }
         .session-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 8px; }
-        .session-card { min-width: 12rem; max-width: 20rem; flex: 0 0 auto; position: relative; overflow: visible; } /* ensures side-by-side cards but constrains size and allows hover overflow */
+        .session-card { min-width: 12rem; max-width: 16rem; flex: 0 0 auto; position: relative; overflow: visible; } /* tighter max-width for large grids so cards appear denser */
+
+        /* On very large screens slightly reduce card min-width constraint and increase columns density */
+        @media (min-width: 1400px) {
+            .session-card { min-width: 11.5rem; max-width: 15.5rem; }
+        }
 
         .session-arrow {
             position: absolute; top: 50%; transform: translateY(-50%);
