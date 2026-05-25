@@ -422,7 +422,25 @@
         #progress-fill { background: linear-gradient(90deg,#a78bfa,#7c3aed); box-shadow: 0 6px 24px rgba(124,58,237,0.12); }
 
         /* Speed menu & captions button keep consistent rounded glass */
-        #speed-menu { border-radius: 12px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(17,17,19,0.8)); border: 1px solid rgba(255,255,255,0.04); box-shadow: 0 12px 36px rgba(2,6,23,0.6); padding: 8px; }
+        #speed-menu {
+            border-radius: 14px;
+            background: rgba(255,255,255,0.025);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: 0 8px 20px rgba(2,6,23,0.45);
+            padding: 6px;
+            transform-origin: right top;
+            opacity: 0;
+            transform: translateY(-4px) scale(0.992);
+            transition: opacity 220ms cubic-bezier(0.2,0.9,0.2,1), transform 260ms cubic-bezier(0.2,0.9,0.2,1), box-shadow 200ms ease;
+        }
+        /* visible state toggled via JS by removing .hidden; ensure visible style */
+        #speed-menu:not(.hidden) {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            box-shadow: 0 14px 34px rgba(124,58,237,0.10);
+        }
 
         /* Accessibility: focus ring for keyboard users */
         #speed-btn:focus-visible, #lumina-captions-btn:focus-visible, #fullscreen-btn:focus-visible, #pip-btn:focus-visible, #mute-btn:focus-visible, #center-play-btn:focus-visible, #bottom-play-btn:focus-visible {
@@ -549,19 +567,27 @@
             .hover-card:hover { transform: none; box-shadow: none; }
             nav, .md\\:hidden { transform: none; }
 
-            /* Mobile: two vertical columns (two stacks) for search and favorites */
+            /* Mobile: enforce a consistent two-column grid for search and favorites that matches list layout */
             #search-grid, #fav-grid {
-                display: grid;
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-                gap: 0.75rem;
+                display: grid !important;
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                gap: 0.75rem !important;
+                align-items: start;
             }
-            /* Ensure session cards span full column width on mobile stacks */
-            #search-grid .session-card, #fav-grid .session-card, .session-wrap .session-card {
-                min-width: unset;
-                width: 100%;
+
+            /* Ensure session cards and catalog cards fill the column, don't rely on min-width constraints */
+            #search-grid .session-card, #fav-grid .session-card, .session-wrap .session-card,
+            #search-grid .hover-card, #fav-grid .hover-card {
+                min-width: unset !important;
+                max-width: 100% !important;
+                width: 100% !important;
             }
-            /* Slightly tighter card aspect for stacked mobile lists */
-            #search-grid .aspect-video, #fav-grid .aspect-video { aspect-ratio: 16/9; }
+
+            /* Keep 16:9 aspect for card covers on mobile for consistent visuals */
+            #search-grid .aspect-video, #fav-grid .aspect-video, #search-grid img, #fav-grid img { 
+                aspect-ratio: 16/9;
+                object-fit: cover;
+            }
         }
 
         /* Tab transition wrapper */
@@ -735,7 +761,7 @@
             position: fixed;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 110px; /* sits above player controls/progress */
+            bottom: 160px; /* sits above player controls/progress */
             z-index: 120;
             pointer-events: none;
             max-width: min(92%, 980px);
@@ -766,6 +792,262 @@
         }
 
         @media (max-width: 520px) {
-            #lumina-captions-overlay { bottom: 120px; }
+            #lumina-captions-overlay { bottom: 180px; }
             #lumina-captions-overlay .custom-captions-line { font-size: 13px; padding: 6px 10px; }
+        }
+
+        /* ======= Player refinement overrides: smoother, subtler animations & reduced visual weight ======= */
+        /* Reduce heavy shadows and slow aggressive transforms while keeping elegant depth and motion. */
+        /* Overall UI: slower, more natural ease and smaller translation distances */
+        .player-ui { transition: opacity 360ms cubic-bezier(0.22,0.9,0.29,1), transform 360ms cubic-bezier(0.22,0.9,0.29,1); }
+        .hover-card { transition: transform 300ms cubic-bezier(0.2,0.9,0.2,1), box-shadow 300ms ease; }
+        .hover-card:hover { transform: translateY(-3px) scale(1.015); box-shadow: 0 14px 30px -12px rgba(0,0,0,0.45); }
+
+        /* Tame center play button: slightly smaller, smoother hover and reduced glow */
+        #center-play-btn {
+            width: 72px !important;
+            height: 72px !important;
+            min-width: 72px !important;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, rgba(139,92,246,0.10), rgba(124,58,237,0.10));
+            border: 1px solid rgba(139,92,246,0.12);
+            box-shadow:
+                0 12px 36px rgba(124,58,237,0.08),
+                inset 0 1px 4px rgba(255,255,255,0.02);
+            transition: transform 220ms cubic-bezier(0.16,1,0.3,1), box-shadow 260ms ease, background 200ms;
+        }
+        #center-play-btn:hover { transform: translateY(-4px) scale(1.04); box-shadow: 0 18px 48px rgba(124,58,237,0.10); }
+
+        /* Bottom play: softer gradient and smaller elevation */
+        #bottom-play-btn {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            border-radius: 9999px;
+            background: linear-gradient(90deg,#9f7aea 0%, #a78bfa 100%);
+            border: 1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 8px 26px rgba(124,58,237,0.06);
+            transition: transform 180ms ease, box-shadow 200ms ease;
+        }
+        #bottom-play-btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 14px 36px rgba(124,58,237,0.08); }
+
+        /* Controls: smaller lift on hover and gentler focus rings */
+        #speed-btn:hover, #lumina-captions-btn:hover, #fullscreen-btn:hover, #pip-btn:hover, #mute-btn:hover,
+        #speed-btn:focus, #lumina-captions-btn:focus, #fullscreen-btn:focus, #pip-btn:focus, #mute-btn:focus {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 10px 28px rgba(124,58,237,0.08);
+            transition: transform 260ms cubic-bezier(0.22,0.9,0.29,1), box-shadow 280ms ease;
+        }
+        #speed-btn:focus-visible, #lumina-captions-btn:focus-visible, #fullscreen-btn:focus-visible, #pip-btn:focus-visible, #mute-btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.14), 0 12px 40px rgba(124,58,237,0.08);
+        }
+
+        /* Progress & volume: smoother thumb transitions and more subtle fills */
+        input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.05); box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
+        #progress-fill { background: linear-gradient(90deg,#b79df0,#8b5cf6); box-shadow: 0 8px 22px rgba(139,92,246,0.08); transition: width 180ms linear; }
+
+        /* Idle behaviour: keep minimal controls visible (PiP & close) while hiding only non-essential chrome */
+        .player-idle .player-ui { opacity: 0.02; pointer-events: none; transition: opacity 380ms ease; }
+        .player-idle .player-ui .keep-visible { opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
+        /* ensure central play remains discoverable when hovering (desktop) */
+        .player-idle:hover .player-ui { opacity: 1; pointer-events: auto; }
+
+        /* Reduce the prominence of badges on cards slightly to keep focus on covers */
+        .card-badge { transform-origin: left top; top: 8px; left: 8px; padding: 5px 9px; font-size: 10.5px; opacity: 0.96; }
+
+        /* Subtle entrance animation for player modal */
+        #player-modal { transition: opacity 420ms cubic-bezier(0.22,1,0.3,1), transform 420ms cubic-bezier(0.22,1,0.3,1); transform-origin: center center; }
+        #player-modal:not(.hidden) { transform: translateY(0) scale(1); }
+        #player-modal.opacity-0 { transform: translateY(6px) scale(0.998); }
+
+        /* Reduce glare and long shadows in many spots for a cleaner, more "perfect" look */
+        .glass, .player-control-circle, .card-badge {
+            border-radius: 12px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.35);
+        }
+
+        /* Make UI transitions slightly faster for responsiveness, but keep fade for elegance */
+        .fade-in, .animate-fade-in { transition: opacity 420ms cubic-bezier(0.22,1,0.3,1) !important; }
+
+        /* Mobile safe-touch targets enlarged slightly for comfort */
+        @media (max-width: 767px) {
+            #center-play-btn { width: 76px !important; height: 76px !important; min-width: 76px !important; }
+            .player-control-circle { width: 48px; height: 48px; min-width: 48px; }
+        }
+
+        /* Force-hide PiP and volume controls when the player is showing a YouTube embed.
+           Applied via adding the 'youtube-embed' class to #player-modal (JS already marks YT flows),
+           this ensures PiP / volume / mute UI cannot appear for YouTube even when other scripts try to show them. */
+        #player-modal.youtube-embed #pip-btn,
+        #player-modal.youtube-embed #volume-bar,
+        #player-modal.youtube-embed #mute-btn,
+        #player-modal.youtube-embed .group\/vol,
+        #player-modal.youtube-embed .keep-visible#pip-btn {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        /* ============================
+           STRONG CAPTIONS STYLES
+           Ensures native cues, ::cue, ::cue-region and custom overlay are highly specific,
+           positioned above player controls, and visually consistent across browsers.
+           ============================ */
+
+        /* Native WebVTT cue styling with high specificity and important flags */
+        #player-modal video::cue,
+        #player-modal video::cue-region,
+        #player-modal ::cue {
+            background: rgba(0,0,0,0.90) !important;
+            color: #fff !important;
+            font-size: 18px !important;
+            line-height: 1.35 !important;
+            padding: 12px 16px !important;
+            border-radius: 10px !important;
+            text-align: center !important;
+            white-space: pre-wrap !important;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.7) !important;
+            max-width: 92% !important;
+            display: inline-block !important;
+            margin: 0 auto !important;
+            /* raise captions further so they sit clearly above the progress bar and player chrome */
+            transform: translateY(-96px) !important;
+            text-rendering: optimizeLegibility !important;
+            -webkit-font-smoothing: antialiased !important;
+            z-index: 2147483647 !important; /* ensure on top */
+        }
+
+        /* WebKit specific internal track display override for iOS/Safari */
+        video::-webkit-media-text-track-display {
+            bottom: 180px !important; /* lift above progress and controls */
+            z-index: 2147483646 !important;
+            pointer-events: none !important;
+        }
+        video::-webkit-media-text-track-display::cue {
+            background: rgba(0,0,0,0.82) !important;
+            color: #fff !important;
+            font-size: 15px !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.6) !important;
+        }
+
+        /* Fallback high-specificity rule for browsers that support ::cue but ignore lesser rules */
+        :not(pre) > video::cue, video::cue {
+            background: rgba(0,0,0,0.82) !important;
+            color: #fff !important;
+            font-size: 16px !important;
+            line-height: 1.25 !important;
+            padding: 8px 12px !important;
+            border-radius: 8px !important;
+            text-align: center !important;
+            transform: translateY(-72px) !important;
+            z-index: 2147483647 !important;
+        }
+
+        /* Make sure captions are above our custom overlays and above player UI gradients */
+        #player-modal .player-ui,
+        #player-modal .player-ui * {
+            z-index: 1000;
+        }
+        #lumina-captions-overlay, #lumina-captions-overlay.custom-captions {
+            z-index: 2147483647 !important;
+            bottom: 160px !important;
+            pointer-events: none !important;
+        }
+        /* Ensure custom overlay visuals match native style */
+        #lumina-captions-overlay .custom-captions-line {
+            background: rgba(0,0,0,0.86) !important;
+            color: #fff !important;
+            padding: 10px 14px !important;
+            border-radius: 8px !important;
+            font-size: 16px !important;
+            line-height: 1.25 !important;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6) !important;
+        }
+
+        /* When native rendering is active (textTracks in 'showing'), hide overlay to avoid duplication */
+        video[textTracks]::cue, video[textTracks]::-webkit-media-text-track-display {
+            /* no-op: presence of cues handled via JS; keep CSS here for completeness */
+        }
+
+        /* Ensure captions remain readable on small screens */
+        @media (max-width: 520px) {
+            #player-modal video::cue,
+            #lumina-captions-overlay .custom-captions-line,
+            video::-webkit-media-text-track-display::cue {
+                font-size: 15px !important;
+                padding: 8px 10px !important;
+                transform: translateY(-72px) !important;
+                bottom: 160px !important;
+            }
+            #lumina-captions-overlay { bottom: 160px !important; }
+
+        /* Ensure the captions toggle button is visible and accessible across players */
+        #lumina-captions-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            padding: 0.45rem !important;
+            border-radius: 14px !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)) !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
+            color: #fff !important;
+            box-shadow: 0 8px 26px rgba(12,10,20,0.55) !important;
+            pointer-events: auto !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            z-index: 2147483648 !important;
+        }
+
+        /* Keep captions button visible even when player-modal has youtube-embed class, but make it inert if needed */
+        #player-modal.youtube-embed #lumina-captions-btn {
+            display: inline-flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* Ensure the captions button is included in keep-visible group (so idle hiding won't remove it) */
+        #lumina-captions-btn { pointer-events: auto; }
+
+        /* Mobile: slightly enlarge the tap area and place it beside other controls */
+        @media (max-width: 767px) {
+            #lumina-captions-btn { width: 48px !important; height: 48px !important; min-width: 48px !important; border-radius: 12px !important; }
+        }
+
+        /* Force captions controls & overlays visible and interactive (high specificity to override other rules) */
+        #lumina-captions-btn,
+        .player-ui #lumina-captions-btn {
+            display: inline-flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            z-index: 2147483648 !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)) !important;
+            border: 1px solid rgba(255,255,255,0.06) !important;
+        }
+
+        /* Ensure custom overlay is always above player chrome and not clipped */
+        #lumina-captions-overlay,
+        #lumina-captions-overlay.custom-captions {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: none !important;
+            z-index: 2147483647 !important;
+            bottom: 160px !important;
+        }
+
+        /* Strong rule to keep native ::cue visible above player UI */
+        #player-modal video::cue,
+        #player-modal ::cue,
+        ::cue {
+            z-index: 2147483647 !important;
+            visibility: visible !important;
         }

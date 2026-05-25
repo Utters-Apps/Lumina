@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#09090b">
@@ -447,8 +448,8 @@
                             </div>
 
                             <!-- Picture-in-Picture (custom icon) -->
-                            <button id="skip-intro-btn" onclick="skipIntro()" class="text-white hover:text-accent transition-colors" title="Pular abertura" aria-label="Pular abertura">
-                                <i class="ph ph-forward text-lg"></i>
+                            <button id="skip-intro-btn" onclick="skipIntro()" class="text-white transition-colors" title="Pular abertura" aria-label="Pular abertura">
+                                <span class="skip-text">Pular Abertura</span>
                             </button>
                             <button id="pip-btn" onclick="togglePiP()" class="keep-visible text-white hover:text-white/70 transition-colors" title="Picture-in-Picture" aria-label="Picture-in-Picture">
                                 <img src="PiPicon.png" alt="PiP" class="w-5 h-5 object-contain" style="opacity:1;filter:none;">
@@ -1534,7 +1535,7 @@
             }
         })();
 
-        // Hide fullscreen button in PWA standalone on iOS devices only; keep it visible for Android PWAs.
+        // Hide fullscreen and PiP buttons in PWA standalone on iOS devices only; keep them visible for Android PWAs.
         (function(){
             try {
                 const isPWAStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) 
@@ -1558,7 +1559,7 @@
                     } catch (e) { return false; }
                 })();
 
-                // Only hide fullscreen button when PWA standalone on iOS mobile; keep it visible for Android PWAs.
+                // Only hide fullscreen and PiP when PWA standalone on iOS mobile; keep them visible for Android PWAs.
                 if (isPWAStandalone && isMobile && isIOS) {
                     const fs = document.getElementById('fullscreen-btn');
                     if (fs) {
@@ -1568,12 +1569,26 @@
                         fs.tabIndex = -1;
                     }
 
-                    // Also inject a CSS rule with !important to ensure the control is not visible in stubborn UAs.
+                    // Also hide the PiP control (ensure all instances are hidden)
+                    try {
+                        const pip = document.getElementById('pip-btn');
+                        if (pip) {
+                            pip.style.display = 'none';
+                            pip.setAttribute('aria-hidden', 'true');
+                            pip.tabIndex = -1;
+                        }
+                        // hide any duplicate or alternate PiP icons/selectors
+                        document.querySelectorAll('#player-modal #pip-btn, #pip-btn, .pip-control, [data-pip]').forEach(el => {
+                            try { el.style.display = 'none'; el.setAttribute('aria-hidden', 'true'); el.tabIndex = -1; } catch(_) {}
+                        });
+                    } catch(_) {}
+
+                    // Also inject a CSS rule with !important to ensure the controls are not visible in stubborn UAs.
                     try {
                         if (!document.getElementById('lumina-hide-fs-ios-style')) {
                             const s = document.createElement('style');
                             s.id = 'lumina-hide-fs-ios-style';
-                            s.textContent = '#fullscreen-btn{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;padding:0!important;margin:0!important;border:0!important}';
+                            s.textContent = '#fullscreen-btn,#pip-btn,#player-modal .pip-control,[data-pip]{display:none!important;visibility:hidden!important;opacity:0!important;height:0!important;width:0!important;padding:0!important;margin:0!important;border:0!important}';
                             document.head.appendChild(s);
                         }
                     } catch(_) {}
@@ -2577,7 +2592,7 @@
       position: 'absolute',
       left: '50%',
       transform: 'translateX(-50%)',
-      bottom: '96px',
+      bottom: '160px',
       zIndex: '9999',
       pointerEvents: 'none',
       maxWidth: 'min(92%,980px)',
@@ -2711,7 +2726,7 @@
       position: 'absolute',
       left: '50%',
       transform: 'translateX(-50%)',
-      bottom: '110px',
+      bottom: '160px',
       zIndex: '99999',
       pointerEvents: 'none',
       maxWidth: '90%',
@@ -2892,8 +2907,15 @@
       const video = wrapper ? wrapper.querySelector('video') : document.querySelector('video');
       const has = hasSubtitlesForVideo(video);
       if (!has && btn) {
-        // remove button if no subtitles available
-        btn.remove();
+        // keep the captions button visible but disabled when no subtitles are available
+        try {
+            btn.disabled = true;
+            btn.setAttribute('aria-disabled', 'true');
+            // visually dim the button so users see it's unavailable
+            btn.classList.add('opacity-40');
+            // ensure it cannot be focused or invoked
+            btn.tabIndex = -1;
+        } catch(_) {}
         return;
       }
       // if has subtitles but button missing, create minimal button re-use existing helper if present
@@ -3331,5 +3353,64 @@
 
 })();
 </script>
+    <style>
+      /* Mobile portrait: add extra top spacing for custom player to account for notches / safe area */
+      @media (max-width: 767px) and (orientation: portrait) {
+        /* Push player UI down using the safe-area-inset-top fallback (keeps behavior in browsers without env support) */
+        #player-modal .player-ui {
+          padding-top: calc(env(safe-area-inset-top, 18px) + 8px) !important;
+        }
+        /* Ensure the centered top title also shifts down so it remains visually balanced */
+        #player-modal .player-ui .top-center {
+          top: calc(12px + env(safe-area-inset-top, 18px)) !important;
+        }
+        /* Slightly lower close button for easier reach on notch devices */
+        #player-modal .player-ui button[title="Fechar player"] {
+          margin-top: calc(env(safe-area-inset-top, 18px) / 2);
+        }
+      }
+    </style>
+    <style>
+      /* Ensure bottom controls (speed, captions, skip-intro, pip, mute, bottom-play) match the fullscreen button size
+         for consistent tap targets in the player's bottom control row. */
+      #fullscreen-btn { width: 44px; height: 44px; min-width: 44px; min-height: 44px; }
+      #speed-btn,
+      #lumina-captions-btn,
+      #pip-btn,
+      #mute-btn,
+      #bottom-play-btn {
+        width: 44px !important;
+        height: 44px !important;
+        min-width: 44px !important;
+        min-height: 44px !important;
+        padding: 0.45rem 0.65rem !important;
+        border-radius: 9999px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+      /* Skip-intro is intentionally styled as a rectangular rounded pill with text (separate sizing below) */
+      #skip-intro-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 140px;
+        height: 44px;
+        padding: 0 14px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+        border: 1px solid rgba(255,255,255,0.06);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: none;
+        box-shadow: 0 8px 26px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+        transition: transform 180ms ease, box-shadow 220ms ease, background 180ms ease, opacity 180ms ease;
+        cursor: pointer;
+      }
+      #skip-intro-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(124,58,237,0.08); background: linear-gradient(90deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04)); }
+      /* keep center-play-btn as the larger central control (do not change) */
+    </style>
 </body>
 </html>

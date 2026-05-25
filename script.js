@@ -1,3 +1,75 @@
+        // High-priority suppression: catch reported ResizeObserver loop message as early as possible.
+        // Some engines emit this non-fatal warning as an uncaught error; handle it at capture phase to avoid console noise.
+        window.addEventListener('error', function(ev) {
+            try {
+                const msgCandidates = [
+                    ev && ev.message,
+                    ev && ev.error && ev.error.message,
+                    ev && ev.error && ev.error.toString && ev.error.toString()
+                ];
+                for (let i = 0; i < msgCandidates.length; i++) {
+                    const m = msgCandidates[i];
+                    if (!m) continue;
+                    if (/ResizeObserver loop completed with undelivered notifications/i.test(String(m))) {
+                        try { ev.preventDefault && ev.preventDefault(); } catch(_) {}
+                        try { ev.stopImmediatePropagation && ev.stopImmediatePropagation(); } catch(_) {}
+                        return;
+                    }
+                }
+            } catch (_) {}
+        }, { capture: true, passive: true });
+
+        // Suppress noisy ResizeObserver loop error that some browsers emit but which is non-fatal.
+        // This prevents the specific error message from showing up as an uncaught error while leaving other errors intact.
+        // Handle multiple shapes: window 'error' events (ev.message / ev.error.message) and unhandled promise rejections.
+        function _isResizeObserverLoopMessage(msg) {
+            try {
+                if (!msg) return false;
+                return /ResizeObserver loop completed with undelivered notifications/i.test(String(msg));
+            } catch (e) {
+                return false;
+            }
+        }
+
+        window.addEventListener('error', function(ev) {
+            try {
+                // ev.message is common; ev.error && ev.error.message covers some other engines
+                const msgCandidates = [
+                    ev && ev.message,
+                    ev && ev.error && ev.error.message,
+                    ev && ev.error && ev.error.toString && ev.error.toString()
+                ];
+                for (let i = 0; i < msgCandidates.length; i++) {
+                    if (_isResizeObserverLoopMessage(msgCandidates[i])) {
+                        try { ev.preventDefault && ev.preventDefault(); } catch(_) {}
+                        try { ev.stopImmediatePropagation && ev.stopImmediatePropagation(); } catch(_) {}
+                        return;
+                    }
+                }
+            } catch (_) {}
+            // allow other errors to propagate normally
+        }, { passive: true, capture: true });
+
+        // Also suppress the ResizeObserver loop message when it surfaces as an unhandled promise rejection reason.
+        window.addEventListener('unhandledrejection', function(ev) {
+            try {
+                const reason = ev && ev.reason;
+                // Reason can be a DOMException, Error, string, or object. Inspect common message carriers.
+                const candidates = [
+                    reason && (reason.message || reason.toString && reason.toString()),
+                    reason
+                ];
+                for (let i = 0; i < candidates.length; i++) {
+                    if (_isResizeObserverLoopMessage(candidates[i])) {
+                        try { ev.preventDefault && ev.preventDefault(); } catch(_) {}
+                        try { ev.stopImmediatePropagation && ev.stopImmediatePropagation(); } catch(_) {}
+                        return;
+                    }
+                }
+            } catch (_) {}
+            // existing logic elsewhere may handle other specific rejections
+        }, { passive: true, capture: true });
+
         "use strict";
         // Ensure non-DB images load eagerly and use async decoding; DB cover images (movie/series) will be lazy-loaded.
         (function(){
@@ -657,7 +729,7 @@
                         { id: 's6-e15', title: 'A Alinhadora', url: 'https://player.odycdn.com/api/v3/streams/free/615/ed1e46dbe9e3303e6a5c3ba72ed6e81596da7983/51a335.mp4' },
                         { id: 's6-e16', title: 'Noe', url: 'https://player.odycdn.com/v6/streams/9cede011109fb452793f589640917b00cfa1e9a3/685cbb.mp4' },
                         { id: 's6-e17', title: 'A Fada dos Belos Sonhos', url: 'https://player.odycdn.com/api/v3/streams/free/fada/614b08606d6740eed5ae9d4a44fb26f2530c8f32/c19857.mp4' },
-                        { id: 's6-e18', title: 'Os Quebra-Catástrofes', url: '' },
+                        { id: 's6-e18', title: 'Os Quebra-Catástrofes', url: 'https://rumble.com/hls-vod/784wm4/playlist.m3u8', cover: '', subtitles: [] },
                         { id: 's6-e19', title: 'Rigina Razione', url: 'https://player.odycdn.com/v6/streams/aa650c9a5a852b4f8f2677c8d581bf445871b8ac/b2994e.mp4' },
                         { id: 's6-e20', title: 'Inverte-Corações', url: 'https://player.odycdn.com/api/v3/streams/free/620/e7f6bbce288ba2c42e3ae265cbd91bfba775d3a9/ceef00.mp4' },
                         { id: 's6-e21', title: 'Os Titãs da Corrente', url: 'https://player.odycdn.com/v6/streams/318325372fbdfc78e6229191da2887cbcb027ba8/b29bbd.mp4' },
@@ -667,7 +739,7 @@
                                 { src: 'https://cdn.cnbr.space/subtitles/623_br.vtt', kind: 'subtitles', srclang: 'pt-BR', label: 'Português (Brasil)', default: true }
                             ]
                         },
-                        { id: 's6-e24', title: 'A Rainha da Terra do Medo', url: '' },
+                        { id: 's6-e24', title: 'A Rainha da Terra do Medo', url: 'https://rumble.com/hls-vod/784hz0/playlist.m3u8', cover: '', subtitles: [] },
                         { id: 's6-e25', title: 'Protocolo Secreto', url: '' },
                         { id: 's6-e26', title: 'Nêmesis', url: '' }
                     ]
@@ -2353,6 +2425,78 @@
                 yearBR: '2025 — estreia em cinemas no Brasil em 13 de novembro de 2025',
                 url: 'https://dl.dropboxusercontent.com/scl/fi/7xoewob7uo3249sk252qp/Young-Hearts-2024.mp4?rlkey=a1phxo8abmfe7vsbac0dhqhob&st=p08eaqsz'
             }
+        ,
+            {
+                id: 'valentins-uma-familia-muuuito-esperta',
+                title: 'Valentins – Uma Família Muuuito Esperta',
+                type: 'serie',
+                category: 'Infantil / Fantasia / Aventura',
+                year: '2016',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/12da367da154c48d1bb468c4764a357ea9628240accc531d36eebc762738174e.jpg',
+                description: 'Quatro irmãos precisam descobrir o que aconteceu com seus pais enquanto enfrentam Randolfo, que tenta sabotar a família e conquistar Alice.',
+                ageRating: 'L',
+                distributor: 'Globoplay',
+                producer: 'Zola Filmes / Gloob',
+                tags: ['Infantil','Fantasia','Aventura'],
+                seasons: {
+                    1: [
+                        { id: 's1-e1', title: 'O Que É Ser Um Valentim?', url: 'https://www.youtube.com/embed/K_a81Y_f9fs' },
+                        { id: 's1-e2', title: 'Sem Pai, Nem Mãe', url: 'https://www.youtube.com/embed/El5sIGnivBg' },
+                        { id: 's1-e3', title: 'O Internato', url: 'https://www.youtube.com/embed/h-qBaqBZshU' },
+                        { id: 's1-e4', title: 'A Cobra', url: 'https://www.youtube.com/embed/LvevYJbsPMY' },
+                        { id: 's1-e5', title: 'A Boneca', url: 'https://www.youtube.com/embed/NqybyQ5JF-E' },
+                        { id: 's1-e6', title: 'O Esqueleto', url: 'https://www.youtube.com/embed/NmpLeiAI6LQ' },
+                        { id: 's1-e7', title: 'A Escuridão', url: 'https://www.youtube.com/embed/ylA5xM6C5XE' },
+                        { id: 's1-e8', title: 'A Doença', url: 'https://www.youtube.com/embed/EIXuQFvXvOA' },
+                        { id: 's1-e9', title: 'Injeção, Não!', url: 'https://www.youtube.com/embed/5Fnhp9q7vZ0' },
+                        { id: 's1-e10', title: 'A Assombração', url: 'https://www.youtube.com/embed/GoJrjZR3M48' },
+                        { id: 's1-e11', title: 'O Fantasma' },
+                        { id: 's1-e12', title: 'Volta Às Aulas' },
+                        { id: 's1-e13', title: 'Invadindo O Hospital' },
+                        { id: 's1-e14', title: 'O Veneno' },
+                        { id: 's1-e15', title: 'A Experiência' },
+                        { id: 's1-e16', title: 'O Sangue' },
+                        { id: 's1-e17', title: 'O Rebelde' },
+                        { id: 's1-e18', title: 'A Governanta' },
+                        { id: 's1-e19', title: 'Noite De Terror' },
+                        { id: 's1-e20', title: 'O Cemitério' },
+                        { id: 's1-e21', title: 'Medo De Rejeição' },
+                        { id: 's1-e22', title: 'A Festa Continua' },
+                        { id: 's1-e23', title: 'O Sumiço' },
+                        { id: 's1-e24', title: 'O Resgate' },
+                        { id: 's1-e25', title: 'O Antídoto' },
+                        { id: 's1-e26', title: 'A Volta' }
+                    ],
+                    2: [
+                        { id: 's2-e1', title: 'O Que Aconteceu Com Artur Valentim?', url: 'https://www.youtube.com/embed/syYOePOmhkA' },
+                        { id: 's2-e2', title: 'Uma Nova Alice', url: 'https://www.youtube.com/embed/_CXUlR6djtM' },
+                        { id: 's2-e3', title: 'Um Noivo Assustador', url: 'https://www.youtube.com/embed/zRKCSE5mXWs' },
+                        { id: 's2-e4', title: 'O Vexame', url: 'https://www.youtube.com/embed/jGAqeD0flbc' },
+                        { id: 's2-e5', title: 'Um Pesadelo de Casamento', url: 'https://www.youtube.com/embed/uQBYACf6guE' },
+                        { id: 's2-e6', title: 'O Sumiço De Alice', url: 'https://www.youtube.com/embed/wMcQpGpCqPo' },
+                        { id: 's2-e7', title: 'A Vidente', url: 'https://www.youtube.com/embed/wLLOWy9RhzU' },
+                        { id: 's2-e8', title: 'A Casa Amaldiçoada', url: 'https://www.youtube.com/embed/KJZ9BTj5rQA' },
+                        { id: 's2-e9', title: 'Jogo Da Memória', url: 'https://www.youtube.com/embed/kPOlOEG6z1E' },
+                        { id: 's2-e10', title: 'Não Abra a Porta Para Estranhos', url: 'https://www.youtube.com/embed/J5m7i3cnQJs' },
+                        { id: 's2-e11', title: 'Viagem Ao Passado' },
+                        { id: 's2-e12', title: 'Uma Diretora Alterada' },
+                        { id: 's2-e13', title: 'O Novo Vizinho' },
+                        { id: 's2-e14', title: 'Álbum De Família' },
+                        { id: 's2-e15', title: 'O Inimigo Mora ao Lado' },
+                        { id: 's2-e16', title: 'Cosquinhas!' },
+                        { id: 's2-e17', title: 'O Hipnotizador' },
+                        { id: 's2-e18', title: 'Um Irmão Espião?' },
+                        { id: 's2-e19', title: 'Uma Nova Ameaça' },
+                        { id: 's2-e20', title: 'Um Novo Capacete' },
+                        { id: 's2-e21', title: 'Memória restaurada' },
+                        { id: 's2-e22', title: 'Valen-Night' },
+                        { id: 's2-e23', title: 'A Geringonça' },
+                        { id: 's2-e24', title: 'O Capacete Vermelho' },
+                        { id: 's2-e25', title: 'De Volta Para O Presente' },
+                        { id: 's2-e26', title: 'Desmascarado' }
+                    ]
+                }
+            }
         ];
 
         // Official platform links for "Veja na ..." buttons (used in details modal)
@@ -2396,7 +2540,8 @@
             'soul': 'https://www.disneyplus.com/browse/entity-5f055dc5-cc07-43f2-839e-bf073b16a823',
             'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen',
             'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO',
-            'rivalidade-ardente': 'https://www.hbomax.com/br/pt/shows/rivalidade-ardente/50cd4e99-04ee-427b-a3b4-da721ed05d9c'
+            'rivalidade-ardente': 'https://www.hbomax.com/br/pt/shows/rivalidade-ardente/50cd4e99-04ee-427b-a3b4-da721ed05d9c',
+            'valentins-uma-familia-muuuito-esperta': 'https://globoplay.globo.com' 
         };
 
         // --- LINK OBFUSCATION (inline DB shielding) ---
@@ -2987,31 +3132,43 @@
                     final = Object.fromEntries(entries.slice(0, 200));
                 }
 
-                // SANITIZE: ensure we never persist progress that effectively equals or exceeds the duration
-                // (this prevents accidental auto-marking as "completed" when players report near-EOF transiently).
+                // SANITIZE: ensure we never persist progress that equals or exceeds the duration,
+                // and avoid auto-marking items completed by clamping time to at most (duration - 1s).
                 try {
                     const sanitized = Object.assign({}, final || {});
                     Object.keys(sanitized).forEach(k => {
                         try {
                             const entry = sanitized[k];
                             if (!entry || typeof entry !== 'object') return;
-                            // If we have both time and duration, clamp time to strictly less than duration by a safety margin.
+
+                            // Normalize numeric fields to numbers when present
+                            if (entry.time != null) entry.time = Number(entry.time);
+                            if (entry.duration != null) entry.duration = Number(entry.duration);
+
                             const dur = (typeof entry.duration === 'number' && entry.duration > 0) ? Number(entry.duration) : null;
                             const tim = (typeof entry.time === 'number') ? Number(entry.time) : null;
+
                             if (dur !== null && tim !== null) {
-                                // keep at most (duration - 1s) to avoid accidental completed states; preserve sub-second precision
+                                // Always ensure persisted time is strictly less than duration by a 1s safety margin.
+                                // This prevents transient near-EOF reports from being treated as full completion.
                                 const safeMax = Math.max(0, dur - 1);
                                 if (tim >= dur || tim > safeMax) {
                                     entry.time = Math.min(tim, safeMax);
                                 }
                             }
-                            // Remove any legacy/computed "completed" flag so UI determines completion from clear user action
+
+                            // Never persist a 'completed' flag automatically; UI/explicit user action decides completion.
                             if (Object.prototype.hasOwnProperty.call(entry, 'completed')) {
                                 try { delete entry.completed; } catch(_) {}
                             }
+
+                            // Ensure timestamp is numeric
+                            if (entry.timestamp != null) entry.timestamp = Number(entry.timestamp) || Date.now();
+
                             sanitized[k] = entry;
                         } catch(_) {}
                     });
+
                     // Attempt to write sanitized progress + history to localStorage; on quota errors trim older entries and retry.
                     try {
                         localStorage.setItem('lumina_v2_prog', JSON.stringify(sanitized));
@@ -3144,6 +3301,22 @@
                 // silent
             }
             return false;
+        }
+
+        // Ensure PiP/volume/mute controls are hidden for YouTube embeds (called when YT player or YT iframe is created)
+        function hideYouTubePlayerControls() {
+            try {
+                const pip = document.getElementById('pip-btn');
+                const vol = document.getElementById('volume-bar');
+                const mute = document.getElementById('mute-btn');
+                const pipImg = document.querySelector('#pip-btn img');
+                if (pip) { pip.style.display = 'none'; pip.setAttribute('aria-hidden','true'); }
+                if (pipImg) { pipImg.style.display = 'none'; }
+                if (vol) { vol.style.display = 'none'; vol.setAttribute('aria-hidden','true'); }
+                if (mute) { mute.style.display = 'none'; mute.setAttribute('aria-hidden','true'); }
+                // also ensure PiP icon won't be visible via keep-visible class fallback
+                try { document.querySelectorAll('.keep-visible').forEach(el => { if (el.id === 'pip-btn' || el === pip) el.style.display = 'none'; }); } catch(_) {}
+            } catch (e) { /* silent */ }
         }
 
         function isDirectVideo(url) {
@@ -3633,13 +3806,15 @@
             const now = Date.now();
 
             // Helper: decide if a per-item progress is meaningful to surface
+            // Raised threshold to 5s to avoid false positives where very short/erroneous progress marks episodes as "continue watching".
             const meaningfulProgress = (prog) => {
                 if (!prog || typeof prog !== 'object') return false;
                 // Embed markers are meaningful (iframe/embedded player started)
                 if (prog.embed === true) return true;
-                // Must have a numeric time (seconds) and be beyond a tiny threshold to avoid false positives
-                if (typeof prog.time === 'number' && prog.time >= 2) {
-                    // If duration is known, require that time is at least 2s and not equal to duration (avoid auto-complete)
+                // Must have a numeric time (seconds) and be beyond a small threshold to avoid false positives
+                // Increased from 2s -> 5s to prevent transient/erroneous marks for newly added DB entries.
+                if (typeof prog.time === 'number' && prog.time >= 5) {
+                    // If duration is known, require that time is at least 5s and not equal to duration (avoid auto-complete)
                     if (typeof prog.duration === 'number' && prog.duration > 0) {
                         // treat as meaningful if not essentially at EOF; small epsilon for safety
                         return prog.time < (prog.duration - 3) || Math.abs(prog.time - prog.duration) > 0.5;
@@ -5068,7 +5243,43 @@
             }
         }
 
-        const player = {
+        /* Hide PiP & volume controls for non-.mp4/.m3u8 playback sources — allow HLS (.m3u8) to keep PiP & audio controls visible */
+function hideControlsForNonMp4(url) {
+    try {
+        // treat .mp4 and .m3u8 as media types that may safely show PiP/volume controls
+        const isMediaFile = typeof url === 'string' && /\.(mp4|m3u8)(\?|$)/i.test(url);
+        const pip = document.getElementById('pip-btn');
+        const vol = document.getElementById('volume-bar');
+        const mute = document.getElementById('mute-btn');
+        const volGroup = document.querySelector('.group\\/vol');
+        if (!isMediaFile) {
+            if (pip) { pip.style.display = 'none'; pip.setAttribute('aria-hidden', 'true'); pip.classList.add('hidden'); }
+            if (vol) { vol.style.display = 'none'; vol.setAttribute('aria-hidden', 'true'); vol.classList.add('hidden'); }
+            if (mute) { mute.style.display = 'none'; mute.setAttribute('aria-hidden', 'true'); mute.classList.add('hidden'); }
+            if (volGroup) { volGroup.style.display = 'none'; volGroup.setAttribute('aria-hidden', 'true'); volGroup.classList.add('hidden'); }
+            // ensure CSS-level enforcement for stubborn UAs
+            try {
+                if (!document.getElementById('lumina-hide-nonmp4-style')) {
+                    const s = document.createElement('style');
+                    s.id = 'lumina-hide-nonmp4-style';
+                    s.textContent = '#player-modal.non-mp4 #pip-btn, #player-modal.non-mp4 #volume-bar, #player-modal.non-mp4 #mute-btn, #player-modal.non-mp4 .group\\/vol { display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important; width: 0 !important; height: 0 !important; }';
+                    document.head.appendChild(s);
+                }
+            } catch (_) {}
+            // tag modal for CSS rules elsewhere
+            try { document.getElementById('player-modal')?.classList.add('non-mp4'); } catch(_) {}
+        } else {
+            // restore visibility if needed (for mp4 and m3u8)
+            if (pip) { pip.style.display = ''; pip.removeAttribute('aria-hidden'); pip.classList.remove('hidden'); }
+            if (vol) { vol.style.display = ''; vol.removeAttribute('aria-hidden'); vol.classList.remove('hidden'); }
+            if (mute) { mute.style.display = ''; mute.removeAttribute('aria-hidden'); mute.classList.remove('hidden'); }
+            if (volGroup) { volGroup.style.display = ''; volGroup.removeAttribute('aria-hidden'); volGroup.classList.remove('hidden'); }
+            try { document.getElementById('player-modal')?.classList.remove('non-mp4'); } catch(_) {}
+        }
+    } catch (e) { /* non-blocking */ }
+}
+
+const player = {
             vid: null, iframe: null, uiTimeout: null, saveInterval: null, context: null, nextPromptShown: false, isSeeking: false, isEmbed: false, preferredRate: 1,
             
             _cleanupBeforeInit: function() {
@@ -5139,6 +5350,8 @@
                 // defensively tear down any previous playback artifacts before initializing a new one
                 try { this._cleanupBeforeInit(); } catch(_) {}
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
+                // Hide PiP and volume controls when the chosen source is not an .mp4 (apply early so UI is correct before rendering)
+                try { hideControlsForNonMp4(url); } catch(_) {}
                 // Persist initial history/progress entry when starting playback so "Continuar Assistindo" updates immediately.
                 try {
                     if (this.context && this.context.type === 'serie' && this.context.seriesId) {
@@ -5396,6 +5609,13 @@
                         this.isYouTube = true;
                         // hide PiP button for YouTube embeds to avoid offering PiP where it doesn't work reliably
                         try { const pipBtn = document.getElementById('pip-btn'); if (pipBtn) { pipBtn.style.display = 'none'; pipBtn.setAttribute('aria-hidden','true'); } } catch(_) {}
+                        // also hide mute/volume controls when using YouTube iframe (they don't map reliably)
+                        try {
+                            const muteBtn = document.getElementById('mute-btn');
+                            const volBar = document.getElementById('volume-bar');
+                            if (muteBtn) { muteBtn.style.display = 'none'; muteBtn.setAttribute('aria-hidden','true'); }
+                            if (volBar) { volBar.style.display = 'none'; volBar.setAttribute('aria-hidden','true'); }
+                        } catch(_) {}
                         this.ytPlayer = null;
                         this.ytSaveInterval = null;
 
@@ -5410,6 +5630,70 @@
                                     attemptClickYTSkip();
                                 } catch(_) {}
                             }, 800);
+                        } catch(_) {}
+
+                        // Attach idle show/hide handlers for YouTube embeds (mirror native player behaviour)
+                        try {
+                            // avoid double-binding
+                            if (!this._ytIdleBound) {
+                                this._ytIdleBound = true;
+                                const wrapperEl = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+                                const uiEl = document.querySelector('.player-ui');
+                                const idleMs = 5000;
+                                let idleTimer = null;
+                                const clearIdle = () => { try { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } } catch(_){} };
+                                const scheduleHide = () => {
+                                    clearIdle();
+                                    // only hide when playing
+                                    let playing = false;
+                                    try { playing = (this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function' && this.ytPlayer.getPlayerState() === 1); } catch(_) { playing = false; }
+                                    if (!playing) return;
+                                    idleTimer = setTimeout(() => {
+                                        try {
+                                            if (wrapperEl) wrapperEl.classList.add('player-idle');
+                                            if (uiEl) { uiEl.style.pointerEvents = 'none'; uiEl.style.opacity = '0'; }
+                                        } catch(_) {}
+                                    }, idleMs);
+                                };
+                                const showControls = () => {
+                                    try {
+                                        if (wrapperEl) wrapperEl.classList.remove('player-idle');
+                                        if (uiEl) { uiEl.style.pointerEvents = ''; uiEl.style.opacity = ''; }
+                                        scheduleHide();
+                                    } catch(_) {}
+                                };
+                                const onInteraction = (e) => {
+                                    try { showControls(); } catch(_) {}
+                                };
+                                // bind lightweight handlers
+                                ['pointermove','pointerdown','touchstart','mousemove'].forEach(evt => {
+                                    try { document.addEventListener(evt, onInteraction, { passive: true }); } catch(_) {}
+                                });
+                                // Also schedule hide on state change (play) from YT events later when player becomes available.
+                                // Start initial schedule when YT player ready
+                                const ytReadyTicker = setInterval(() => {
+                                    try {
+                                        if (this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function') {
+                                            clearInterval(ytReadyTicker);
+                                            // initial schedule and also observe state changes
+                                            scheduleHide();
+                                            // listen to YT state changes to reschedule/hide appropriately
+                                            if (typeof YT !== 'undefined' && YT && YT.Player) {
+                                                // attach via onStateChange provided earlier in YT Player config; but also poll as fallback
+                                                const poll = setInterval(() => {
+                                                    try {
+                                                        if (!this.ytPlayer || typeof this.ytPlayer.getPlayerState !== 'function') return;
+                                                        const st = this.ytPlayer.getPlayerState();
+                                                        if (st === 1) scheduleHide(); // playing
+                                                        if (st === 2) { clearIdle(); if (wrapperEl) wrapperEl.classList.remove('player-idle'); if (uiEl) { uiEl.style.pointerEvents = ''; uiEl.style.opacity = ''; } }
+                                                    } catch(_) {}
+                                                }, 900);
+                                                this._ytIdlePoll = poll;
+                                            }
+                                        }
+                                    } catch(_) {}
+                                }, 300);
+                            }
                         } catch(_) {}
 
                          // decide autoplay behavior: allow autoplay on desktop, require user interaction on mobile
@@ -5481,19 +5765,17 @@
                                     iv_load_policy: 3,
                                     playsinline: 1,
                                     enablejsapi: 1,
-                                    // do not force muted start; prefer audible playback when allowed
+                                    // request unmuted autoplay and attempt immediate resume/unmute to start audio without click
                                     mute: 0
                                 },
                                 events: {
                                     onReady: (e) => {
-                                        // Hide loading ui
+                                        try { hideYouTubePlayerControls(); } catch(_) {}
                                         const loadingEl = document.getElementById('player-loading');
                                         if (loadingEl) loadingEl.classList.add('hidden');
-
-                                        // cancel any load watchdog
                                         try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
 
-                                        // Ensure iframe allow attributes include autoplay & playsinline for better autoplay compatibility
+                                        // ensure iframe allow attributes include autoplay & playsinline for better autoplay compatibility
                                         try {
                                             const iframeNode = document.querySelector('#yt-player iframe');
                                             if (iframeNode) {
@@ -5506,48 +5788,74 @@
                                             }
                                         } catch(_) {}
 
-                                        // Robust muted autoplay attempt:
-                                        // 1) ensure the player is muted before trying play (many browsers allow muted autoplay)
-                                        // 2) attempt play and retry a few times with backoff if necessary
-                                        // 3) unmute on first user gesture
+                                        // Attempt muted autoplay (most browsers allow muted autoplay). If that succeeds, keep playing muted
+                                        // and then unmute on the first user gesture to avoid autoplay block.
                                         try {
-                                            if (e && e.target) {
-                                                try {
-                                                    // Ensure the YouTube player is unmuted and at a sensible volume so audio is audible on start.
-                                                    e.target.unMute && e.target.unMute();
-                                                    e.target.setVolume && e.target.setVolume(100);
-                                                } catch(_) {}
-                                            }
-                                        } catch(_) {}
-
-                                        const tryPlay = (attempt = 0) => {
+                                            // ensure muted state and try to play
                                             try {
-                                                if (e && e.target) {
-                                                    try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
-                                                }
-                                                // verify play state after a short delay; retry a few times if not playing
-                                                setTimeout(() => {
+                                                // Try to unmute and play; if browser blocks unmuted autoplay, fallback to muted autoplay.
+                                                try { e.target.setVolume && e.target.setVolume(100); } catch(_) {}
+                                                try { e.target.unMute && e.target.unMute(); } catch(_) {}
+                                                // request play and check shortly whether it started; if not, mute and retry
+                                                try {
+                                                    e.target.playVideo && e.target.playVideo();
+                                                } catch(_) {}
+                                                (async () => {
+                                                    await new Promise(r => setTimeout(r, 700));
                                                     try {
-                                                        const stateYT = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
-                                                        if (stateYT !== 1 && attempt < 4) {
-                                                            tryPlay(attempt + 1);
+                                                        const st = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
+                                                        if (st !== 1) {
+                                                            // blocked: mute and attempt to play muted
+                                                            try { e.target.mute && e.target.mute(); } catch(_) {}
+                                                            try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
+                                                        } else {
+                                                            // playing with audio — ensure volume restored on first gesture if browser later restricts it
+                                                            const restoreOnGesture = () => {
+                                                                try { player && player.ytPlayer && player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
+                                                                try { player && player.ytPlayer && player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
+                                                                try { document.removeEventListener('pointerdown', restoreOnGesture); document.removeEventListener('touchstart', restoreOnGesture); } catch(_) {}
+                                                            };
+                                                            try { document.addEventListener('pointerdown', restoreOnGesture, { once: true, passive: true }); document.addEventListener('touchstart', restoreOnGesture, { once: true, passive: true }); } catch(_) {}
                                                         }
                                                     } catch(_) {}
-                                                }, 600 + attempt * 300);
+                                                })().catch(()=>{});
                                             } catch(_) {}
-                                        };
-                                        tryPlay(0);
+                                            const tryPlayMuted = (attempt = 0) => {
+                                                try {
+                                                    if (e && e.target) e.target.playVideo && e.target.playVideo();
+                                                    setTimeout(() => {
+                                                        try {
+                                                            const stateYT = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
+                                                            if (stateYT !== 1 && attempt < 4) tryPlayMuted(attempt + 1);
+                                                        } catch(_) {}
+                                                    }, 600 + attempt * 300);
+                                                } catch(_) {}
+                                            };
+                                            tryPlayMuted(0);
+                                        } catch(_) {}
 
-                                        // Try to ensure YouTube plays with audio enabled immediately (best-effort)
-                                        try { player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
-                                        try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
+                                        // Unmute on first user gesture (pointerdown/touchstart) and set volume
+                                        const unmuteOnce = () => {
+                                            try {
+                                                if (player && player.ytPlayer && typeof player.ytPlayer.unMute === 'function') {
+                                                    try { player.ytPlayer.unMute(); } catch(_) {}
+                                                    try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
+                                                } else {
+                                                    // best-effort: postMessage to iframe to unmute if possible (silently ignore cross-origin restrictions)
+                                                    const iframeNode = document.querySelector('#yt-player iframe');
+                                                    if (iframeNode && iframeNode.contentWindow) {
+                                                        try { iframeNode.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch(_) {}
+                                                    }
+                                                }
+                                            } catch(_) {}
+                                            try { document.removeEventListener('pointerdown', unmuteOnce); document.removeEventListener('touchstart', unmuteOnce); } catch(_) {}
+                                        };
+                                        try { document.addEventListener('pointerdown', unmuteOnce, { once: true, passive: true }); document.addEventListener('touchstart', unmuteOnce, { once: true, passive: true }); } catch(_) {}
 
                                         // apply preferred playback rate when available (defer slightly)
                                         try {
                                             if (player && typeof player.preferredRate === 'number' && e.target.setPlaybackRate) {
-                                                setTimeout(() => {
-                                                    try { e.target.setPlaybackRate(player.preferredRate); } catch(_) {}
-                                                }, 120);
+                                                setTimeout(() => { try { e.target.setPlaybackRate(player.preferredRate); } catch(_) {} }, 120);
                                             }
                                         } catch(_) {}
 
@@ -5568,7 +5876,6 @@
                                             if (!this.ytPlayer || typeof this.ytPlayer.getCurrentTime !== 'function') return;
                                             const cur = this.ytPlayer.getCurrentTime();
                                             const dur = this.ytPlayer.getDuration() || 0;
-                                            // update timeline UI
                                             if (!isNaN(dur) && dur > 0) {
                                                 const pct = (cur / dur) * 100;
                                                 const progBar = document.getElementById('progress-bar');
@@ -5580,9 +5887,8 @@
                                                 if (tc) tc.innerText = formatTime(cur);
                                                 if (td) td.innerText = formatTime(dur);
                                             }
-                                            // manage skip-intro visibility while playing YouTube
                                             try { if (typeof player.updateSkipIntroVisibility === 'function') player.updateSkipIntroVisibility(cur); } catch(_) {}
-                                            // persist progress periodically
+                                            try { if (typeof player.checkNextTrigger === 'function') player.checkNextTrigger(); } catch(_) {}
                                             if (this.context && this.context.id && typeof cur === 'number' && !isNaN(cur)) {
                                                 state.progress[this.context.id] = { time: cur, duration: this.ytPlayer.getDuration() || 0, timestamp: Date.now() };
                                                 if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
@@ -5591,7 +5897,6 @@
                                         }, 500);
                                     },
                                     onStateChange: (e) => {
-                                        // map YT states: 1 playing, 2 paused, 0 ended
                                         if (e.data === YT.PlayerState.PLAYING) {
                                             updatePlayBtns(false);
                                             try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
@@ -5777,10 +6082,25 @@
 
                             // ensure UI visible and functional
                             const ui = document.querySelector('.player-ui');
-                            if(ui) ui.style.display = '';
-                            document.getElementById('progress-bar').style.display = '';
-                            document.getElementById('center-play-btn').style.display = '';
-                            document.getElementById('bottom-play-btn').style.display = '';
+                            if (ui) ui.style.display = '';
+                            // show core controls
+                            const progEl = document.getElementById('progress-bar');
+                            const centerBtn = document.getElementById('center-play-btn');
+                            const bottomBtn = document.getElementById('bottom-play-btn');
+                            if (progEl) progEl.style.display = '';
+                            if (centerBtn) centerBtn.style.display = '';
+                            if (bottomBtn) bottomBtn.style.display = '';
+
+                            // Ensure volume controls are visible for native video playback
+                            try {
+                                const volEl = document.getElementById('volume-bar');
+                                const muteBtn = document.getElementById('mute-btn');
+                                const pipBtn = document.getElementById('pip-btn');
+                                if (volEl) { volEl.style.display = ''; volEl.removeAttribute('aria-hidden'); }
+                                if (muteBtn) { muteBtn.style.display = ''; muteBtn.removeAttribute('aria-hidden'); }
+                                // keep PiP visibility as-is (we hide PiP for YouTube elsewhere)
+                                if (pipBtn && pipBtn.style.display === 'none') { /* preserve hidden for YT */ }
+                            } catch (_) {}
 
                             document.getElementById('player-loading').classList.remove('hidden');
                             dismissNextEp(true);
@@ -5819,6 +6139,21 @@
                             this.iframe.allowFullscreen = true;
                             this.iframe.className = 'w-full h-full';
                             wrapper.appendChild(this.iframe);
+
+                            // Improve idle responsiveness for embeds (YouTube or other cross-origin iframes)
+                            // Attach element-level pointer/mouse enter/move listeners on the iframe element itself
+                            // (these fire on the iframe element even if its content is cross-origin).
+                            try {
+                                const iframeEl = this.iframe;
+                                const showControlsFn = () => { try { player && player._showControls && player._showControls(); } catch(_){} };
+                                iframeEl.addEventListener('mouseenter', showControlsFn, { passive: true });
+                                iframeEl.addEventListener('mousemove', showControlsFn, { passive: true });
+                                iframeEl.addEventListener('pointermove', showControlsFn, { passive: true });
+                                // also ensure a tap on the iframe element reveals controls on mobile
+                                iframeEl.addEventListener('touchstart', showControlsFn, { passive: true });
+                            } catch (err) {
+                                // non-fatal: continue without iframe listeners
+                            }
 
                             // If this is the One Piece series and the embed may redirect to a .mp4, try to resolve the final URL.
                             // If we can determine a final .mp4, replace iframe with a native <video> to enable accurate progress tracking.
@@ -6355,20 +6690,23 @@
                 const ui = document.querySelector('.player-ui');
 
                 // Robust idle timer: show controls on user interaction, hide after idleTimeoutMs of inactivity.
-                const idleTimeoutMs = 3500;
+                // On mobile, we want the player to assume idle automatically after 5s of no sustained touch input,
+                // even if a button/control currently has focus (controls selected do not prevent idle).
+                const idleTimeoutMs = 5000; // increased to 5s per mobile UX requirement
                 const clearIdleTimer = () => {
                     try { if (this._idleTimer) { clearTimeout(this._idleTimer); this._idleTimer = null; } } catch(_) {}
                 };
                 const scheduleHide = () => {
                     try {
                         clearIdleTimer();
-                        // only hide when playing
-                        if (!this.vid || this.vid.paused) return;
+                        // only hide when playing (for embeds, rely on non-null time/playing checks where available)
+                        const isPlaying = (this.isYouTube ? (this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function' && this.ytPlayer.getPlayerState() === 1)
+                                                         : (this.vid && !this.vid.paused));
+                        if (!isPlaying) return;
                         this._idleTimer = setTimeout(() => {
-                            try { 
+                            try {
                                 const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
-                                if (wrapper) wrapper.classList.add('player-idle'); 
-                                // ensure UI pointer-events are disabled for idle state
+                                if (wrapper) wrapper.classList.add('player-idle');
                                 if (ui) { ui.style.pointerEvents = 'none'; ui.style.opacity = '0'; }
                             } catch(_) {}
                         }, idleTimeoutMs);
@@ -6413,55 +6751,54 @@
                     if (bottomBtn) bottomBtn.onclick = () => togglePlay();
                 } catch (e) {}
 
-                // Interaction handler that shows controls on pointer/touch/mouse and is debounced lightly
+                // Interaction handler that shows controls on user interaction, but does NOT prevent the idle timeout from hiding them:
+                // i.e., any interaction will reveal controls, but after idleTimeoutMs they will auto-hide even if a control has focus.
                 let interactionDebounce = null;
                 const onUserInteraction = (ev) => {
                     try {
-                        // Always show controls on any user interaction, but do NOT bail out when the target is a UI control.
-                        // This ensures that on mobile a "selected" control does not block the idle hide timer — controls
-                        // will still be auto-hidden after the configured idleTimeout.
-                        const target = ev && ev.target;
-                        // show controls immediately on any pointer/touch/mouse event
+                        // Show controls for this interaction.
                         showControls();
-                        // small debounce to avoid thrashing on continuous pointermove
+                        // We deliberately do NOT block scheduleHide when a control/button is focused.
+                        // Debounce quick continuous events to avoid thrash.
                         if (interactionDebounce) clearTimeout(interactionDebounce);
                         interactionDebounce = setTimeout(() => { interactionDebounce = null; }, 120);
-                        // Note: we intentionally do not return early when the target is inside the player UI,
-                        // so scheduleHide() will still run and trigger the idle hide even when a control appears focused.
                     } catch (err) { /* ignore */ }
                 };
 
-                // Attach robust pointer/mouse/touch listeners to wrapper, container and document to ensure events are captured
+                // Attach pointer/mouse/touch listeners to wrapper, container and document to ensure events are captured.
+                // Also ensure YouTube embed interactions bubble to these handlers by listening at document level.
                 try {
                     const mediaWrap = document.getElementById('player-media-wrapper') || container;
 
-                    // Prefer pointer events for unified handling when supported
+                    // Prefer pointer events for unified handling; attach several event types to be robust across UAs.
                     ['pointermove','pointerdown','pointerup','mousemove','touchstart','touchmove','touchend'].forEach(evtName => {
                         try {
-                            // use passive: true for move/start to avoid blocking, but pointerup needs default to allow releasePointerCapture in other handlers
-                            const opts = (evtName === 'pointerup' || evtName === 'touchend') ? { passive: true } : { passive: true };
-                            // attach to media wrap and container (some user agents route touches differently)
+                            const opts = { passive: true };
                             mediaWrap.addEventListener(evtName, onUserInteraction, opts);
                             container.addEventListener(evtName, onUserInteraction, opts);
-                            // attach on document as a last-resort to catch events when overlays/iframes intercept them
+                            // attach on document to catch interactions that occur inside cross-origin iframes (best-effort)
                             document.addEventListener(evtName, onUserInteraction, opts);
                         } catch(_) {}
                     });
 
-                    // special case: treat quick taps (pointerup) as toggle only when not interacting with UI
+                    // Taps: toggle only when tapping outside player UI; quick taps inside UI show controls but do not block idle hiding.
                     const onTapToggle = (ev) => {
                         try {
                             const target = ev && ev.target;
-                            if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) return;
-                            // ensure very short taps toggle; long presses or drags shouldn't
-                            const now = Date.now();
-                            // Use timeout heuristic: if it's a quick up event, toggle
+                            if (target && (target.closest && target.closest('.player-ui, button, input, select, textarea, a'))) {
+                                // Tap landed inside UI: reveal controls (already done by onUserInteraction) but do not toggle
+                                return;
+                            }
+                            // Toggle controls visibility for outside taps
                             toggleControlsVisibility();
                         } catch(_) {}
                     };
                     mediaWrap.addEventListener('pointerup', onTapToggle, { passive: true });
                     container.addEventListener('pointerup', onTapToggle, { passive: true });
                     document.addEventListener('pointerup', onTapToggle, { passive: true });
+
+                    // Ensure scheduleHide gets called on startup so YouTube embeds also auto-hide after idleTimeoutMs.
+                    scheduleHide();
                 } catch (e) {
                     // best-effort: ignore attach failures
                 }
@@ -7791,14 +8128,23 @@
                                     // match by label or srclang or kind
                                     if ((s.label && tt.label === s.label) || (s.srclang && tt.language && tt.language.toLowerCase().indexOf(String(s.srclang).toLowerCase())!==-1) || tt.kind === (s.kind || 'subtitles')) {
                                         try {
-                                            // set showing if default requested, otherwise leave disabled
-                                            tt.mode = s.default ? 'showing' : 'disabled';
+                                            // Force visible: we set to 'showing' to ensure captions appear in UI,
+                                            // but respect explicit default=false by still enabling display programmatically.
+                                            tt.mode = 'showing';
                                         } catch(_) {
                                             // some engines require setting on the track element after a tiny delay
-                                            setTimeout(() => { try { tt.mode = s.default ? 'showing' : 'disabled'; } catch(_) {} }, 120);
+                                            setTimeout(() => { try { tt.mode = 'showing'; } catch(_) {} }, 120);
                                         }
                                     }
                                 }
+                                // Also ensure our captions toggle/button exists and reflects visible state
+                                try { 
+                                    if (typeof ensureCaptionsButton === 'function') ensureCaptionsButton(videoEl); 
+                                    const btn = document.getElementById('lumina-captions-btn');
+                                    if (btn) btn.style.display = ''; // make sure the button is visible
+                                    // mark button as active visually when showing
+                                    try { if (btn) btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch(_) {}
+                                } catch(_) {}
                             } catch(_) {}
                         };
 
@@ -7816,7 +8162,32 @@
                         }
                     } catch(_) {}
                 }
-            } catch (_) {}
+
+                // final safety: if there are now textTracks, set first portuguese or first track to showing after short delay
+                try {
+                    setTimeout(() => {
+                        try {
+                            const tracks = videoEl.textTracks || [];
+                            if (!tracks || tracks.length === 0) return;
+                            // prefer pt-BR or pt
+                            let chosen = null;
+                            for (let i=0;i<tracks.length;i++) {
+                                const tt = tracks[i];
+                                if (tt.language && /pt/i.test(tt.language)) { chosen = tt; break; }
+                            }
+                            if (!chosen) chosen = tracks[0];
+                            if (chosen) {
+                                try { chosen.mode = 'showing'; } catch(_) { setTimeout(()=>{ try{ chosen.mode='showing'; }catch(_){} },120); }
+                            }
+                            // ensure UI captions button present
+                            try { if (typeof ensureCaptionsButton === 'function') ensureCaptionsButton(videoEl); } catch(_) {}
+                        } catch(_) {}
+                    }, 420);
+                } catch(_) {}
+
+            } catch (e) {
+                console.warn('attachSubtitlesToVideo error', e);
+            }
         }
 
         function dismissNextEp(instant = false) {
@@ -8888,33 +9259,65 @@
 
             // Create and attach VTT track to a video element; returns the created track element
             async function attachSRTasVTT(videoEl, srtUrl, label = 'Português (BR)') {
-                if (!videoEl || !srtUrl) return null;
+            if (!videoEl || !srtUrl) return null;
+            try {
+                // Fetch as ArrayBuffer and decode explicitly as UTF-8 to preserve accents/special chars across origins/encodings.
+                const res = await fetch(srtUrl, { cache: 'no-store' });
+                if (!res || !res.ok) return null;
+                let srtText = '';
                 try {
-                    const res = await fetch(srtUrl, { cache: 'no-store' });
-                    if (!res.ok) return null;
-                    const srtText = await res.text();
-                    const vttText = convertSRTtoVTT(srtText);
-                    const blob = new Blob([vttText], { type: 'text/vtt' });
-                    const vttUrl = URL.createObjectURL(blob);
-                    // remove any existing similar track for safety
+                    // prefer arrayBuffer + TextDecoder('utf-8') to avoid mojibake
+                    const buf = await res.arrayBuffer();
+                    srtText = new TextDecoder('utf-8').decode(new Uint8Array(buf));
+                    // Basic sanity: if decoded text looks empty, fallback to text()
+                    if (!srtText || /^\s*$/.test(srtText)) {
+                        srtText = await res.text().catch(() => '');
+                    }
+                } catch (decodeErr) {
+                    // fallback: try text() if arrayBuffer/decoder failed (best-effort)
+                    try { srtText = await res.text().catch(() => ''); } catch (_) { srtText = ''; }
+                }
+
+                const vttText = convertSRTtoVTT(srtText);
+                const blob = new Blob([vttText], { type: 'text/vtt' });
+                const vttUrl = URL.createObjectURL(blob);
+
+                // remove any existing similar track for safety
+                try {
                     const existing = Array.from(videoEl.querySelectorAll('track')).find(t => t.label === label || t.srclang === 'pt-BR');
                     if (existing) existing.remove();
-                    const track = document.createElement('track');
-                    track.kind = 'subtitles';
-                    track.label = label;
-                    track.srclang = 'pt-BR';
-                    track.src = vttUrl;
-                    // do not force default; user toggles
-                    track.default = false;
-                    videoEl.appendChild(track);
-                    // ensure loaded mode is disabled initially
-                    try { track.mode = 'disabled'; } catch(_) {}
-                    return track;
-                } catch (e) {
-                    console.warn('attachSRTasVTT failed', e);
-                    return null;
-                }
+                } catch (_) {}
+
+                const track = document.createElement('track');
+                track.kind = 'subtitles';
+                track.label = label;
+                track.srclang = 'pt-BR';
+                track.src = vttUrl;
+                // do not force default; user toggles
+                track.default = false;
+                videoEl.appendChild(track);
+
+                // ensure the browser sees the track and set mode defensively
+                try { track.mode = 'disabled'; } catch (_) {}
+                // After a short delay ensure the corresponding TextTrack is set to 'showing' when appropriate by toggles
+                setTimeout(() => {
+                    try {
+                        const tracks = videoEl.textTracks || [];
+                        for (let i = 0; i < tracks.length; i++) {
+                            const tt = tracks[i];
+                            if ((label && tt && tt.label === label) || (tt && /pt/i.test(tt.language))) {
+                                try { tt.mode = 'disabled'; } catch (_) {}
+                            }
+                        }
+                    } catch (_) {}
+                }, 200);
+
+                return track;
+            } catch (e) {
+                console.warn('attachSRTasVTT failed', e);
+                return null;
             }
+        }
 
             // Add a captions toggle button into the player UI near other controls (if not already present)
             function ensureCaptionsButton(videoEl) {
@@ -9056,3 +9459,106 @@
                 document.addEventListener('DOMContentLoaded', observeWrapper);
             } else observeWrapper();
         })();
+
+
+// Robust attachSRTasVTT override: detects common encodings and converts SRT -> VTT without producing replacement-char mojibake.
+// Exposed globally as window.attachSRTasVTT for runtime use.
+window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = 'Português (BR)') {
+    try {
+        if (!videoEl || !srtUrl) return null;
+
+        async function fetchArrayBuffer(url) {
+            try {
+                const res = await fetch(url, { cache: 'no-store', credentials: 'omit' });
+                if (!res || !res.ok) return null;
+                return await res.arrayBuffer().catch(()=>null);
+            } catch (e) { return null; }
+        }
+
+        const hasReplacementChar = (str) => {
+            if (!str) return false;
+            return /\uFFFD/.test(str) || /�/.test(str);
+        };
+
+        const tryDecode = (u8, enc) => {
+            try { return new TextDecoder(enc, { fatal: false }).decode(u8); }
+            catch (e) {
+                try { return new TextDecoder(enc === 'utf-8' ? 'iso-8859-1' : 'utf-8').decode(u8); }
+                catch (_) { return ''; }
+            }
+        };
+
+        const buf = await fetchArrayBuffer(srtUrl);
+        if (!buf) return null;
+        const u8 = new Uint8Array(buf);
+
+        // 1) Prefer UTF-8
+        let srtText = tryDecode(u8, 'utf-8');
+
+        // 2) If replacement characters detected, try windows-1252 then iso-8859-1
+        if (hasReplacementChar(srtText)) {
+            const win1252 = tryDecode(u8, 'windows-1252');
+            if (!hasReplacementChar(win1252) && win1252.trim().length > 0) srtText = win1252;
+            else {
+                const latin1 = tryDecode(u8, 'iso-8859-1');
+                if (!hasReplacementChar(latin1) && latin1.trim().length > 0) srtText = latin1;
+                else srtText = win1252.length > srtText.length ? win1252 : srtText;
+            }
+        }
+
+        // 3) Check for UTF-16 BOM and decode if present
+        try {
+            if (u8.length >= 2) {
+                const bom0 = u8[0], bom1 = u8[1];
+                if ((bom0 === 0xFE && bom1 === 0xFF) || (bom0 === 0xFF && bom1 === 0xFE)) {
+                    try { srtText = new TextDecoder('utf-16').decode(u8); } catch (_) {}
+                }
+            }
+        } catch (_) {}
+
+        // 4) Last-resort: iso-8859-1 fallback if still broken
+        if (hasReplacementChar(srtText)) {
+            try { const iso = tryDecode(u8, 'iso-8859-1'); if (iso && iso.replace(/\s/g,'').length > 0) srtText = iso; } catch(_) {}
+        }
+
+        // Convert SRT to VTT preserving timestamps and line breaks
+        const vtt = 'WEBVTT\n\n' + srtText.replace(/\r+/g,'').replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
+
+        const blob = new Blob([vtt], { type: 'text/vtt;charset=utf-8' });
+        const vttUrl = URL.createObjectURL(blob);
+
+        try {
+            const existing = Array.from(videoEl.querySelectorAll('track')).find(t => t.label === label || /pt/i.test(t.srclang || ''));
+            if (existing) existing.remove();
+        } catch (_) {}
+
+        const track = document.createElement('track');
+        track.kind = 'subtitles';
+        track.label = label;
+        track.srclang = 'pt-BR';
+        track.src = vttUrl;
+        track.default = false;
+        videoEl.appendChild(track);
+
+        // Ensure track is recognized and set to showing (with small delay to account for browser processing)
+        setTimeout(() => {
+            try {
+                const tracks = videoEl.textTracks || [];
+                for (let i = 0; i < tracks.length; i++) {
+                    const tt = tracks[i];
+                    if ((tt.label && tt.label === label) || (tt.language && /pt/i.test(tt.language))) {
+                        try { tt.mode = 'showing'; } catch (_) { setTimeout(()=>{ try{ tt.mode = 'showing'; }catch(_){} }, 120); }
+                    }
+                }
+                try { if (typeof ensureCaptionsButton === 'function') ensureCaptionsButton(videoEl); } catch (_) {}
+                const btn = document.getElementById('lumina-captions-btn');
+                if (btn) try { btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch (_) {}
+            } catch (_) {}
+        }, 240);
+
+        return track;
+    } catch (e) {
+        console.warn('attachSRTasVTT robust override failed', e);
+        return null;
+    }
+};
