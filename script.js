@@ -519,7 +519,7 @@
                 type: 'filme',
                 category: 'Animação / Família',
                 year: '2024',
-                cover: 'https://cdn.oantagonista.com/uploads/2024/08/Divertida-Mente-2-entra-top-10-de-bilheterias-da-historia.jpg',
+                cover: 'https://disney.images.edge.bamgrid.com/ripcut-delivery/v2/variant/disney/421b09d0-262e-40ef-927a-709fd49bd024/compose?aspectRatio=1.78&format=png&width=3840',
                 description: 'Riley agora é uma adolescente e novas emoções chegam ao quartel-general: Ansiedade, Inveja, Tédio e Vergonha. A Alegria terá trabalho dobrado.',
                 ageRating: '10',
                 url: 'https://dl.dropboxusercontent.com/scl/fi/52txzjif5aydz9lhm0jpo/Divertida-Mente-2.mp4?rlkey=0qb4kpi7tlecwiu0oxngoxt0f&st=jv5n3jij'
@@ -8864,13 +8864,30 @@ const player = {
                     window.removeEventListener('touchstart', startDeferredBackgroundWork);
                     window.removeEventListener('click', startDeferredBackgroundWork);
 
-                    // Start rotators and badge timers gently
-                    try { startHeroRotate(); } catch (_) {}
-                    try { startHomeRotator(); } catch (_) {}
-                    try { startBadgeTimer(); } catch (_) {}
+                    // Detect mobile devices to avoid starting CPU/network-heavy periodic tasks on phones
+                    const mobile = (function(){
+                        try {
+                            const ua = navigator.userAgent || navigator.vendor || '';
+                            return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
+                        } catch (e) { return false; }
+                    })();
 
-                    // initialize notifications/badges that required user gesture
-                    try { if (typeof initBadgesAndNotifications === 'function') initBadgesAndNotifications(); } catch (_) {}
+                    // On mobile, start only the lightweight rotator at a much lower frequency and defer badge rotations.
+                    if (mobile) {
+                        try {
+                            // start a very gentle home rotator (longer interval) to keep UI alive without heating CPU
+                            if (!window.__home_rotator) window.__home_rotator = { timer: null, interval: 60000, step: 1, running: false };
+                            try { startHomeRotator(); } catch (_) {}
+                        } catch (_) {}
+                        // request notifications init (still user-driven) but do not auto-start badge or hero timers
+                        try { if (typeof initBadgesAndNotifications === 'function') initBadgesAndNotifications(); } catch (_) {}
+                    } else {
+                        // Desktop/tablet: normal behavior
+                        try { startHeroRotate(); } catch (_) {}
+                        try { startHomeRotator(); } catch (_) {}
+                        try { startBadgeTimer(); } catch (_) {}
+                        try { if (typeof initBadgesAndNotifications === 'function') initBadgesAndNotifications(); } catch (_) {}
+                    }
                 } catch (e) { console.warn('startDeferredBackgroundWork failed', e); }
             };
 
