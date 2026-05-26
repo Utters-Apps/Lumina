@@ -601,6 +601,16 @@
         /* session scroller: tuned spacing for denser, cleaner layouts across breakpoints */
         .session-scroll { display: flex; gap: 0.75rem; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; scroll-behavior: smooth; }
 
+        /* Mobile: disable native swipe/drag horizontal scroll for session carousels so navigation is done only via arrows.
+           Arrows remain visible and functional; JS scrollCards still performs smooth scrolling programmatically. */
+        @media (max-width: 767px) {
+            .session-scroll {
+                overflow-x: hidden !important;
+                -webkit-overflow-scrolling: auto !important; /* avoid momentum scrolling when hidden */
+                touch-action: pan-y !important; /* allow vertical scroll only */
+            }
+        }
+
         /* Specific tweaks for Related (horizontal on mobile) and Search (grid) to reduce overly large gaps
            and make cards sit closer together on wide screens while keeping comfortable touch spacing on mobile. */
         /* Related lists rendered into #related-grid-<id> should use a tighter gap and slightly smaller card min-width */
