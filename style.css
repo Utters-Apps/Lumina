@@ -1061,3 +1061,130 @@
             z-index: 2147483647 !important;
             visibility: visible !important;
         }
+
+        /* ========== Mobile Portrait: optimized player layout ========== */
+
+        /* Hide only the volume adjustment slider on mobile WHEN IN PORTRAIT (vertical).
+           Keep the mute/volume button visible so users can still toggle audio;
+           the slider will remain available again in landscape and on larger viewports.
+           Use high-specificity rules with !important to reliably override runtime toggles. */
+        @media (max-width: 520px) and (orientation: portrait) {
+            /* target the primary slider and common wrapper classes used by the player UI */
+            #volume-bar,
+            .group\/vol,
+            .player-ui #volume-bar,
+            #player-modal #volume-bar,
+            /* also hide any inline volume input placed inside group/vol wrappers */
+            .group\/vol input[type="range"] {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
+                width: 0 !important;
+                height: 0 !important;
+            }
+
+            /* keep the mute button visible and tappable (do not hide #mute-btn) */
+            #mute-btn { display: inline-flex !important; visibility: visible !important; opacity: 1 !important; pointer-events: auto !important; }
+        }
+        @media (max-width: 520px) and (orientation: portrait) {
+            /* Keep the player modal aligned to the top-safe area and avoid cover overlap with controls */
+            #player-modal {
+                align-items: flex-start !important;
+                padding-top: env(safe-area-inset-top, 12px) !important;
+            }
+
+            /* Player UI: compact top padding, centered title moved into a safe zone and made non-overlapping */
+            #player-modal .player-ui {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+                padding-top: calc(env(safe-area-inset-top, 12px) + 6px) !important;
+                gap: 8px;
+            }
+            #player-modal .player-ui .top-center {
+                top: calc(env(safe-area-inset-top, 12px) + 6px) !important;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 96px);
+                pointer-events: none;
+            }
+
+            /* Make the media area use a stable fraction of the viewport so controls and captions have dedicated space */
+            #player-media-wrapper {
+                height: 54vh !important;
+                min-height: 44vh !important;
+                max-height: 66vh !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #000 !important;
+            }
+
+            /* Central play: larger but slightly reduced for reach and to avoid blocking captions */
+            #center-play-btn {
+                width: 72px !important;
+                height: 72px !important;
+                min-width: 72px !important;
+                min-height: 72px !important;
+                border-radius: 9999px;
+                box-shadow: 0 14px 40px rgba(124,58,237,0.14) !important;
+            }
+
+            /* Bottom controls grouped into a compact row above safe area; ensure they are reachable */
+            .player-ui > .w-full.pb-8 {
+                padding-bottom: calc(env(safe-area-inset-bottom, 12px) + 12px) !important;
+            }
+            .player-ui .w-full.pb-8 .flex {
+                gap: 8px;
+                align-items: center;
+            }
+
+            /* Make progress bar taller and easier to tap without overlapping captions */
+            #progress-bar { height: 20px !important; border-radius: 999px; }
+            #progress-fill { height: 100% !important; border-radius: 999px; }
+
+            /* Position captions overlay above the media area so it doesn't collide with bottom controls/progress */
+            #lumina-captions-overlay, #lumina-captions-overlay.custom-captions {
+                bottom: calc(54vh + 10px) !important; /* anchor above the media area */
+                max-width: calc(100% - 28px) !important;
+                font-size: 15px !important;
+                padding: 8px 12px !important;
+            }
+            #player-modal video::cue,
+            #lumina-captions-overlay .custom-captions-line {
+                transform: translateY(-72px) !important;
+                font-size: 15px !important;
+                padding: 8px 10px !important;
+            }
+
+            /* Keep the Next Episode and Skip Intro controls within reach and out of the way of captions */
+            #skip-intro-btn {
+                bottom: calc(env(safe-area-inset-bottom, 12px) + 84px) !important;
+                right: 16px !important;
+                min-width: 130px;
+            }
+            #next-ep-prompt {
+                right: 12px !important;
+                bottom: calc(env(safe-area-inset-bottom, 12px) + 18px) !important;
+                max-width: calc(100% - 48px);
+            }
+
+            /* Larger close/back control for touch */
+            .player-ui > .flex .w-10 { width:44px; height:44px; min-width:44px; min-height:44px; }
+
+            /* Prevent the player UI from exceeding viewport while keyboard is open */
+            #player-modal .player-ui, #player-modal #custom-player-container {
+                max-height: calc(100vh - env(safe-area-inset-top, 12px) - env(safe-area-inset-bottom, 12px)) !important;
+                overflow: visible;
+            }
+
+            /* Maintain smooth behavior when soft keyboard appears */
+            @supports (max-height: 1px) {
+                #player-modal .player-ui { will-change: transform; }
+            }
+
+            /* Slightly enlarge bottom control tap targets on small screens */
+            #speed-btn, #lumina-captions-btn, #fullscreen-btn, #pip-btn, #mute-btn {
+                width: 48px !important; height: 48px !important; min-width:48px; min-height:48px;
+            }
+        }

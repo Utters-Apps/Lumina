@@ -3412,5 +3412,63 @@
       #skip-intro-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 36px rgba(124,58,237,0.08); background: linear-gradient(90deg, rgba(255,255,255,0.09), rgba(255,255,255,0.04)); }
       /* keep center-play-btn as the larger central control (do not change) */
     </style>
+    <style>
+      /* Mobile portrait: pin close & cast to safe-area edges and keep centered title clear */
+      @media (max-width: 767px) and (orientation: portrait) {
+        /* Close button (top-left) aligned to safe area and elevated for touch reach */
+        #player-modal .player-ui button[title="Fechar player"] {
+          position: absolute !important;
+          left: calc(env(safe-area-inset-left, 12px) + 12px) !important;
+          top: calc(env(safe-area-inset-top, 12px) + 12px) !important;
+          z-index: 150 !important;
+          transform: none !important;
+        }
+
+        /* Cast button (top-right) aligned to safe area and elevated similarly */
+        #cast-top-btn {
+          position: absolute !important;
+          right: calc(env(safe-area-inset-right, 12px) + 12px) !important;
+          top: calc(env(safe-area-inset-top, 12px) + 12px) !important;
+          z-index: 150 !important;
+          transform: none !important;
+        }
+
+        /* Move the centered title downward and limit its width so it never gets overlapped by left/right controls */
+        #player-modal .player-ui .top-center {
+          top: calc(env(safe-area-inset-top, 12px) + 52px) !important;
+          left: 50% !important;
+          transform: translateX(-50%) !important;
+          width: calc(100% - (env(safe-area-inset-left, 12px) + env(safe-area-inset-right, 12px) + 120px)) !important;
+          max-width: calc(100% - 96px) !important;
+          pointer-events: none !important;
+          z-index: 140 !important;
+        }
+
+        /* Reduce title line-height and ensure it truncates to avoid wrap into the control area */
+        #player-modal .player-ui .top-center #player-ep-title {
+          line-height: 1.05 !important;
+          white-space: nowrap !important;
+          overflow: hidden !important;
+          text-overflow: ellipsis !important;
+        }
+
+        /* Ensure the close button keeps a proper hit area */
+        #player-modal .player-ui button[title="Fechar player"] {
+          width: 44px !important;
+          height: 44px !important;
+          min-width: 44px !important;
+          min-height: 44px !important;
+          border-radius: 12px !important;
+        }
+
+        /* Ensure cast button matches touch target */
+        #cast-top-btn { width: 44px !important; height: 44px !important; min-width:44px !important; min-height:44px !important; border-radius:12px !important; }
+
+        /* Keep small safe spacing under title so captions/controls don't overlap */
+        #lumina-captions-overlay.custom-captions {
+          bottom: calc(54vh + 18px) !important;
+        }
+      }
+    </style>
 </body>
 </html>
