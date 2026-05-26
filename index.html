@@ -3438,8 +3438,9 @@
           top: calc(env(safe-area-inset-top, 12px) + 52px) !important;
           left: 50% !important;
           transform: translateX(-50%) !important;
-          width: calc(100% - (env(safe-area-inset-left, 12px) + env(safe-area-inset-right, 12px) + 120px)) !important;
-          max-width: calc(100% - 96px) !important;
+          /* Reserve extra right-side space for the cast button on mobile portrait so title never overlaps it */
+          width: calc(100% - (env(safe-area-inset-left, 12px) + env(safe-area-inset-right, 12px) + 160px)) !important;
+          max-width: calc(100% - 120px) !important;
           pointer-events: none !important;
           z-index: 140 !important;
         }
