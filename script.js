@@ -2497,6 +2497,23 @@
                     ]
                 }
             }
+            ,
+            {
+                id: 'heartstopper-forever',
+                title: 'Heartstopper Para Sempre',
+                originalTitle: 'Heartstopper Forever',
+                type: 'filme',
+                category: 'Drama / Romance / LGBTQIA+ / Teen',
+                year: '2026',
+                yearBR: '2026 — lançamento previsto para 17 de julho de 2026 na Netflix',
+                cover: 'https://files.catbox.moe/1ajx2e.png',
+                description: 'Nick e Charlie enfrentam novos desafios quando a possibilidade de um relacionamento à distância começa a afetar sua relação. Enquanto Nick se prepara para a universidade e Charlie busca mais independência, o casal precisa descobrir se o primeiro amor pode realmente durar para sempre.',
+                ageRating: '12',
+                duration: '1h50min',
+                distributor: 'Netflix',
+                production: 'See-Saw Films / Netflix',
+                url: ''
+            }
         ];
 
         // Official platform links for "Veja na ..." buttons (used in details modal)
@@ -2508,6 +2525,7 @@
             'stranger-things': 'https://www.netflix.com/br/title/80057281',
             'miraculous-ladybug': 'https://globoplay.globo.com/miraculous-as-aventuras-de-ladybug/t/DzVqV1jn8Q/',
             'heartstopper': 'https://www.netflix.com/br/title/81059939',
+            'heartstopper-forever': 'https://www.netflix.com/title/82040750',
             'one-piece-live': 'https://www.netflix.com/br/title/80217863',
             'outer-banks': 'https://www.netflix.com/br/title/80236318',
             'south-park-panderverso': 'https://www.primevideo.com/-/pt/detail/South-Park-Entrando-no-Panderverso/0TGVKVPRJ0740ZTO4VRBT4X8HE',
