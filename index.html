@@ -3471,5 +3471,156 @@
         }
       }
     </style>
+    <style id="lumina-hide-fs-pwa-pc">
+      /* Hide fullscreen button when running as a PWA in desktop/large viewports */
+      @media (min-width: 768px) and (display-mode: standalone) {
+        #fullscreen-btn {
+          display: none !important;
+          visibility: hidden !important;
+          width: 0 !important;
+          height: 0 !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      }
+
+      /* Fallback: if display-mode media is not supported, JS will add .pwa-desktop to <html> for same effect */
+      @media (min-width: 768px) {
+        html.pwa-desktop #fullscreen-btn {
+          display: none !important;
+          visibility: hidden !important;
+          width: 0 !important;
+          height: 0 !important;
+          opacity: 0 !important;
+          pointer-events: none !important;
+        }
+      }
+    </style>
+
+    <script>
+      // Ensure fullscreen control is removed for desktop PWAs (Edge/Chrome/Firefox PWAs on PC).
+      (function(){
+        try {
+          // isMobileOS is defined earlier in script.js; guard if absent.
+          var _isMobile = (function(){
+            try {
+              if (typeof isMobileOS === 'function') return isMobileOS();
+              var ua = navigator.userAgent || navigator.vendor || '';
+              return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
+            } catch (e) { return false; }
+          })();
+
+          var isStandalone = false;
+          try {
+            // Preferred check for modern browsers
+            if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) isStandalone = true;
+            // iOS legacy
+            if (window.navigator && window.navigator.standalone === true) isStandalone = true;
+            // fallback: PWA query param/helper
+            if (!isStandalone && location.search && location.search.indexOf('source=pwa') !== -1) isStandalone = true;
+          } catch (e) { isStandalone = false; }
+
+          if (isStandalone && !_isMobile) {
+            // add class to html as a robust fallback for UAs that don't support display-mode in CSS
+            try { document.documentElement.classList.add('pwa-desktop'); } catch(_) {}
+            // also ensure player modal has a marker class for any runtime CSS rules
+            try { document.getElementById('player-modal')?.classList.add('pwa-standalone-desktop'); } catch(_) {}
+          }
+        } catch(_) {}
+      })();
+    </script>
+
+<script>
+  // Lumina: robust global inactivity handler to hide player UI when idle (works for native .mp4, Dropbox, embeds)
+  (function(){
+    const IDLE_MS = 5000; // hide after 5s of inactivity
+    let idleTimer = null;
+    let lastActive = Date.now();
+
+    function isPlayerVisible() {
+      try {
+        const pm = document.getElementById('player-modal');
+        return pm && !pm.classList.contains('hidden') && pm.classList.contains('flex');
+      } catch (e) { return false; }
+    }
+
+    function hidePlayerUI() {
+      try {
+        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+        const ui = document.querySelector('.player-ui');
+        if (wrapper) wrapper.classList.add('player-idle');
+        if (ui) { ui.style.pointerEvents = 'none'; ui.style.opacity = '0'; }
+      } catch (e) {}
+    }
+
+    function showPlayerUI() {
+      try {
+        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
+        const ui = document.querySelector('.player-ui');
+        if (wrapper) wrapper.classList.remove('player-idle');
+        if (ui) { ui.style.pointerEvents = ''; ui.style.opacity = ''; }
+      } catch (e) {}
+    }
+
+    function resetIdleTimer() {
+      try {
+        lastActive = Date.now();
+        // only act when player visible
+        if (!isPlayerVisible()) {
+          // make sure UI visible when player not active
+          showPlayerUI();
+          if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+          return;
+        }
+        // show controls on any interaction
+        showPlayerUI();
+        if (idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+          // double-check visibility and recency
+          if (!isPlayerVisible()) return;
+          if (Date.now() - lastActive >= IDLE_MS) hidePlayerUI();
+        }, IDLE_MS + 40);
+      } catch (e) {}
+    }
+
+    // listen for global interaction events at high level to reliably detect activity
+    const events = ['pointermove','pointerdown','pointerup','mousemove','touchstart','touchmove','keydown','wheel'];
+    events.forEach(ev => {
+      try { document.addEventListener(ev, resetIdleTimer, { passive: true }); } catch (e) {}
+    });
+
+    // Also observe when player-modal opens/closes to start/stop timers
+    const playerModal = document.getElementById('player-modal');
+    if (playerModal) {
+      const mo = new MutationObserver(() => {
+        try {
+          if (isPlayerVisible()) {
+            // ensure UI visible when opened and start timer
+            showPlayerUI();
+            resetIdleTimer();
+          } else {
+            // when closed, clear timer and reveal UI globally
+            if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+            showPlayerUI();
+          }
+        } catch (e) {}
+      });
+      try { mo.observe(playerModal, { attributes: true, attributeFilter: ['class', 'style'] }); } catch (e) {}
+    }
+
+    // Defensive: if the page becomes hidden, cancel idle timer to avoid surprises on resume
+    document.addEventListener('visibilitychange', () => {
+      try {
+        if (document.visibilityState === 'hidden') { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
+        else resetIdleTimer();
+      } catch (e) {}
+    }, { passive: true });
+
+    // Expose for debugging
+    window.__lumina_force_show_player_ui = showPlayerUI;
+    window.__lumina_force_hide_player_ui = hidePlayerUI;
+    window.__lumina_reset_idle = resetIdleTimer;
+  })();
+</script>
 </body>
 </html>

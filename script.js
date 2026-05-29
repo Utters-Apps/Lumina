@@ -2559,7 +2559,7 @@
             'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen',
             'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO',
             'rivalidade-ardente': 'https://www.hbomax.com/br/pt/shows/rivalidade-ardente/50cd4e99-04ee-427b-a3b4-da721ed05d9c',
-            'valentins-uma-familia-muuuito-esperta': 'https://globoplay.globo.com' 
+            'valentins-uma-familia-muuuito-esperta': 'https://globoplay.globo.com/valentins/t/2sCrGLb6jH/' 
         };
 
         // --- LINK OBFUSCATION (inline DB shielding) ---
@@ -2791,6 +2791,151 @@
                 } catch (e) { return 1; }
             })()
         };
+
+        // Sanitize persisted history/progress: remove any history entries whose season is "Tnull" (or contains "null")
+        // and also remove any per-episode progress tied to those history entries, then persist changes.
+        (function removeTnullFromHistoryAndProgress() {
+            try {
+                if (!state || typeof state !== 'object') return;
+                const hist = state.history || {};
+                const prog = state.progress || {};
+
+                // collect keys to remove
+                const histKeys = Object.keys(hist || {});
+                const toRemoveHist = [];
+                const toRemoveProgIds = new Set();
+
+                histKeys.forEach(seriesId => {
+                    try {
+                        const entry = hist[seriesId];
+                        if (!entry) return;
+                        const s = entry.s;
+                        // treat 'Tnull' or any literal containing 'null' (case-insensitive) as invalid
+                        if (s === null || s === undefined) {
+                            // also check explicit string "Tnull"
+                            if (String(s).toLowerCase().indexOf('null') !== -1 || s === null) {
+                                toRemoveHist.push(seriesId);
+                                if (entry.epId) toRemoveProgIds.add(String(entry.epId));
+                            }
+                        } else {
+                            const sStr = String(s);
+                            if (/tnull/i.test(sStr) || /null/i.test(sStr)) {
+                                toRemoveHist.push(seriesId);
+                                if (entry.epId) toRemoveProgIds.add(String(entry.epId));
+                            }
+                        }
+                    } catch (_) {}
+                });
+
+                // Remove detected history entries and related progress entries
+                toRemoveHist.forEach(k => {
+                    try { delete state.history[k]; } catch (_) {}
+                });
+                // Also scan progress entries and remove any with id matching epId in toRemoveProgIds or with season/tag containing null
+                Object.keys(prog || {}).forEach(pid => {
+                    try {
+                        if (toRemoveProgIds.has(String(pid))) {
+                            delete state.progress[pid];
+                            return;
+                        }
+                        // defensive: if progress entry contains a nested reference to season with 'null', remove it
+                        const p = state.progress[pid];
+                        if (p && p.season && (String(p.season).toLowerCase().indexOf('null') !== -1 || /tnull/i.test(String(p.season)))) {
+                            delete state.progress[pid];
+                        }
+                        // also remove entries where id string itself contains "tnull" or "null" patterns (defensive)
+                        if (/tnull|null/i.test(String(pid))) {
+                            delete state.progress[pid];
+                        }
+                    } catch (_) {}
+                });
+
+                // Persist cleaned state to localStorage safely
+                try {
+                    localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {}));
+                } catch (_) {}
+                try {
+                    localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress || {}));
+                } catch (_) {}
+
+                // Also update in-memory copies used elsewhere
+                try { window.state = window.state || state; } catch (_) {}
+            } catch (e) {
+                // non-fatal: do not break app startup
+                console.warn('removeTnullFromHistoryAndProgress failed', e);
+            }
+        })();
+
+        // Force-cleaner: expose a callable function that aggressively removes any history/progress entries
+        // that include 'null' or 'Tnull'/'Enull' in season/episode identifiers; runs immediately once to ensure Continue Watching is clean.
+        (function forceCleanNullContinue() {
+            function cleanAll() {
+                try {
+                    const histKey = 'lumina_v2_hist';
+                    const progKey = 'lumina_v2_prog';
+                    let hist = {};
+                    let prog = {};
+                    try { hist = JSON.parse(localStorage.getItem(histKey)) || {}; } catch(_) { hist = state.history || {}; }
+                    try { prog = JSON.parse(localStorage.getItem(progKey)) || {}; } catch(_) { prog = state.progress || {}; }
+
+                    const histKeys = Object.keys(hist || {});
+                    histKeys.forEach(k => {
+                        try {
+                            const v = hist[k];
+                            if (!v) { delete hist[k]; return; }
+                            // if season contains 'null' or equals 'Tnull' or episode contains 'null' or 'Enull', remove
+                            const s = v.s; const e = v.e; const epId = String(v.epId || '');
+                            if (s === null || typeof s === 'undefined' || String(s).toLowerCase().indexOf('null') !== -1 || /tnull/i.test(String(s))) {
+                                delete hist[k];
+                                // also remove related prog by epId if present
+                                if (epId && prog[epId]) delete prog[epId];
+                                return;
+                            }
+                            if (e === null || typeof e === 'undefined' || String(e).toLowerCase().indexOf('null') !== -1 || /enull/i.test(String(e))) {
+                                delete hist[k];
+                                if (epId && prog[epId]) delete prog[epId];
+                                return;
+                            }
+                            // defensive: if epId itself contains 'null' or 'tnull' or 'enull'
+                            if (/tnull|enull|null/i.test(epId)) {
+                                delete hist[k];
+                                if (prog[epId]) delete prog[epId];
+                                return;
+                            }
+                        } catch(_) {}
+                    });
+
+                    // Clean progress entries that mention season or other null markers in nested objects or keys
+                    Object.keys(prog || {}).forEach(pid => {
+                        try {
+                            const p = prog[pid];
+                            if (!p) { delete prog[pid]; return; }
+                            if (/tnull|enull|null/i.test(String(pid))) { delete prog[pid]; return; }
+                            if (p.season && String(p.season).toLowerCase().indexOf('null') !== -1) { delete prog[pid]; return; }
+                            if (p.s && String(p.s).toLowerCase().indexOf('null') !== -1) { delete prog[pid]; return; }
+                            if (p.epId && /tnull|enull|null/i.test(String(p.epId))) { delete prog[pid]; return; }
+                        } catch(_) {}
+                    });
+
+                    // Commit cleaned objects back to localStorage and in-memory state
+                    try { localStorage.setItem(histKey, JSON.stringify(hist)); } catch(_) {}
+                    try { localStorage.setItem(progKey, JSON.stringify(prog)); } catch(_) {}
+                    try { state.history = hist; state.progress = prog; window.state = window.state || state; } catch(_) {}
+
+                    // Trigger a UI refresh so Continue Watching updates immediately
+                    try { renderView(); } catch(_) {}
+                } catch (e) {
+                    console.warn('forceCleanNullContinue failed', e);
+                }
+            }
+
+            // Expose globally for manual invocation and debugging
+            try {
+                window.forceCleanNullContinue = cleanAll;
+                // Run once immediately at startup to enforce the rule
+                setTimeout(() => { try { window.forceCleanNullContinue(); } catch(_) {} }, 120);
+            } catch (e) { /* ignore */ }
+        })();
 
         // Background timer control helpers:
         // Pause non-essential background activity when video playback is active to avoid
@@ -3815,6 +3960,62 @@
         }
 
         function getContinueWatching() {
+            // Remove any history entries whose season contains 'tnull' or 'null' (case-insensitive), and remove related progress entries,
+            // then persist cleaned state so Continue Assistindo never shows Tnull entries.
+            try {
+                if (state && state.history) {
+                    const histKeys = Object.keys(state.history || {});
+                    let changed = false;
+                    const toRemoveProgIds = new Set();
+                    histKeys.forEach(seriesId => {
+                        try {
+                            const entry = state.history[seriesId];
+                            if (!entry) return;
+                            const s = entry.s;
+                            if (s === null || typeof s === 'undefined') {
+                                if (String(s).toLowerCase().indexOf('null') !== -1 || s === null) {
+                                    toRemoveProgIds.add(String(entry.epId || ''));
+                                    delete state.history[seriesId];
+                                    changed = true;
+                                }
+                            } else {
+                                const sStr = String(s);
+                                if (/tnull/i.test(sStr) || /null/i.test(sStr)) {
+                                    toRemoveProgIds.add(String(entry.epId || ''));
+                                    delete state.history[seriesId];
+                                    changed = true;
+                                }
+                            }
+                        } catch (_) {}
+                    });
+
+                    // Also remove any per-episode progress entries that reference those epIds or have season marked with null
+                    Object.keys(state.progress || {}).forEach(pid => {
+                        try {
+                            if (toRemoveProgIds.has(String(pid))) {
+                                delete state.progress[pid];
+                                changed = true;
+                                return;
+                            }
+                            const p = state.progress[pid];
+                            if (p && p.season && (String(p.season).toLowerCase().indexOf('null') !== -1 || /tnull/i.test(String(p.season)))) {
+                                delete state.progress[pid];
+                                changed = true;
+                            }
+                        } catch (_) {}
+                    });
+
+                    // Persist cleaned storage if anything changed
+                    if (changed) {
+                        try { localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {})); } catch(_) {}
+                        try { localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress || {})); } catch(_) {}
+                    }
+                }
+            } catch (e) {
+                // non-fatal: continue to build continue list even if cleaning fails
+                console.warn('Tnull cleanup failed', e);
+            }
+
             // Return a stable, deterministic list of items the user actually started watching.
             // Rules:
             //  - Only include films/episodes with a reliable progress record (time >= 2s) OR explicit embed marker.
@@ -5370,23 +5571,8 @@ const player = {
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
                 // Hide PiP and volume controls when the chosen source is not an .mp4 (apply early so UI is correct before rendering)
                 try { hideControlsForNonMp4(url); } catch(_) {}
-                // Persist initial history/progress entry when starting playback so "Continuar Assistindo" updates immediately.
-                try {
-                    if (this.context && this.context.type === 'serie' && this.context.seriesId) {
-                        state.history[this.context.seriesId] = {
-                            s: this.context.season,
-                            e: this.context.episode,
-                            epId: this.context.id,
-                            timestamp: Date.now()
-                        };
-                        // write to storage (debounced inside saveProgressData)
-                        saveProgressData();
-                    } else if (this.context && this.context.type === 'filme' && this.context.id) {
-                        // ensure a placeholder progress record exists for films (helps continue list and safe saves)
-                        state.progress[this.context.id] = state.progress[this.context.id] || { time: 0, duration: 0, timestamp: Date.now() };
-                        saveProgressData();
-                    }
-                } catch (e) { /* non-blocking */ }
+                // Do NOT pre-write history/progress here to avoid creating "fake" Continue Watching entries.
+                // History/progress will be recorded only when the player actually reports playback progress (see saveProgress).
                 const modal = document.getElementById('player-modal');
                 modal.classList.remove('hidden'); modal.classList.add('flex');
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
