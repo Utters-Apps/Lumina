@@ -3622,5 +3622,133 @@
     window.__lumina_reset_idle = resetIdleTimer;
   })();
 </script>
+<script>
+  // Lumina: aggressive runtime cleanup to remove Tnull/null and ghost continue-watching entries
+  (function(){
+    function safeParse(key){
+      try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch(e){ return {}; }
+    }
+    function safeWrite(key,obj){
+      try { localStorage.setItem(key, JSON.stringify(obj)); return true; } catch(e){ return false; }
+    }
+    function isNullishToken(v){
+      try {
+        if (v === null || typeof v === 'undefined') return true;
+        return /(^|\W)(tnull|enull|null)(\W|$)/i.test(String(v));
+      } catch(e){ return false; }
+    }
+    function cleanHistoryAndProgress(){
+      try {
+        // ensure db available
+        const dbList = Array.isArray(window.db) ? window.db.map(x => String(x.id)) : [];
+        const histKey = 'lumina_v2_hist';
+        const progKey = 'lumina_v2_prog';
+        const hist = safeParse(histKey);
+        const prog = safeParse(progKey);
+
+        let changed = false;
+
+        // Remove history entries that reference non-existent series or that have Tnull/null in season/episode/epId
+        Object.keys(hist).forEach(k => {
+          try {
+            const v = hist[k];
+            const seriesExists = dbList.indexOf(k) !== -1;
+            const s = v && v.s;
+            const e = v && v.e;
+            const epId = String(v && v.epId || '');
+            if (!seriesExists || isNullishToken(s) || isNullishToken(e) || isNullishToken(epId) || !v.timestamp) {
+              delete hist[k];
+              changed = true;
+              // also remove any progress referencing that epId
+              if (epId && prog[epId]) { delete prog[epId]; }
+            }
+          } catch(_) {}
+        });
+
+        // Remove progress entries whose id does not match any known episode id (scan db episodes)
+        const knownEpIds = new Set();
+        try {
+          if (Array.isArray(window.db)) {
+            window.db.forEach(item=>{
+              try{
+                if (item && item.seasons && typeof item.seasons === 'object') {
+                  Object.keys(item.seasons).forEach(s=>{
+                    const arr = item.seasons[s] || [];
+                    if (Array.isArray(arr)) arr.forEach((ep, idx)=>{
+                      try {
+                        if (ep && ep.id && String(ep.id).trim()) knownEpIds.add(String(ep.id));
+                        else knownEpIds.add(`${item.id}-s${s}-e${idx}`);
+                      } catch(_) {}
+                    });
+                  });
+                }
+                // film-level id_ep or id
+                if (item && item.type === 'filme') {
+                  if (item.id_ep) knownEpIds.add(String(item.id_ep));
+                  else if (item.id) knownEpIds.add(String(item.id));
+                }
+              } catch(_) {}
+            });
+          }
+        } catch(_) {}
+
+        Object.keys(prog).forEach(pid=>{
+          try {
+            const entry = prog[pid];
+            // remove entries that look like null tokens or whose id is not in knownEpIds
+            if (isNullishToken(pid) || isNullishToken(entry && entry.season) || isNullishToken(entry && entry.epId)) {
+              delete prog[pid]; changed = true; return;
+            }
+            if (!knownEpIds.has(String(pid))) {
+              // if this progress entry looks like an embed marker (embed:true) and has recent timestamp, keep it only if it matches a DB title found by searching titles,
+              // otherwise remove it to avoid ghost items.
+              if (entry && entry.embed) {
+                const maybeKeep = (function(){
+                  try {
+                    const textKeys = (entry && entry.title) ? String(entry.title).toLowerCase().trim() : '';
+                    if (!textKeys) return false;
+                    return window.db && window.db.some(d => ((d.title||'') + ' ' + (d.originalTitle||'')).toLowerCase().includes(textKeys));
+                  } catch(_) { return false; }
+                })();
+                if (!maybeKeep) { delete prog[pid]; changed = true; }
+              } else {
+                delete prog[pid]; changed = true;
+              }
+            }
+          } catch(_) {}
+        });
+
+        // persist only if changed
+        if (changed) {
+          safeWrite(histKey, hist);
+          safeWrite(progKey, prog);
+          try { state.history = hist; state.progress = prog; } catch(_) {}
+          try { renderView(); } catch(_) {}
+        }
+      } catch(e){
+        console.warn('Lumina runtime cleanup failed', e);
+      }
+    }
+
+    // Run immediately after DOM ready and again shortly after to catch async DB installs; also run when storage events occur.
+    function scheduleRuns(){
+      try {
+        cleanHistoryAndProgress();
+        setTimeout(cleanHistoryAndProgress, 180);
+        setTimeout(cleanHistoryAndProgress, 1200);
+      } catch(_) {}
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleRuns);
+    else scheduleRuns();
+
+    // Also respond to storage events in case some other tab wrote problematic entries
+    window.addEventListener('storage', function(ev){
+      try { if (ev.key && /lumina_v2_(hist|prog)/i.test(ev.key)) setTimeout(cleanHistoryAndProgress, 80); } catch(_) {}
+    }, { passive: true });
+
+    // Expose manual clean API
+    window.lumina_clean_nulls = cleanHistoryAndProgress;
+  })();
+</script>
 </body>
 </html>
