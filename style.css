@@ -101,6 +101,11 @@
 
         /* Treat touch interactions like native apps: prevent browser double-tap/pinch zooming side-effects */
         html, body { touch-action: manipulation; -ms-touch-action: manipulation; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
+        /* Allow text selection and normal typing interactions inside form controls */
+        input, textarea {
+            -webkit-user-select: auto !important;
+            user-select: auto !important;
+        }
         
         body {
             background-color: #09090b; color: #fafafa; overflow-x: hidden;
@@ -123,7 +128,7 @@
         }
 
         /* Smooth Images & Hover */
-        img { transition: opacity 0.3s ease-in-out; }
+        img { transition: opacity 0.3s ease-in-out; display: block; vertical-align: middle; }
         img[loading] { opacity: 0; }
         img.loaded { opacity: 1; }
 
@@ -150,6 +155,8 @@
         input[type=range]:hover::-webkit-slider-runnable-track { height: 6px; }
         input[type=range]::-webkit-slider-thumb {
             height: 0; width: 0; background: #fff; -webkit-appearance: none; margin-top: 2px; border-radius: 50%; transition: all 0.2s;
+            position: relative;
+            z-index: 5; /* ensure thumb sits above progress fill */
         }
         input[type=range]:hover::-webkit-slider-thumb { height: 16px; width: 16px; margin-top: -5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
@@ -166,6 +173,9 @@
         /* Instead of forcing the entire UI to invisible (which hides persistent controls such as PiP),
            we disable pointer events on the UI container and hide only elements marked as hide-on-idle.
            Elements marked keep-visible remain interactive and visible (useful for PiP / persistent actions). */
+
+        /* Global class to hide mouse cursor when player is hidden (applied/removed by JS) */
+        .lumina-hide-mouse, html.lumina-hide-mouse, body.lumina-hide-mouse { cursor: none !important; }
         .player-idle .player-ui { pointer-events: none; }
         .player-idle .player-ui .hide-on-idle { opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.35s, transform 0.35s; }
         .player-idle .player-ui .keep-visible { opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
@@ -549,7 +559,7 @@
         .search-input-desktop:focus, .search-input-desktop:not(:placeholder-shown) { width: 180px; padding-left: 8px; }
 
         /* Prevent scale on hero cover specifically */
-        .hero-cover-no-scale { transition: opacity 0.3s ease-in-out; transform: none !important; }
+        .hero-cover-no-scale { transition: opacity 0.3s ease-in-out; transform: none !important; display: block; width: 100%; height: 100%; object-fit: cover; }
 
         /* Desktop refinements */
         @media (min-width: 768px) {

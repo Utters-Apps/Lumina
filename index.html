@@ -3869,5 +3869,259 @@
       window.__lumina_normalize_progress_keys = normalizeProgressKeys;
     })();
     </script>
+<script>
+(function(){
+  // Safe guards
+  const g = window;
+  const safe = (...fn) => { try { return fn[0](); } catch(e){ try { console.warn('lumina-hotfix error', e); } catch(_){} } };
+
+  // Ensure getStableEpId exists
+  if (!g.getStableEpId) {
+    g.getStableEpId = function(seriesId, season, index, ep) {
+      try {
+        if (!seriesId) return null;
+        let rawId = (ep && ep.id && String(ep.id).trim()) ? String(ep.id).trim() : `s${season}-e${index}`;
+        rawId = rawId.replace(/^.*::/, '');
+        return rawId.startsWith(seriesId + '-') ? rawId : `${seriesId}-${rawId}`;
+      } catch (e) {
+        return `${seriesId}-s${season}-e${index}`;
+      }
+    };
+  }
+
+  // Patch loadSeason: ensure it uses getStableEpId for episode keys/rendering
+  safe(() => {
+    const origLoad = window.loadSeason;
+    window.loadSeason = function(itemId, seasonNum) {
+      try {
+        // If original exists, call it but first monkey-patch episode ids in the DB season slice so original render uses stable ids
+        const series = (window.db || []).find(d => d && d.id === itemId);
+        if (series && series.seasons && Array.isArray(series.seasons[seasonNum])) {
+          const arr = series.seasons[seasonNum];
+          for (let i=0;i<arr.length;i++) {
+            const ep = arr[i] || {};
+            // rewrite ep._stableId so renderers can use it if they check
+            try { ep._stableId = g.getStableEpId(series.id, seasonNum, i, ep); } catch(_) { ep._stableId = `${series.id}-s${seasonNum}-e${i}`; }
+            // Also normalize ep.id to the stable form to avoid code paths that read ep.id directly
+            try {
+              if (!ep.id || String(ep.id).trim() === '') ep.id = ep._stableId;
+              else {
+                // ensure ep.id includes series prefix
+                const cleaned = String(ep.id).replace(/^.*::/,'');
+                ep.id = cleaned.startsWith(series.id + '-') ? cleaned : `${series.id}-${cleaned}`;
+              }
+            } catch(_) {}
+          }
+        }
+      } catch(_) {}
+      // call original implementation (if any)
+      try { return origLoad ? origLoad.apply(this, arguments) : undefined; } catch(e){
+        // If original throws, fallback to a minimal renderer: populate episodes container safely
+        try {
+          const item = (window.db||[]).find(d=>d && d.id===itemId);
+          const container = document.getElementById(`episodes-container-${itemId}`) || document.getElementById('episodes-container');
+          if (!container || !item) return;
+          container.innerHTML = '';
+          const eps = (item.seasons && item.seasons[seasonNum]) ? item.seasons[seasonNum] : [];
+          for (let i=0;i<eps.length;i++){
+            const ep = eps[i] || {};
+            const stableId = g.getStableEpId(itemId, seasonNum, i, ep);
+            const node = document.createElement('div');
+            node.className = 'group flex gap-4 p-3 rounded-2xl transition-colors duration-300 cursor-pointer';
+            node.onclick = function(){ try { requestPlay(ep.url || '', `${item.title} T${seasonNum}:E${i+1}`, { type:'serie', seriesId: itemId, season: seasonNum, episode: i, id: stableId, url: ep.url }); } catch(_){} };
+            node.innerHTML = `<div class="w-32 aspect-video bg-surface rounded-md overflow-hidden"><img src="${ep.cover || item.cover || 'fiveicon.png'}" class="w-full h-full object-cover"></div><div><h4 class="text-white">${i+1}. ${ep.title||'Episódio'}</h4></div>`;
+            container.appendChild(node);
+          }
+        } catch(_) {}
+      }
+    };
+  });
+
+  // Make changeSeason call loadSeason (eliminate duplicate implementation)
+  safe(() => {
+    window.changeSeason = function(itemId, seasonNum) {
+      try { return window.loadSeason && window.loadSeason(itemId, seasonNum); } catch(e) { console.warn('changeSeason hotfix failed', e); }
+    };
+  });
+
+  // Patch openDetails to compute stableEpId via getStableEpId wherever episode ids are built for series flows
+  safe(() => {
+    const origOpen = window.openDetails;
+    window.openDetails = function(id) {
+      try {
+        // locate series item and ensure per-episode ids normalized in its seasons
+        const item = (window.db || []).find(d => d && d.id === id);
+        if (item && item.type === 'serie' && item.seasons) {
+          Object.keys(item.seasons || {}).forEach(seasonKey => {
+            const arr = item.seasons[seasonKey] || [];
+            for (let idx=0; idx < arr.length; idx++) {
+              const ep = arr[idx] || {};
+              try {
+                const stable = g.getStableEpId(item.id, seasonKey, idx, ep);
+                // normalize ep.id and store stable copy
+                ep._stableId = stable;
+                if (!ep.id || String(ep.id).trim() === '') ep.id = stable;
+                else {
+                  const cleaned = String(ep.id).replace(/^.*::/,'');
+                  ep.id = cleaned.startsWith(item.id + '-') ? cleaned : `${item.id}-${cleaned}`;
+                }
+              } catch(_) {}
+            }
+          });
+        }
+
+        // Call original openDetails; if it relies on ep.id it will now see normalized stable ids
+        if (origOpen) return origOpen.apply(this, arguments);
+      } catch (e) {
+        try { if (origOpen) return origOpen.apply(this, arguments); } catch(_) {}
+      }
+    };
+  });
+
+  // Patch playNextEpisode to use getStableEpId for next episode id generation
+  safe(() => {
+    const origPlayNext = window.playNextEpisode;
+    window.playNextEpisode = function() {
+      try {
+        // try to detect the series and next ep data from current player.context
+        const ctx = (window.player && window.player.context) ? window.player.context : null;
+        if (!ctx || ctx.type !== 'serie') {
+          if (origPlayNext) return origPlayNext.apply(this, arguments);
+          return;
+        }
+        const seriesData = (window.db || []).find(d => d && d.id === ctx.seriesId);
+        if (!seriesData) { if (origPlayNext) return origPlayNext.apply(this, arguments); return; }
+        // compute next episode indices
+        const sNum = String(ctx.season);
+        const eIdx = Number(ctx.episode);
+        const seasonArr = (seriesData.seasons && seriesData.seasons[sNum]) ? seriesData.seasons[sNum] : [];
+        let next = null;
+        if (eIdx + 1 < seasonArr.length) {
+          next = { s: sNum, e: eIdx+1, epData: seasonArr[eIdx+1] };
+        } else {
+          const nextSeasonNum = String(Number(sNum) + 1);
+          const nextSeasonArr = seriesData.seasons && seriesData.seasons[nextSeasonNum] ? seriesData.seasons[nextSeasonNum] : null;
+          if (nextSeasonArr && nextSeasonArr.length > 0) next = { s: nextSeasonNum, e: 0, epData: nextSeasonArr[0] };
+        }
+        if (!next) {
+          if (origPlayNext) return origPlayNext.apply(this, arguments);
+          return;
+        }
+        const epData = next.epData;
+        const stableEpId = g.getStableEpId(seriesData.id, next.s, next.e, epData);
+        // construct context for next ep and call requestPlay/init flow
+        const fullContext = { type: 'serie', seriesId: seriesData.id, seriesTitle: seriesData.title, season: next.s, episode: next.e, id: stableEpId, trigger: seriesData.nextEpisodeTrigger || 0, nextEp: null, url: epData.url, subtitles: epData.subtitles || [] };
+        // call player init / requestPlay
+        try { if (window.player && typeof window.player.init === 'function') { window.player.init(epData.url, `T${next.s}:E${next.e+1} - ${epData.title}`, fullContext); return; } } catch(_) {}
+        try { requestPlay(epData.url, `T${next.s}:E${next.e+1} - ${epData.title}`, fullContext); } catch(_) {}
+      } catch (e) {
+        try { if (origPlayNext) return origPlayNext.apply(this, arguments); } catch(_) {}
+      }
+    };
+  });
+
+  // Patch player.saveProgress to remove any "::" namespace coercion and ensure canonical id usage
+  safe(() => {
+    try {
+      if (window.player && typeof window.player.saveProgress === 'function') {
+        const origSave = window.player.saveProgress.bind(window.player);
+        window.player.saveProgress = function() {
+          try {
+            // run original save logic first
+            const res = origSave && origSave();
+            // then sanitize: ensure keys don't include '::' and are normalized using getStableEpId when possible
+            try {
+              const prog = window.state && window.state.progress ? window.state.progress : {};
+              const fixed = {};
+              Object.keys(prog).forEach(k => {
+                try {
+                  let newKey = String(k);
+                  // remove :: namespace if present
+                  newKey = newKey.replace(/::/g, '-');
+                  // if key already contains a known series prefix with hyphen pattern, keep it,
+                  // otherwise attempt to find matching db series and rebuild using getStableEpId heuristics
+                  if (!/-s\d+-e\d+/.test(newKey)) {
+                    // attempt to locate in db by matching ep id tail
+                    const tail = newKey.split('-').slice(-3).join('-');
+                    let found = null;
+                    (window.db || []).forEach(series => {
+                      if (found) return;
+                      Object.keys(series.seasons || {}).forEach(seasonKey => {
+                        const arr = series.seasons[seasonKey] || [];
+                        for (let i=0;i<arr.length;i++){
+                          const ep = arr[i] || {};
+                          const candidate = (ep.id && String(ep.id).trim()) ? String(ep.id).trim() : `s${seasonKey}-e${i}`;
+                          const candidateStable = g.getStableEpId(series.id, seasonKey, i, ep);
+                          if (candidate === k || candidateStable === k || candidateStable.endsWith(tail)) { found = { series, seasonKey, i, ep }; break; }
+                        }
+                      });
+                    });
+                    if (found) {
+                      newKey = g.getStableEpId(found.series.id, found.seasonKey, found.i, found.ep);
+                    }
+                  }
+                  fixed[newKey] = prog[k];
+                } catch(_) {}
+              });
+              // replace in-memory map and persist
+              window.state.progress = fixed;
+              try { localStorage.setItem('lumina_v2_prog', JSON.stringify(fixed)); } catch(_) {}
+            } catch(_) {}
+            return res;
+          } catch (e) {
+            try { return origSave && origSave(); } catch(_) {}
+          }
+        };
+      }
+    } catch(e) {}
+  });
+
+  // Small normalization pass immediately to reduce collisions for existing in-memory DB episodes:
+  safe(() => {
+    try {
+      if (!Array.isArray(window.db)) return;
+      window.db.forEach(series => {
+        try {
+          if (!series || !series.id || !series.seasons) return;
+          Object.keys(series.seasons || {}).forEach(seasonKey => {
+            const arr = series.seasons[seasonKey] || [];
+            for (let i=0;i<arr.length;i++){
+              const ep = arr[i] || {};
+              const stable = g.getStableEpId(series.id, seasonKey, i, ep);
+              ep._stableId = stable;
+              if (!ep.id || String(ep.id).trim() === '') ep.id = stable;
+              else {
+                const cleaned = String(ep.id).replace(/^.*::/,'');
+                ep.id = cleaned.startsWith(series.id + '-') ? cleaned : `${series.id}-${cleaned}`;
+              }
+            }
+          });
+        } catch(_) {}
+      });
+    } catch(_) {}
+  });
+
+  // Expose debug helper
+  g.__lumina_hotfix_applied = true;
+})();
+</script>
+    <style>
+      /* Ensure Next Episode prompt is interactive and sits above player UI overlays */
+      #next-ep-prompt {
+        pointer-events: auto !important;
+        z-index: 2147483650 !important;
+      }
+      /* Make sure the prompt's inner buttons are clickable on all devices */
+      #next-ep-prompt button,
+      #next-ep-prompt .w-10,
+      #next-ep-prompt .w-8 {
+        pointer-events: auto !important;
+      }
+      /* Slightly increase hit area for mobile */
+      @media (max-width: 767px) {
+        #next-ep-prompt { padding: 12px !important; }
+        #next-ep-prompt .w-10, #next-ep-prompt .w-8 { min-width: 44px !important; min-height: 44px !important; }
+      }
+    </style>
 </body>
 </html>
