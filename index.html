@@ -2255,6 +2255,136 @@
         })();
     </script>
     <script src="script.js" defer></script>
+    <script>
+    // Lumina: final guard — normalize progress keys to series-scoped keys and enforce safe flush to prevent cross-series contamination.
+    (function(){
+      function normalizeKeyCandidates(progObj, dbArr) {
+        try {
+          if (!progObj || typeof progObj !== 'object') return progObj;
+          if (!Array.isArray(dbArr)) return progObj;
+          const mapping = {}; // shortKey -> canonical (only if unique)
+          // build reverse map for episode ids to canonical id with series prefix
+          dbArr.forEach(series => {
+            try {
+              if (!series || !series.id || !series.seasons) return;
+              Object.keys(series.seasons || {}).forEach(seasonKey => {
+                const eps = series.seasons[seasonKey] || [];
+                for (let i = 0; i < eps.length; i++) {
+                  const ep = eps[i] || {};
+                  const short = (ep.id && String(ep.id).trim()) ? String(ep.id).trim() : null;
+                  const canonical = (ep && ep.id) ? `${series.id}::${String(ep.id).trim()}` : `${series.id}::s${seasonKey}e${i}`;
+                  if (!short) continue;
+                  if (!mapping[short]) mapping[short] = new Set();
+                  mapping[short].add(canonical);
+                }
+              });
+            } catch (e) {}
+          });
+          // Clone input, renaming ambiguous keys only when mapping is unambiguous
+          const out = {};
+          Object.keys(progObj).forEach(k => {
+            try {
+              // already namespaced? keep as-is
+              if (String(k).indexOf('::') !== -1) { out[k] = progObj[k]; return; }
+              const candidates = mapping[k];
+              if (candidates && candidates.size === 1) {
+                const canon = Array.from(candidates)[0];
+                out[canon] = progObj[k];
+              } else {
+                // ambiguous or not found -> keep original key but mark it so further passes can inspect
+                out[k] = progObj[k];
+              }
+            } catch (e) { out[k] = progObj[k]; }
+          });
+          return out;
+        } catch (e) { return progObj; }
+      }
+
+      // Wrap existing flushProgressNow to normalize keys before persisting and to ensure only active context persists when present.
+      try {
+        const orig = window.flushProgressNow && window.flushProgressNow.bind(window);
+        window.flushProgressNow = function lumina_normalize_and_flush() {
+          try {
+            // Normalize in-memory state.progress keys to canonical per-series form where possible
+            try {
+              if (window.state && window.state.progress && Array.isArray(window.db)) {
+                window.state.progress = normalizeKeyCandidates(window.state.progress, window.db);
+              }
+            } catch (_) {}
+
+            // If there is an active player context, restrict persisted progress to that single canonical key + minimal series history
+            try {
+              const ctx = (window.player && window.player.context) ? window.player.context : null;
+              if (ctx && ctx.id) {
+                const progKey = 'lumina_v2_prog';
+                const histKey = 'lumina_v2_hist';
+                const activeId = (String(ctx.id).indexOf('::') === -1 && ctx.seriesId) ? `${ctx.seriesId}::${String(ctx.id)}` : String(ctx.id);
+                const safeProg = {};
+                if (window.state && window.state.progress && window.state.progress[activeId]) {
+                  safeProg[activeId] = Object.assign({}, window.state.progress[activeId]);
+                  safeProg[activeId].timestamp = Number(safeProg[activeId].timestamp) || Date.now();
+                } else if (window.state && window.state.progress) {
+                  // attempt to find any entry that matches the episode id without namespace
+                  const keys = Object.keys(window.state.progress || {});
+                  for (const k of keys) {
+                    if (k === activeId || (String(k).endsWith('::' + ctx.id))) {
+                      safeProg[activeId] = Object.assign({}, window.state.progress[k]);
+                      safeProg[activeId].timestamp = Number(safeProg[activeId].timestamp) || Date.now();
+                      break;
+                    }
+                  }
+                }
+                // history: only include the active series minimal snapshot
+                const safeHist = {};
+                if (ctx.type === 'serie' && ctx.seriesId) {
+                  safeHist[ctx.seriesId] = Object.assign({}, (window.state && window.state.history && window.state.history[ctx.seriesId]) || { s: ctx.season, e: ctx.episode, epId: activeId, timestamp: Date.now() });
+                  safeHist[ctx.seriesId].timestamp = Number(safeHist[ctx.seriesId].timestamp) || Date.now();
+                } else {
+                  Object.assign(safeHist, (window.state && window.state.history) || {});
+                }
+
+                try { localStorage.setItem(progKey, JSON.stringify(safeProg)); } catch (e) { try { localStorage.removeItem(progKey); localStorage.setItem(progKey, JSON.stringify(safeProg)); } catch(_) {} }
+                try { localStorage.setItem(histKey, JSON.stringify(safeHist)); } catch (e) { try { localStorage.removeItem(histKey); localStorage.setItem(histKey, JSON.stringify(safeHist)); } catch(_) {} }
+
+                // Mirror back into memory minimally
+                try {
+                  window.state = window.state || {};
+                  window.state.progress = safeProg;
+                  if (ctx.type === 'serie' && ctx.seriesId) {
+                    window.state.history = window.state.history || {};
+                    window.state.history[ctx.seriesId] = safeHist[ctx.seriesId];
+                  }
+                } catch (_) {}
+                return;
+              }
+            } catch (_) {}
+
+            // No active context: perform normalization and call original flush (or write normalized snapshot)
+            try {
+              if (orig) {
+                // normalize state.progress before calling original
+                try { if (window.state && window.state.progress && Array.isArray(window.db)) window.state.progress = normalizeKeyCandidates(window.state.progress, window.db); } catch(_) {}
+                return orig();
+              } else {
+                // fallback: write normalized state directly
+                try {
+                  const progKey = 'lumina_v2_prog', histKey = 'lumina_v2_hist';
+                  try { if (window.state && window.state.progress) localStorage.setItem(progKey, JSON.stringify(normalizeKeyCandidates(window.state.progress, window.db || []))); } catch(_) {}
+                  try { if (window.state && window.state.history) localStorage.setItem(histKey, JSON.stringify(window.state.history)); } catch(_) {}
+                } catch (_) {}
+              }
+            } catch (e) { /* ignore */ }
+          } catch (err) {
+            // If unexpected error happens, fallback gracefully to original or direct writes
+            try { if (orig) orig(); else { localStorage.setItem('lumina_v2_prog', JSON.stringify(window.state && window.state.progress || {})); localStorage.setItem('lumina_v2_hist', JSON.stringify(window.state && window.state.history || {})); } } catch(_) {}
+          }
+        };
+      } catch (e) {
+        // if override fails, do nothing
+        console.warn('Lumina flush wrapper failed', e);
+      }
+    })();
+    </script>
 
     <!-- New Lumina Legal Modal (replaces legacy legal modals; legacy elements hidden) -->
     <style>
@@ -3530,225 +3660,214 @@
       })();
     </script>
 
-<script>
-  // Lumina: robust global inactivity handler to hide player UI when idle (works for native .mp4, Dropbox, embeds)
-  (function(){
-    const IDLE_MS = 5000; // hide after 5s of inactivity
-    let idleTimer = null;
-    let lastActive = Date.now();
-
-    function isPlayerVisible() {
-      try {
-        const pm = document.getElementById('player-modal');
-        return pm && !pm.classList.contains('hidden') && pm.classList.contains('flex');
-      } catch (e) { return false; }
-    }
-
-    function hidePlayerUI() {
-      try {
-        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
-        const ui = document.querySelector('.player-ui');
-        if (wrapper) wrapper.classList.add('player-idle');
-        if (ui) { ui.style.pointerEvents = 'none'; ui.style.opacity = '0'; }
-      } catch (e) {}
-    }
-
-    function showPlayerUI() {
-      try {
-        const wrapper = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
-        const ui = document.querySelector('.player-ui');
-        if (wrapper) wrapper.classList.remove('player-idle');
-        if (ui) { ui.style.pointerEvents = ''; ui.style.opacity = ''; }
-      } catch (e) {}
-    }
-
-    function resetIdleTimer() {
-      try {
-        lastActive = Date.now();
-        // only act when player visible
-        if (!isPlayerVisible()) {
-          // make sure UI visible when player not active
-          showPlayerUI();
-          if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
-          return;
-        }
-        // show controls on any interaction
-        showPlayerUI();
-        if (idleTimer) clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => {
-          // double-check visibility and recency
-          if (!isPlayerVisible()) return;
-          if (Date.now() - lastActive >= IDLE_MS) hidePlayerUI();
-        }, IDLE_MS + 40);
-      } catch (e) {}
-    }
-
-    // listen for global interaction events at high level to reliably detect activity
-    const events = ['pointermove','pointerdown','pointerup','mousemove','touchstart','touchmove','keydown','wheel'];
-    events.forEach(ev => {
-      try { document.addEventListener(ev, resetIdleTimer, { passive: true }); } catch (e) {}
-    });
-
-    // Also observe when player-modal opens/closes to start/stop timers
-    const playerModal = document.getElementById('player-modal');
-    if (playerModal) {
-      const mo = new MutationObserver(() => {
+    <!-- OVERRIDE: Safer flushProgressNow to prevent progress contamination across series/episodes -->
+    <script>
+      (function(){
         try {
-          if (isPlayerVisible()) {
-            // ensure UI visible when opened and start timer
-            showPlayerUI();
-            resetIdleTimer();
-          } else {
-            // when closed, clear timer and reveal UI globally
-            if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
-            showPlayerUI();
+          // Preserve original if present
+          if (!window.flushProgressNowOriginal && typeof window.flushProgressNow === 'function') {
+            window.flushProgressNowOriginal = window.flushProgressNow;
           }
-        } catch (e) {}
-      });
-      try { mo.observe(playerModal, { attributes: true, attributeFilter: ['class', 'style'] }); } catch (e) {}
-    }
 
-    // Defensive: if the page becomes hidden, cancel idle timer to avoid surprises on resume
-    document.addEventListener('visibilitychange', () => {
-      try {
-        if (document.visibilityState === 'hidden') { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
-        else resetIdleTimer();
-      } catch (e) {}
-    }, { passive: true });
+          window.flushProgressNow = function saferFlushProgressNow() {
+            try {
+              const ctx = (window.player && window.player.context) ? window.player.context : null;
 
-    // Expose for debugging
-    window.__lumina_force_show_player_ui = showPlayerUI;
-    window.__lumina_force_hide_player_ui = hidePlayerUI;
-    window.__lumina_reset_idle = resetIdleTimer;
-  })();
-</script>
-<script>
-  // Lumina: aggressive runtime cleanup to remove Tnull/null and ghost continue-watching entries
-  (function(){
-    function safeParse(key){
-      try { return JSON.parse(localStorage.getItem(key) || '{}'); } catch(e){ return {}; }
-    }
-    function safeWrite(key,obj){
-      try { localStorage.setItem(key, JSON.stringify(obj)); return true; } catch(e){ return false; }
-    }
-    function isNullishToken(v){
-      try {
-        if (v === null || typeof v === 'undefined') return true;
-        return /(^|\W)(tnull|enull|null)(\W|$)/i.test(String(v));
-      } catch(e){ return false; }
-    }
-    function cleanHistoryAndProgress(){
-      try {
-        // ensure db available
-        const dbList = Array.isArray(window.db) ? window.db.map(x => String(x.id)) : [];
-        const histKey = 'lumina_v2_hist';
-        const progKey = 'lumina_v2_prog';
-        const hist = safeParse(histKey);
-        const prog = safeParse(progKey);
+              // If a player context exists, persist only the active entry + minimal history to avoid cross-series contamination.
+              if (ctx && ctx.id) {
+                try {
+                  const progKey = 'lumina_v2_prog';
+                  const histKey = 'lumina_v2_hist';
+                  const activeId = String(ctx.id);
 
-        let changed = false;
+                  // Build minimal safe progress snapshot for the active id
+                  const safeProg = {};
+                  if (window.state && window.state.progress && window.state.progress[activeId]) {
+                    const p = Object.assign({}, window.state.progress[activeId]);
+                    if (p.time != null) p.time = Number(p.time);
+                    if (p.duration != null) p.duration = Number(p.duration);
+                    p.timestamp = Number(p.timestamp) || Date.now();
+                    try { delete p.completed; } catch(_) {}
+                    safeProg[activeId] = p;
+                  } else {
+                    safeProg[activeId] = { time: 0, duration: (window.state && window.state.progress && window.state.progress[activeId] && window.state.progress[activeId].duration) ? Number(window.state.progress[activeId].duration) : 0, timestamp: Date.now() };
+                  }
 
-        // Remove history entries that reference non-existent series or that have Tnull/null in season/episode/epId
-        Object.keys(hist).forEach(k => {
-          try {
-            const v = hist[k];
-            const seriesExists = dbList.indexOf(k) !== -1;
-            const s = v && v.s;
-            const e = v && v.e;
-            const epId = String(v && v.epId || '');
-            if (!seriesExists || isNullishToken(s) || isNullishToken(e) || isNullishToken(epId) || !v.timestamp) {
-              delete hist[k];
-              changed = true;
-              // also remove any progress referencing that epId
-              if (epId && prog[epId]) { delete prog[epId]; }
-            }
-          } catch(_) {}
-        });
+                  // Build minimal history for the series if applicable
+                  const safeHist = {};
+                  if (ctx.type === 'serie' && ctx.seriesId) {
+                    const sid = String(ctx.seriesId);
+                    safeHist[sid] = Object.assign({}, (window.state && window.state.history && window.state.history[sid]) || { s: ctx.season, e: ctx.episode, epId: activeId, timestamp: Date.now() });
+                    safeHist[sid].timestamp = Number(safeHist[sid].timestamp) || Date.now();
+                  } else {
+                    // non-series: keep existing history as-is (non-destructive)
+                    try { Object.assign(safeHist, window.state && window.state.history ? window.state.history : {}); } catch(_) {}
+                  }
 
-        // Remove progress entries whose id does not match any known episode id (scan db episodes)
-        const knownEpIds = new Set();
-        try {
-          if (Array.isArray(window.db)) {
-            window.db.forEach(item=>{
-              try{
-                if (item && item.seasons && typeof item.seasons === 'object') {
-                  Object.keys(item.seasons).forEach(s=>{
-                    const arr = item.seasons[s] || [];
-                    if (Array.isArray(arr)) arr.forEach((ep, idx)=>{
-                      try {
-                        if (ep && ep.id && String(ep.id).trim()) knownEpIds.add(String(ep.id));
-                        else knownEpIds.add(`${item.id}-s${s}-e${idx}`);
-                      } catch(_) {}
-                    });
-                  });
-                }
-                // film-level id_ep or id
-                if (item && item.type === 'filme') {
-                  if (item.id_ep) knownEpIds.add(String(item.id_ep));
-                  else if (item.id) knownEpIds.add(String(item.id));
-                }
-              } catch(_) {}
-            });
-          }
-        } catch(_) {}
-
-        Object.keys(prog).forEach(pid=>{
-          try {
-            const entry = prog[pid];
-            // remove entries that look like null tokens or whose id is not in knownEpIds
-            if (isNullishToken(pid) || isNullishToken(entry && entry.season) || isNullishToken(entry && entry.epId)) {
-              delete prog[pid]; changed = true; return;
-            }
-            if (!knownEpIds.has(String(pid))) {
-              // if this progress entry looks like an embed marker (embed:true) and has recent timestamp, keep it only if it matches a DB title found by searching titles,
-              // otherwise remove it to avoid ghost items.
-              if (entry && entry.embed) {
-                const maybeKeep = (function(){
+                  // Write to localStorage with conservative fallbacks
                   try {
-                    const textKeys = (entry && entry.title) ? String(entry.title).toLowerCase().trim() : '';
-                    if (!textKeys) return false;
-                    return window.db && window.db.some(d => ((d.title||'') + ' ' + (d.originalTitle||'')).toLowerCase().includes(textKeys));
-                  } catch(_) { return false; }
-                })();
-                if (!maybeKeep) { delete prog[pid]; changed = true; }
-              } else {
-                delete prog[pid]; changed = true;
+                    localStorage.setItem(progKey, JSON.stringify(safeProg));
+                  } catch (err) {
+                    try { localStorage.removeItem(progKey); localStorage.setItem(progKey, JSON.stringify(safeProg)); } catch (_) {}
+                  }
+                  try {
+                    localStorage.setItem(histKey, JSON.stringify(safeHist));
+                  } catch (err) {
+                    try { localStorage.removeItem(histKey); localStorage.setItem(histKey, JSON.stringify(safeHist)); } catch (_) {}
+                  }
+
+                  // Reflect minimal snapshot into in-memory state to keep UI consistent
+                  try {
+                    if (!window.state) window.state = {};
+                    window.state.progress = window.state.progress || {};
+                    Object.keys(window.state.progress).forEach(k => { if (k !== activeId) delete window.state.progress[k]; });
+                    window.state.progress[activeId] = safeProg[activeId];
+                    if (ctx.type === 'serie' && ctx.seriesId) {
+                      window.state.history = window.state.history || {};
+                      window.state.history[ctx.seriesId] = safeHist[ctx.seriesId];
+                    }
+                  } catch(_) {}
+
+                  return;
+                } catch (innerErr) {
+                  if (typeof window.flushProgressNowOriginal === 'function') {
+                    try { return window.flushProgressNowOriginal(); } catch (_) {}
+                  }
+                  return;
+                }
               }
+
+              // No active context: fallback to original behavior if available
+              if (typeof window.flushProgressNowOriginal === 'function') {
+                try { return window.flushProgressNowOriginal(); } catch (e) { /* swallow */ }
+              }
+            } catch (err) {
+              // Final best-effort fallback
+              try { localStorage.setItem('lumina_v2_prog', JSON.stringify(window.state && window.state.progress || {})); } catch(_) {}
+              try { localStorage.setItem('lumina_v2_hist', JSON.stringify(window.state && window.state.history || {})); } catch(_) {}
             }
-          } catch(_) {}
-        });
-
-        // persist only if changed
-        if (changed) {
-          safeWrite(histKey, hist);
-          safeWrite(progKey, prog);
-          try { state.history = hist; state.progress = prog; } catch(_) {}
-          try { renderView(); } catch(_) {}
+          };
+        } catch (e) {
+          // keep original if override fails
         }
-      } catch(e){
-        console.warn('Lumina runtime cleanup failed', e);
+      })();
+    </script>
+
+    <!-- FIX: Normalize progress keys to namespaced series-level keys to avoid cross-series contamination -->
+    <script>
+    (function(){
+      // Move per-episode progress entries that use short/ambiguous episode IDs (like "s1-e1")
+      // into stable namespaced keys: "<seriesId>-s<season>-e<index>" wherever we can match episodes in the DB.
+      function normalizeProgressKeys() {
+        try {
+          if (!window.db || !Array.isArray(window.db) || !window.state || !window.state.progress) return;
+          const prog = window.state.progress || {};
+          const moved = [];
+
+          // Build a reverse map of possible short ep ids to the canonical namespaced id(s)
+          // e.g. 's1-e1' -> ['akame-ga-kill-s1-e1', 'espiritos-na-escola-s1-e1', ...]
+          const shortToCanonical = {};
+          window.db.forEach(series => {
+            try {
+              if (!series || !series.id || !series.seasons) return;
+              Object.keys(series.seasons || {}).forEach(seasonKey => {
+                const eps = series.seasons[seasonKey] || [];
+                for (let i = 0; i < eps.length; i++) {
+                  const ep = eps[i] || {};
+                  const shortId = (ep.id && String(ep.id).trim()) ? String(ep.id).trim() : null;
+                  const canonical = (ep.id && String(ep.id).trim()) ? `${series.id}-s${seasonKey}-e${i}` : `${series.id}-s${seasonKey}-e${i}`;
+                  if (shortId) {
+                    if (!shortToCanonical[shortId]) shortToCanonical[shortId] = new Set();
+                    shortToCanonical[shortId].add(canonical);
+                  }
+                }
+              });
+            } catch(_) {}
+          });
+
+          // For each entry in state.progress, if the key looks like a short episode id and maps to one or more canonical ids,
+          // try to relocate it to the canonical key that belongs to the same series if determinable, otherwise skip moving to avoid ambiguity.
+          Object.keys(Object.assign({}, prog)).forEach(key => {
+            try {
+              if (!key || typeof key !== 'string') return;
+              // If key already contains a series namespace, skip
+              if (key.indexOf('-s') !== -1 && key.split('-s').length > 1) return;
+
+              // If this short key maps to a single canonical id, move it there.
+              const candidates = shortToCanonical[key];
+              if (!candidates || candidates.size === 0) return;
+              if (candidates.size === 1) {
+                const canonical = Array.from(candidates)[0];
+                // skip if canonical already has an entry (prefer canonical)
+                if (!prog[canonical]) {
+                  prog[canonical] = Object.assign({}, prog[key]);
+                  // ensure numeric normalization for common fields
+                  try { if (prog[canonical].time != null) prog[canonical].time = Number(prog[canonical].time); } catch(_) {}
+                  try { if (prog[canonical].duration != null) prog[canonical].duration = Number(prog[canonical].duration); } catch(_) {}
+                  try { prog[canonical].timestamp = Number(prog[canonical].timestamp) || Date.now(); } catch(_) { prog[canonical].timestamp = Date.now(); }
+                  moved.push({ from: key, to: canonical });
+                }
+                // remove the ambiguous short key to prevent accidental reuse
+                try { delete prog[key]; } catch(_) {}
+              } else {
+                // multiple candidates: try to disambiguate using history entries or recent play context.
+                // If we can detect a last-played series or recent history mapping to one of these canonical ids, move accordingly.
+                const histSeriesIds = new Set(Object.keys(window.state.history || {}));
+                let chosen = null;
+                // prefer a candidate whose seriesId matches an existing history key
+                for (const c of Array.from(candidates)) {
+                  try {
+                    const sid = c.split('-s')[0];
+                    if (histSeriesIds.has(sid)) { chosen = c; break; }
+                  } catch(_) {}
+                }
+                // otherwise, if current player context suggests a series, prefer that candidate
+                if (!chosen && window.player && window.player.context && window.player.context.seriesId) {
+                  const ctxSid = String(window.player.context.seriesId);
+                  for (const c of Array.from(candidates)) {
+                    try { if (c.indexOf(ctxSid + '-s') === 0) { chosen = c; break; } } catch(_) {}
+                  }
+                }
+                if (chosen) {
+                  if (!prog[chosen]) {
+                    prog[chosen] = Object.assign({}, prog[key]);
+                    try { if (prog[chosen].time != null) prog[chosen].time = Number(prog[chosen].time); } catch(_) {}
+                    try { if (prog[chosen].duration != null) prog[chosen].duration = Number(prog[chosen].duration); } catch(_) {}
+                    try { prog[chosen].timestamp = Number(prog[chosen].timestamp) || Date.now(); } catch(_) { prog[chosen].timestamp = Date.now(); }
+                    moved.push({ from: key, to: chosen, reason: 'disambiguated' });
+                  }
+                  try { delete prog[key]; } catch(_) {}
+                }
+                // if still ambiguous, DO NOT move; instead leave as-is but mark it to avoid accidental saving cross-series (no-op here).
+              }
+            } catch(_) {}
+          });
+
+          // persist normalized map back to state and localStorage quickly (best-effort)
+          try { window.state.progress = prog; localStorage.setItem('lumina_v2_prog', JSON.stringify(prog)); } catch(_) {}
+
+          if (moved.length) {
+            try { console.info('Lumina: normalized progress keys', moved.slice(0,10)); } catch(_) {}
+          }
+        } catch (e) {
+          try { console.warn('normalizeProgressKeys error', e); } catch(_) {}
+        }
       }
-    }
 
-    // Run immediately after DOM ready and again shortly after to catch async DB installs; also run when storage events occur.
-    function scheduleRuns(){
+      // Run normalization early once DOM is ready and DB decoded, and also after any ensureDB fetch.
       try {
-        cleanHistoryAndProgress();
-        setTimeout(cleanHistoryAndProgress, 180);
-        setTimeout(cleanHistoryAndProgress, 1200);
-      } catch(_) {}
-    }
-    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scheduleRuns);
-    else scheduleRuns();
+        document.addEventListener('DOMContentLoaded', () => {
+          try { normalizeProgressKeys(); } catch(_) {}
+          // also run again soon to cover late DB loads
+          setTimeout(() => { try { normalizeProgressKeys(); } catch(_) {} }, 400);
+        }, { once: true });
+        // also run immediately in case DOM already ready
+        if (document.readyState !== 'loading') { setTimeout(() => { try { normalizeProgressKeys(); } catch(_) {} }, 80); }
+      } catch (e) { /* ignore */ }
 
-    // Also respond to storage events in case some other tab wrote problematic entries
-    window.addEventListener('storage', function(ev){
-      try { if (ev.key && /lumina_v2_(hist|prog)/i.test(ev.key)) setTimeout(cleanHistoryAndProgress, 80); } catch(_) {}
-    }, { passive: true });
-
-    // Expose manual clean API
-    window.lumina_clean_nulls = cleanHistoryAndProgress;
-  })();
-</script>
+      // Expose for debugging/manual invocation
+      window.__lumina_normalize_progress_keys = normalizeProgressKeys;
+    })();
+    </script>
 </body>
 </html>

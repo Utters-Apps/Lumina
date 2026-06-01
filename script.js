@@ -2792,151 +2792,6 @@
             })()
         };
 
-        // Sanitize persisted history/progress: remove any history entries whose season is "Tnull" (or contains "null")
-        // and also remove any per-episode progress tied to those history entries, then persist changes.
-        (function removeTnullFromHistoryAndProgress() {
-            try {
-                if (!state || typeof state !== 'object') return;
-                const hist = state.history || {};
-                const prog = state.progress || {};
-
-                // collect keys to remove
-                const histKeys = Object.keys(hist || {});
-                const toRemoveHist = [];
-                const toRemoveProgIds = new Set();
-
-                histKeys.forEach(seriesId => {
-                    try {
-                        const entry = hist[seriesId];
-                        if (!entry) return;
-                        const s = entry.s;
-                        // treat 'Tnull' or any literal containing 'null' (case-insensitive) as invalid
-                        if (s === null || s === undefined) {
-                            // also check explicit string "Tnull"
-                            if (String(s).toLowerCase().indexOf('null') !== -1 || s === null) {
-                                toRemoveHist.push(seriesId);
-                                if (entry.epId) toRemoveProgIds.add(String(entry.epId));
-                            }
-                        } else {
-                            const sStr = String(s);
-                            if (/tnull/i.test(sStr) || /null/i.test(sStr)) {
-                                toRemoveHist.push(seriesId);
-                                if (entry.epId) toRemoveProgIds.add(String(entry.epId));
-                            }
-                        }
-                    } catch (_) {}
-                });
-
-                // Remove detected history entries and related progress entries
-                toRemoveHist.forEach(k => {
-                    try { delete state.history[k]; } catch (_) {}
-                });
-                // Also scan progress entries and remove any with id matching epId in toRemoveProgIds or with season/tag containing null
-                Object.keys(prog || {}).forEach(pid => {
-                    try {
-                        if (toRemoveProgIds.has(String(pid))) {
-                            delete state.progress[pid];
-                            return;
-                        }
-                        // defensive: if progress entry contains a nested reference to season with 'null', remove it
-                        const p = state.progress[pid];
-                        if (p && p.season && (String(p.season).toLowerCase().indexOf('null') !== -1 || /tnull/i.test(String(p.season)))) {
-                            delete state.progress[pid];
-                        }
-                        // also remove entries where id string itself contains "tnull" or "null" patterns (defensive)
-                        if (/tnull|null/i.test(String(pid))) {
-                            delete state.progress[pid];
-                        }
-                    } catch (_) {}
-                });
-
-                // Persist cleaned state to localStorage safely
-                try {
-                    localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {}));
-                } catch (_) {}
-                try {
-                    localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress || {}));
-                } catch (_) {}
-
-                // Also update in-memory copies used elsewhere
-                try { window.state = window.state || state; } catch (_) {}
-            } catch (e) {
-                // non-fatal: do not break app startup
-                console.warn('removeTnullFromHistoryAndProgress failed', e);
-            }
-        })();
-
-        // Force-cleaner: expose a callable function that aggressively removes any history/progress entries
-        // that include 'null' or 'Tnull'/'Enull' in season/episode identifiers; runs immediately once to ensure Continue Watching is clean.
-        (function forceCleanNullContinue() {
-            function cleanAll() {
-                try {
-                    const histKey = 'lumina_v2_hist';
-                    const progKey = 'lumina_v2_prog';
-                    let hist = {};
-                    let prog = {};
-                    try { hist = JSON.parse(localStorage.getItem(histKey)) || {}; } catch(_) { hist = state.history || {}; }
-                    try { prog = JSON.parse(localStorage.getItem(progKey)) || {}; } catch(_) { prog = state.progress || {}; }
-
-                    const histKeys = Object.keys(hist || {});
-                    histKeys.forEach(k => {
-                        try {
-                            const v = hist[k];
-                            if (!v) { delete hist[k]; return; }
-                            // if season contains 'null' or equals 'Tnull' or episode contains 'null' or 'Enull', remove
-                            const s = v.s; const e = v.e; const epId = String(v.epId || '');
-                            if (s === null || typeof s === 'undefined' || String(s).toLowerCase().indexOf('null') !== -1 || /tnull/i.test(String(s))) {
-                                delete hist[k];
-                                // also remove related prog by epId if present
-                                if (epId && prog[epId]) delete prog[epId];
-                                return;
-                            }
-                            if (e === null || typeof e === 'undefined' || String(e).toLowerCase().indexOf('null') !== -1 || /enull/i.test(String(e))) {
-                                delete hist[k];
-                                if (epId && prog[epId]) delete prog[epId];
-                                return;
-                            }
-                            // defensive: if epId itself contains 'null' or 'tnull' or 'enull'
-                            if (/tnull|enull|null/i.test(epId)) {
-                                delete hist[k];
-                                if (prog[epId]) delete prog[epId];
-                                return;
-                            }
-                        } catch(_) {}
-                    });
-
-                    // Clean progress entries that mention season or other null markers in nested objects or keys
-                    Object.keys(prog || {}).forEach(pid => {
-                        try {
-                            const p = prog[pid];
-                            if (!p) { delete prog[pid]; return; }
-                            if (/tnull|enull|null/i.test(String(pid))) { delete prog[pid]; return; }
-                            if (p.season && String(p.season).toLowerCase().indexOf('null') !== -1) { delete prog[pid]; return; }
-                            if (p.s && String(p.s).toLowerCase().indexOf('null') !== -1) { delete prog[pid]; return; }
-                            if (p.epId && /tnull|enull|null/i.test(String(p.epId))) { delete prog[pid]; return; }
-                        } catch(_) {}
-                    });
-
-                    // Commit cleaned objects back to localStorage and in-memory state
-                    try { localStorage.setItem(histKey, JSON.stringify(hist)); } catch(_) {}
-                    try { localStorage.setItem(progKey, JSON.stringify(prog)); } catch(_) {}
-                    try { state.history = hist; state.progress = prog; window.state = window.state || state; } catch(_) {}
-
-                    // Trigger a UI refresh so Continue Watching updates immediately
-                    try { renderView(); } catch(_) {}
-                } catch (e) {
-                    console.warn('forceCleanNullContinue failed', e);
-                }
-            }
-
-            // Expose globally for manual invocation and debugging
-            try {
-                window.forceCleanNullContinue = cleanAll;
-                // Run once immediately at startup to enforce the rule
-                setTimeout(() => { try { window.forceCleanNullContinue(); } catch(_) {} }, 120);
-            } catch (e) { /* ignore */ }
-        })();
-
         // Background timer control helpers:
         // Pause non-essential background activity when video playback is active to avoid
         // continual DOM updates/timers from starving rendering during long sessions.
@@ -3856,7 +3711,19 @@
                 if (mInput && window.innerWidth < 768 && !state.searchQuery) mInput.focus();
 
             } else if (state.tab === 'home') {
-                const continueItems = getContinueWatching();
+                const continueItems = getContinueWatching().filter(it => {
+                    try {
+                        // If the continue-watching entry has a history object with null/invalid season/episode/id, drop it
+                        if (!it || !it._hist) return true;
+                        const h = it._hist;
+                        if (h.s == null || h.e == null) return false;
+                        // require a stable episode id (epId) to be present and non-empty
+                        if (!h.epId || String(h.epId).trim() === '') return false;
+                        return true;
+                    } catch (e) {
+                        return true;
+                    }
+                });
                 const heroItem = db[heroIndex] || db[0]; 
                 
                 let html = `
@@ -3960,62 +3827,6 @@
         }
 
         function getContinueWatching() {
-            // Remove any history entries whose season contains 'tnull' or 'null' (case-insensitive), and remove related progress entries,
-            // then persist cleaned state so Continue Assistindo never shows Tnull entries.
-            try {
-                if (state && state.history) {
-                    const histKeys = Object.keys(state.history || {});
-                    let changed = false;
-                    const toRemoveProgIds = new Set();
-                    histKeys.forEach(seriesId => {
-                        try {
-                            const entry = state.history[seriesId];
-                            if (!entry) return;
-                            const s = entry.s;
-                            if (s === null || typeof s === 'undefined') {
-                                if (String(s).toLowerCase().indexOf('null') !== -1 || s === null) {
-                                    toRemoveProgIds.add(String(entry.epId || ''));
-                                    delete state.history[seriesId];
-                                    changed = true;
-                                }
-                            } else {
-                                const sStr = String(s);
-                                if (/tnull/i.test(sStr) || /null/i.test(sStr)) {
-                                    toRemoveProgIds.add(String(entry.epId || ''));
-                                    delete state.history[seriesId];
-                                    changed = true;
-                                }
-                            }
-                        } catch (_) {}
-                    });
-
-                    // Also remove any per-episode progress entries that reference those epIds or have season marked with null
-                    Object.keys(state.progress || {}).forEach(pid => {
-                        try {
-                            if (toRemoveProgIds.has(String(pid))) {
-                                delete state.progress[pid];
-                                changed = true;
-                                return;
-                            }
-                            const p = state.progress[pid];
-                            if (p && p.season && (String(p.season).toLowerCase().indexOf('null') !== -1 || /tnull/i.test(String(p.season)))) {
-                                delete state.progress[pid];
-                                changed = true;
-                            }
-                        } catch (_) {}
-                    });
-
-                    // Persist cleaned storage if anything changed
-                    if (changed) {
-                        try { localStorage.setItem('lumina_v2_hist', JSON.stringify(state.history || {})); } catch(_) {}
-                        try { localStorage.setItem('lumina_v2_prog', JSON.stringify(state.progress || {})); } catch(_) {}
-                    }
-                }
-            } catch (e) {
-                // non-fatal: continue to build continue list even if cleaning fails
-                console.warn('Tnull cleanup failed', e);
-            }
-
             // Return a stable, deterministic list of items the user actually started watching.
             // Rules:
             //  - Only include films/episodes with a reliable progress record (time >= 2s) OR explicit embed marker.
@@ -5571,8 +5382,23 @@ const player = {
                 this.context = context; this.nextPromptShown = false; this.isSeeking = false;
                 // Hide PiP and volume controls when the chosen source is not an .mp4 (apply early so UI is correct before rendering)
                 try { hideControlsForNonMp4(url); } catch(_) {}
-                // Do NOT pre-write history/progress here to avoid creating "fake" Continue Watching entries.
-                // History/progress will be recorded only when the player actually reports playback progress (see saveProgress).
+                // Persist initial history/progress entry when starting playback so "Continuar Assistindo" updates immediately.
+                try {
+                    if (this.context && this.context.type === 'serie' && this.context.seriesId) {
+                        state.history[this.context.seriesId] = {
+                            s: this.context.season,
+                            e: this.context.episode,
+                            epId: this.context.id,
+                            timestamp: Date.now()
+                        };
+                        // write to storage (debounced inside saveProgressData)
+                        saveProgressData();
+                    } else if (this.context && this.context.type === 'filme' && this.context.id) {
+                        // ensure a placeholder progress record exists for films (helps continue list and safe saves)
+                        state.progress[this.context.id] = state.progress[this.context.id] || { time: 0, duration: 0, timestamp: Date.now() };
+                        saveProgressData();
+                    }
+                } catch (e) { /* non-blocking */ }
                 const modal = document.getElementById('player-modal');
                 modal.classList.remove('hidden'); modal.classList.add('flex');
                 setTimeout(() => modal.classList.remove('opacity-0'), 10);
@@ -6722,66 +6548,70 @@ const player = {
             },
 
             saveProgress: function() {
-                // Save progress for both native video and embed players (YouTube / iframe) where possible.
-                if (!this.context || !this.context.id) return;
+                // Only update progress/history for the currently-playing context to avoid contaminating other series' episodes.
                 try {
+                    if (!this.context || !this.context.id) return;
+
                     let cur = 0, dur = 0, hasTime = false;
 
-                    // YouTube via API
                     if (this.isYouTube && this.ytPlayer && typeof this.ytPlayer.getCurrentTime === 'function') {
-                        try {
-                            cur = Number(this.ytPlayer.getCurrentTime()) || 0;
-                            dur = Number(this.ytPlayer.getDuration()) || 0;
-                            hasTime = !isNaN(cur);
-                        } catch (_) { hasTime = false; }
+                        try { cur = Number(this.ytPlayer.getCurrentTime()) || 0; dur = Number(this.ytPlayer.getDuration()) || 0; hasTime = !isNaN(cur); } catch(_) { hasTime = false; }
                     } else if (this.vid) {
-                        // native video element
-                        try {
-                            cur = Number(this.vid.currentTime) || 0;
-                            dur = (!isNaN(this.vid.duration) && Number(this.vid.duration) > 0) ? Number(this.vid.duration) : 0;
-                            hasTime = true;
-                        } catch (_) { hasTime = false; }
+                        try { cur = Number(this.vid.currentTime) || 0; dur = (!isNaN(this.vid.duration) && Number(this.vid.duration) > 0) ? Number(this.vid.duration) : 0; hasTime = true; } catch(_) { hasTime = false; }
                     } else {
-                        // embeds/iframes without API access: store lightweight embed marker with timestamp so continue list can still show it
                         hasTime = false;
                     }
 
-                    // compute safe current time when we have duration
-                    let safeCur = 0;
-                    if (hasTime) {
-                        safeCur = dur > 0 ? Math.max(0, Math.min(cur, Math.max(0, dur - 0.5))) : Math.max(0, cur);
-                    }
-
-                    // Prevent regressing saved progress: only update if new time is >= previously saved time minus small epsilon,
-                    // or if no previous good record exists. This avoids overwriting with older values.
+                    const safeCur = hasTime ? (dur > 0 ? Math.max(0, Math.min(cur, Math.max(0, dur - 0.5))) : Math.max(0, cur)) : 0;
+                    let ctxId = String(this.context.id);
                     try {
-                        const id = this.context.id;
-                        const prev = state.progress[id] || {};
-
-                        if (hasTime) {
-                            // Always record the latest observed playback position and timestamp.
-                            // This ensures intentional rewinds (e.g. seeking back to start) are persisted immediately.
-                            state.progress[id] = { time: safeCur, duration: dur || (prev.duration || 0), timestamp: Date.now() };
-                        } else {
-                            // Embed/no-time cases: mark as embed-started so it appears in Continue Watching.
-                            state.progress[id] = Object.assign({}, prev, { embed: true, timestamp: Date.now() });
+                        if (this.context.type === 'serie' && this.context.seriesId) {
+                            const sid = String(this.context.seriesId);
+                            if (!ctxId.startsWith(sid + '::')) ctxId = `${sid}::${ctxId}`;
                         }
-                    } catch (inner) {
-                        if (hasTime) state.progress[this.context.id] = { time: safeCur, duration: dur || 0, timestamp: Date.now() };
-                        else state.progress[this.context.id] = { embed: true, timestamp: Date.now() };
+                    } catch (_) {}
+
+                    // ONLY mutate the single entry for the active context id and its series history.
+                    try {
+                        const prev = state.progress[ctxId] || {};
+                        if (hasTime) {
+                            // avoid regressing: keep the larger time when timestamps are equal or older
+                            const prevTime = (typeof prev.time === 'number') ? prev.time : -1;
+                            const nowTs = Date.now();
+                            if (prevTime > 0 && prevTime > safeCur && prev.timestamp && prev.timestamp > nowTs - 2000) {
+                                // if previous time is more recent within a small race window, keep prev (avoid overwrite by concurrent writes)
+                                state.progress[ctxId] = Object.assign({}, prev, { timestamp: nowTs });
+                            } else {
+                                state.progress[ctxId] = { time: safeCur, duration: dur || (prev.duration || 0), timestamp: nowTs };
+                            }
+                        } else {
+                            // mark as embed-started without touching other entries
+                            state.progress[ctxId] = Object.assign({}, prev, { embed: true, timestamp: Date.now() });
+                        }
+
+                        if (this.context.type === 'serie' && this.context.seriesId) {
+                            const sid = String(this.context.seriesId);
+                            state.history[sid] = {
+                                s: this.context.season,
+                                e: this.context.episode,
+                                epId: this.context.id,
+                                timestamp: Date.now()
+                            };
+                        }
+                    } catch (e) {
+                        // fallback: ensure the single entry exists
+                        state.progress[ctxId] = state.progress[ctxId] || { timestamp: Date.now() };
                     }
 
-                    if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
-
-                    // Debounced save for common updates, but flush immediately so mobile/PC/PWA resume is reliable across closes/reopens
+                    // Persist only - do not iterate or merge other series entries here.
                     try { saveProgressData(); } catch(_) {}
-                    try { flushProgressNow(); } catch(_) {}
-                } catch (e) {
-                    // non-blocking fallback
+                } catch (err) {
+                    // best-effort safe fallback
                     try {
-                        state.progress[this.context.id] = state.progress[this.context.id] || { embed: true, timestamp: Date.now() };
-                        try { saveProgressData(); } catch(_) {}
-                        try { flushProgressNow(); } catch(_) {}
+                        if (this.context && this.context.id) {
+                            state.progress[this.context.id] = state.progress[this.context.id] || { embed: true, timestamp: Date.now() };
+                            try { saveProgressData(); } catch(_) {}
+                        }
                     } catch(_) {}
                 }
             },
@@ -7946,8 +7776,48 @@ const player = {
             } 
         }
         function toggleFullscreen() {
-            const m = document.getElementById('player-modal');
-            !document.fullscreenElement ? m.requestFullscreen().catch(e=>e) : document.exitFullscreen();
+            try {
+                // prefer the player modal if present
+                const modalEl = document.getElementById('player-modal');
+                const targetEl = modalEl || document.documentElement;
+
+                // Helper to request fullscreen with vendor fallbacks
+                const requestFS = async (el) => {
+                    if (!el) return Promise.reject(new Error('No element for fullscreen'));
+                    if (el.requestFullscreen) return el.requestFullscreen();
+                    if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+                    if (el.mozRequestFullScreen) return el.mozRequestFullScreen();
+                    if (el.msRequestFullscreen) return el.msRequestFullscreen();
+                    return Promise.reject(new Error('Fullscreen API not supported'));
+                };
+
+                // Helper to exit fullscreen with vendor fallbacks
+                const exitFS = async () => {
+                    if (document.exitFullscreen) return document.exitFullscreen();
+                    if (document.webkitExitFullscreen) return document.webkitExitFullscreen();
+                    if (document.mozCancelFullScreen) return document.mozCancelFullScreen();
+                    if (document.msExitFullscreen) return document.msExitFullscreen();
+                    return Promise.reject(new Error('Exit Fullscreen not supported'));
+                };
+
+                // If any element is fullscreen, exit; otherwise request on target
+                const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+                if (isFs) {
+                    exitFS().catch(() => {/* ignore errors */});
+                } else {
+                    // Some environments (PWA shells / constrained players) may not allow element-level fullscreen.
+                    // Try requesting on the player modal first; if that fails, fall back to documentElement.
+                    requestFS(targetEl).catch(() => {
+                        // fallback to root element if request on modal failed
+                        if (targetEl !== document.documentElement) {
+                            requestFS(document.documentElement).catch(() => {/* ignore final failure */});
+                        }
+                    });
+                }
+            } catch (err) {
+                // defensive no-op to avoid breaking the UI if something unexpected happens
+                try { console.warn('toggleFullscreen error', err); } catch(_) {}
+            }
         }
 
         // Skip intro: seeks past saved intro metadata (works for native video and YouTube iframe)
@@ -9134,7 +9004,8 @@ const player = {
                         el.addEventListener('click', (ev) => {
                             ev.preventDefault();
                             try { 
-                                switchTab(mapping[id]); 
+                                // use the global switchTab override to ensure immediate UI refresh
+                                window.switchTab && window.switchTab(mapping[id]); 
                                 // if user opened the mobile Search tab, focus the mobile search input after render to improve discoverability
                                 if (mapping[id] === 'search') {
                                     setTimeout(() => {
@@ -9142,7 +9013,6 @@ const player = {
                                             const mInput = document.getElementById('mobile-search');
                                             if (mInput) {
                                                 mInput.focus({ preventScroll: true });
-                                                // ensure virtual keyboard shows on mobile by briefly selecting value
                                                 try { mInput.setSelectionRange && mInput.setSelectionRange(mInput.value.length, mInput.value.length); } catch(_) {}
                                             }
                                         } catch(_) {}
@@ -9162,6 +9032,223 @@ const player = {
             setTimeout(attachNavTabListeners, 50);
         }
 
+
+// Override flushProgressNow to enforce per-context atomic saves and prevent cross-series contamination
+window.flushProgressNow = function() {
+  try {
+    const progKey = 'lumina_v2_prog';
+    const histKey = 'lumina_v2_hist';
+    // load safely
+    const safeParse = (s) => { try { return JSON.parse(s||'{}'); } catch(e){ return {}; } };
+
+    // If a player context exists, persist only that context's progress + its series history snapshot
+    const ctx = (window.player && window.player.context) ? window.player.context : null;
+    if (ctx && ctx.id) {
+      const outgoingProg = {};
+      const outgoingHist = {};
+
+      // prefer canonical id for progress keys
+      const activeId = String(ctx.id);
+
+      // take current in-memory progress for active id if present
+      if (window.state && window.state.progress && window.state.progress[activeId]) {
+        outgoingProg[activeId] = Object.assign({}, window.state.progress[activeId]);
+        outgoingProg[activeId].timestamp = Number(outgoingProg[activeId].timestamp) || Date.now();
+        if (outgoingProg[activeId].time != null) outgoingProg[activeId].time = Number(outgoingProg[activeId].time);
+        if (outgoingProg[activeId].duration != null) outgoingProg[activeId].duration = Number(outgoingProg[activeId].duration);
+        // never include an automatic 'completed' flag
+        try { delete outgoingProg[activeId].completed; } catch(_) {}
+      } else {
+        // ensure at least a minimal placeholder exists to avoid creating empty lists with unrelated entries
+        outgoingProg[activeId] = { time: 0, duration: 0, timestamp: Date.now() };
+      }
+
+      // For series, ensure we persist only the relevant series history entry
+      if (ctx.type === 'serie' && ctx.seriesId) {
+        const sid = String(ctx.seriesId);
+        outgoingHist[sid] = Object.assign({}, (window.state && window.state.history && window.state.history[sid]) || {
+          s: ctx.season, e: ctx.episode, epId: activeId, timestamp: Date.now()
+        });
+        outgoingHist[sid].timestamp = Number(outgoingHist[sid].timestamp) || Date.now();
+      } else {
+        // keep existing history as-is for non-series but minimize size: keep at most 50 most recent entries
+        const existing = safeParse(localStorage.getItem(histKey));
+        const entries = Object.entries(existing || {});
+        entries.sort((a,b) => (b[1].timestamp||0)-(a[1].timestamp||0));
+        const limited = Object.fromEntries(entries.slice(0,50));
+        Object.assign(outgoingHist, limited);
+      }
+
+      // Write with quota-aware fallbacks
+      try {
+        localStorage.setItem(progKey, JSON.stringify(outgoingProg));
+      } catch (e) {
+        try { localStorage.removeItem(progKey); localStorage.setItem(progKey, JSON.stringify({ [activeId]: outgoingProg[activeId] })); }
+        catch(_) {}
+      }
+      try {
+        localStorage.setItem(histKey, JSON.stringify(outgoingHist));
+      } catch (e) {
+        try { localStorage.removeItem(histKey); localStorage.setItem(histKey, JSON.stringify(outgoingHist)); }
+        catch(_) {}
+      }
+
+      // mirror minimal snapshot back into memory to keep UI consistent
+      try {
+        window.state = window.state || {};
+        window.state.progress = window.state.progress || {};
+        // remove any other in-memory progress entries to avoid UI confusion
+        Object.keys(window.state.progress).forEach(k => { if (k !== activeId) delete window.state.progress[k]; });
+        window.state.progress[activeId] = outgoingProg[activeId];
+        if (ctx.type === 'serie' && ctx.seriesId) {
+          window.state.history = window.state.history || {};
+          window.state.history[ctx.seriesId] = outgoingHist[ctx.seriesId];
+        }
+      } catch(_) {}
+
+      return;
+    }
+
+    // No active context: fall back to safe global merge trimmed by timestamp, keeping newest 200 entries
+    const storedProgAll = safeParse(localStorage.getItem(progKey));
+    const incoming = (window.state && window.state.progress) ? window.state.progress : {};
+    const merged = Object.assign({}, storedProgAll);
+    Object.keys(incoming).forEach(id => {
+      try {
+        const inc = incoming[id] || {};
+        const prev = merged[id] || {};
+        const prevTs = Number(prev.timestamp) || 0;
+        const incTs = Number(inc.timestamp) || Date.now();
+        if (incTs >= prevTs) merged[id] = Object.assign({}, prev, inc, { timestamp: incTs });
+      } catch(_) {}
+    });
+
+    // trim to most recent 200
+    const entries = Object.entries(merged || {});
+    if (entries.length > 200) {
+      entries.sort((a,b) => (b[1].timestamp||0)-(a[1].timestamp||0));
+      const kept = Object.fromEntries(entries.slice(0,200));
+      try { localStorage.setItem(progKey, JSON.stringify(kept)); } catch (e) {
+        try { localStorage.setItem(progKey, JSON.stringify(Object.fromEntries(entries.slice(0,100)))); } catch(_) {}
+      }
+    } else {
+      try { localStorage.setItem(progKey, JSON.stringify(merged)); } catch (e) {
+        // as last resort, try trimming existing stored entries then write
+        try {
+          const raw = localStorage.getItem(progKey);
+          if (raw) {
+            const obj = safeParse(raw);
+            const e2 = Object.entries(obj).sort((a,b)=> (b[1].timestamp||0)-(a[1].timestamp||0)).slice(0,100);
+            localStorage.setItem(progKey, JSON.stringify(Object.fromEntries(e2)));
+          } else {
+            localStorage.setItem(progKey, JSON.stringify(merged));
+          }
+        } catch(_) {}
+      }
+    }
+
+    // history: keep newest 200 entries as well
+    const storedHistAll = safeParse(localStorage.getItem(histKey));
+    const incomingHist = (window.state && window.state.history) ? window.state.history : {};
+    const mergedHist = Object.assign({}, storedHistAll);
+    Object.keys(incomingHist).forEach(k => {
+      try {
+        const inc = incomingHist[k] || {};
+        const prev = mergedHist[k] || {};
+        const prevTs = Number(prev.timestamp) || 0;
+        const incTs = Number(inc.timestamp) || Date.now();
+        if (incTs >= prevTs) mergedHist[k] = Object.assign({}, prev, inc, { timestamp: incTs });
+      } catch(_) {}
+    });
+    const he = Object.entries(mergedHist || {});
+    if (he.length > 200) {
+      he.sort((a,b)=> (b[1].timestamp||0)-(a[1].timestamp||0));
+      try { localStorage.setItem(histKey, JSON.stringify(Object.fromEntries(he.slice(0,200)))); } catch (_) {
+        try { localStorage.setItem(histKey, JSON.stringify(Object.fromEntries(he.slice(0,100)))); } catch(_) {}
+      }
+    } else {
+      try { localStorage.setItem(histKey, JSON.stringify(mergedHist)); } catch(_) {}
+    }
+  } catch (err) {
+    // best effort fallback: try direct save and avoid throwing
+    try { localStorage.setItem('lumina_v2_prog', JSON.stringify(window.state && window.state.progress || {})); } catch(_) {}
+    try { localStorage.setItem('lumina_v2_hist', JSON.stringify(window.state && window.state.history || {})); } catch(_) {}
+  }
+};
+
+        // Override switchTab to immediately refresh UI and force render updates to avoid stale info across navigations.
+        (function(){
+            const originalSwitch = window.switchTab;
+            window.switchTab = function(tab, clearSearch = true) {
+                try {
+                    // Keep state changes deterministic
+                    const prevTab = state.tab;
+                    state.tab = tab;
+
+                    if (clearSearch) {
+                        state.searchQuery = '';
+                        const dSearch = document.getElementById('desktop-search');
+                        if (dSearch) dSearch.value = '';
+                    }
+
+                    // Update nav visuals synchronously
+                    try {
+                        const desktopMap = { home: 'tab-home-desktop', favorites: 'tab-fav-desktop' };
+                        Object.keys(desktopMap).forEach(k => {
+                            const el = document.getElementById(desktopMap[k]);
+                            if (!el) return;
+                            el.className = (k === tab) ? 'text-white font-medium text-sm transition-all' : 'text-white/50 hover:text-white font-medium text-sm transition-all';
+                        });
+
+                        const mobileMap = { home: '#tab-home-mobile', search: '#tab-search-mobile', favorites: '#tab-fav-mobile' };
+                        Object.keys(mobileMap).forEach(k => {
+                            const entry = document.querySelector(mobileMap[k]);
+                            if (!entry) return;
+                            const isActive = k === tab;
+                            entry.className = `flex flex-col items-center gap-1 w-16 transition-all ${isActive ? 'text-white scale-110' : 'text-white/40 hover:text-white'}`;
+                            const iconEl = entry.querySelector('i');
+                            if (iconEl) {
+                                const iconMap = { home: 'ph-house', search: 'ph-magnifying-glass', favorites: 'ph-bookmark-simple' };
+                                iconEl.className = `${isActive ? 'ph-fill' : 'ph'} ${iconMap[k] || 'ph-house'} text-2xl mb-0.5`;
+                            }
+                        });
+                    } catch (e) {}
+
+                    // Immediately stop heavy background rotators while we re-render to avoid race conditions
+                    try { stopHomeRotator(); stopBadgeTimer(); } catch(_) {}
+
+                    // Synchronous render to ensure UI is up-to-date now (prevents stale data flashes)
+                    try { renderView(); insertLegalFooter && insertLegalFooter(); } catch (e) {}
+
+                    // Gentle reflow and light enter animation for smoother transition
+                    try {
+                        const container = document.getElementById('main-content');
+                        if (container) {
+                            container.classList.add('tab-exit');
+                            setTimeout(() => {
+                                try {
+                                    container.classList.remove('tab-exit');
+                                    container.classList.add('tab-enter');
+                                    void container.offsetWidth;
+                                    container.classList.add('tab-enter-active');
+                                    setTimeout(() => container.classList.remove('tab-enter', 'tab-enter-active'), 350);
+                                } catch(_) {}
+                            }, 80);
+                        }
+                    } catch (_) {}
+
+                    // Resume non-essential background tasks after a short delay (gives render a moment to settle)
+                    setTimeout(() => { try { resumeBackgroundActivity(); startHomeRotator(); } catch(_) {} }, 450);
+
+                    // If original switchTab existed and did extra behavior, call it defensively but ignore its DOM manipulations
+                    try { if (typeof originalSwitch === 'function') originalSwitch(tab, clearSearch); } catch(_) {}
+                } catch (err) {
+                    // On error fallback to original to avoid breaking navigation
+                    try { if (typeof originalSwitch === 'function') originalSwitch(tab, clearSearch); } catch(_) {}
+                }
+            };
+        })();
+
         // Ensure progress is flushed when the user navigates away or the page is hidden
         window.addEventListener('beforeunload', () => {
             try { if (window.player && typeof window.player.saveProgress === 'function') window.player.saveProgress(); } catch (_) {}
@@ -9180,6 +9267,61 @@ const player = {
         }, { passive: true });
 
         // --- LEGAL / DISCLAIMER HANDLERS ---
+
+// Enforce exclusive progress saving: wrap player's saveProgress so only the currently-playing context keeps very-recent timestamps,
+// pruning any other progress entries updated within a short window to prevent simultaneous cross-series/film saves.
+(function(){
+  function wrapSaveProgress() {
+    try {
+      if (!window.player || typeof window.player.saveProgress !== 'function') return;
+      if (window.player.__lumina_saveWrapped) return;
+      const origSave = window.player.saveProgress.bind(window.player);
+      window.player.saveProgress = function() {
+        try {
+          // run original save first
+          origSave();
+
+          // If we don't have a current context id, just flush normally.
+          const ctxId = (this && this.context && this.context.id) ? this.context.id : null;
+          if (!ctxId) {
+            try { flushProgressNow(); } catch(_) { saveProgressData(); }
+            return;
+          }
+
+          // Short safety window: remove other progress entries that were updated in the last N ms (likely concurrent)
+          const now = Date.now();
+          const windowMs = 5000; // 5 seconds
+          try {
+            const prog = state.progress || {};
+            Object.keys(prog).forEach(key => {
+              try {
+                if (key === ctxId) return;
+                const entry = prog[key];
+                if (entry && entry.timestamp && (now - Number(entry.timestamp) <= windowMs)) {
+                  try { delete state.progress[key]; } catch(_) {}
+                }
+              } catch(_) {}
+            });
+          } catch(_) {}
+
+          // Persist immediately (use existing quota-safe flush)
+          try { flushProgressNow(); } catch (e) { try { saveProgressData(); } catch(_) {} }
+        } catch (err) {
+          try { origSave(); } catch(_) {}
+        }
+      };
+      window.player.__lumina_saveWrapped = true;
+    } catch (e) {
+      // silent
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', wrapSaveProgress);
+  } else {
+    setTimeout(wrapSaveProgress, 80);
+  }
+})();
         // Robust modal open/close that queries DOM at call time (avoids init-order failures)
         (function(){
             // helper to check reduced motion preference at runtime
@@ -9783,3 +9925,300 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
         return null;
     }
 };
+
+/* ===== Lumina: Per-series progress snapshot & contamination guard =====
+   - Creates a snapshot of "same-numbered" episodes across all series when the user begins playback of a series.
+   - Verifies and restores/cleans any unintended cross-series progress contamination on key events:
+     progress flush, episode change, player close, returning to home, pagehide/unload, and end-of-episode.
+   - Guarantees progress is tied to seriesId + season + episode (never only to episode number).
+*/
+
+(function(){
+    // snapshot map: latest snapshot keyed by currentSeriesId (or global 'last')
+    window.__lumina_progress_snapshots = {
+        // structure:
+        // lastKey: { ts: <timestamp>, sourceSeriesId: '...', season: 'N', episodeIndex: X, entries: { '<seriesId>|<season>|<epId>': { state:'data'|'epempty', time, duration, pct, seriesId, epId, raw } } }
+    };
+
+    // Helper to build stable episode lookup for a given series, season and episode index
+    function getEpisodeByIndex(series, seasonKey, episodeIndex) {
+        try {
+            if (!series || !series.seasons) return null;
+            const seasonArr = series.seasons[seasonKey] || series.seasons[String(seasonKey)] || null;
+            if (!Array.isArray(seasonArr)) return null;
+            return seasonArr[episodeIndex] || null;
+        } catch (e) { return null; }
+    }
+
+    // Build snapshot when playing a series: collect for every series the episode at same season & episode index
+    window.createProgressSnapshotForSameNumber = function(context) {
+        try {
+            if (!context || context.type !== 'serie') return null;
+            const seasonKey = String(context.season);
+            const episodeIndex = Number(context.episode);
+            const sourceSeriesId = String(context.seriesId || 'unknown');
+            const snapshot = { ts: Date.now(), sourceSeriesId, season: seasonKey, episodeIndex, entries: {} };
+
+            (window.db || []).forEach(series => {
+                try {
+                    if (!series || !series.id) return;
+                    const ep = getEpisodeByIndex(series, seasonKey, episodeIndex);
+                    if (!ep) {
+                        // Mark explicit absence (no episode at that index)
+                        snapshot.entries[`${series.id}|${seasonKey}|__noep__`] = { state: 'noep', seriesId: series.id, season: seasonKey, epId: null };
+                        return;
+                    }
+                    // determine stable episode id used in progress store: prefer ep.id if present, else generated stable id
+                    const stableEpId = (ep.id && String(ep.id).trim()) ? ep.id : `${series.id}-s${seasonKey}-e${episodeIndex}`;
+                    const prog = state.progress && state.progress[stableEpId] ? state.progress[stableEpId] : null;
+                    if (prog && typeof prog === 'object' && (prog.time || prog.embed || prog.timestamp)) {
+                        const time = Number(prog.time || 0);
+                        const duration = Number(prog.duration || 0);
+                        const pct = (duration > 0) ? Math.round((time / duration) * 10000) / 100 : (prog.time ? 100 : 0);
+                        snapshot.entries[`${series.id}|${seasonKey}|${stableEpId}`] = {
+                            state: 'data',
+                            time: time,
+                            duration: duration,
+                            pct: pct,
+                            seriesId: series.id,
+                            epId: stableEpId,
+                            raw: JSON.parse(JSON.stringify(prog || {}))
+                        };
+                    } else {
+                        snapshot.entries[`${series.id}|${seasonKey}|${stableEpId}`] = {
+                            state: 'epempty',
+                            seriesId: series.id,
+                            epId: stableEpId,
+                            season: seasonKey
+                        };
+                    }
+                } catch (_) {}
+            });
+
+            // store snapshot as latest
+            window.__lumina_progress_snapshots.last = snapshot;
+            return snapshot;
+        } catch (e) {
+            console.warn('createProgressSnapshotForSameNumber failed', e);
+            return null;
+        }
+    };
+
+    // Helper that restores a snapshot entry (either data or epempty)
+    function restoreSnapshotEntry(ent) {
+        try {
+            if (!ent || !ent.seriesId) return;
+            const pid = ent.epId;
+            if (ent.state === 'data' && ent.raw) {
+                // restore exact saved object into state.progress
+                state.progress[pid] = Object.assign({}, ent.raw);
+                // ensure numeric fields are numbers
+                if (state.progress[pid].time != null) state.progress[pid].time = Number(state.progress[pid].time);
+                if (state.progress[pid].duration != null) state.progress[pid].duration = Number(state.progress[pid].duration);
+                if (!state.progress[pid].timestamp) state.progress[pid].timestamp = Date.now();
+                // update history if this was part of a series and history incorrectly overwritten
+                try {
+                    if (ent.seriesId && state.history && state.history[ent.seriesId]) {
+                        // keep history as originally saved in snapshot raw if present
+                        // if raw had no history, do not remove history here (non-destructive)
+                    }
+                } catch (_) {}
+            } else if (ent.state === 'epempty') {
+                // remove any progress created erroneously
+                try {
+                    if (state.progress && state.progress[pid]) delete state.progress[pid];
+                } catch (_) {}
+                // ensure no history points to this episode
+                try {
+                    const hist = state.history && state.history[ent.seriesId];
+                    if (hist && hist.epId === pid) delete state.history[ent.seriesId];
+                } catch (_) {}
+            } else if (ent.state === 'noep') {
+                // nothing to restore
+            }
+        } catch (e) { console.warn('restoreSnapshotEntry error', e); }
+    }
+
+    // Compare snapshot against current state and restore contaminated entries.
+    window.verifyAndRestoreProgressSnapshots = function(reason, currentContext) {
+        try {
+            const snap = window.__lumina_progress_snapshots.last;
+            if (!snap || !snap.entries) return { restored: false, reason: 'no-snapshot' };
+
+            const contaminated = [];
+            Object.keys(snap.entries).forEach(key => {
+                try {
+                    const ent = snap.entries[key];
+                    if (!ent || !ent.seriesId) return;
+                    // key may include __noep__, handle accordingly
+                    if (ent.state === 'noep') return;
+
+                    const pid = ent.epId;
+                    const currentProg = state.progress && state.progress[pid] ? state.progress[pid] : null;
+
+                    if (ent.state === 'epempty') {
+                        // If snapshot was empty and now there's progress -> contamination
+                        const nowHas = currentProg && (typeof currentProg.time === 'number' && currentProg.time > 1 || currentProg.embed);
+                        if (nowHas) {
+                            contaminated.push({ kind: 'epempty->tainted', entry: ent, pid });
+                        }
+                    } else if (ent.state === 'data') {
+                        // If snapshot had data, but now the stored progress differs from snapshot raw in a way that indicates overwrite
+                        if (!currentProg) {
+                            // totally lost: treat as change but not contamination from current playback; still restore
+                            contaminated.push({ kind: 'data->missing', entry: ent, pid });
+                        } else {
+                            // compare time and duration and key continuity fields
+                            const prevTime = Number(ent.time || 0);
+                            const prevDur = Number(ent.duration || 0);
+                            const nowTime = Number(currentProg.time || 0);
+                            const nowDur = Number(currentProg.duration || 0);
+                            // If the nowTime differs significantly from snapshot AND matches the current playing context's progress,
+                            // it's likely contaminated by the active playback. We'll treat any difference as suspicious and restore.
+                            const timeChanged = Math.abs(nowTime - prevTime) > 1.5 && !(Math.abs(nowTime - prevTime) <= 0.5);
+                            const durationChanged = Math.abs(nowDur - prevDur) > 0.5;
+                            if (timeChanged || durationChanged) {
+                                contaminated.push({ kind: 'data->changed', entry: ent, pid, now: { time: nowTime, duration: nowDur } });
+                            }
+                        }
+                    }
+                } catch (_) {}
+            });
+
+            if (contaminated.length === 0) return { restored: false, reason: 'clean', contaminated: 0 };
+
+            // Restore each contaminated entry according to snapshot
+            contaminated.forEach(c => {
+                try {
+                    restoreSnapshotEntry(c.entry);
+                } catch (_) {}
+            });
+
+            // Persist changes and re-render UI to remove contaminated "Continue Watching"
+            try {
+                flushProgressNow();
+            } catch (_) { try { saveProgressData(); } catch(_) {} }
+
+            try {
+                // Re-render Continue and view parts to avoid contaminated entries showing up
+                renderView();
+            } catch (_) {}
+
+            return { restored: true, reason: reason || 'verify', count: contaminated.length, details: contaminated };
+        } catch (e) {
+            console.warn('verifyAndRestoreProgressSnapshots failed', e);
+            return { restored: false, error: String(e) };
+        }
+    };
+
+    // Wrap player.init to create snapshot when starting a series playback
+    try {
+        if (window.player && typeof window.player.init === 'function') {
+            const origInit = window.player.init.bind(window.player);
+            window.player.init = function(url, title, context) {
+                try {
+                    if (context && context.type === 'serie') {
+                        try { window.createProgressSnapshotForSameNumber(context); } catch(_) {}
+                    }
+                } catch(_) {}
+                return origInit(url, title, context);
+            };
+        }
+    } catch (e) { console.warn('wrap player.init failed', e); }
+
+    // Wrap player.close to trigger a verification pass when player closes
+    try {
+        if (window.player && typeof window.player.close === 'function') {
+            const origClose = window.player.close.bind(window.player);
+            window.player.close = function() {
+                try { const ctx = window.player && window.player.context; const reason = 'player.close'; origClose(); try { setTimeout(()=>window.verifyAndRestoreProgressSnapshots(reason, ctx), 120); } catch(_) {} } catch (e) { try{ origClose(); }catch(_){} }
+            };
+        }
+    } catch (e) { console.warn('wrap player.close failed', e); }
+
+    // Wrap flushProgressNow to run verification after progress persisted
+    try {
+        if (typeof flushProgressNow === 'function') {
+            const origFlush = flushProgressNow.bind(window);
+            window.flushProgressNow = function() {
+                try {
+                    const before = window.__lumina_progress_snapshots && window.__lumina_progress_snapshots.last;
+                    origFlush();
+                    // run verification asynchronously (give flush a moment)
+                    try { setTimeout(() => { window.verifyAndRestoreProgressSnapshots('flushProgressNow'); }, 60); } catch(_) {}
+                } catch (e) { try { origFlush(); } catch(_) {} }
+            };
+        }
+    } catch (e) { console.warn('wrap flushProgressNow failed', e); }
+
+    // Hook into requestPlay flow: ensure snapshot created when user requests playing a series (redundant/defensive)
+    try {
+        const origRequestPlay = window.requestPlay;
+        window.requestPlay = function(url, title, context) {
+            try { if (context && context.type === 'serie') window.createProgressSnapshotForSameNumber(context); } catch(_) {}
+            return origRequestPlay && origRequestPlay(url, title, context);
+        };
+    } catch (_) {}
+
+    // Listen to important lifecycle events to trigger verification:
+    // - beforeunload / pagehide: verify and restore if needed (ensures corruption cleaned before unload)
+    // - visibilitychange -> when returning to visible trigger verify
+    // - when switching to home tab -> verify
+    // - when an episode ends -> player.ontimeupdate/onended call already triggers checkNextTrigger; we also verify on ended
+    window.addEventListener('beforeunload', function(){ try { window.verifyAndRestoreProgressSnapshots('beforeunload'); } catch(_) {} }, { passive: true });
+    window.addEventListener('pagehide', function(){ try { window.verifyAndRestoreProgressSnapshots('pagehide'); } catch(_) {} }, { passive: true });
+    document.addEventListener('visibilitychange', function(){ try { if (document.visibilityState === 'visible') window.verifyAndRestoreProgressSnapshots('visibility:visible'); } catch(_) {} }, { passive: true });
+
+    // ensure switchTab triggers verification when returning to home
+    try {
+        const origSwitchTab = window.switchTab;
+        window.switchTab = function(tab, clearSearch) {
+            try {
+                const prev = state.tab;
+                const res = origSwitchTab && origSwitchTab(tab, clearSearch);
+                // If moving to home or away from player, verify after a short delay
+                if (tab === 'home' || prev === 'home') {
+                    try { setTimeout(() => window.verifyAndRestoreProgressSnapshots('switchTab', window.player && window.player.context), 160); } catch(_) {}
+                }
+                return res;
+            } catch (e) { return origSwitchTab && origSwitchTab(tab, clearSearch); }
+        };
+    } catch (e) {}
+
+    // Also verify on player end-of-media (ensure contamination from end/nextEp flows is caught)
+    try {
+        const origOnEnded = function(){};
+        // If player exists, wrap its onended handler if available
+        if (window.player) {
+            const vp = window.player;
+            // best-effort: monkey-patch player.vid.onended when video element is available
+            const attachEndWatcher = () => {
+                try {
+                    const vid = vp.vid || document.querySelector('#main-video');
+                    if (!vid) return;
+                    if (vid.__lumina_end_bound) return;
+                    vid.__lumina_end_bound = true;
+                    vid.addEventListener('ended', function(){ try { setTimeout(()=>window.verifyAndRestoreProgressSnapshots('ended'), 80); } catch(_){} }, { passive: true });
+                } catch (e) {}
+            };
+            // attempt now and also observe mutations to attach later
+            setTimeout(attachEndWatcher, 120);
+            const mo = new MutationObserver(() => attachEndWatcher());
+            try { mo.observe(document.getElementById('player-media-wrapper') || document.body, { childList: true, subtree: true }); } catch(_) {}
+        }
+    } catch (e) {}
+
+    // Public debug helper
+    window.__lumina_restore_snapshot_now = function() {
+        try {
+            const snap = window.__lumina_progress_snapshots.last;
+            if (!snap) return false;
+            Object.values(snap.entries).forEach(ent => {
+                try { restoreSnapshotEntry(ent); } catch(_) {}
+            });
+            flushProgressNow();
+            renderView();
+            return true;
+        } catch (e) { return false; }
+    };
+})();
