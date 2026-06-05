@@ -156,7 +156,7 @@
         input[type=range]::-webkit-slider-thumb {
             height: 0; width: 0; background: #fff; -webkit-appearance: none; margin-top: 2px; border-radius: 50%; transition: all 0.2s;
             position: relative;
-            z-index: 5; /* ensure thumb sits above progress fill */
+            z-index: 1000; /* lowered so progress fill does not overlap the white thumb */
         }
         input[type=range]:hover::-webkit-slider-thumb { height: 16px; width: 16px; margin-top: -5px; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
 
@@ -175,7 +175,11 @@
            Elements marked keep-visible remain interactive and visible (useful for PiP / persistent actions). */
 
         /* Global class to hide mouse cursor when player is hidden (applied/removed by JS) */
-        .lumina-hide-mouse, html.lumina-hide-mouse, body.lumina-hide-mouse { cursor: none !important; }
+        /* restrict cursor hiding to the player only so site pages keep pointer visible */
+        #player-modal.lumina-hide-mouse,
+        #player-modal.lumina-hide-mouse * {
+            cursor: none !important;
+        }
         .player-idle .player-ui { pointer-events: none; }
         .player-idle .player-ui .hide-on-idle { opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity 0.35s, transform 0.35s; }
         .player-idle .player-ui .keep-visible { opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
@@ -937,7 +941,7 @@
             transform: translateY(-96px) !important;
             text-rendering: optimizeLegibility !important;
             -webkit-font-smoothing: antialiased !important;
-            z-index: 2147483647 !important; /* ensure on top */
+            z-index: 1000 !important; /* ensure on top */
         }
 
         /* WebKit specific internal track display override for iOS/Safari */
@@ -974,7 +978,7 @@
             z-index: 1000;
         }
         #lumina-captions-overlay, #lumina-captions-overlay.custom-captions {
-            z-index: 2147483647 !important;
+            z-index: 1000 !important;
             bottom: 160px !important;
             pointer-events: none !important;
         }
@@ -1039,6 +1043,89 @@
         /* Mobile: slightly enlarge the tap area and place it beside other controls */
         @media (max-width: 767px) {
             #lumina-captions-btn { width: 48px !important; height: 48px !important; min-width: 48px !important; border-radius: 12px !important; }
+        }
+
+        /* ==========================================================================
+   NOVOS ESTILOS: CARROSSEL DE TEMPORADAS E MODAL DE EPISÓDIOS
+   ========================================================================== */
+
+        /* Efeito Glassmorphism Premium */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Setas e controles com vidro refinado */
+        .glass-button {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .glass-button:hover {
+            background: rgba(168, 85, 247, 0.15);
+            border-color: rgba(168, 85, 247, 0.4);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+            color: #c084fc;
+        }
+
+        .card-active-shadow {
+            box-shadow: 0 0 60px -5px rgba(168, 85, 247, 0.3), 
+                        inset 0 0 20px 0 rgba(168, 85, 247, 0.15);
+        }
+
+        /* Mobile: remove purple glow/tint from season cards to avoid the purple background sheen on small viewports */
+        @media (max-width: 767px) {
+            /* Remove the purple halo entirely for active season cards */
+            .card-active-shadow,
+            #season-cards-wrapper .season-card.card-active-shadow,
+            .season-card.card-active-shadow {
+                box-shadow: none !important;
+                /* fallback neutral rim instead of purple */
+                border-color: rgba(255,255,255,0.06) !important;
+                background: linear-gradient(135deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.005) 100%) !important;
+            }
+
+            /* Ensure any text or indicator tint that relied on purple is neutralized on mobile */
+            #season-cards-wrapper .season-card .indicator-text,
+            #season-cards-wrapper .season-card h2,
+            .season-card .indicator-text,
+            .season-card h2 {
+                color: #ffffff !important;
+                text-shadow: none !important;
+            }
+
+            /* Dots: keep neutral appearance on mobile when season is active */
+            #season-dots-wrapper span,
+            #season-dots-wrapper span.active {
+                background: rgba(255,255,255,0.2) !important;
+                box-shadow: none !important;
+                width: 6px !important;
+                height: 6px !important;
+            }
+        }
+
+        /* Modal e Container de Episódios */
+        #episodes-modal:not(.opacity-0) {
+            pointer-events: auto !important;
+        }
+        /* Make episodes modal close button perfectly circular and consistent touch target */
+        #episodes-modal-container .flex-none > button {
+            width: 44px !important;
+            height: 44px !important;
+            padding: 0.5rem !important;
+            border-radius: 9999px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        #episodes-modal:not(.opacity-0) #episodes-wrapper-box {
+            transform: translateY(0) scale(1);
         }
 
         /* Force captions controls & overlays visible and interactive (high specificity to override other rules) */
