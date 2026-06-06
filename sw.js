@@ -112,34 +112,48 @@ async function networkFirstRange(request) {
     const range = request.headers.get('range');
     if (!range) return await networkFirst(request);
 
-    // For ranged requests, fetch from network with credentials and no-cache to ensure CDN serves proper 206 partial responses.
-    const init = {
-      method: 'GET',
-      headers: {
-        // Preserve incoming headers but ensure Range is passed through
-        'Range': range
-      },
-      // We prefer CORS mode for most CDNs; allow no-cors fallback where necessary.
-      mode: 'cors',
-      credentials: 'omit',
-      cache: 'no-cache'
+    // For ranged requests, attempt network fetch with CORS first and fall back to no-cors when CORS blocks
+    const makeFetch = async (mode) => {
+      try {
+        const init = {
+          method: 'GET',
+          headers: { 'Range': range },
+          mode: mode, // 'cors' or 'no-cors'
+          credentials: 'omit',
+          cache: 'no-cache'
+        };
+        // Use fetch with the provided mode and return response (may be opaque for no-cors)
+        return await fetch(request.url, init);
+      } catch (e) {
+        return null;
+      }
     };
 
-    // Attempt network fetch first; if it fails, try to serve a cached full file as fallback (best-effort).
-    const networkResponse = await fetch(request.url, init);
-    if (networkResponse && (networkResponse.status === 206 || networkResponse.status === 200)) {
-      // For partial content (206) or full (200), return network response directly without caching (to avoid storing large media with partial ranges).
+    // Try CORS-mode fetch first (best for receiving 206 with proper headers)
+    let networkResponse = await makeFetch('cors');
+
+    // If CORS failed or returned an opaque/unsuitable response, try no-cors fallback (may yield opaque response but often succeeds on CDNs like Dropbox)
+    if (!networkResponse || (!networkResponse.ok && networkResponse.status !== 206 && networkResponse.type !== 'opaque')) {
+      const fallbackResp = await makeFetch('no-cors');
+      if (fallbackResp) networkResponse = fallbackResp;
+    }
+
+    // If we have a usable response (206, 200 or opaque), return it directly (do not cache partials)
+    if (networkResponse && (networkResponse.status === 206 || networkResponse.status === 200 || networkResponse.type === 'opaque')) {
       return networkResponse;
     }
 
-    // If network returns non-ideal status, fall back to cache if available.
+    // Otherwise try to serve a cached copy as fallback
     const cache = await caches.open(RUNTIME);
     const cached = await cache.match(request);
     if (cached) return cached;
 
-    // As last resort, attempt a normal fetch (without Range) to obtain a response.
-    const fallback = await fetch(request.url, { mode: 'cors', credentials: 'omit' });
-    return fallback;
+    // Final fallback: try a normal network fetch without Range (with CORS then no-cors)
+    let normal = null;
+    try { normal = await fetch(request.url, { mode: 'cors', credentials: 'omit' }); } catch(_) { try { normal = await fetch(request.url, { mode: 'no-cors', credentials: 'omit' }); } catch(_) { normal = null; } }
+    if (normal) return normal;
+
+    return Response.error();
   } catch (err) {
     try {
       // On network error, return cached variant if present

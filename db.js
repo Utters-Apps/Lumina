@@ -12,14 +12,37 @@ export const db = [
                 producer: 'Estúdios Globo / Biônica Filmes / Mauricio de Sousa Produções',
                 seasons: {
                     1: [
-                        { id: 'turma-da-monica-a-serie-s1-e1', title: 'Mônica', url: 'https://dl.dropboxusercontent.com/scl/fi/duxbc88i0l60axl0qgbwu/1.mp4?rlkey=c9ljq21tbuj4vzm2amt3oe38u&st=r7akj1l2' },
-        { id: 'turma-da-monica-a-serie-s1-e2', title: 'Magali', url: 'https://dl.dropboxusercontent.com/scl/fi/as7324nnbkkszqw106a8v/2.mp4?rlkey=lxkjs9p9i034yafl4g0megmyc&st=qgl9in3n', duration: 1260 },
-        { id: 'turma-da-monica-a-serie-s1-e3', title: 'Cebolinha', url: 'https://dl.dropboxusercontent.com/scl/fi/7b5ymnyj2ool54xstrvvb/3.mp4?rlkey=6iv567b5e4eix40vxofkl1qdx&st=ri8vnvbd' },
-        { id: 'turma-da-monica-a-serie-s1-e4', title: 'Cascão', url: 'https://dl.dropboxusercontent.com/scl/fi/wgej1laj21tiv3vljv0qw/4.mp4?rlkey=iz9louzh8aoux21zi4kyu26h4&st=ygdr7rs8' },
-        { id: 'turma-da-monica-a-serie-s1-e5', title: 'Milena', url: 'https://dl.dropboxusercontent.com/scl/fi/2nkbp9pu29bk4g4pxfhpr/5.mp4?rlkey=tgfpf2zgxl0uapc8w5oy0oa9e&st=d5pc1p0p' },
-        { id: 'turma-da-monica-a-serie-s1-e6', title: 'Perfeição', url: 'https://dl.dropboxusercontent.com/scl/fi/x5inhpsxel6w65qzi5x1z/6.mp4?rlkey=bw7360crn1gfjonj6x3wk72s8&st=rwj2q7xq' },
-        { id: 'turma-da-monica-a-serie-s1-e7', title: 'Segredo', url: 'https://dl.dropboxusercontent.com/scl/fi/7bfah4oywlv56s86eso05/7.mp4?rlkey=fz8gvps4irb976js7kweo1qc9&st=27lvvvup' },
-        { id: 'turma-da-monica-a-serie-s1-e8', title: 'Lama', url: 'https://dl.dropboxusercontent.com/scl/fi/69s8mc97nrlf55lsboe8k/8.mp4?rlkey=md72d6xcidqpgad5ywlmgjvxz&st=y8gdi3q4' }
+                        { id: 'turma-da-monica-a-serie-s1-e1', title: 'Mônica', url: 'https://dl.dropboxusercontent.com/scl/fi/duxbc88i0l60axl0qgbwu/1.mp4?rlkey=c9ljq21tbuj4vzm2amt3oe38u&st=r7akj1l2', cover: 'https://s04.video.glbimg.com/x216/10742899.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e2', title: 'Magali', url: 'https://dl.dropboxusercontent.com/scl/fi/as7324nnbkkszqw106a8v/2.mp4?rlkey=lxkjs9p9i034yafl4g0megmyc&st=qgl9in3n', duration: 1260, cover: 'https://s04.video.glbimg.com/x216/10742915.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e3', title: 'Cebolinha', url: 'https://dl.dropboxusercontent.com/scl/fi/7b5ymnyj2ool54xstrvvb/3.mp4?rlkey=6iv567b5e4eix40vxofkl1qdx&st=ri8vnvbd', cover: 'https://s04.video.glbimg.com/x216/10774951.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e4', title: 'Cascão', url: 'https://dl.dropboxusercontent.com/scl/fi/wgej1laj21tiv3vljv0qw/4.mp4?rlkey=iz9louzh8aoux21zi4kyu26h4&st=ygdr7rs8', cover: 'https://s01.video.glbimg.com/x216/10772628.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e5', title: 'Milena', url: 'https://dl.dropboxusercontent.com/scl/fi/2nkbp9pu29bk4g4pxfhpr/5.mp4?rlkey=tgfpf2zgxl0uapc8w5oy0oa9e&st=d5pc1p0p', cover: 'https://s04.video.glbimg.com/x216/10755671.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e6', title: 'Perfeição', url: 'https://dl.dropboxusercontent.com/scl/fi/x5inhpsxel6w65qzi5x1z/6.mp4?rlkey=bw7360crn1gfjonj6x3wk72s8&st=rwj2q7xq', cover: 'https://s03.video.glbimg.com/x216/10755678.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e7', title: 'Segredo', url: 'https://dl.dropboxusercontent.com/scl/fi/7bfah4oywlv56s86eso05/7.mp4?rlkey=fz8gvps4irb976js7kweo1qc9&st=27lvvvup', cover: 'https://s04.video.glbimg.com/x216/10772639.jpg' },
+        { id: 'turma-da-monica-a-serie-s1-e8', title: 'Lama', url: 'https://dl.dropboxusercontent.com/scl/fi/69s8mc97nrlf55lsboe8k/8.mp4?rlkey=md72d6xcidqpgad5ywlmgjvxz&st=y8gdi3q4', cover: 'https://s04.video.glbimg.com/x216/10772643.jpg' }
+                    ]
+                }
+            },
+            {
+                id: 'off-campus-amores-improvaveis',
+                title: 'Off Campus: Amores Improváveis',
+                type: 'serie',
+                category: 'Drama / Romance / Romântico',
+                year: '2026',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/cb8cf22ac8c1b392b5b03dee45e8ecd2f45c07d7a24c364072fcdbb312f64df3.jpg',
+                description: 'A série acompanha o romance entre Hannah, uma estudante de música que odeia hóquei, e Garrett, o astro do time da Briar University. A história mistura amor, amizade e a fase de transição para a vida adulta.',
+                ageRating: '16',
+                distributor: 'Prime Video / Amazon MGM Studios',
+                seasons: {
+                    1: [
+                        { id: 'off-campus-amores-improvaveis-s1-e1', title: 'O Acordo', url: 'https://dl.dropboxusercontent.com/scl/fi/oq8f08mdbj399r0by925e/01.mp4?rlkey=eo140nw3l55z3e1ch1u3ly7bx&st=taotd39g', cover: 'https://m.media-amazon.com/images/S/pv-target-images/b17be5c6a26e9eae24efa47c24c59ff98c13e2639a7b735cfebc9d415704c433._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e2', title: 'O Treino', url: 'https://dl.dropboxusercontent.com/scl/fi/exvbq08adiibs0rvm263w/02.mp4?rlkey=e35u69vwa8qbm4s9v24bcbfu2&st=sdzxsq96', cover: 'https://m.media-amazon.com/images/S/pv-target-images/5dc9a3e29698d2779d8e67fe541c3b52ae3325408e9b0fade06c43c19d4846d7._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e3', title: 'O Orgasmo', url: 'https://dl.dropboxusercontent.com/scl/fi/0vbk7jl7c73kfqy2u8y43/03.mp4?rlkey=il6rz0bu0u7q6jf53uv257vdt&st=q4sqywh1', cover: 'https://m.media-amazon.com/images/S/pv-target-images/efaa8d591bc7fefcaba45ef77d5a237f49aea0a5ac620d5975aa8cdd349389c3._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e4', title: 'O Término', url: 'https://dl.dropboxusercontent.com/scl/fi/oejisi4mrv895hvoa21zz/04.mp4?rlkey=x8ymd43m50d5zrcjsimq3iccy&st=t027twff', cover: 'https://m.media-amazon.com/images/S/pv-target-images/5d78f2d8b080db40ec76895ff7da5c5aa0c447bfc9ec93a03b9819b49db10a9d._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e5', title: 'Peru Frio', url: 'https://dl.dropboxusercontent.com/scl/fi/za0tcwb8s0fk7z3qnwudw/05.mp4?rlkey=mrn7fqn65pjaqjejfaccffrfr&st=616rvzxn', cover: 'https://m.media-amazon.com/images/S/pv-target-images/7332448dda88843fe1ddbe01df2c300d60a8c6ec1874b1d8e0a2bb6ebd4ce563._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e6', title: 'A Virada', url: 'https://dl.dropboxusercontent.com/scl/fi/ru39f9pt158e3vj80i62j/06.mp4?rlkey=qo1sv7hid964bgl4dyc4laepc&st=qgimbrht', cover: 'https://m.media-amazon.com/images/S/pv-target-images/1574d62430fea62ebcca3c893aa2479520f903b3fab4bdc7bdbd39ae8caa2281._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e7', title: 'O Confronto', url: 'https://dl.dropboxusercontent.com/scl/fi/fc0n5am6hbl3pb02v5y7h/07.mp4?rlkey=d3qzem1zyevep70htyuabjydf&st=zj8mj848', cover: 'https://m.media-amazon.com/images/S/pv-target-images/095d76858acbfdbff219b6439fae43169eeceaeb37fe887570c806c81890bace._BR-6_AC_SX720_FMjpg_.jpg' },
+                        { id: 'off-campus-amores-improvaveis-s1-e8', title: 'A Substituição', url: 'https://dl.dropboxusercontent.com/scl/fi/uaaotjiwaxruv5or516la/08.mp4?rlkey=un3gg09wg7hr8931db0699t10&st=goxrhhvy', cover: 'https://m.media-amazon.com/images/S/pv-target-images/f3d3b9f0ca155d7f04de9217a3741a1742a66929972abe19c186fdf8374ccf08._BR-6_AC_SX720_FMjpg_.jpg' }
                     ]
                 }
             },
@@ -38,30 +61,30 @@ export const db = [
                 nextEpisodeTrigger: 30,
                 seasons: {
                     1: [
-                        { id: 'akame-ga-kill-s1-e1', title: 'Acabe com a escuridão', url: 'https://dl.dropboxusercontent.com/scl/fi/53s1rmpcpcdshqpz3tsxa/agk01.mp4?rlkey=3fthnep8tzvhnfx4daiv90wm4&st=gnpw1hpw' },
-        { id: 'akame-ga-kill-s1-e2', title: 'Mate a autoridade', url: 'https://dl.dropboxusercontent.com/scl/fi/0t3zx6m6autkc47ib6mdr/agk02.mp4?rlkey=t79vwkzd9evlpr28hq7wnj685&st=3li346us' },
-        { id: 'akame-ga-kill-s1-e3', title: 'Acabe com as preocupações', url: 'https://dl.dropboxusercontent.com/scl/fi/8lag5rtrsof8o8pmb0hn7/akg03.mp4?rlkey=aarv4quzjqsd9qkl4v5ci82b0&st=96go08jm' },
-        { id: 'akame-ga-kill-s1-e4', title: 'Mate os usuários de armas imperiais', url: 'https://dl.dropboxusercontent.com/scl/fi/6rt85zt1744rq6g0j5hv2/agk04.mp4?rlkey=gb7xkn8f1ot7gztur16kafc4l&st=d4k27fn0' },
-        { id: 'akame-ga-kill-s1-e5', title: 'Acabe com o sonho', url: 'https://dl.dropboxusercontent.com/scl/fi/v329z5lf7173ebft4r3ch/agk5.mp4?rlkey=g18r0gg7nlisbfxvcdn0fhfpk&st=md5lce9u' },
-        { id: 'akame-ga-kill-s1-e6', title: 'Acabe com a justiça absoluta', url: 'https://dl.dropboxusercontent.com/scl/fi/ijzcje0h3s6zg29pg5pml/agk6.mp4?rlkey=pk3zzo2rrl94g9hy0v8lr67ya&st=gtrgb4xw' },
-        { id: 'akame-ga-kill-s1-e7', title: 'Mate os três: Parte 1', url: 'https://dl.dropboxusercontent.com/scl/fi/zznax2qt08myu17swucgx/agk7.mp4?rlkey=ix17ebgwg2x4dm7141c6stgdq&st=y9tai6r6' },
-        { id: 'akame-ga-kill-s1-e8', title: 'Mate os três: Parte 2', url: 'https://dl.dropboxusercontent.com/scl/fi/zl2z0akv5lpycdw5b9u95/agk8.mp4?rlkey=4sr5wf5je4kfabcpfvlyiwck7&st=6ip3gw97' },
-        { id: 'akame-ga-kill-s1-e9', title: 'Mate a fanática por batalhas', url: 'https://dl.dropboxusercontent.com/scl/fi/lpk35oqn0zva2hhgo7r0n/agk9.mp4?rlkey=wkn3fkdw42657quz4fu6jkvms&st=ubqenpe3' },
-        { id: 'akame-ga-kill-s1-e10', title: 'Acabe com a tentação', url: 'https://dl.dropboxusercontent.com/scl/fi/zwy2iwdrlmk9kz4lgvvkc/agk10.mp4?rlkey=a650chrr087bucsvabk48r93q&st=099z8g5b' },
-        { id: 'akame-ga-kill-s1-e11', title: 'Mate o cientista louco', url: 'https://dl.dropboxusercontent.com/scl/fi/3v6ha3yp8q5mw5shuyw3h/agk11.mp4?rlkey=tgicrfa249r6zjx4qbkicvave&st=681es7lq' },
-        { id: 'akame-ga-kill-s1-e12', title: 'Mate os novatos', url: 'https://dl.dropboxusercontent.com/scl/fi/miovtelxzj2m9guj9quea/agk12.mp4?rlkey=r9pa9yyx20tnm9738kkc2kn79&st=d5zjewxr' },
-        { id: 'akame-ga-kill-s1-e13', title: 'Mate os que incomodam', url: 'https://dl.dropboxusercontent.com/scl/fi/86hvcas8gmc76br62ocqa/agk13.mp4?rlkey=5osqar2rdhxy5nahnxvu02o6u&st=5gk5yj87' },
-        { id: 'akame-ga-kill-s1-e14', title: 'Mate a criatura', url: 'https://dl.dropboxusercontent.com/scl/fi/swg4vxwnxv9xafyvh0c7o/agk14.mp4?rlkey=vf39ywdklf4z1wty1jwxreg2n&st=8lckxkgm' },
-        { id: 'akame-ga-kill-s1-e15', title: 'Acabe com a organização religiosa', url: 'https://dl.dropboxusercontent.com/scl/fi/qen5q545l7q45pbdpducr/agk15.mp4?rlkey=gvm8mv9ls13n09hqwyernc1qh&st=pcgtr9ph' },
-        { id: 'akame-ga-kill-s1-e16', title: 'Mate os fantoches', url: 'https://dl.dropboxusercontent.com/scl/fi/4ktc6f7o1eb1ju70zl5wi/agk16.mp4?rlkey=hdpd98qb9av9dp35frd33vrw6&st=rfoq8yev' },
-        { id: 'akame-ga-kill-s1-e17', title: 'Acabe com a maldição', url: 'https://dl.dropboxusercontent.com/scl/fi/hs602iyj90p6yz6vpa2bc/agk17.mp4?rlkey=x5gy4so1w2hsvka0rxxz2le9z&st=kpfk4yn3' },
-        { id: 'akame-ga-kill-s1-e18', title: 'Mate os demônios', url: 'https://dl.dropboxusercontent.com/scl/fi/r9citm5bhsogbhta6ntyk/agk18.mp4?rlkey=fdef2cxg5kkgfiqjv5167zsrz&st=0sprzw9s' },
-        { id: 'akame-ga-kill-s1-e19', title: 'Acabe com o destino', url: 'https://dl.dropboxusercontent.com/scl/fi/rsqt50lxh26gfhm4yv7nq/agk19.mp4?rlkey=ifnnhuiuhb8b1ubg4fqcj2xqy&st=isqmln5s' },
-        { id: 'akame-ga-kill-s1-e20', title: 'Mate Syura', url: 'https://dl.dropboxusercontent.com/scl/fi/p1ha012sip2ni4y7ilcv0/agk20.mp4?rlkey=ihuwlufkaiq18zazu46qsvrcy&st=dylub9xa' },
-        { id: 'akame-ga-kill-s1-e21', title: 'Acabe com o desespero', url: 'https://dl.dropboxusercontent.com/scl/fi/7izzdv0mqf0acpgbcu8v4/agk21.mp4?rlkey=5gassl8tuws06vlqhhp71nb9b&st=7e48rexv' },
-        { id: 'akame-ga-kill-s1-e22', title: 'Mate a irmãzinha', url: 'https://dl.dropboxusercontent.com/scl/fi/hq1mgywett33j4exy4yj1/agk22.mp4?rlkey=g1ttc8u6w3bumkn7gju767bhm&st=w306n51t' },
-        { id: 'akame-ga-kill-s1-e23', title: 'Mate o imperador', url: 'https://dl.dropboxusercontent.com/scl/fi/t4bkjwx50r9uf8ctw2m70/agk23.mp4?rlkey=qi5romrdfckrrlu84my0v2779&st=piuddzup' },
-        { id: 'akame-ga-kill-s1-e24', title: 'Akame ga Kill!', url: 'https://dl.dropboxusercontent.com/scl/fi/irms5l9w61ryjvisckquq/agk24.mp4?rlkey=b6o0ci9lcw9dp7jtg83oxunyi&st=tpi81oaj' }
+                        { id: 'akame-ga-kill-s1-e1', title: 'Acabe com a escuridão', url: 'https://dl.dropboxusercontent.com/scl/fi/53s1rmpcpcdshqpz3tsxa/agk01.mp4?rlkey=3fthnep8tzvhnfx4daiv90wm4&st=gnpw1hpw', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABa0Fsz9Buqb15-Cyk0mF0IJ_sWwBnRWs6UCNQL8sK7gqQqai8FRlBYJ6djukjY1ri_N_YzMsrStwcscBykZVDLYEbv-on1U24QzxSgVEuyFzWShVzT8ykBXO.webp?r=39f' },
+        { id: 'akame-ga-kill-s1-e2', title: 'Mate a autoridade', url: 'https://dl.dropboxusercontent.com/scl/fi/0t3zx6m6autkc47ib6mdr/agk02.mp4?rlkey=t79vwkzd9evlpr28hq7wnj685&st=3li346us', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABUPR8YYOxzcuAH-bFQHurqZqqsuafyOuSBv8ECyGOPcy6gDpyFffDgxuXN1GMPnoEuIB9Uug26z4RCcAIlPAENuIPwULtfG2iMaC0P9X5uRbGHYN41_EIU4w.webp?r=48b' },
+        { id: 'akame-ga-kill-s1-e3', title: 'Acabe com as preocupações', url: 'https://dl.dropboxusercontent.com/scl/fi/8lag5rtrsof8o8pmb0hn7/akg03.mp4?rlkey=aarv4quzjqsd9qkl4v5ci82b0&st=96go08jm', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABSm-gp3Ln_J4UVaMa1dTzpneOL8hc_XJUWUpiCXZmEF22woWOp7JKssrZ_wqm55woVOfOyaApLgQi_Ew9evbbyyoMEgthjf0Bs3m3GzojRTrxIzGbRfFPJa-.webp?r=0a5' },
+        { id: 'akame-ga-kill-s1-e4', title: 'Mate os usuários de armas imperiais', url: 'https://dl.dropboxusercontent.com/scl/fi/6rt85zt1744rq6g0j5hv2/agk04.mp4?rlkey=gb7xkn8f1ot7gztur16kafc4l&st=d4k27fn0', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABQXp5LBO9TJgXJup3JY1pqksvcZVHR6_qHkzRBDBgiQhP3t5EfENW6-XwhX0Lbxghx9vrcTgN9krXTIsLSWA7SrXzZPESISQOdV5E0mywi-5BJBXT-Crr8Fj.webp?r=b4e' },
+        { id: 'akame-ga-kill-s1-e5', title: 'Acabe com o sonho', url: 'https://dl.dropboxusercontent.com/scl/fi/v329z5lf7173ebft4r3ch/agk5.mp4?rlkey=g18r0gg7nlisbfxvcdn0fhfpk&st=md5lce9u', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABcSTEZC2Ys7eXuBqzZ0wjYASmPZd3CQnu1Z7Jyce9NrknfQG7jZJVg75qO08vESKurNP66s9kOhSBcmXts2Qt8oNUDAX7Io3mHM1FEgyWdMxhfc-Dthr-Jk6.webp?r=616' },
+        { id: 'akame-ga-kill-s1-e6', title: 'Acabe com a justiça absoluta', url: 'https://dl.dropboxusercontent.com/scl/fi/ijzcje0h3s6zg29pg5pml/agk6.mp4?rlkey=pk3zzo2rrl94g9hy0v8lr67ya&st=gtrgb4xw', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABT8ifXbY986YJANAa_nOH9Nkgjg8taztfUfdGfdmNpYO-6tgy4a45pWFx9iKWCXObicGW9Al7pCyir_ta19XKCK-Co1WvsDwqClFx97sK16uiXMiEupGQfUl.webp?r=03e' },
+        { id: 'akame-ga-kill-s1-e7', title: 'Mate os três: Parte 1', url: 'https://dl.dropboxusercontent.com/scl/fi/zznax2qt08myu17swucgx/agk7.mp4?rlkey=ix17ebgwg2x4dm7141c6stgdq&st=y9tai6r6', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABX4X37AX0KLou4qe0ONZvVj6H9Thz-Gm4ycWXV5qKtyQyxtK4U1T3b7dFmoUWpUgonMq1VYRAtXjP0vMOIaHDBOGS7MhSetf9FIEMjPy1xLz9JLlPK1xcNw3.webp?r=72b' },
+        { id: 'akame-ga-kill-s1-e8', title: 'Mate os três: Parte 2', url: 'https://dl.dropboxusercontent.com/scl/fi/zl2z0akv5lpycdw5b9u95/agk8.mp4?rlkey=4sr5wf5je4kfabcpfvlyiwck7&st=6ip3gw97', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABTXztARTtcal0nqWDRhxlCv-MCjfA76RW5U0-KOThhzC0Uh-AaFgIeG1inhvygsLZXUMUg5pP10VzJgAFY0SWSNvgA_Z8kjD2muBuWMCB9O2NUd3TP6kPcvk.webp?r=ad0' },
+        { id: 'akame-ga-kill-s1-e9', title: 'Mate a fanática por batalhas', url: 'https://dl.dropboxusercontent.com/scl/fi/lpk35oqn0zva2hhgo7r0n/agk9.mp4?rlkey=wkn3fkdw42657quz4fu6jkvms&st=ubqenpe3', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABW_PIHe6iaiIuwzUCvrQrRsvwjVL01mAMNQomvUmueq8R_P-a0NBC-4DLw7AHIN25H-blX_Oq4qkhvaHGUpKRBPQ6IbOSZOoZS9RwUTWdbD_MP7VFy82U0ub.webp?r=34b' },
+        { id: 'akame-ga-kill-s1-e10', title: 'Acabe com a tentação', url: 'https://dl.dropboxusercontent.com/scl/fi/zwy2iwdrlmk9kz4lgvvkc/agk10.mp4?rlkey=a650chrr087bucsvabk48r93q&st=099z8g5b', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABZI0Po45aB1ap3CLeLsV45C3-3fejjoDyTsSSuiMyqHAYQ8cZjSXNn4HONkehvjReNzDjTQIKGwQGqSioapjd5uNc6gOzjIktVgWjpULRSvaWwXQQQVNudrN.webp?r=1e3' },
+        { id: 'akame-ga-kill-s1-e11', title: 'Mate o cientista louco', url: 'https://dl.dropboxusercontent.com/scl/fi/3v6ha3yp8q5mw5shuyw3h/agk11.mp4?rlkey=tgicrfa249r6zjx4qbkicvave&st=681es7lq', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABUDML_Ve70rqMpeOG0xZuM1DbbFjc2U5Z3nqkBPZJ8S0bS_uJwrNdS10IIGISGQ4OhRxvoowYHsd1mTvJkPOzf1DVg5Dr4o-las65WV7WLP-U7B-7_ACu6r6.webp?r=a96' },
+        { id: 'akame-ga-kill-s1-e12', title: 'Mate os novatos', url: 'https://dl.dropboxusercontent.com/scl/fi/miovtelxzj2m9guj9quea/agk12.mp4?rlkey=r9pa9yyx20tnm9738kkc2kn79&st=d5zjewxr', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABYsQnebwqNu3WounOWuZIOOQDudHwgDQpOOtmByQiz_lMGDaCjM7X0OMrzh67wJMhMio0wfccnUR-Ej64gDWs7qvulssLH56LG2InXTi6En414fmzO4ztL94.webp?r=64f' },
+        { id: 'akame-ga-kill-s1-e13', title: 'Mate os que incomodam', url: 'https://dl.dropboxusercontent.com/scl/fi/86hvcas8gmc76br62ocqa/agk13.mp4?rlkey=5osqar2rdhxy5nahnxvu02o6u&st=5gk5yj87', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABaDpLzqMzX375WFvX_tDhti7h4k9ouPrsaTEqDGe2joISMG1m04ETvYt3HjGFMKteWbfjKtL3BGqHpQYXMXbNgvB8mDPAE0skSXG-WH9luG6RVChJlRkvNG-.webp?r=f34' },
+        { id: 'akame-ga-kill-s1-e14', title: 'Mate a criatura', url: 'https://dl.dropboxusercontent.com/scl/fi/swg4vxwnxv9xafyvh0c7o/agk14.mp4?rlkey=vf39ywdklf4z1wty1jwxreg2n&st=8lckxkgm', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABe_7tqp2jYok3AO7C7V01tunlJ93kzxqkLQuwWhsfe9o9A44VioEx2rwiUPpvGn1dZ3XAgx3sUEIYoC6-9R-w_g-R1fD68HCOvsTefToxRPyTwRs9HBKCEY1.webp?r=3c2' },
+        { id: 'akame-ga-kill-s1-e15', title: 'Acabe com a organização religiosa', url: 'https://dl.dropboxusercontent.com/scl/fi/qen5q545l7q45pbdpducr/agk15.mp4?rlkey=gvm8mv9ls13n09hqwyernc1qh&st=pcgtr9ph', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABZjA6IjUjUvXyoYk3dN5Slg72migJMskD2hKI8jaM7mDF5T52u__s8LjPWTihiS1hMr-o6KNv79mGe-ovvqsAIdRiDabtfqHgPWA5uMnOchCYKZ9QefVrwUH.webp?r=6a3' },
+        { id: 'akame-ga-kill-s1-e16', title: 'Mate os fantoches', url: 'https://dl.dropboxusercontent.com/scl/fi/4ktc6f7o1eb1ju70zl5wi/agk16.mp4?rlkey=hdpd98qb9av9dp35frd33vrw6&st=rfoq8yev', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABUR6m-fvAMEUzRb0vzJPQs2rzrQJ3uGwZjYbngS-CoY3bp6oRkwjR9RUL7XGxyJQX5HG-ZIK-Ps58kDLZzWrGkECrz3JI9Fz0mnJ8kvQ4x3d1PSuQMJioE9y.webp?r=a8a' },
+        { id: 'akame-ga-kill-s1-e17', title: 'Acabe com a maldição', url: 'https://dl.dropboxusercontent.com/scl/fi/hs602iyj90p6yz6vpa2bc/agk17.mp4?rlkey=x5gy4so1w2hsvka0rxxz2le9z&st=kpfk4yn3', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABeAQP4SBX2pGBUUrJisMOJDGKaJu15pZfRXpa8TN0IeVg1bviNMufLksiy9tsJJZlY5eL1khWALPPnXCstOp0ocWTm23kr8JYWYxMKth5PFzCIyBnz5PXgU5.webp?r=bbb' },
+        { id: 'akame-ga-kill-s1-e18', title: 'Mate os demônios', url: 'https://dl.dropboxusercontent.com/scl/fi/r9citm5bhsogbhta6ntyk/agk18.mp4?rlkey=fdef2cxg5kkgfiqjv5167zsrz&st=0sprzw9s', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABWnuZnbDH5ONFpu0dhzGf4GVGvaK7ALzFt6pz7MpzITyIo6yCdQ7SsYDuU-ilbNFX3N0CCG3mpUzdajgmMwgHZrkTyBnVSmdQrYThyC6p0epnL7nrFs6RH0u.webp?r=41b' },
+        { id: 'akame-ga-kill-s1-e19', title: 'Acabe com o destino', url: 'https://dl.dropboxusercontent.com/scl/fi/rsqt50lxh26gfhm4yv7nq/agk19.mp4?rlkey=ifnnhuiuhb8b1ubg4fqcj2xqy&st=isqmln5s', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABV-wzrihL1WoeF8br4uW2RTzzB4jf0SCpIbV3RIv8S1rgupwKgWQhdlodWu5l3w9e-R5ef-Toqp018kIdCs_ImYoUIRhdpq0hBEIAt8sArcR7IcuZ3wLybWN.webp?r=9b2' },
+        { id: 'akame-ga-kill-s1-e20', title: 'Mate Syura', url: 'https://dl.dropboxusercontent.com/scl/fi/p1ha012sip2ni4y7ilcv0/agk20.mp4?rlkey=ihuwlufkaiq18zazu46qsvrcy&st=dylub9xa', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABUB0s4F-PRlBkRYjIXIrQ8MlCVZSoFNdkO-BSeZghoQPW4lz0vUEH7y6gyW3G6fN1jkHwxZxB09iCWZWN86PC2iHmOgTB3YAaPJHruyKZZmfRqvCDlXmeIk6.webp?r=d20' },
+        { id: 'akame-ga-kill-s1-e21', title: 'Acabe com o desespero', url: 'https://dl.dropboxusercontent.com/scl/fi/7izzdv0mqf0acpgbcu8v4/agk21.mp4?rlkey=5gassl8tuws06vlqhhp71nb9b&st=7e48rexv', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABRrVZCmukvckP_t6DBC1i83YSx1Rz_vhWe04PZjT34qaR5txL6cNzQMXtSdsGwryiGlwkxjVDE364Ceqsm-0vkh-ClRB5dSzBzTqtMNRQajT4qRMI8aIwGOb.webp?r=50d' },
+        { id: 'akame-ga-kill-s1-e22', title: 'Mate a irmãzinha', url: 'https://dl.dropboxusercontent.com/scl/fi/hq1mgywett33j4exy4yj1/agk22.mp4?rlkey=g1ttc8u6w3bumkn7gju767bhm&st=w306n51t', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABdAgzUGSJqV-ix4SwuqWXnBHHMcIdP_DyJz5VcA3fKUcpsPwgyLakVWxYvt4W5muxBL9xJ_U-sr190DS0312TFM5jtdBJ9YXghZoIz7ja3YYr7_QUcqw7Fjh.webp?r=94e' },
+        { id: 'akame-ga-kill-s1-e23', title: 'Mate o imperador', url: 'https://dl.dropboxusercontent.com/scl/fi/t4bkjwx50r9uf8ctw2m70/agk23.mp4?rlkey=qi5romrdfckrrlu84my0v2779&st=piuddzup', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABe19R7fddtP4rxhfRNmwW0CX8kM-_qQFVN2dt3BEZfXzzVOysHtNZqJxYWh3cuJS-UIFbirJSj8tCUiEr8STTmFduzVBCq-7lwzpo3Yg8He0-FFpdQsmxPB5.webp?r=c2e' },
+        { id: 'akame-ga-kill-s1-e24', title: 'Akame ga Kill!', url: 'https://dl.dropboxusercontent.com/scl/fi/irms5l9w61ryjvisckquq/agk24.mp4?rlkey=b6o0ci9lcw9dp7jtg83oxunyi&st=tpi81oaj', cover: 'https://occ-0-7475-420.1.nflxso.net/dnm/api/v6/9pS1daC2n6UGc3dUogvWIPMR_OU/AAAABXGN4WXT4kgVx7VWDcgfSMMbVtDV5tn2xGS4ZOd35mTHaXBRPU_dFZ5GvEhRCAXvrcJnVSpLOp0aCkhJQTC9rP7ozq-dPD_hLeuofyjrUbMPf35LiuS1dkOl.webp?r=747' }
                     ]
                 }
             },
@@ -338,60 +361,60 @@ export const db = [
                 isHero: true,
                 seasons: {
                     1: [
-                        { id: 'stranger-things-s1-e1', title: "O desaparecimento de Will Byers", url: "https://drive.google.com/file/d/1jA0SUmrcvDJSRxTPWRkCh__yPxGXKs2Q/preview" },
-        { id: 'stranger-things-s1-e2', title: "A estranha da Maple Street", url: "https://drive.google.com/file/d/1pglYy77Xa8o0dYr0frDST_wtceovJKB6/preview" },
-        { id: 'stranger-things-s1-e3', title: "Caramba", url: "https://drive.google.com/file/d/1E9BmsgTCviJGsazvx_q0D_qNng1k2Cop/preview" },
-        { id: 'stranger-things-s1-e4', title: "O corpo", url: "https://drive.google.com/file/d/1APURKFILNPvNGAT5Z18Zs2YtNdpnhwWL/preview" },
-        { id: 'stranger-things-s1-e5', title: "A pulga e o acrobata", url: "https://drive.google.com/file/d/1UIRAu43z4qHuTtWxPDvs03mq61OjWpJh/preview" },
-        { id: 'stranger-things-s1-e6', title: "O monstro", url: "https://drive.google.com/file/d/1QQQfaiAdD7inyyRgjWeAnzxKDtxaQmU6/preview" },
-        { id: 'stranger-things-s1-e7', title: "A banheira", url: "https://drive.google.com/file/d/1Nr7BB5TZMUN8FJQJk5Eu81Nz32Ijj9-M/preview" },
-        { id: 'stranger-things-s1-e8', title: "De ponta-cabeça", url: "https://drive.google.com/file/d/1lt6WZmAHr40_ofQ3YI0Ir0WqONMt3sxp/preview" }
-    ],
+                        { id: 'stranger-things-s1-e1', title: "O desaparecimento de Will Byers", url: "https://drive.google.com/file/d/1jA0SUmrcvDJSRxTPWRkCh__yPxGXKs2Q/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/6jSA6JpxNDV63aDXpmsUFCjCINb.jpg" },
+                        { id: 'stranger-things-s1-e2', title: "A estranha da Maple Street", url: "https://drive.google.com/file/d/1pglYy77Xa8o0dYr0frDST_wtceovJKB6/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/8iA56ugQyHZmX81wSsNqwXjCE6F.jpg" },
+                        { id: 'stranger-things-s1-e3', title: "Caramba", url: "https://drive.google.com/file/d/1E9BmsgTCviJGsazvx_q0D_qNng1k2Cop/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/5snULpWQWp7aqFto7UbRcEkEyyS.jpg" },
+                        { id: 'stranger-things-s1-e4', title: "O corpo", url: "https://drive.google.com/file/d/1APURKFILNPvNGAT5Z18Zs2YtNdpnhwWL/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/60wmC1e20HV8gu688GAhsWxqxPx.jpg" },
+                        { id: 'stranger-things-s1-e5', title: "A pulga e o acrobata", url: "https://drive.google.com/file/d/1UIRAu43z4qHuTtWxPDvs03mq61OjWpJh/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/idAoStMju7xrMmCvHiLldKXUaPk.jpg" },
+                        { id: 'stranger-things-s1-e6', title: "O monstro", url: "https://drive.google.com/file/d/1QQQfaiAdD7inyyRgjWeAnzxKDtxaQmU6/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/tOb9lLSrWBIQfl1ulMHsVVTGtkv.jpg" },
+                        { id: 'stranger-things-s1-e7', title: "A banheira", url: "https://drive.google.com/file/d/1Nr7BB5TZMUN8FJQJk5Eu81Nz32Ijj9-M/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/arjP5c4qHLznbujCrrBVz4Z8Ykl.jpg" },
+                        { id: 'stranger-things-s1-e8', title: "De ponta-cabeça", url: "https://drive.google.com/file/d/1lt6WZmAHr40_ofQ3YI0Ir0WqONMt3sxp/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/1teJ5dbuepfqOOs9uYhYTUjr2qs.jpg" }
+                    ],
 
     2: [
-        { id: 'stranger-things-s2-e1', title: "Mad Max", url: "https://drive.google.com/file/d/1vWObqz3txFCkAsmlF6rP0hnkLXQdYNTg/preview" },
-        { id: 'stranger-things-s2-e2', title: "Gostosura ou travessura", url: "https://drive.google.com/file/d/15LkiyN-XNsKTsKuIinx1lxGEJ6atqEB3/preview" },
-        { id: 'stranger-things-s2-e3', title: "O girino", url: "https://drive.google.com/file/d/1aOYmRWV7aAiuDm7F-L8d2nWPXsnK3u2N/preview" },
-        { id: 'stranger-things-s2-e4', title: "Will, o sábio", url: "https://drive.google.com/file/d/1EbN2px12MOdlv8t3bG1lzW8CHKX19S3f/preview" },
-        { id: 'stranger-things-s2-e5', title: "Dig Dug", url: "https://drive.google.com/file/d/15RS3bamEfRrHxtUgOPgrPbjWQnGCs9K3/preview" },
-        { id: 'stranger-things-s2-e6', title: "O espião", url: "https://drive.google.com/file/d/1eftQ6iiGIegch1OxNC8g_impKYvdvMsx/preview" },
-        { id: 'stranger-things-s2-e7', title: "A irmã perdida", url: "https://drive.google.com/file/d/14go4_qruYL5gVU5MWzwmeLzNR8rFGRrB/preview" },
-        { id: 'stranger-things-s2-e8', title: "O Devorador de Mentes", url: "https://drive.google.com/file/d/1hsJCe8ryMDaz5iHMxF5i9UvRGRJp51gc/preview" },
-        { id: 'stranger-things-s2-e9', title: "O portal", url: "https://drive.google.com/file/d/1KGNzD6d4sLvhpsT0xGGF9Z8gEesGtPFD/preview" }
+        { id: 'stranger-things-s2-e1', title: "Mad Max", url: "https://drive.google.com/file/d/1vWObqz3txFCkAsmlF6rP0hnkLXQdYNTg/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/efz0MgPAxPw11PIeAJNgKKg3Paa.jpg" },
+        { id: 'stranger-things-s2-e2', title: "Gostosura ou travessura", url: "https://drive.google.com/file/d/15LkiyN-XNsKTsKuIinx1lxGEJ6atqEB3/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/3gzPnRilyASmcoSyUKXhaD5ofhr.jpg" },
+        { id: 'stranger-things-s2-e3', title: "O girino", url: "https://drive.google.com/file/d/1aOYmRWV7aAiuDm7F-L8d2nWPXsnK3u2N/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/792NQjFydcr5ucb1sga55LS6Vt3.jpg" },
+        { id: 'stranger-things-s2-e4', title: "Will, o sábio", url: "https://drive.google.com/file/d/1EbN2px12MOdlv8t3bG1lzW8CHKX19S3f/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/j4FVUW27sMiqk2OTPMtlZ8W4bZS.jpg" },
+        { id: 'stranger-things-s2-e5', title: "Dig Dug", url: "https://drive.google.com/file/d/15RS3bamEfRrHxtUgOPgrPbjWQnGCs9K3/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/oshY3LAwQRzhcjmEEr7EbOnypuU.jpg" },
+        { id: 'stranger-things-s2-e6', title: "O espião", url: "https://drive.google.com/file/d/1eftQ6iiGIegch1OxNC8g_impKYvdvMsx/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/y3Npi32SQZ6hGM0LnSQ9ONJyNJY.jpg" },
+        { id: 'stranger-things-s2-e7', title: "A irmã perdida", url: "https://drive.google.com/file/d/14go4_qruYL5gVU5MWzwmeLzNR8rFGRrB/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/kgOaaTbAutwAoA7tkVzYCfTjPXn.jpg" },
+        { id: 'stranger-things-s2-e8', title: "O Devorador de Mentes", url: "https://drive.google.com/file/d/1hsJCe8ryMDaz5iHMxF5i9UvRGRJp51gc/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/vuLea0DA9rYc9Y4M2Ic28CXL4Al.jpg" },
+        { id: 'stranger-things-s2-e9', title: "O portal", url: "https://drive.google.com/file/d/1KGNzD6d4sLvhpsT0xGGF9Z8gEesGtPFD/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/cxCf7O5WPHfyXb7PLSJCG6EvXc3.jpg" }
     ],
 
     3: [
-        { id: 'stranger-things-s3-e1', title: "Está me ouvindo, Suzie?", url: "https://drive.google.com/file/d/1XfzDMa5UUXTEGYI7rRor16xMLqns21-S/preview" },
-        { id: 'stranger-things-s3-e2', title: "O caso dos ratos", url: "https://drive.google.com/file/d/1uDZAS0aOjS-bQipiFiGYG0X2zK1Bc3Jt/preview" },
-        { id: 'stranger-things-s3-e3', title: "A salva-vidas desaparecida", url: "https://drive.google.com/file/d/1VpRDqWLTi4QsU01GcNxJrwmKP5MS6Lo5/preview" },
-        { id: 'stranger-things-s3-e4', title: "A prova da sauna", url: "https://drive.google.com/file/d/1IVZ1hfGl8YIeTfGQO5Jp3DJd4jVQeDmj/preview" },
-        { id: 'stranger-things-s3-e5', title: "Os devorados", url: "https://drive.google.com/file/d/1SVXkvGOx2HMa8iS5WCRY8PuoQSA8J6YK/preview" },
-        { id: 'stranger-things-s3-e6', title: "E pluribus unum", url: "https://drive.google.com/file/d/1uam4RJCEYkFGtyinYJ8Ljo-JkHIpSLc1/preview" },
-        { id: 'stranger-things-s3-e7', title: "A mordida", url: "https://drive.google.com/file/d/1JiRmtEHXa83vleGIBTv-1yg_OCIYZaCW/preview" },
-        { id: 'stranger-things-s3-e8', title: "A batalha de Starcourt", url: "https://drive.google.com/file/d/1_F6_qA9MtI7SR9mr3C4CW-wen5i9yu6u/preview" }
+        { id: 'stranger-things-s3-e1', title: "Está me ouvindo, Suzie?", url: "https://drive.google.com/file/d/1XfzDMa5UUXTEGYI7rRor16xMLqns21-S/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/97PVnrEQWEsdMnD08QDmMxLkV7h.jpg" },
+        { id: 'stranger-things-s3-e2', title: "O caso dos ratos", url: "https://drive.google.com/file/d/1uDZAS0aOjS-bQipiFiGYG0X2zK1Bc3Jt/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/1XgtGAnheGKfrYtV3mLSFf13AJi.jpg" },
+        { id: 'stranger-things-s3-e3', title: "A salva-vidas desaparecida", url: "https://drive.google.com/file/d/1VpRDqWLTi4QsU01GcNxJrwmKP5MS6Lo5/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/oaYdVvYwnvoQ7SLelKUcaAt0HKJ.jpg" },
+        { id: 'stranger-things-s3-e4', title: "A prova da sauna", url: "https://drive.google.com/file/d/1IVZ1hfGl8YIeTfGQO5Jp3DJd4jVQeDmj/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/tEgd6fXKngAG8eC92dH7ey6Y4eA.jpg" },
+        { id: 'stranger-things-s3-e5', title: "Os devorados", url: "https://drive.google.com/file/d/1SVXkvGOx2HMa8iS5WCRY8PuoQSA8J6YK/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/cxIZ4btU6h9GQM1Fn0kotuaXlwo.jpg" },
+        { id: 'stranger-things-s3-e6', title: "E pluribus unum", url: "https://drive.google.com/file/d/1uam4RJCEYkFGtyinYJ8Ljo-JkHIpSLc1/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/dZKsMHJm8DPdBuqFcZxdIulrpNs.jpg" },
+        { id: 'stranger-things-s3-e7', title: "A mordida", url: "https://drive.google.com/file/d/1JiRmtEHXa83vleGIBTv-1yg_OCIYZaCW/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/6QA91GJK2ze1EaGPEKhil9MJIXx.jpg" },
+        { id: 'stranger-things-s3-e8', title: "A batalha de Starcourt", url: "https://drive.google.com/file/d/1_F6_qA9MtI7SR9mr3C4CW-wen5i9yu6u/preview", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/5YcjTWas07RteM9lssOzL9UhmJh.jpg" }
     ],
 
     4: [
-        { id: 'stranger-things-s4-e1', title: "O Clube Hellfire", url: "https://drive.google.com/file/d/1ZDiFOud9zBnrsegnKCo1oEoW6iBbzCS2/preview" },
-        { id: 'stranger-things-s4-e2', title: "A maldição de Vecna", url: "https://drive.google.com/file/d/1BLh9YesJz1mWYZxFw-EjVM0BRulY305u/preview" },
-        { id: 'stranger-things-s4-e3', title: "O monstro e a super-heroína", url: "https://drive.google.com/file/d/17d7rivkMsdtf8l500URgQGdvMaggSS1k/preview" },
-        { id: 'stranger-things-s4-e4', title: "Querido Billy", url: "https://drive.google.com/file/d/1z_rVv032G7-UXqb45OCtNLpDkVG8Kpq/preview" },
-        { id: 'stranger-things-s4-e5', title: "Projeto Nina", url: "https://drive.google.com/file/d/1OD2KvUHg_9xWMWkbAdh__w5Dau8JFUTS/preview" },
-        { id: 'stranger-things-s4-e6', title: "Mergulho", url: "https://drive.google.com/file/d/1WegNowrQi1EsSQZO7Uz_A3GowbBfH9FO/preview" },
-        { id: 'stranger-things-s4-e7', title: "O massacre no laboratório", url: "https://drive.google.com/file/d/1ipI0psTtKFSw6OcoQiXvFot2koGJW2W0/preview" },
-        { id: 'stranger-things-s4-e8', title: "Papai", url: "https://drive.google.com/file/d/16NS_DpktJW4a7M9aqflF9m7Iv3Z4z0LJ/preview" },
-        { id: 'stranger-things-s4-e9', title: "E o plano de Onze", url: "https://drive.google.com/file/d/1i_qekb-WZTIkkFlRM36FIjHKPjfTZ3Y6/preview" }
-    ],
+    { id: 'stranger-things-s4-e1', title: "O Clube Hellfire", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/xeNKubDmPiMraW4hXqzEBrN6f4A.jpg", url: "https://drive.google.com/file/d/1ZDiFOud9zBnrsegnKCo1oEoW6iBbzCS2/preview" },
+    { id: 'stranger-things-s4-e2', title: "A maldição de Vecna", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/lSSWqv7XrO51uY2uc4lql9Hub3f.jpg", url: "https://drive.google.com/file/d/1BLh9YesJz1mWYZxFw-EjVM0BRulY305u/preview" },
+    { id: 'stranger-things-s4-e3', title: "O monstro e a super-heroína", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/6q1UM63T5tiQcWrbsJvY3bunkyZ.jpg", url: "https://drive.google.com/file/d/17d7rivkMsdtf8l500URgQGdvMaggSS1k/preview" },
+    { id: 'stranger-things-s4-e4', title: "Querido Billy", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/u3LeFRR7AhyPp4y0Ii7hpkD488b.jpg", url: "https://drive.google.com/file/d/1z_rVv032G7-UXqb45OCtNLpDkVG8Kpq/preview" },
+    { id: 'stranger-things-s4-e5', title: "Projeto Nina", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/yvXXeBv4zfDgwcZyxqH5LJAe4oV.jpg", url: "https://drive.google.com/file/d/1OD2KvUHg_9xWMWkbAdh__w5Dau8JFUTS/preview" },
+    { id: 'stranger-things-s4-e6', title: "Mergulho", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/9EbhReDcbfmqLhDBg0Rn97z4lT.jpg", url: "https://drive.google.com/file/d/1WegNowrQi1EsSQZO7Uz_A3GowbBfH9FO/preview" },
+    { id: 'stranger-things-s4-e7', title: "O massacre no laboratório", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/n64hMYFaVunT8jqSVgYq5qt0Vbn.jpg", url: "https://drive.google.com/file/d/1ipI0psTtKFSw6OcoQiXvFot2koGJW2W0/preview" },
+    { id: 'stranger-things-s4-e8', title: "Papai", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/XhpquP7GFEDzKIHTAPX6vI8Phd.jpg", url: "https://drive.google.com/file/d/16NS_DpktJW4a7M9aqflF9m7Iv3Z4z0LJ/preview" },
+    { id: 'stranger-things-s4-e9', title: "E o plano de Onze", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/fvoa0Hosu4yK7TUiHglV8TvjMUB.jpg", url: "https://drive.google.com/file/d/1i_qekb-WZTIkkFlRM36FIjHKPjfTZ3Y6/preview" }
+],
 
-    5: [
-        { id: 'stranger-things-s5-e1', title: "Missão de resgate", url: "https://drive.google.com/file/d/1xFrwPesQ0zXWoRsBaL9ZIDTPnvVSkkuF/preview" },
-        { id: 'stranger-things-s5-e2', title: "O desaparecimento de Holly Wheeler", url: "https://drive.google.com/file/d/1f7j3ma94atswrsZV9-uSiqPLNeixHrC/preview" },
-        { id: 'stranger-things-s5-e3', title: "A armadilha", url: "https://drive.google.com/file/d/1Um1zw_iXsah4kh3AzDBSOuMek6kbZxI2/preview" },
-        { id: 'stranger-things-s5-e4', title: "Feiticeiro", url: "https://drive.google.com/file/d/1_dBex9phSWyauWp1eoFoRx9AN9i31dPA/preview" },
-        { id: 'stranger-things-s5-e5', title: "Tratamento de choque", url: "https://drive.google.com/file/d/1wvZIvfHngKO8b7yurLrDsPIzX3ijLZHE/preview" },
-        { id: 'stranger-things-s5-e6', title: "A fuga de Camazotz", url: "https://drive.google.com/file/d/15J4JKrp2BVQQCdoQcHU_JnYHOzdNd3qJ/preview" },
-        { id: 'stranger-things-s5-e7', title: "A ponte", url: "https://drive.google.com/file/d/1OzFsVQtKLWbAiXQgF1iGiTzSGuuPRFX0/preview" },
-        { id: 'stranger-things-s5-e8', title: "O mundo direito", url: "https://drive.google.com/file/d/1XSlN4w9H4jsas08jGrMhthBHspHNm3QS/preview" }
+5: [
+    { id: 'stranger-things-s5-e1', title: "Missão de resgate", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/aOOOdhkmhncbikMVqXfVxwQ6lQw.jpg", url: "https://drive.google.com/file/d/1xFrwPesQ0zXWoRsBaL9ZIDTPnvVSkkuF/preview" },
+    { id: 'stranger-things-s5-e2', title: "O desaparecimento de Holly Wheeler", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/loM7T7Mwd849wFaWj9KPlNNSHZr.jpg", url: "https://drive.google.com/file/d/1f7j3ma94atswrsZV9-uSiqPLNeixHrC/preview" },
+    { id: 'stranger-things-s5-e3', title: "A armadilha", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/iCsM4oeBM9PIESD6PJw7mWO1xbl.jpg", url: "https://drive.google.com/file/d/1Um1zw_iXsah4kh3AzDBSOuMek6kbZxI2/preview" },
+    { id: 'stranger-things-s5-e4', title: "Feiticeiro", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/r0uVKBsPj74lQGNRdC9IM2P5roW.jpg", url: "https://drive.google.com/file/d/1_dBex9phSWyauWp1eoFoRx9AN9i31dPA/preview" },
+    { id: 'stranger-things-s5-e5', title: "Tratamento de choque", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/A9gML0mmuyE2m3hGK0eZZA2tRPg.jpg", url: "https://drive.google.com/file/d/1wvZIvfHngKO8b7yurLrDsPIzX3ijLZHE/preview" },
+    { id: 'stranger-things-s5-e6', title: "A fuga de Camazotz", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/zwJuStMjSOT1jaPUkX3dweIciRs.jpg", url: "https://drive.google.com/file/d/15J4JKrp2BVQQCdoQcHU_JnYHOzdNd3qJ/preview" },
+    { id: 'stranger-things-s5-e7', title: "A ponte", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/xJv3oJoVQqITux8N9isJfb1Ao6g.jpg", url: "https://drive.google.com/file/d/1OzFsVQtKLWbAiXQgF1iGiTzSGuuPRFX0/preview" },
+    { id: 'stranger-things-s5-e8', title: "O mundo direito", cover: "https://media.themoviedb.org/t/p/w454_and_h254_face/kP23RWbUWM6vGhT9PxFyP5VT3y4.jpg", url: "https://drive.google.com/file/d/1XSlN4w9H4jsas08jGrMhthBHspHNm3QS/preview" }
                     ]
                 }
             },
@@ -1540,17 +1563,17 @@ export const db = [
                 // enable Portuguese captions by requesting cc and preferring Portuguese via URL params
                 seasons: {
                     1: [
-                        { id: 'eWxnxzfgMao', title: 'Enterrado', duration: 285, url: 'https://www.youtube.com/embed/eWxnxzfgMao?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'pGw0oAFp9wY', title: 'Busted', duration: 221, url: 'https://www.youtube.com/embed/pGw0oAFp9wY?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'wmvqwb697Lg', title: 'Heirloom', duration: 203, url: 'https://www.youtube.com/embed/wmvqwb697Lg?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'LR1245gfItA', title: 'Stain', duration: 246, url: 'https://www.youtube.com/embed/LR1245gfItA?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'FvsUbmJaI_c', title: 'Recital', duration: 301, url: 'https://www.youtube.com/embed/FvsUbmJaI_c?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'FKUiHNLoo4Q', title: 'Invenção', duration: 245, url: 'https://www.youtube.com/embed/FKUiHNLoo4Q?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: '-h8g8GeuWRQ', title: 'Vigilância', duration: 262, url: 'https://www.youtube.com/embed/-h8g8GeuWRQ?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: '55WCwlMh0yk', title: 'Lição', duration: 257, url: 'https://www.youtube.com/embed/55WCwlMh0yk?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'JurFRipexao', title: 'Boombox', duration: 181, url: 'https://www.youtube.com/embed/JurFRipexao?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: '1ZyvQoX6ElE', title: 'Intrusos', duration: 226, url: 'https://www.youtube.com/embed/1ZyvQoX6ElE?cc_lang_pref=pt&cc_load_policy=1' },
-                        { id: 'hud6wt4uw48', title: 'Flux', duration: 391, url: 'https://www.youtube.com/embed/hud6wt4uw48?cc_lang_pref=pt&cc_load_policy=1' }
+                        { id: 'eWxnxzfgMao', title: 'Enterrado', duration: 285, url: 'https://www.youtube.com/embed/eWxnxzfgMao?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/eWxnxzfgMao/maxresdefault.jpg' },
+                        { id: 'pGw0oAFp9wY', title: 'Busted', duration: 221, url: 'https://www.youtube.com/embed/pGw0oAFp9wY?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/pGw0oAFp9wY/maxresdefault.jpg' },
+                        { id: 'wmvqwb697Lg', title: 'Heirloom', duration: 203, url: 'https://www.youtube.com/embed/wmvqwb697Lg?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/wmvqwb697Lg/maxresdefault.jpg' },
+                        { id: 'LR1245gfItA', title: 'Stain', duration: 246, url: 'https://www.youtube.com/embed/LR1245gfItA?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/LR1245gfItA/maxresdefault.jpg' },
+                        { id: 'FvsUbmJaI_c', title: 'Recital', duration: 301, url: 'https://www.youtube.com/embed/FvsUbmJaI_c?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/FvsUbmJaI_c/maxresdefault.jpg' },
+                        { id: 'FKUiHNLoo4Q', title: 'Invenção', duration: 245, url: 'https://www.youtube.com/embed/FKUiHNLoo4Q?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/FKUiHNLoo4Q/maxresdefault.jpg' },
+                        { id: '-h8g8GeuWRQ', title: 'Vigilância', duration: 262, url: 'https://www.youtube.com/embed/-h8g8GeuWRQ?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/-h8g8GeuWRQ/maxresdefault.jpg' },
+                        { id: '55WCwlMh0yk', title: 'Lição', duration: 257, url: 'https://www.youtube.com/embed/55WCwlMh0yk?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/55WCwlMh0yk/maxresdefault.jpg' },
+                        { id: 'JurFRipexao', title: 'Boombox', duration: 181, url: 'https://www.youtube.com/embed/JurFRipexao?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/JurFRipexao/maxresdefault.jpg' },
+                        { id: '1ZyvQoX6ElE', title: 'Intrusos', duration: 226, url: 'https://www.youtube.com/embed/1ZyvQoX6ElE?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/1ZyvQoX6ElE/maxresdefault.jpg' },
+                        { id: 'hud6wt4uw48', title: 'Flux', duration: 391, url: 'https://www.youtube.com/embed/hud6wt4uw48?cc_lang_pref=pt&cc_load_policy=1', cover: 'https://i.ytimg.com/vi/hud6wt4uw48/maxresdefault.jpg' }
                     ]
                 }
             },
@@ -2366,6 +2389,33 @@ export const db = [
                 production: 'See-Saw Films / Netflix',
                 url: ''
             }
+        ,
+            {
+                id: 'among-us-a-serie',
+                title: 'Among Us: A Série',
+                type: 'serie',
+                category: 'Animação, Comédia, Ficção Científica, Mistério, Suspense',
+                year: '2026',
+                cover: 'https://wwwimage-intl.pplusstatic.com/thumbnails/photos/pplcrn/2026/06/02/ddf7da18-fc18-4fbf-8940-262d24137be5.jpg?format=webp',
+                description: 'Uma tripulação de astronautas viaja pelo espaço realizando tarefas em sua nave. Porém, um Impostor alienígena está escondido entre eles, sabotando a missão e eliminando os tripulantes um por um.',
+                ageRating: '14',
+                distributor: 'Paramount+',
+                producer: ['CBS Studios','Titmouse'],
+                seasons: {
+                    1: [
+                        { id: 'among-us-a-serie-s1-e1', title: 'Uma pizza onde nada de ruim acontece', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSESYEB6EWPRYN7GXA0VX4WF/PPCBS_AMONGUS_101_V1_3997247_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e2', title: 'Não dá para ser bonito e inteligente', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSESZMXGE689Y323H5ZVX0WS/PPCBS_AMONGUS_102_V1_3997245_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e3', title: 'A NOVA CASA DO CAOS!', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSET0G4WEP1R6KWX6ANGNXCW/PPCBS_AMONGUS_103_V1_3997253_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e4', title: 'E GOSTAM DE MATAR!', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSET1DT0ETMR1WARRM4QP2ZE/PPCBS_AMONGUS_104_V1_3997249_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e5', title: 'Só boas energias', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSET4H98EMABP5CBBQAMNCP4/PPCBS_AMONGUS_105_V1_3997255_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e6', title: 'Segurança insegura', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSET5AK1E9FSJM8GFMWXG4RS/PPCBS_AMONGUS_106_V1_3997261_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e7', title: '6 tripulantes indignados', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSET8TV8EEQVCVQVWFN88PSE/PPCBS_AMONGUS_107_V1_3997258_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e8', title: 'Síndrome do impostor', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSETBX7XEK1T22BYTYDXZWQA/PPCBS_AMONGUS_108_V1_3997264_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e9', title: 'Só estou desabafando', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSETEYWSEM3V41WFK6KMXAKQ/PPCBS_AMONGUS_109_V1_3997265_1920x1080.jpg' },
+                        { id: 'among-us-a-serie-s1-e10', title: 'Todos ainda vivem. Ninguém morreu.', url: '', cover: 'https://thumbnails.cbsig.net/_x/w400/CBS_Production_Entertainment_VMS/2026/05/25/ALVE01KSETKYZ3EY5SA5ZFW552KPX1/PPCBS_AMONGUS_110_V1_3997267_1920x1080.jpg' }
+                    ]
+                }
+            }
         ];
 
         // Official platform links for "Veja na ..." buttons (used in details modal)
@@ -2411,5 +2461,6 @@ export const db = [
             'jujutsu-execucao': 'https://www.crunchyroll.com/pt-br/series/GRDV0019R/jujutsu-kaisen',
             'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO',
             'rivalidade-ardente': 'https://www.hbomax.com/br/pt/shows/rivalidade-ardente/50cd4e99-04ee-427b-a3b4-da721ed05d9c',
-            'valentins-uma-familia-muuuito-esperta': 'https://globoplay.globo.com/valentins/t/2sCrGLb6jH/' 
+            'valentins-uma-familia-muuuito-esperta': 'https://globoplay.globo.com/valentins/t/2sCrGLb6jH/',
+            'among-us-a-serie': 'https://www.paramountplus.com/shows/among-us/'
         };

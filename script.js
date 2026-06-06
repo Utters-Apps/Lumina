@@ -38,6 +38,16 @@
 
         "use strict";
 
+// Função global para detectar dispositivo mobile
+window.isMobileOS = function() {
+    try {
+        const ua = navigator.userAgent || navigator.vendor || window.opera || '';
+        return (/android/i.test(ua) && !/windows phone/i.test(ua)) || /iPad|iPhone|iPod/.test(ua);
+    } catch (e) {
+        return false;
+    }
+};
+
         // --- IMPORTAÇÃO E INSTALAÇÃO DO BANCO DE DADOS ---
         import { db } from './db.js';
         window.db = db; // Garante o escopo global imediato do DB para evitar problemas com scripts inline
@@ -1162,6 +1172,75 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 __saveProgressTimer = null;
             }, 300);
         }
+
+        // Reliable periodic autosave: low-overhead background timer that flushes progress regularly.
+        // Guarded so it does nothing when there's no meaningful progress state or when a previous flush is in-flight.
+        (function setupAutosaveLoop() {
+            try {
+                if (window.__lumina_autosave_installed) return;
+                window.__lumina_autosave_installed = true;
+
+                // Call flushProgressNow only when there is something to save and not more often than 500ms.
+                let autosavePending = false;
+                let lastAutosave = 0;
+                const MIN_INTERVAL = 500; // ms
+
+                const maybeFlush = () => {
+                    try {
+                        // Fast checks to avoid expensive JSON operations frequently
+                        const hasProgress = state && state.progress && Object.keys(state.progress || {}).length > 0;
+                        if (!hasProgress) return;
+                        const now = Date.now();
+                        if (autosavePending) return;
+                        if (now - lastAutosave < MIN_INTERVAL) return;
+                        autosavePending = true;
+                        // schedule microtask to flush (coalesces many small writes into one)
+                        setTimeout(() => {
+                            try {
+                                flushProgressNow();
+                                lastAutosave = Date.now();
+                            } catch (e) {
+                                // fall back to debounced saver if flush fails
+                                try { saveProgressData(); } catch (_) {}
+                            } finally { autosavePending = false; }
+                        }, 0);
+                    } catch (e) { autosavePending = false; }
+                };
+
+                // Start a gentle interval to call maybeFlush — this is resilient when other event handlers fail.
+                window.__lumina_autosave_interval = setInterval(() => {
+                    try { maybeFlush(); } catch (_) {}
+                }, MIN_INTERVAL);
+
+                // Also trigger on key lifecycle events to maximize chance of saving
+                ['visibilitychange','pagehide','beforeunload','unload'].forEach(evt => {
+                    try {
+                        window.addEventListener(evt, () => {
+                            try {
+                                // immediate best-effort synchronous attempts on pagehide/beforeunload
+                                if (evt === 'beforeunload' || evt === 'pagehide' || evt === 'unload') {
+                                    try { if (window.player && typeof window.player.saveProgress === 'function') { window.player.saveProgress(); } } catch(_) {}
+                                    try { flushProgressNow(); } catch (_) { saveProgressData(); }
+                                    return;
+                                }
+                                // otherwise try a quick maybeFlush
+                                maybeFlush();
+                            } catch(_) {}
+                        }, { passive: true });
+                    } catch (_) {}
+                });
+
+                // ensure we attempt to flush when state.progress is mutated by common helpers (monkey-patch saveProgressData caller points)
+                const origSave = saveProgressData;
+                saveProgressData = function() {
+                    try { origSave && origSave(); } catch(_) {}
+                    try { maybeFlush(); } catch(_) {}
+                };
+
+            } catch (e) {
+                // fail silently if autosave installation fails
+            }
+        })();
 
         // helper: detect if URL is direct video file (or youtube embed)
         let __youtubeApiLoaded = false;
@@ -3056,7 +3135,47 @@ window.getStableEpId = function(seriesId, season, index, ep) {
             </div>
             `;
 
-            setTimeout(() => { updateSeasonUI(); }, 50);
+            setTimeout(() => { 
+                updateSeasonUI(); 
+
+                // Attach interactive behavior after DOM insertion: first click recenters a non-central card, second click (when it's centered) opens the modal.
+                try {
+                    const container = document.getElementById('season-cards-wrapper');
+                    if (!container) return;
+                    // bind handlers for each card by index
+                    const cards = Array.from(container.querySelectorAll('[id^="season-card-"]'));
+                    cards.forEach((card) => {
+                        try {
+                            const idxAttr = card.getAttribute('data-index');
+                            const idx = (idxAttr !== null) ? Number(idxAttr) : parseInt((card.id || '').replace('season-card-',''), 10);
+                            if (card.__lumina_season_bound) return;
+                            card.__lumina_season_bound = true;
+                            card.addEventListener('click', (ev) => {
+                                try {
+                                    ev && ev.stopPropagation && ev.stopPropagation();
+                                    // If clicked card is already central -> open modal
+                                    if (window.activeSeasonIdx === idx) {
+                                        // open modal for this season only if central
+                                        try { openEpisodesModal && openEpisodesModal(window.seasonKeys[idx]); } catch(_) {}
+                                        return;
+                                    }
+                                    // Otherwise move this card to center (set active index and update UI smoothly)
+                                    try {
+                                        window.activeSeasonIdx = idx;
+                                        updateSeasonUI && updateSeasonUI();
+                                        // also trigger a small focus/tactile hint (pop animation) on the newly centered card
+                                        try {
+                                            card.style.transition = 'transform 420ms cubic-bezier(0.16,1,0.3,1), box-shadow 420ms';
+                                            card.classList.add('card-active-shadow');
+                                            setTimeout(() => { card.classList.remove('card-active-shadow'); }, 520);
+                                        } catch(_) {}
+                                    } catch(_) {}
+                                } catch(_) {}
+                            }, { passive: true });
+                        } catch(_) {}
+                    });
+                } catch(_) {}
+            }, 50);
             return html;
         }
 
@@ -3489,7 +3608,7 @@ const player = {
 
                     // Determine appropriate timeout: longer on mobile and for slow CDNs (Dropbox) to reduce premature failures.
                     // Special-case: episodes 2..8 (indices 1..7) of season 1 for series 'one-piece-live' get an extended window.
-                    // Defaults: desktop 7s, mobile 20s; Dropbox/slow CDNs get larger multiples (30s mobile / 20s desktop).
+                    // Defaults: desktop 7s, mobile 20s; Dropbox/slow CDNs get a 30s watchdog to avoid premature auto-close.
                     let watchdogDelay = 7000;
                     try {
                         const lower = String(url || '').toLowerCase();
@@ -3508,9 +3627,9 @@ const player = {
                             }
                         } catch (inner) { /* ignore */ }
 
-                        // Dropbox and similar CDNs can be slow => bump further (mobile gets highest)
-                        if (lower.includes('dropbox.com') || lower.includes('odycdn.com') || lower.includes('player.odycdn.com')) {
-                            watchdogDelay = isMobileDevice ? 30000 : 20000;
+                        // Dropbox and similar CDNs can be slow => bump to 30s to allow slower responses (includes dl.dropboxusercontent.com)
+                        if (lower.includes('dropbox.com') || lower.includes('dropboxusercontent.com') || lower.includes('odycdn.com') || lower.includes('player.odycdn.com')) {
+                            watchdogDelay = 30000;
                         }
                     } catch (e) { /* ignore and use default */ }
 
@@ -3555,28 +3674,29 @@ const player = {
                         this.loadTimeout = null;
                     }
 
-                    // If this is a Dropbox-hosted link, use an adaptive, Dropbox-tuned warmup + progressive-range fetch pipeline
+                    // If this is a Dropbox-hosted link, use an adaptive, Dropbox-tuned warmup + progressive-range/full fetch pipeline
                     try {
                         const lowerUrl = String(url || '').toLowerCase();
                         if (lowerUrl.includes('dropbox.com')) {
-                            // Dropbox has higher latency; use more attempts and exponential backoff tuned to ~150-160ms RTT.
+                            // Dropbox can be high-latency and sometimes requires fetching more than a small range to make the player happy.
                             // Strategy:
-                            // 1) Try a small Range HEAD/GET (0-65535) to warm connections and prompt CDN to accept streaming.
-                            // 2) If a successful partial response arrives, create an object URL from the returned blob and set video.src to it.
-                            // 3) Retry with exponential backoff (baseDelay tuned to dropbox RTT) up to maxAttempts, then fall back to original src.
-                            const maxAttempts = 6;
-                            const baseRttMs = 160; // measured median RTT to Dropbox from Brazil
-                            const jitter = () => Math.floor(Math.random() * 80) - 40; // +/- 40ms jitter
-                            let attempts = 0;
-                            if (this._dropboxRetryTimer) { clearInterval(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
+                            // 1) Try small-range warmups (0-64KB) with exponential backoff.
+                            // 2) If small ranges don't yield usable blob data within attempts, attempt a full optimized fetch (with retries).
+                            // 3) When a blob is obtained, createObjectURL and swap into video.src for reliable playback and seeking.
+                            const baseRttMs = 160;
+                            const jitter = () => Math.floor(Math.random() * 120) - 60;
+                            const maxWarmupAttempts = 5;
+                            const maxFullFetchAttempts = 3;
+                            let warmupAttempts = 0;
+                            let fullFetchAttempts = 0;
+
+                            if (this._dropboxRetryTimer) { clearTimeout(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
 
                             const tryRangeWarmup = async () => {
-                                attempts++;
-                                // best-effort range fetch of first 64KB
+                                warmupAttempts++;
                                 try {
                                     const controller = new AbortController();
-                                    // adaptive timeout proportional to RTT and attempts (increase window each retry)
-                                    const timeoutMs = Math.min(45000, Math.round((baseRttMs * Math.pow(1.8, attempts)) + 800 + jitter()));
+                                    const timeoutMs = Math.min(45000, Math.round((baseRttMs * Math.pow(1.8, warmupAttempts)) + 900 + jitter()));
                                     const to = setTimeout(() => controller.abort(), timeoutMs);
                                     const res = await fetch(url, {
                                         method: 'GET',
@@ -3589,56 +3709,117 @@ const player = {
                                     clearTimeout(to);
 
                                     if (res && (res.status === 206 || res.status === 200 || res.type === 'opaque')) {
-                                        // prefer 206 partial content; for opaque/no-cors responses we still try to use blob if possible
-                                        try {
-                                            const blob = await res.blob().catch(()=>null);
-                                            if (blob && blob.size > 16) {
-                                                // create objectURL and swap in the video element (this primes the player with a local URI
-                                                // that the browser can stream from while leaving the underlying connection warm)
-                                                try {
-                                                    const objectUrl = URL.createObjectURL(blob);
-                                                    // If we already have a video element, assign and play; if not, store as initial src before element creation
-                                                    if (this.vid) {
-                                                        // Pause/manual reload to avoid race conditions
-                                                        try { this.vid.pause(); } catch(_) {}
-                                                        // assign object URL and call load to ensure buffered data is recognized
-                                                        try {
-                                                            this.vid.src = objectUrl;
-                                                            this.vid.load && this.vid.load();
-                                                        } catch(_) {
-                                                            // fallback: do nothing and let normal src be used
-                                                        }
-                                                    } else {
-                                                        // stash objectURL to be consumed when video element is created
-                                                        this.__dropbox_object_url = objectUrl;
-                                                    }
-                                                    // success: clear any retry timer and stop watchdog
-                                                    if (this._dropboxRetryTimer) { clearInterval(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
-                                                    if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
-                                                    return true;
-                                                } catch (errInner) {
-                                                    // object URL creation failed, continue to retry
-                                                }
+                                        const blob = await res.blob().catch(()=>null);
+                                        if (blob && blob.size > 16) {
+                                            const objectUrl = URL.createObjectURL(blob);
+                                            if (this.vid) {
+                                                try { this.vid.pause(); } catch(_) {}
+                                                try { this.vid.src = objectUrl; this.vid.load && this.vid.load(); } catch(_) {}
+                                            } else {
+                                                this.__dropbox_object_url = objectUrl;
                                             }
-                                        } catch (_) {}
+                                            if (this._dropboxRetryTimer) { clearTimeout(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
+                                            if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+                                            return true;
+                                        }
                                     }
-                                } catch (err) {
-                                    // fetch failed or aborted; we'll retry until maxAttempts
+                                } catch (_) { /* ignore and retry */ }
+
+                                if (warmupAttempts < maxWarmupAttempts) {
+                                    const delay = Math.round(baseRttMs * Math.pow(1.9, warmupAttempts) + 200 + jitter());
+                                    this._dropboxRetryTimer = setTimeout(() => { tryRangeWarmup().catch(()=>{}); }, delay);
+                                    return false;
                                 }
 
-                                // If we haven't succeeded and attempts remain, schedule the next try using exponential backoff
-                                if (attempts < maxAttempts) {
-                                    const delay = Math.round(baseRttMs * Math.pow(1.9, attempts) + 120 + jitter());
-                                    // schedule a one-off retry (do not stack intervals)
-                                    this._dropboxRetryTimer = setTimeout(() => { tryRangeWarmup().catch(()=>{}); }, delay);
-                                } else {
-                                    // Final fallback: give up trying warmup; clear timers and allow normal src assignment
-                                    if (this._dropboxRetryTimer) { clearTimeout(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
-                                }
+                                // Warmup failed enough times -> escalate to full optimized fetch attempts
+                                tryFullFetch();
                                 return false;
                             };
 
-                            // Start first attempt immediately and then rely on internal scheduling for retries
+                            const tryFullFetch = async () => {
+                                fullFetchAttempts++;
+                                try {
+                                    // progressive full fetch: try to fetch as blob with larger timeout; if it stalls try again with longer timeout.
+                                    const controller = new AbortController();
+                                    const timeoutMs = Math.min(120000, Math.round(8000 * Math.pow(1.9, fullFetchAttempts)) + jitter());
+                                    const to = setTimeout(() => controller.abort(), timeoutMs);
+                                    // Use no-cache to avoid stale copies; allow CORS mode first
+                                    let res = null;
+                                    try { res = await fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', cache: 'no-store', signal: controller.signal }); } catch(_) {
+                                        try { res = await fetch(url, { method: 'GET', mode: 'no-cors', credentials: 'omit', cache: 'no-store', signal: controller.signal }); } catch(_) { res = null; }
+                                    }
+                                    clearTimeout(to);
+
+                                    if (res && (res.ok || res.type === 'opaque')) {
+                                        // If a streaming response is available, try to stream into a blob progressively to avoid keeping the full response in memory twice.
+                                        try {
+                                            const reader = res.body && res.body.getReader ? res.body.getReader() : null;
+                                            if (reader) {
+                                                // accumulate chunks with a controlled max buffer to avoid long GC spikes; create blob at the end.
+                                                const chunks = [];
+                                                let received = 0;
+                                                let done = false;
+                                                const streamTimeout = 120000; // max stream time
+                                                const streamStart = Date.now();
+                                                while (!done) {
+                                                    const r = await reader.read().catch(()=>({ done: true }));
+                                                    if (r && r.value) {
+                                                        chunks.push(r.value);
+                                                        received += r.value.length || r.value.byteLength || 0;
+                                                    }
+                                                    if (r && r.done) { done = true; break; }
+                                                    // safety: if streaming takes too long, abort and fallback to simple blob()
+                                                    if ((Date.now() - streamStart) > streamTimeout) { try { reader.cancel(); } catch(_){}; done = true; break; }
+                                                }
+                                                // build blob
+                                                const blob = new Blob(chunks, { type: res.headers && res.headers.get ? (res.headers.get('content-type') || 'video/mp4') : 'video/mp4' });
+                                                if (blob && blob.size > 1024) {
+                                                    const objectUrl = URL.createObjectURL(blob);
+                                                    if (this.vid) {
+                                                        try { this.vid.pause(); } catch(_) {}
+                                                        try { this.vid.src = objectUrl; this.vid.load && this.vid.load(); } catch(_) {}
+                                                    } else {
+                                                        this.__dropbox_object_url = objectUrl;
+                                                    }
+                                                    if (this._dropboxRetryTimer) { clearTimeout(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
+                                                    if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+                                                    return true;
+                                                }
+                                            } else {
+                                                // no streaming reader available: fallback to blob()
+                                                const blob = await res.blob().catch(()=>null);
+                                                if (blob && blob.size > 1024) {
+                                                    const objectUrl = URL.createObjectURL(blob);
+                                                    if (this.vid) {
+                                                        try { this.vid.pause(); } catch(_) {}
+                                                        try { this.vid.src = objectUrl; this.vid.load && this.vid.load(); } catch(_) {}
+                                                    } else {
+                                                        this.__dropbox_object_url = objectUrl;
+                                                    }
+                                                    if (this._dropboxRetryTimer) { clearTimeout(this._dropboxRetryTimer); this._dropboxRetryTimer = null; }
+                                                    if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+                                                    return true;
+                                                }
+                                            }
+                                        } catch (streamErr) {
+                                            // streaming failed, but we may retry
+                                        }
+                                    }
+                                } catch (_) { /* ignore */ }
+
+                                // schedule retry if attempts remain
+                                if (fullFetchAttempts < maxFullFetchAttempts) {
+                                    const delay = Math.round(3000 * Math.pow(2, fullFetchAttempts) + jitter());
+                                    this._dropboxRetryTimer = setTimeout(() => { tryFullFetch().catch(()=>{}); }, delay);
+                                    return false;
+                                }
+
+                                // final fallback: leave original URL as-is (browser will try network)
+                                if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
+                                return false;
+                            };
+
+                            // start warmup first
                             tryRangeWarmup().catch(()=>{});
                         }
                     } catch (err) {
@@ -3834,12 +4015,12 @@ const player = {
                                         if (loadingEl) loadingEl.classList.add('hidden');
                                         try { if (player && player.loadTimeout) { clearTimeout(player.loadTimeout); player.loadTimeout = null; } } catch(_) {}
 
-                                        // ensure iframe allow attributes include autoplay & playsinline for better autoplay compatibility
+                                        // ensure iframe allow attributes include autoplay & playsinline & picture-in-picture for best chance
                                         try {
                                             const iframeNode = document.querySelector('#yt-player iframe');
                                             if (iframeNode) {
                                                 const allow = (iframeNode.getAttribute('allow') || '');
-                                                const needed = ['autoplay', 'playsinline', 'picture-in-picture', 'fullscreen'];
+                                                const needed = ['autoplay', 'playsinline', 'picture-in-picture', 'fullscreen', 'encrypted-media'];
                                                 let combined = allow;
                                                 needed.forEach(flag => { if (!new RegExp(flag, 'i').test(combined)) combined += '; ' + flag; });
                                                 iframeNode.setAttribute('allow', combined.replace(/;;+/g,';'));
@@ -3847,60 +4028,58 @@ const player = {
                                             }
                                         } catch(_) {}
 
-                                        // Attempt muted autoplay (most browsers allow muted autoplay). If that succeeds, keep playing muted
-                                        // and then unmute on the first user gesture to avoid autoplay block.
+                                        // Try to start audible playback aggressively:
+                                        // 1) resume AudioContext if present
+                                        // 2) attempt unMute + setVolume + play immediately
+                                        // 3) if blocked, repeatedly try unMute+play for a short burst (best-effort)
                                         try {
-                                            // ensure muted state and try to play
+                                            // Try to resume audio context to satisfy some autoplay policies
                                             try {
-                                                // Try to unmute and play; if browser blocks unmuted autoplay, fallback to muted autoplay.
-                                                try { e.target.setVolume && e.target.setVolume(100); } catch(_) {}
-                                                try { e.target.unMute && e.target.unMute(); } catch(_) {}
-                                                // request play and check shortly whether it started; if not, mute and retry
+                                                if (window.AudioContext || window.webkitAudioContext) {
+                                                    const C = window.AudioContext || window.webkitAudioContext;
+                                                    if (!window.__lumina_audio_ctx) window.__lumina_audio_ctx = new C();
+                                                    try { window.__lumina_audio_ctx.resume && window.__lumina_audio_ctx.resume(); } catch(_) {}
+                                                }
+                                            } catch(_) {}
+
+                                            // Ensure YT player is unmuted and at full volume
+                                            try { e.target.unMute && e.target.unMute(); } catch(_) {}
+                                            try { e.target.setVolume && e.target.setVolume(100); } catch(_) {}
+
+                                            // Attempt to play now; many browsers will allow autoplay if audio playback is initiated successfully.
+                                            try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
+
+                                            // Start a short burst of retries to overcome transient autoplay race conditions.
+                                            // This loop will attempt unMute+play up to ~8 times spaced over ~5s.
+                                            let retryCount = 0;
+                                            const maxRetries = 8;
+                                            const retryInterval = 600;
+                                            const retryHandle = setInterval(() => {
                                                 try {
-                                                    e.target.playVideo && e.target.playVideo();
-                                                } catch(_) {}
-                                                (async () => {
-                                                    await new Promise(r => setTimeout(r, 700));
+                                                    retryCount++;
+                                                    // try to unmute and play
+                                                    try { e.target.unMute && e.target.unMute(); } catch(_) {}
+                                                    try { e.target.setVolume && e.target.setVolume(100); } catch(_) {}
+                                                    try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
+                                                    // if playing, stop retries
                                                     try {
                                                         const st = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
-                                                        if (st !== 1) {
-                                                            // blocked: mute and attempt to play muted
-                                                            try { e.target.mute && e.target.mute(); } catch(_) {}
-                                                            try { e.target.playVideo && e.target.playVideo(); } catch(_) {}
-                                                        } else {
-                                                            // playing with audio — ensure volume restored on first gesture if browser later restricts it
-                                                            const restoreOnGesture = () => {
-                                                                try { player && player.ytPlayer && player.ytPlayer.unMute && player.ytPlayer.unMute(); } catch(_) {}
-                                                                try { player && player.ytPlayer && player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
-                                                                try { document.removeEventListener('pointerdown', restoreOnGesture); document.removeEventListener('touchstart', restoreOnGesture); } catch(_) {}
-                                                            };
-                                                            try { document.addEventListener('pointerdown', restoreOnGesture, { once: true, passive: true }); document.addEventListener('touchstart', restoreOnGesture, { once: true, passive: true }); } catch(_) {}
-                                                        }
+                                                        if (st === 1) { clearInterval(retryHandle); return; }
                                                     } catch(_) {}
-                                                })().catch(()=>{});
-                                            } catch(_) {}
-                                            const tryPlayMuted = (attempt = 0) => {
-                                                try {
-                                                    if (e && e.target) e.target.playVideo && e.target.playVideo();
-                                                    setTimeout(() => {
-                                                        try {
-                                                            const stateYT = (player && player.ytPlayer && typeof player.ytPlayer.getPlayerState === 'function') ? player.ytPlayer.getPlayerState() : null;
-                                                            if (stateYT !== 1 && attempt < 4) tryPlayMuted(attempt + 1);
-                                                        } catch(_) {}
-                                                    }, 600 + attempt * 300);
-                                                } catch(_) {}
-                                            };
-                                            tryPlayMuted(0);
+                                                    if (retryCount >= maxRetries) clearInterval(retryHandle);
+                                                } catch(_) { clearInterval(retryHandle); }
+                                            }, retryInterval);
+                                            // ensure retries are cleared after a timeout as well
+                                            setTimeout(() => { try { clearInterval(retryHandle); } catch(_) {} }, Math.min(12000, maxRetries * retryInterval + 500));
                                         } catch(_) {}
 
-                                        // Unmute on first user gesture (pointerdown/touchstart) and set volume
+                                        // Unmute on first user gesture as an additional safety (keeps behavior stable)
                                         const unmuteOnce = () => {
                                             try {
                                                 if (player && player.ytPlayer && typeof player.ytPlayer.unMute === 'function') {
                                                     try { player.ytPlayer.unMute(); } catch(_) {}
                                                     try { player.ytPlayer.setVolume && player.ytPlayer.setVolume(100); } catch(_) {}
                                                 } else {
-                                                    // best-effort: postMessage to iframe to unmute if possible (silently ignore cross-origin restrictions)
                                                     const iframeNode = document.querySelector('#yt-player iframe');
                                                     if (iframeNode && iframeNode.contentWindow) {
                                                         try { iframeNode.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*'); } catch(_) {}
@@ -6691,6 +6870,53 @@ const player = {
                 const imgOnError = `this.onerror=null;this.src='fiveicon.png';this.classList.add('loaded');this.style.objectFit='cover';`;
 
                 // Provide both src and data-src so the resilient loader and browsers have a stable source to fetch from.
+                // determine progress for this item if exists (try multiple key variants)
+                let pct = 0;
+                try {
+                    // attempt to find a progress entry for common keys (item.id, item.id_ep, stable episodic keys)
+                    const searchKeys = [];
+                    if (item.id) searchKeys.push(String(item.id));
+                    if (item.id_ep) searchKeys.push(String(item.id_ep));
+                    // try to detect first-episode stable id pattern for series cards (best-effort)
+                    if (item.seasons && Object.keys(item.seasons).length) {
+                        const firstSeason = Object.keys(item.seasons)[0];
+                        const firstEp = (item.seasons[firstSeason] && item.seasons[firstSeason][0]) ? item.seasons[firstSeason][0] : null;
+                        if (firstEp && firstEp.id) searchKeys.push(String(firstEp.id));
+                    }
+                    // also check state.progress for keys that end with item.id (legacy tolerant)
+                    if (window.state && window.state.progress) {
+                        const keys = Object.keys(window.state.progress);
+                        keys.forEach(k => {
+                            try {
+                                if (!k) return;
+                                if (item.id && String(k).includes(String(item.id))) searchKeys.push(k);
+                            } catch(_) {}
+                        });
+                    }
+                    // find first matching progress
+                    let foundProg = null;
+                    for (const k of (searchKeys || [])) {
+                        if (!k) continue;
+                        const p = (window.state && window.state.progress && window.state.progress[k]) ? window.state.progress[k] : null;
+                        if (p) { foundProg = p; break; }
+                    }
+                    if (foundProg && typeof foundProg === 'object') {
+                        const t = Number(foundProg.time || 0);
+                        const d = Number(foundProg.duration || 0);
+                        if (d > 0) pct = Math.min(100, (t / d) * 100);
+                        else if (t > 0) pct = Math.min(100, (t / (t + 60)) * 100);
+                        if (!isFinite(pct) || pct < 0) pct = 0;
+                        if (pct > 100) pct = 100;
+                    }
+                } catch (_) { pct = 0; }
+
+                // watched class and check badge when pct > 90
+                const watchedClass = pct > 90 ? 'is-watched' : '';
+                const checkBadgeHtml = pct > 90 ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
+                const progressHtml = pct > 0 ? `<div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>` : '';
+
+                card.className = card.className + ' ' + watchedClass;
+
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
                         <img loading="lazy" decoding="async" data-db-cover="1" data-src="${coverSrc}" src="${coverSrc}" onerror="${imgOnError}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
@@ -6703,6 +6929,8 @@ const player = {
                             </div>
                         </div>
                         ${tagsHtml}
+                        ${checkBadgeHtml}
+                        ${progressHtml}
                     </div>
                     <div class="px-1">
                         <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
@@ -6725,8 +6953,13 @@ const player = {
                 card.className = 'w-64 md:w-80 shrink-0 hover-card cursor-pointer group session-card';
                 card.onclick = () => openDetails(item.id);
                 
-                const pct = Math.min(100, ((item._prog && item._prog.time) ? (item._prog.time / item._prog.duration) * 100 : 0));
+                const pct = Math.min(100, ((item._prog && item._prog.time && item._prog.duration) ? (item._prog.time / item._prog.duration) * 100 : ((item._prog && item._prog.time) ? Math.min(100, (item._prog.time / (item._prog.time + 60)) * 100) : 0)));
                 const subtitle = item._hist ? `T${item._hist.s} : E${item._hist.e+1}` : 'Continuar filme';
+                const watchedClass = pct > 90 ? 'is-watched' : '';
+                const checkBadgeHtml = pct > 90 ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
+                const progressHtml = pct > 0 ? `<div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>` : '';
+
+                card.className = card.className + ' ' + watchedClass;
 
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl overflow-hidden bg-surface mb-3 border border-white/5">
@@ -6737,9 +6970,8 @@ const player = {
                                 <i class="ph-fill ph-play text-xl ml-0.5"></i>
                             </div>
                         </div>
-                        <div class="absolute bottom-0 left-0 w-full h-1 bg-white/10 z-20">
-                            <div class="h-full bg-accent" style="width: ${pct}%"></div>
-                        </div>
+                        ${checkBadgeHtml}
+                        ${progressHtml}
                     </div>
                     <div class="px-1">
                         <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
@@ -8468,8 +8700,30 @@ window.loadSeason = function(itemId, seasonNum) {
         }
 
         const frag = document.createDocumentFragment();
+
+        // HELPER ROBUSTO: Procura a chave de progresso correta para evitar pct zerado
+        const findProgressForEp = (stableId) => {
+            try {
+                if (!stableId || !window.state || !window.state.progress) return null;
+                const progMap = window.state.progress;
+                if (progMap[stableId]) return progMap[stableId];
+                const candidates = [
+                    `${itemId}-${stableId}`,
+                    `${itemId}::${stableId}`,
+                    `${stableId}`
+                ];
+                for (const c of candidates) {
+                    if (progMap[c]) return progMap[c];
+                }
+                const keys = Object.keys(progMap || {});
+                for (const k of keys) {
+                    if (k && k.endsWith(stableId)) return progMap[k];
+                }
+            } catch (_) {}
+            return null;
+        };
+
         episodes.forEach((ep, index) => {
-            // Resolve real URL using normalizeMediaUrl helper (handles url_enc, Drive, Dropbox, YouTube, embed hosts etc.)
             let realUrl = '';
             try {
                 realUrl = normalizeMediaUrl(ep);
@@ -8477,7 +8731,6 @@ window.loadSeason = function(itemId, seasonNum) {
 
             const available = !!(realUrl && String(realUrl).trim().length > 0);
             
-            // Mantém a compatibilidade com a sua lógica de IDs estáveis de progresso
             let stableEpId = `${itemId}-s${seasonNum}-e${index}`;
             if (typeof window.getStableEpId === 'function') {
                 try { stableEpId = window.getStableEpId(itemId, seasonNum, index, ep); } catch(_) {}
@@ -8485,22 +8738,30 @@ window.loadSeason = function(itemId, seasonNum) {
                 try { stableEpId = window.g.getStableEpId(itemId, seasonNum, index, ep); } catch(_) {}
             }
 
-            const prog = window.state && window.state.progress && window.state.progress[stableEpId];
-            const pct = (prog && prog.duration) ? Math.min(100, (prog.time / prog.duration) * 100) : 0;
+            // CALCULA A PORCENTAGEM DE PROGRESSO CORRETAMENTE
+            let pct = 0;
+            try {
+                const prog = findProgressForEp(stableEpId);
+                if (prog && typeof prog === 'object') {
+                    const t = Number(prog.time || 0);
+                    const d = Number(prog.duration || 0);
+                    if (d > 0) pct = Math.min(100, (t / d) * 100);
+                    else if (t > 0) pct = Math.min(100, (t / (t + 60)) * 100);
+                    if (!isFinite(pct) || pct < 0) pct = 0;
+                    if (pct > 100) pct = 100;
+                }
+            } catch (e) { pct = 0; }
 
             const row = document.createElement('div');
-            // add ep-item class so modal animation/selection and event wiring target episode rows reliably
             row.className = 'ep-item group flex gap-4 p-3 rounded-2xl transition-colors duration-300';
             if (available) row.className += ' cursor-pointer hover:bg-white/[0.03]';
             else row.className += ' opacity-50';
 
-            // Prefer episode cover; if missing, fall back to the season's first episode cover; otherwise use series cover, then a local placeholder.
             let cover = 'fiveicon.png';
             try {
                 if (ep && ep.cover && String(ep.cover).trim()) {
                     cover = String(ep.cover).trim();
                 } else {
-                    // try the season's first episode cover (same logic used by season cards)
                     const seasonFirst = (item.seasons && item.seasons[seasonNum] && item.seasons[seasonNum][0]) ? item.seasons[seasonNum][0] : null;
                     if (seasonFirst && seasonFirst.cover && String(seasonFirst.cover).trim()) {
                         cover = String(seasonFirst.cover).trim();
@@ -8510,22 +8771,29 @@ window.loadSeason = function(itemId, seasonNum) {
                 }
             } catch (_) { cover = 'fiveicon.png'; }
 
+            // HTML: CRIA OS CHECKS ASSISTIDOS CASO PASSE DE 95%
+            const checkOverlay = (pct > 95) ? `<div class="absolute top-2 right-2 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-accent backdrop-blur-md shadow-[0_0_10px_rgba(0,0,0,0.5)]"><i class="ph-fill ph-check-circle text-lg"></i></div>` : '';
+            const checkBadge = (pct > 95) ? `<i class="ph-fill ph-check-circle text-accent text-lg shrink-0 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" title="Assistido"></i>` : '';
+
             row.innerHTML = `
                 <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-white/5" style="background-image: url('${cover}'); background-size: cover; background-position: center;">
-                    ${pct > 0 ? `<div class="absolute bottom-0 left-0 w-full h-1 bg-black/40"><div class="h-full bg-purple-600" style="width:${pct}%"></div></div>` : ''}
+                    ${checkOverlay}
+                    ${available ? `<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30"><div class="w-10 h-10 rounded-full glass flex items-center justify-center text-white"><i class="ph-fill ph-play text-white"></i></div></div>` : ''}
+                    ${pct > 0 ? `<div class="absolute bottom-0 left-0 w-full h-1 bg-black/60 z-20"><div class="h-full bg-accent shadow-[0_0_8px_rgba(139,92,246,0.8)] transition-all duration-300" style="width:${pct}%"></div></div>` : ''}
                 </div>
                 <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
                     <div class="flex justify-between items-start mb-1">
                         <h4 class="text-white font-medium text-sm md:text-base truncate pr-4">${index+1}. ${ep.title || 'Episódio'}</h4>
+                        ${checkBadge}
                     </div>
                     <span class="text-xs text-zinc-500">Episódio ${index+1}</span>
+                    ${ep.description ? `<p class="text-xs text-white/50 mt-1 line-clamp-2">${ep.description}</p>` : ''}
                 </div>
             `;
 
             if (available) {
                 row.addEventListener('click', () => {
                     const nextE = (index + 1 < episodes.length) ? episodes[index + 1] : null;
-                    // resolve next URL similarly
                     let nextRealUrl = '';
                     try {
                         if (nextE && nextE.url && String(nextE.url).trim()) nextRealUrl = String(nextE.url).trim();
@@ -8550,10 +8818,7 @@ window.loadSeason = function(itemId, seasonNum) {
                         introDuration: ep.introDuration || 0
                     };
                     
-
-
                     try { 
-                        // pass the resolved realUrl (not ep.url_enc) to requestPlay
                         window.requestPlay(realUrl, `T${seasonNum}:E${index+1} - ${ep.title || 'Episódio'}`, ctx); 
                     } catch(_) {}
                 }, { passive: true });
@@ -8580,9 +8845,35 @@ window.renderEpisodesList = function(seriesItem, seasonKey) {
         const episodes = (seriesItem.seasons && seriesItem.seasons[seasonKey]) ? seriesItem.seasons[seasonKey] : [];
         const frag = document.createDocumentFragment();
 
+        // helper: robustly find progress entry for an episode by checking several key variants and suffix matches
+        const findProgressForEp = (stableId) => {
+            try {
+                if (!stableId || !window.state || !window.state.progress) return null;
+                const progMap = window.state.progress;
+                // exact match first
+                if (progMap[stableId]) return progMap[stableId];
+                // common namespaced forms
+                const candidates = [
+                    `${seriesItem.id}-${stableId}`,
+                    `${seriesItem.id}::${stableId}`,
+                    `${stableId}`, // try plain again defensively
+                ];
+                for (const c of candidates) {
+                    if (progMap[c]) return progMap[c];
+                }
+                // last resort: find any key that endsWith the stableId (covers legacy collisions)
+                const keys = Object.keys(progMap || {});
+                for (const k of keys) {
+                    if (k && k.endsWith(stableId)) return progMap[k];
+                }
+            } catch (_) {}
+            return null;
+        };
+
         episodes.forEach((ep, index) => {
             const card = document.createElement('div');
             card.className = 'group flex gap-4 p-3 rounded-2xl transition-colors duration-300';
+            
             // graceful available indicator
             const realUrl = (ep && ep.url) ? String(ep.url).trim() : (ep && ep.url_enc && window.__lumina_deobf ? window.__lumina_deobf.decode(ep.url_enc, window.__lumina_deobf.key) : '');
             const available = !!realUrl;
@@ -8592,45 +8883,74 @@ window.renderEpisodesList = function(seriesItem, seasonKey) {
 
             // Cover fallback: episode -> first ep of season -> series cover -> placeholder
             let cover = 'fiveicon.png';
-            if (ep && ep.cover) cover = ep.cover;
-            else {
-                const first = (seriesItem.seasons && seriesItem.seasons[seasonKey] && seriesItem.seasons[seasonKey][0]) ? seriesItem.seasons[seasonKey][0] : null;
-                if (first && first.cover) cover = first.cover;
-                else if (seriesItem.cover) cover = seriesItem.cover;
-            }
+            try {
+                if (ep && ep.cover) cover = ep.cover;
+                else {
+                    const first = (seriesItem.seasons && seriesItem.seasons[seasonKey] && seriesItem.seasons[seasonKey][0]) ? seriesItem.seasons[seasonKey][0] : null;
+                    if (first && first.cover) cover = first.cover;
+                    else if (seriesItem.cover) cover = seriesItem.cover;
+                }
+            } catch(_) { cover = 'fiveicon.png'; }
 
-            // populate inner HTML (visual only)
+            // stable episode id (consistent)
+            let stableEpId = `${seriesItem.id}-s${seasonKey}-e${index}`;
+            try { if (typeof window.getStableEpId === 'function') stableEpId = window.getStableEpId(seriesItem.id, seasonKey, index, ep); } catch(_) {}
+
+            // compute progress robustly using helper
+            let pct = 0;
+            try {
+                const prog = findProgressForEp(stableEpId);
+                if (prog && typeof prog === 'object') {
+                    const t = Number(prog.time || 0);
+                    const d = Number(prog.duration || 0);
+                    if (d > 0) pct = Math.min(100, (t / d) * 100);
+                    else if (t > 0) pct = Math.min(100, (t / (t + 60)) * 100);
+                    // ensure numeric and bounded
+                    if (!isFinite(pct) || pct < 0) pct = 0;
+                    if (pct > 100) pct = 100;
+                }
+            } catch (e) { pct = 0; }
+
+            // build check icon html when >95%
+            const checkHtml = (pct > 95) ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
+
+            // populate inner HTML
             card.innerHTML = `
                 <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-white/5">
                     <img loading="lazy" decoding="async" data-db-cover="1" src="${cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-300" onerror="this.onerror=null;this.src='fiveicon.png';">
+                    ${checkHtml}
                     ${available ? `<div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30"><div class="w-10 h-10 rounded-full glass flex items-center justify-center text-white"><i class="ph-fill ph-play text-white"></i></div></div>` : ''}
+                    
+                    ${pct > 0 ? `
+                        <div class="absolute bottom-0 left-0 w-full h-1 bg-black/60 z-20">
+                            <div class="h-full bg-accent shadow-[0_0_8px_rgba(139,92,246,0.8)] transition-all duration-300" style="width: ${pct}%"></div>
+                        </div>
+                    ` : ''}
                 </div>
+                
                 <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
                     <div class="flex justify-between items-start mb-1">
                         <h4 class="text-white font-medium text-sm md:text-base truncate pr-4">${index+1}. ${ep.title || `Episódio ${index+1}`}</h4>
+                        ${pct > 95 ? '<i class="ph-fill ph-check-circle text-accent text-lg shrink-0 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" title="Assistido"></i>' : ''}
                     </div>
                     <span class="text-xs text-zinc-500">Episódio ${index+1}</span>
                     ${ep.description ? `<p class="text-xs text-white/50 mt-1 line-clamp-2">${ep.description}</p>` : ''}
                 </div>
             `;
 
-            // Programmatic click handler (safe): set history/progress and call requestPlay/openPlayer with direct references
+            // click handler: programmatic, safe
             if (available) {
                 card.addEventListener('click', (ev) => {
                     try {
                         ev && ev.stopPropagation && ev.stopPropagation();
-                        // stable episode id (use existing helper if present)
-                        let stableEpId = `${seriesItem.id}-s${seasonKey}-e${index}`;
-                        try { if (typeof window.getStableEpId === 'function') stableEpId = window.getStableEpId(seriesItem.id, seasonKey, index, ep); } catch(_) {}
 
-                        // update history (minimal)
+                        // update history minimal
                         try {
                             state.history = state.history || {};
                             state.history[seriesItem.id] = { s: parseInt(seasonKey, 10), e: index, epId: stableEpId, timestamp: Date.now() };
                             saveProgressData();
                         } catch(_) {}
 
-                        // Build context object for the player
                         const nextEp = (seriesItem.seasons && seriesItem.seasons[seasonKey] && seriesItem.seasons[seasonKey][index+1]) ? seriesItem.seasons[seasonKey][index+1] : null;
                         const nextRealUrl = nextEp ? ((nextEp.url && nextEp.url.trim()) ? nextEp.url : (nextEp.url_enc && window.__lumina_deobf ? window.__lumina_deobf.decode(nextEp.url_enc, window.__lumina_deobf.key) : '')) : null;
                         const nextContext = nextRealUrl ? { url: nextRealUrl, title: `T${seasonKey}:E${index+2} - ${nextEp.title}`, s: seasonKey, e: index+1 } : null;
@@ -8650,7 +8970,6 @@ window.renderEpisodesList = function(seriesItem, seasonKey) {
                             introDuration: ep.introDuration || 0
                         };
 
-                        // prefer calling requestPlay (existing flow) with direct url and context
                         if (typeof requestPlay === 'function') {
                             requestPlay(realUrl, `T${seasonKey}:E${index+1} - ${ep.title || 'Episódio'}`, ctx);
                         } else if (typeof openPlayer === 'function') {
