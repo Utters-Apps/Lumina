@@ -1140,11 +1140,13 @@
             width: 100%;
             height: 4px;
             background: rgba(255, 255, 255, 0.15);
-            z-index: 30;
+            z-index: 60; /* ensure it's above overlays */
+            display: block !important; /* ensure visible */
             overflow: hidden;
             /* Herda o arredondamento das bordas do card/imagem */
             border-bottom-left-radius: inherit;
             border-bottom-right-radius: inherit;
+            will-change: width, opacity;
         }
 
         /* Barra roxa de progresso preenchida */
