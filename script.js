@@ -8772,7 +8772,7 @@ window.loadSeason = function(itemId, seasonNum) {
             } catch (_) { cover = 'fiveicon.png'; }
 
             // HTML: CRIA OS CHECKS ASSISTIDOS CASO PASSE DE 95%
-            const checkOverlay = (pct > 95) ? `<div class="absolute top-2 right-2 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-accent backdrop-blur-md shadow-[0_0_10px_rgba(0,0,0,0.5)]"><i class="ph-fill ph-check-circle text-lg"></i></div>` : '';
+            const checkOverlay = (pct >= 90) ? `<div class="absolute top-2 right-2 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-accent backdrop-blur-md shadow-[0_0_10px_rgba(0,0,0,0.5)]"><i class="ph-fill ph-check-circle text-lg"></i></div>` : '';
             const checkBadge = (pct > 95) ? `<i class="ph-fill ph-check-circle text-accent text-lg shrink-0 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" title="Assistido"></i>` : '';
 
             row.innerHTML = `
@@ -8833,8 +8833,10 @@ window.loadSeason = function(itemId, seasonNum) {
 };
 /* Safe renderer for episode cards: builds DOM nodes and assigns click handlers programmatically to avoid
    JS interpolation issues and broken inline onclick attributes. */
-window.renderEpisodesList = function(seriesItem, seasonKey) {
+window.renderEpisodesList = async function(seriesItem, seasonKey) {
     try {
+        // Ensure DB is available and any obfuscated urls/ids are decoded before computing progress
+        try { await ensureDB(); } catch(_) {}
         if (!seriesItem || !seasonKey) return;
         const episodesContainer = document.getElementById('episodes-modal-list') ||
                                    document.getElementById(`episodes-container-${seriesItem.id}`) ||
@@ -8912,7 +8914,7 @@ window.renderEpisodesList = function(seriesItem, seasonKey) {
             } catch (e) { pct = 0; }
 
             // build check icon html when >95%
-            const checkHtml = (pct > 95) ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
+            const checkHtml = (pct >= 90) ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
 
             // populate inner HTML
             card.innerHTML = `
