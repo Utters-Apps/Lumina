@@ -133,7 +133,11 @@
         img.loaded { opacity: 1; }
 
         .hover-card { transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease; }
-        .hover-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+        /* Keep card geometry stable on hover; only visual emphasis via image scale and shadow */
+        .hover-card:hover { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.5); }
+        /* Scale only the cover image inside the card to produce the hover zoom effect */
+        .hover-card img { transition: transform 0.45s cubic-bezier(0.16,1,0.3,1), opacity 0.3s ease-in-out; transform-origin: center center; }
+        .hover-card:hover img { transform: scale(1.06); }
 
         /* Favorite button pop animation for feedback */
         .pop-anim {
@@ -825,7 +829,11 @@
         /* Overall UI: slower, more natural ease and smaller translation distances */
         .player-ui { transition: opacity 360ms cubic-bezier(0.22,0.9,0.29,1), transform 360ms cubic-bezier(0.22,0.9,0.29,1); }
         .hover-card { transition: transform 300ms cubic-bezier(0.2,0.9,0.2,1), box-shadow 300ms ease; }
-        .hover-card:hover { transform: translateY(-3px) scale(1.015); box-shadow: 0 14px 30px -12px rgba(0,0,0,0.45); }
+        /* Do not scale the card itself on hover; apply shadow only and let image scale provide the zoom feel */
+        .hover-card:hover { box-shadow: 0 14px 30px -12px rgba(0,0,0,0.45); }
+        /* Ensure images transition and zoom independently for a subtle hover effect */
+        .hover-card img { transition: transform 0.3s cubic-bezier(0.2,0.9,0.2,1), opacity 0.3s ease-in-out; transform-origin: center center; }
+        .hover-card:hover img { transform: scale(1.04); }
 
         /* Tame center play button: slightly smaller, smoother hover and reduced glow */
         #center-play-btn {
