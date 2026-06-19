@@ -2153,13 +2153,14 @@ window.getStableEpId = function(seriesId, season, index, ep) {
             });
         }
 
-        // Grid 16:9 Cards for Catalog & Search
+                // Grid 16:9 Cards for Catalog & Search (enhanced: adds favorite button with programmatic handler)
         function render16by9CatalogCards(data, container) {
             data.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'hover-card cursor-pointer group relative';
                 card.onclick = () => openDetails(item.id);
                 
+                // include a favorite button rendered into the card; button has an id so we can attach handler safely
                 card.innerHTML = `
                     <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
                         <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onload="this.classList.add('loaded')">
@@ -2171,6 +2172,13 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                 <i class="ph-fill ph-play text-xl ml-0.5"></i>
                             </div>
                         </div>
+
+                        <!-- Favorite button (top-right) -->
+                        <div class="absolute top-3 right-3 z-40">
+                            <button id="fav-btn-${item.id}" data-fav-id="${item.id}" onclick="event.stopPropagation(); toggleFav(event, '${item.id}')" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors" title="Minha Lista" aria-label="Adicionar à minha lista">
+                                <i class="ph ph-plus text-xl"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="px-1">
                         <h3 class="text-white font-medium text-sm truncate">${item.title}</h3>
@@ -2181,6 +2189,33 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                     </div>
                 `;
                 container.appendChild(card);
+
+                // Attach a safe click listener to the fav button so inline onclicks aren't required and event propagation is handled
+                try {
+                    const favBtn = document.getElementById(`fav-btn-${item.id}`);
+                    if (favBtn) {
+                        // remove any accidental inline onclick handlers for safety
+                        try { favBtn.removeAttribute && favBtn.removeAttribute('onclick'); } catch (_) {}
+                        favBtn.addEventListener('click', function(ev) {
+                            try {
+                                ev && ev.stopPropagation && ev.stopPropagation();
+                                // call the global toggleFav function (already exposed). Guard against missing implementation.
+                                if (typeof window.toggleFav === 'function') {
+                                    window.toggleFav(ev, item.id);
+                                } else {
+                                    // fallback: update state and persist
+                                    const idx = state.favorites.indexOf(item.id);
+                                    if (idx === -1) state.favorites.push(item.id);
+                                    else state.favorites.splice(idx, 1);
+                                    try { localStorage.setItem('lumina_v2_favs', JSON.stringify(state.favorites)); } catch(_) {}
+                                    try { renderView(); } catch(_) {}
+                                }
+                            } catch (e) { console.warn('favBtn handler failed', e); }
+                        }, { passive: true });
+                    }
+                } catch (e) {
+                    console.warn('attach fav handler failed', e);
+                }
             });
         }
 

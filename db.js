@@ -829,35 +829,35 @@ export const db = [
                 ratings: { imdb: 8.5, rottenTomatoes: 96, metascore: 82 },
                 seasons: {
                     1: [
-                        { id: "heartstopper-s1-e1", title: "Encontro", url: "https://dl.dropboxusercontent.com/scl/fi/hngjcsx55y01xa5qit5yy/Epis‑dio.01.mp4?rlkey=6hl0rxem4io4118fc00wjlgq2" },
-                        { id: "heartstopper-s1-e2", title: "Crush", url: "https://dl.dropboxusercontent.com/scl/fi/dltfolwgk6pptsl1lx4jk/Epis‑dio.02.mp4?rlkey=41lzw3p7p1qbq30rv6oud4eje" },
-                        { id: "heartstopper-s1-e3", title: "Beijo", url: "https://dl.dropboxusercontent.com/scl/fi/hr48fa5bxeynq9p24jjvq/Epis-dio.03.mp4?rlkey=sjqdwjqqyzjmbvwf53g7harhu" },
-                        { id: "heartstopper-s1-e4", title: "Segredo", url: "https://dl.dropboxusercontent.com/scl/fi/lqhi6a4ru2vh2wpl5by6y/Epis-dio.04.mp4?rlkey=1wzhsmlmyrsgk88ic19k0oelc" },
-                        { id: "heartstopper-s1-e5", title: "Amizade", url: "https://dl.dropboxusercontent.com/scl/fi/t5do3ztz0v95ad0pcxqvj/Epis-dio.05.mp4?rlkey=1qtqi4buifhnre62et57eeb5f" },
-                        { id: "heartstopper-s1-e6", title: "Garotas", url: "https://dl.dropboxusercontent.com/scl/fi/idxnh4xvzysany1z260on/Epis-dio.06.mp4?rlkey=03e8notm84gvojmdp5knbivqi" },
-                        { id: "heartstopper-s1-e7", title: "Bullying", url: "https://dl.dropboxusercontent.com/scl/fi/l5abe3fa54ofovs66bx4w/Epis-dio.07.mp4?rlkey=ru9qskk96v2uavprilr0p6z0f" },
-                        { id: "heartstopper-s1-e8", title: "Namoro", url: "https://dl.dropboxusercontent.com/scl/fi/z5slaudy4yd3odi0mc31s/Epis-dio.08.mp4?rlkey=yroyahhemiimiz4fidbb4giym" }
-                    ],
-                    2: [
-                        { id: "heartstopper-s2-e1", title: "Revelação", url: "https://dl.dropboxusercontent.com/scl/fi/z6wxqembvpx5re74txwyl/Epis-dio.01-1.mp4?rlkey=7duwphgvio102s6vlc9sgw609" },
-                        { id: "heartstopper-s2-e2", title: "Família", url: "https://dl.dropboxusercontent.com/scl/fi/m2ebxrdm0u5x2todblboy/Epis-dio.02-1.mp4?rlkey=4db0xj9uxla1an618je1sd95s" },
-                        { id: "heartstopper-s2-e3", title: "Promessa", url: "https://dl.dropboxusercontent.com/scl/fi/ti0m6hhzbb3mm1uo6hg2u/Epis-dio.03-1.mp4?rlkey=wc4hvcrodzsd4ooaj96w8jxkv" },
-                        { id: "heartstopper-s2-e4", title: "Desafio", url: "https://dl.dropboxusercontent.com/scl/fi/lqnsghqkyqyc3lbkj7tue/Epis-dio.04.mp4?rlkey=1cpntz9abqa0513ncuvu2aina&st=ojkh6szy" },
-                        { id: "heartstopper-s2-e5", title: "Calor", url: "https://dl.dropboxusercontent.com/scl/fi/babx2s608zpp8j55bakr7/Epis-dio.05.mp4?rlkey=29ua0szrkidzjmncr8ibj5cdw&st=aerq7f12" },
-                        { id: "heartstopper-s2-e6", title: "Verdade ou consequência", url: "https://dl.dropboxusercontent.com/scl/fi/b3k6je2tyrunna8d29ayw/Epis-dio.06.mp4?rlkey=m6ryhqmjg664hqmht69nnljxk&st=fwllamu7" },
-                        { id: "heartstopper-s2-e7", title: "Desculpas e arrependimentos", url: "https://dl.dropboxusercontent.com/scl/fi/09wnevoy1b4bzktua69ri/Epis-dio.07.mp4?rlkey=7iyfvxbysr9b4w3btyboeu5lx&st=6x93u38s" },
-                        { id: "heartstopper-s2-e8", title: "Perfeito", url: "https://dl.dropboxusercontent.com/scl/fi/zk3ovo2d1bp5rq7n1lkd6/Epis-dio.08.mp4?rlkey=aay10wnwogtgettfjdlsqs9xg&st=rxgpc813" }
-                    ],
-                    3: [
-                        { id: "heartstopper-s3-e1", title: "Amor", url: "https://dl.dropboxusercontent.com/scl/fi/4wrqectmmv03ab42yr02k/S3ep1.mp4?rlkey=7z9az4lgh1fczheio7eismciz&st=ux36zty0" },
-                        { id: "heartstopper-s3-e2", title: "Casa", url: "https://dl.dropboxusercontent.com/scl/fi/lbmfxi8x0ixzbj2ujkhxy/S3ep2.mp4?rlkey=d1d0g8h2228161jpliu331z02&st=00ypx6r4" },
-                        { id: "heartstopper-s3-e3", title: "Conversa", url: "https://dl.dropboxusercontent.com/scl/fi/kwoissm00uasg7gw2y89q/S3ep3.mp4?rlkey=5kg715cp8v0bqzcw8j40iy2kc&st=jwdm5hkz" },
-                        { id: "heartstopper-s3-e4", title: "Jornada", url: "https://dl.dropboxusercontent.com/scl/fi/7kgbv073fkkvevvxuzyw3/S3ep4.mp4?rlkey=jph3gz3kcw2r6ck9cxxyaccme&st=9tmgbd0o" },
-                        { id: "heartstopper-s3-e5", title: "Inverno", url: "https://dl.dropboxusercontent.com/scl/fi/s4dq3k9ecujoluwkfne30/S3ep5.mp4?rlkey=59ek669e76t458n9a7441t7cz&st=bihhsysz" },
-                        { id: "heartstopper-s3-e6", title: "Corpo", url: "https://dl.dropboxusercontent.com/scl/fi/gssry2sehn3ioe64hbu4u/S3e6.mp4?rlkey=aev0syvjchxgf2w5jn5woujjw&st=qnvinpl7" },
-                        { id: "heartstopper-s3-e7", title: "Juntos", url: "https://dl.dropboxusercontent.com/scl/fi/wxkmlie808teahh9dadji/S3e7.mp4?rlkey=5tgfecefslhrjklujydcmxcep&st=uc2yaf3q" },
-                        { id: "heartstopper-s3-e8", title: "Separados", url: "https://dl.dropboxusercontent.com/scl/fi/11ipxwlo3qxx2umam1aim/S3e8.mp4?rlkey=gb53r407vfmt0apn0mskne8vd&st=14mm33sf" }
-                    ]
+    { id: "heartstopper-s1-e1", title: "Encontro", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/mLVKPK39umEFkhrE7pNwg7AYW0G.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/hngjcsx55y01xa5qit5yy/Epis-dio.01.mp4?rlkey=6hl0rxem4io4118fc00wjlgq2" },
+    { id: "heartstopper-s1-e2", title: "Crush", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/rgEMVeNBwmzmnAXm1NffxAWIInn.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/dltfolwgk6pptsl1lx4jk/Epis-dio.02.mp4?rlkey=41lzw3p7p1qbq30rv6oud4eje" },
+    { id: "heartstopper-s1-e3", title: "Beijo", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/9vMstsAcoDuXF0FbWLo5po4qqK7.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/hr48fa5bxeynq9p24jjvq/Epis-dio.03.mp4?rlkey=sjqdwjqqyzjmbvwf53g7harhu" },
+    { id: "heartstopper-s1-e4", title: "Segredo", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/qJ6sAoGvNxDrbynrTtxspcyqHy4.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/lqhi6a4ru2vh2wpl5by6y/Epis-dio.04.mp4?rlkey=1wzhsmlmyrsgk88ic19k0oelc" },
+    { id: "heartstopper-s1-e5", title: "Amizade", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/vCmT0gerrl9RBYcaFX5HTPNeOiH.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/t5do3ztz0v95ad0pcxqvj/Epis-dio.05.mp4?rlkey=1qtqi4buifhnre62et57eeb5f" },
+    { id: "heartstopper-s1-e6", title: "Garotas", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/viyFoorz1pVY4JQmMalOURgs9Oa.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/idxnh4xvzysany1z260on/Epis-dio.06.mp4?rlkey=03e8notm84gvojmdp5knbivqi" },
+    { id: "heartstopper-s1-e7", title: "Bullying", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/3y48LT2NC6iKo6OyeCfCA8sQ5kP.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/l5abe3fa54ofovs66bx4w/Epis-dio.07.mp4?rlkey=ru9qskk96v2uavprilr0p6z0f" },
+    { id: "heartstopper-s1-e8", title: "Namoro", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/2IKUdOQTeHm9HQVOyupCXyQlbNY.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/z5slaudy4yd3odi0mc31s/Epis-dio.08.mp4?rlkey=yroyahhemiimiz4fidbb4giym" }
+  ],
+  2: [
+    { id: "heartstopper-s2-e1", title: "Revelação", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/xgPWJUahXyajUL10TYEO77gezhq.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/z6wxqembvpx5re74txwyl/Epis-dio.01-1.mp4?rlkey=7duwphgvio102s6vlc9sgw609" },
+    { id: "heartstopper-s2-e2", title: "Família", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/iZ6ZYxvgyY9vQHhXVIzHZEUlCif.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/m2ebxrdm0u5x2todblboy/Epis-dio.02-1.mp4?rlkey=4db0xj9uxla1an618je1sd95s" },
+    { id: "heartstopper-s2-e3", title: "Promessa", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/bLRXbeKxOTbmzRdjc7cg1AopXzD.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/ti0m6hhzbb3mm1uo6hg2u/Epis-dio.03-1.mp4?rlkey=wc4hvcrodzsd4ooaj96w8jxkv" },
+    { id: "heartstopper-s2-e4", title: "Desafio", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/z1dQxHqXZY5FK7GDH95wQry51Cr.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/lqnsghqkyqyc3lbkj7tue/Epis-dio.04.mp4?rlkey=1cpntz9abqa0513ncuvu2aina&st=ojkh6szy" },
+    { id: "heartstopper-s2-e5", title: "Calor", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/vOSa7CXHJvhaWkpic0tKowFVInS.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/babx2s608zpp8j55bakr7/Epis-dio.05.mp4?rlkey=29ua0szrkidzjmncr8ibj5cdw&st=aerq7f12" },
+    { id: "heartstopper-s2-e6", title: "Verdade ou consequência", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/ki2vpT7ZQmgOid7ZAy7M8PKrH2L.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/b3k6je2tyrunna8d29ayw/Epis-dio.06.mp4?rlkey=m6ryhqmjg664hqmht69nnljxk&st=fwllamu7" },
+    { id: "heartstopper-s2-e7", title: "Desculpas e arrependimentos", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/3PZjDWw1wBPWx5jXoyQ5OsanV9.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/09wnevoy1b4bzktua69ri/Epis-dio.07.mp4?rlkey=7iyfvxbysr9b4w3btyboeu5lx&st=6x93u38s" },
+    { id: "heartstopper-s2-e8", title: "Perfeito", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/tn2iYtq9Nw3eeVix4N3zRlvIfod.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/zk3ovo2d1bp5rq7n1lkd6/Epis-dio.08.mp4?rlkey=aay10wnwogtgettfjdlsqs9xg&st=rxgpc813" }
+  ],
+  3: [
+    { id: "heartstopper-s3-e1", title: "Amor", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/8AjpwsXWF6hmM3OUGbwJuChcNYj.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/4wrqectmmv03ab42yr02k/S3ep1.mp4?rlkey=7z9az4lgh1fczheio7eismciz&st=ux36zty0" },
+    { id: "heartstopper-s3-e2", title: "Casa", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/4tlhXhJEERliNfRBpFaO9yrqqgb.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/lbmfxi8x0ixzbj2ujkhxy/S3ep2.mp4?rlkey=d1d0g8h2228161jpliu331z02&st=00ypx6r4" },
+    { id: "heartstopper-s3-e3", title: "Conversa", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/sPdRCWOLroVD38hLy5PgGd8yyzJ.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/kwoissm00uasg7gw2y89q/S3ep3.mp4?rlkey=5kg715cp8v0bqzcw8j40iy2kc&st=jwdm5hkz" },
+    { id: "heartstopper-s3-e4", title: "Jornada", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/n1T4ePIvk8TSe1kT5yqsBVJtAZc.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/7kgbv073fkkvevvxuzyw3/S3ep4.mp4?rlkey=jph3gz3kcw2r6ck9cxxyaccme&st=9tmgbd0o" },
+    { id: "heartstopper-s3-e5", title: "Inverno", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/25P13klJYhnPtBPmfMNanaijYRV.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/s4dq3k9ecujoluwkfne30/S3ep5.mp4?rlkey=59ek669e76t458n9a7441t7cz&st=bihhsysz" },
+    { id: "heartstopper-s3-e6", title: "Corpo", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/hEBOND17lRNfj24j2NWWgMeBT5P.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/gssry2sehn3ioe64hbu4u/S3e6.mp4?rlkey=aev0syvjchxgf2w5jn5woujjw&st=qnvinpl7" },
+    { id: "heartstopper-s3-e7", title: "Juntos", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/uewgSxlGLMnB9zrxB2umybl0KBZ.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/wxkmlie808teahh9dadji/S3e7.mp4?rlkey=5tgfecefslhrjklujydcmxcep&st=uc2yaf3q" },
+    { id: "heartstopper-s3-e8", title: "Separados", cover: "https://media.themoviedb.org/t/p/w227_and_h127_face/K8WdfAa0usM6re9RANr6UHcNBJ.jpg", url: "https://dl.dropboxusercontent.com/scl/fi/11ipxwlo3qxx2umam1aim/S3e8.mp4?rlkey=gb53r407vfmt0apn0mskne8vd&st=14mm33sf" }
+  ]
                 }
             },
             {
@@ -1106,7 +1106,7 @@ export const db = [
                 category: 'Aventura / Fantasia / Família',
                 year: '2025',
                 yearBR: '2025 — estreia abril de 2025 nos cinemas',
-                cover: 'https://akamai.sscdn.co/uploadfile/letras/playlists/0/f/0/c/0f0c0051d76042ad8fd1121e742718a1.jpg',
+                cover: 'https://m.media-amazon.com/images/S/pv-target-images/3b77ab278c961aa0a62929a8dad3f0d3eee2f1bfcd373488ea329596391676e1.jpg',
                 description: 'Um grupo de pessoas é transportado para o mundo de Minecraft, onde precisam aprender a sobreviver e dominar as regras desse universo feito de blocos. Para voltar para casa, eles embarcam em uma jornada cheia de perigos, criaturas e descobertas, usando criatividade e trabalho em equipe.',
                 ageRating: '10',
                 distributor: 'Warner Bros. Pictures',
@@ -1537,14 +1537,15 @@ export const db = [
                 isYouTubeSeries: true,
                 seasons: {
                     1: [
-                        { id: 'amazing-digital-circus-s1-e1', title: 'Piloto', duration: 1514, url: 'https://www.youtube.com/embed/HwAPLk_sQ3w' },
-                        { id: 'amazing-digital-circus-s1-e2', title: 'Desespero no Desfiladeiro Doce!', duration: 1483, url: 'https://www.youtube.com/embed/4ofJpOEXrZs' },
-                        { id: 'amazing-digital-circus-s1-e3', title: 'O Mistério da Mansão Mildenhall', duration: 1400, url: 'https://www.youtube.com/embed/bKjfw77cxeQ' },
-                        { id: 'amazing-digital-circus-s1-e4', title: 'Um Dia a Máscara Cai', duration: 1533, url: 'https://www.youtube.com/embed/Q9KWcWKo2T8' },
-                        { id: 'amazing-digital-circus-s1-e5', title: 'Sem Título', duration: 1533, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
-                        { id: 'amazing-digital-circus-s1-e6', title: 'Todos Ganham Armas', duration: 2034, url: 'https://www.youtube.com/embed/mOvhHim78YA' },
-                        { id: 'amazing-digital-circus-s1-e7', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY' },
-                        { id: 'amazing-digital-circus-s1-e8', title: 'hjsakldfhl', duration: 0, url: 'https://www.youtube.com/embed/DMNlzf8PiEM?si=FdBSzqjAgiNoFqct' }
+                        { id: 'amazing-digital-circus-s1-e1', title: 'Piloto', duration: 1514, url: 'https://www.youtube.com/embed/HwAPLk_sQ3w', cover: 'https://i.ytimg.com/vi/HwAPLk_sQ3w/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e2', title: 'Desespero no Desfiladeiro Doce!', duration: 1483, url: 'https://www.youtube.com/embed/4ofJpOEXrZs', cover: 'https://i.ytimg.com/vi/4ofJpOEXrZs/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e3', title: 'O Mistério da Mansão Mildenhall', duration: 1400, url: 'https://www.youtube.com/embed/bKjfw77cxeQ', cover: 'https://i.ytimg.com/vi/bKjfw77cxeQ/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e4', title: 'Um Dia a Máscara Cai', duration: 1533, url: 'https://www.youtube.com/embed/Q9KWcWKo2T8', cover: 'https://i.ytimg.com/vi/Q9KWcWKo2T8/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e5', title: 'Sem Título', duration: 1533, url: 'https://www.youtube.com/embed/L4p2gN2CzsA', cover: 'https://i.ytimg.com/vi/L4p2gN2CzsA/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e6', title: 'Todos Ganham Armas', duration: 2034, url: 'https://www.youtube.com/embed/mOvhHim78YA', cover: 'https://i.ytimg.com/vi/mOvhHim78YA/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e7', title: 'Episódio de Praia', duration: 1976, url: 'https://www.youtube.com/embed/oaOG1xOk7XY', cover: 'https://i.ytimg.com/vi/oaOG1xOk7XY/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e8', title: 'hjsakldfhl', duration: 0, url: 'https://www.youtube.com/embed/DMNlzf8PiEM?si=FdBSzqjAgiNoFqct', cover: 'https://i.ytimg.com/vi/DMNlzf8PiEM/maxresdefault.jpg' },
+                        { id: 'amazing-digital-circus-s1-e9', title: 'Lembrem-se', duration: 0, url: 'https://youtu.be/PVy-bcTsO8A?si=vWNpDEZ39KAV0klX', cover: 'https://i.ytimg.com/vi/PVy-bcTsO8A/maxresdefault.jpg' }
                     ]
                 }
             },
@@ -1601,8 +1602,8 @@ export const db = [
                 originalTitle: 'Primate',
                 type: 'filme',
                 category: 'Terror / Suspense',
-                year: '2025/2026',
-                cover: 'https://cinepop.com.br/wp-content/uploads/2025/10/o-primata-696x391.jpg',
+                year: '2026',
+                cover: 'https://onpoplife.com.br/wp-content/uploads/2026/03/Primate_VariantArt_BR_3840x2160_ver3-2048x1152.jpg',
                 description: 'A universitária Lucy retorna para umas férias em casa no Havaí e se reúne com a família e o chimpanzé de estimação, Ben. Quando Ben é mordido por um animal silvestre e contrai raiva, ele se torna extremamente agressivo, forçando Lucy, amigos e parentes a lutarem pela sobrevivência enquanto tentam escapar do perigo.',
                 shortSynopsis: 'Lucy volta da faculdade para passar alguns dias com a família; após o chimpanzé Ben contrair raiva, o fim de semana se transforma em uma luta pela sobrevivência.',
                 duration: '89 minutos',
@@ -2416,7 +2417,23 @@ export const db = [
 ]
                 }
             }
-        ];
+        ,
+{
+  id: 'descendentes-pais-das-maravilhas-malvado',
+  title: 'Descendentes: País das Maravilhas Malvado',
+  originalTitle: 'Descendants: Wonderland of Evil',
+  type: 'filme',
+  category: 'Amadurecimento / Musical / Fantasia',
+  year: '2026',
+  cover: 'https://pbs.twimg.com/media/HKUgN7bXsAAsyLk?format=jpg&name=large',
+  description: 'Red e Chloe precisam voltar ao País das Maravilhas depois que um novo vilão, Maddox Hatter, captura a Rainha de Copas.',
+  ageRating: 'L',
+  distributor: 'Disney+',
+  producer: 'Disney',
+  tags: ['Musical','Fantasia'],
+  url: ''
+}
+];
 
         // Official platform links for "Veja na ..." buttons (used in details modal)
         // Keys are db item ids -> public platform URL
@@ -2462,5 +2479,6 @@ export const db = [
             'super-mario-galaxy-2026': 'https://www.primevideo.com/-/pt/detail/Super-Mario-Galaxy-O-Filme/0PBFG5N3HA86BJ9IED4VCLMBIO',
             'rivalidade-ardente': 'https://www.hbomax.com/br/pt/shows/rivalidade-ardente/50cd4e99-04ee-427b-a3b4-da721ed05d9c',
             'valentins-uma-familia-muuuito-esperta': 'https://globoplay.globo.com/valentins/t/2sCrGLb6jH/',
-            'among-us-a-serie': 'https://www.paramountplus.com/shows/among-us/'
+            'among-us-a-serie': 'https://www.paramountplus.com/shows/among-us/',
+        'descendentes-pais-das-maravilhas-malvado': 'https://www.disneyplus.com/pt-br/browse/entity-2d3229b5-5e76-47ee-be6a-bb508d7c383f'
         };
