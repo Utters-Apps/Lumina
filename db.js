@@ -644,7 +644,7 @@ export const db = [
                                 { src: 'https://cdn.cnbr.space/subtitles/623_br.vtt', kind: 'subtitles', srclang: 'pt-BR', label: 'Português (Brasil)', default: true }
                             ]
                         },
-                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e24', title: 'A Rainha da Terra do Medo', url: 'https://rumble.com/hls-vod/784hz0/playlist.m3u8', cover: '', subtitles: [] },
+                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e24', title: 'Rainha do Domo do Medo', url: 'https://rumble.com/hls-vod/795h7k/playlist.m3u8', cover: '', subtitles: [] },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e25', title: 'Protocolo Secreto', url: '' },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e26', title: 'Nêmesis', url: '' }
                     ]
