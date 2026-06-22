@@ -48,7 +48,7 @@ const STATIC_EXT = /\.(?:js|css|png|jpg|jpeg|webp|svg|gif|woff2?|ttf|ico)$/i;
  * - Any request that looks like a direct media file (.mp4, .webm, .m3u8, .mov, .ogg)
  * This improves mobile playback and seeking for CDN-hosted videos and tokenized links.
  */
-const MEDIA_HOSTS = ['dl.dropboxusercontent.com', 'player.odycdn.com', 'drive.google.com', 'odycdn.com', 'tokyvideo.com', 'playerflixapi.com', 'player.odycdn.com', 'blogger.com'];
+const MEDIA_HOSTS = ['dl.dropboxusercontent.com', 'player.odycdn.com', 'drive.google.com', 'odycdn.com', 'tokyvideo.com', 'playerflixapi.com', 'player.odycdn.com', 'blogger.com', 'rumble.com'];
 
 // Install: pre-cache core shell
 self.addEventListener('install', (event) => {
