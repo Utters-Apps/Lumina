@@ -1126,14 +1126,14 @@ export const db = [
                 ageRating: '18',
                 seasons: {
                     1: [
-                        { id: "it-bem-vindos-a-derry-s1-e1", title: 'O Piloto', url: 'https://embedplay.icu/player.php?id=5fd00c3d' },
-                        { id: "it-bem-vindos-a-derry-s1-e2", title: 'A Coisa na Escuridão', url: 'https://embedplay.icu/player.php?id=210503df' },
-                        { id: "it-bem-vindos-a-derry-s1-e3", title: 'Agora Você O Vê', url: 'https://embedplay.icu/player.php?id=ef5487b6' },
-                        { id: "it-bem-vindos-a-derry-s1-e4", title: 'O Grande Aparato Giratório do Funcionamento do Nosso Planeta', url: 'https://embedplay.icu/player.php?id=32082266' },
-                        { id: "it-bem-vindos-a-derry-s1-e5", title: 'Rua Neibolt, 29', url: 'https://embedplay.icu/player.php?id=ea9d07aa' },
-                        { id: "it-bem-vindos-a-derry-s1-e6", title: 'Em Nome do Pai', url: 'https://embedplay.icu/player.php?id=0508108d' },
-                        { id: "it-bem-vindos-a-derry-s1-e7", title: 'O Black Spot', url: 'https://embedplay.icu/player.php?id=72b303b8' },
-                        { id: "it-bem-vindos-a-derry-s1-e8", title: 'Brasas no Inverno', url: 'https://embedplay.icu/player.php?id=ce186551' }
+                        { id: "it-bem-vindos-a-derry-s1-e1", title: 'O Piloto', url: 'https://dl.dropboxusercontent.com/scl/fi/ui9cw6ynxev1ov0eq4x35/01.mp4?rlkey=6o5gg386ro00ykfke8puiz4e7&st=fv602kg9' },
+                        { id: "it-bem-vindos-a-derry-s1-e2", title: 'A Coisa na Escuridão', url: 'https://dl.dropboxusercontent.com/scl/fi/vfecyev9zkxpc7f5074iz/02.mp4?rlkey=cys2y3ywtk1ciz9hx9315tt9f&st=76tnzl1c' },
+                        { id: "it-bem-vindos-a-derry-s1-e3", title: 'Agora Você O Vê', url: 'https://dl.dropboxusercontent.com/scl/fi/2ihph28n42m4is67w0x87/03.mp4?rlkey=o7uulcdhnrs80gyli1e3l8fnt&st=2vrjfg72' },
+                        { id: "it-bem-vindos-a-derry-s1-e4", title: 'O Grande Aparato Giratório do Funcionamento do Nosso Planeta', url: 'https://dl.dropboxusercontent.com/scl/fi/y9wp80h2w2l4cs4u422sz/04.mp4?rlkey=3oaeydh9falt1028i6wc41t81&st=xz52bgrf' },
+                        { id: "it-bem-vindos-a-derry-s1-e5", title: 'Rua Neibolt, 29', url: 'https://dl.dropboxusercontent.com/scl/fi/9r1gudeycp3j8dbzoneag/05.mp4?rlkey=kkv0y3esjyv2kni0gv3itjs5g&st=ehld233l' },
+                        { id: "it-bem-vindos-a-derry-s1-e6", title: 'Em Nome do Pai', url: 'https://dl.dropboxusercontent.com/scl/fi/fsm41g4nqo7n58799ciuf/06.mp4?rlkey=xszqydq5gm2eceekska6mnaq8&st=kl7d73sm' },
+                        { id: "it-bem-vindos-a-derry-s1-e7", title: 'O Black Spot', url: 'https://dl.dropboxusercontent.com/scl/fi/ss1gy7pzhl5wm1iqwhtd5/07.mp4?rlkey=zahvukfv9d1z33l29mi1l3otz&st=a1mgosip' },
+                        { id: "it-bem-vindos-a-derry-s1-e8", title: 'Brasas no Inverno', url: 'https://dl.dropboxusercontent.com/scl/fi/u78a3z61ql23ff61w8wk3/08.mp4?rlkey=uv5snugq3ofyu3ahno5aopk43&st=f4o96pbd' }
                     ]
                 }
             },
@@ -1268,7 +1268,7 @@ export const db = [
                 distributor: 'Sony Pictures Releasing',
                 production: 'Rovio Animation / Columbia Pictures',
                 tags: ['Animação','Família'],
-                url: 'https://dl.dropboxusercontent.com/scl/fi/80zikmw07y1za5o9vdbql/Angry-Birds.mp4?rlkey=osrhvi0mv1l6yjxjmm5odl5mo&st=x9zlb5oy'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/zw0e3k4mib0gz4s96optx/Ab.mp4?rlkey=titpspdgjkg14xf3xxk7yipyt&st=79f16znz'
             },
             {
                 id: 'as-branquelas',
@@ -1422,7 +1422,19 @@ export const db = [
 { id: 'gm-s2-e7', title: "Um Banco de Ônibus e Fé em Abundância", url: "https://dl.dropboxusercontent.com/scl/fi/df2h22svpgylpkze6zqse/GRGEMNDSPC27.mp4?rlkey=7tafj83cd03ned9sbocmxb4u8&st=10f3mh9a" },
 { id: 'gm-s2-e8', title: "Mordidas, Palmadas e um Monte de Baboseira Psicológica Ianque", url: "https://dl.dropboxusercontent.com/scl/fi/nha1tsycgyeluzsb2ifzt/GRGEMNDSPC28.mp4?rlkey=wt5mbrqfxlvk5qx0frhw09fpw&st=gbqucl46" },
 { id: 'gm-s2-e9', title: "A Vingança e uma Festa Parcial", url: "https://dl.dropboxusercontent.com/scl/fi/0ufr01oqecs5dhj40s7si/GRGMND29.mp4?rlkey=9lxtwycalekn2qdaiha8pnya3&st=e1luwkla" },
-{ id: 'gm-s2-e10', title: "Miami Beach e um Natal Mágico em Família", url: "https://dl.dropboxusercontent.com/scl/fi/wjqs7691hey32ntg804up/GRGMND210.mp4?rlkey=4j8b3ymzh8vc12ygw2u60ps90&st=1o7dkwed" }
+{ id: 'gm-s2-e10', title: "Miami Beach e um Natal Mágico em Família", url: "https://dl.dropboxusercontent.com/scl/fi/wjqs7691hey32ntg804up/GRGMND210.mp4?rlkey=4j8b3ymzh8vc12ygw2u60ps90&st=1o7dkwed" },
+{ id: 'gm-s2-e11', title: 'Um Novo Hobby, Um Pervertido e Um Emprego de Meio Período', url: '' },
+{ id: 'gm-s2-e12', title: 'A Palavra Com G e Uma Bimbo Blasfemante', url: '' },
+{ id: 'gm-s2-e13', title: 'Um Universitário Especial e Doses de Tequila', url: '' },
+{ id: 'gm-s2-e14', title: 'Três Mulheres Furiosas e Uma Camisinha', url: '' },
+{ id: 'gm-s2-e15', title: 'Um Bicho de Pelúcia e Uma Ex-Namorada', url: '' },
+{ id: 'gm-s2-e16', title: 'Machos Alfa e o Poder da Oração', url: '' },
+{ id: 'gm-s2-e17', title: 'Um Clube de Campo, Um Caipira e Um Novo Chefe', url: '' },
+{ id: 'gm-s2-e18', title: 'Um Novo Placar e Um Grande Filho de Você Sabe O Que', url: '' },
+{ id: 'gm-s2-e19', title: 'Um Pouco de Conversa Fiada e Faro Para as Notícias', url: '' },
+{ id: 'gm-s2-e20', title: 'Extravagâncias e Segredos', url: '' },
+{ id: 'gm-s2-e21', title: 'Um Chili Legal e Amigos Que Tiraram a Roupa', url: '' },
+{ id: 'gm-s2-e22', title: 'Um Novo Namorado e a Mãe de Outra Pessoa', url: '' }
                     ]
                 }
             },
