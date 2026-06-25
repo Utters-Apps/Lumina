@@ -1300,7 +1300,7 @@ export const db = [
                 distributor: 'Sony Pictures Releasing',
                 production: 'Rovio Animation / Columbia Pictures',
                 tags: ['Animação','Família','Aventura'],
-                url: 'https://dl.dropboxusercontent.com/scl/fi/z81ea7gqnonpi7adtjhys/Angry.Birds.2.mp4?rlkey=ptszsvpsqt7irzhjvrkcuwefj&st=xert941d'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/vlo8ovf1yu5tv833jcpon/Ab2.mp4?rlkey=j8eptgeie0bnl9dbqotw3nwgg&st=wyp4rmn9'
             },
             {
                 id: 'alvin-na-estrada',
@@ -1423,18 +1423,18 @@ export const db = [
 { id: 'gm-s2-e8', title: "Mordidas, Palmadas e um Monte de Baboseira Psicológica Ianque", url: "https://dl.dropboxusercontent.com/scl/fi/nha1tsycgyeluzsb2ifzt/GRGEMNDSPC28.mp4?rlkey=wt5mbrqfxlvk5qx0frhw09fpw&st=gbqucl46" },
 { id: 'gm-s2-e9', title: "A Vingança e uma Festa Parcial", url: "https://dl.dropboxusercontent.com/scl/fi/0ufr01oqecs5dhj40s7si/GRGMND29.mp4?rlkey=9lxtwycalekn2qdaiha8pnya3&st=e1luwkla" },
 { id: 'gm-s2-e10', title: "Miami Beach e um Natal Mágico em Família", url: "https://dl.dropboxusercontent.com/scl/fi/wjqs7691hey32ntg804up/GRGMND210.mp4?rlkey=4j8b3ymzh8vc12ygw2u60ps90&st=1o7dkwed" },
-{ id: 'gm-s2-e11', title: 'Um Novo Hobby, Um Pervertido e Um Emprego de Meio Período', url: '' },
-{ id: 'gm-s2-e12', title: 'A Palavra Com G e Uma Bimbo Blasfemante', url: '' },
-{ id: 'gm-s2-e13', title: 'Um Universitário Especial e Doses de Tequila', url: '' },
-{ id: 'gm-s2-e14', title: 'Três Mulheres Furiosas e Uma Camisinha', url: '' },
-{ id: 'gm-s2-e15', title: 'Um Bicho de Pelúcia e Uma Ex-Namorada', url: '' },
-{ id: 'gm-s2-e16', title: 'Machos Alfa e o Poder da Oração', url: '' },
-{ id: 'gm-s2-e17', title: 'Um Clube de Campo, Um Caipira e Um Novo Chefe', url: '' },
-{ id: 'gm-s2-e18', title: 'Um Novo Placar e Um Grande Filho de Você Sabe O Que', url: '' },
-{ id: 'gm-s2-e19', title: 'Um Pouco de Conversa Fiada e Faro Para as Notícias', url: '' },
-{ id: 'gm-s2-e20', title: 'Extravagâncias e Segredos', url: '' },
-{ id: 'gm-s2-e21', title: 'Um Chili Legal e Amigos Que Tiraram a Roupa', url: '' },
-{ id: 'gm-s2-e22', title: 'Um Novo Namorado e a Mãe de Outra Pessoa', url: '' }
+{ id: 'gm-s2-e11', title: 'Um Novo Hobby, Um Pervertido e Um Emprego de Meio Período', url: 'https://dl.dropboxusercontent.com/scl/fi/v4mvrs27s037n7igycgej/11.mp4?rlkey=3e1016zhk8sp8vbcak60wz37f&st=5i787okj' },
+{ id: 'gm-s2-e12', title: 'A Palavra Com G e Uma Bimbo Blasfemante', url: 'https://dl.dropboxusercontent.com/scl/fi/fb85qs4a6ii55yygemmyw/12.mp4?rlkey=caj4dyohuhx6ocz8rjmbyzajz&st=0lssuxqf' },
+{ id: 'gm-s2-e13', title: 'Um Universitário Especial e Doses de Tequila', url: 'https://dl.dropboxusercontent.com/scl/fi/y4e5xiqakn4zgjarhzz12/13.mp4?rlkey=jud6jtk91hgxdjawu2x2zkq0x&st=zalbcebx' },
+{ id: 'gm-s2-e14', title: 'Três Mulheres Furiosas e Uma Camisinha', url: 'https://dl.dropboxusercontent.com/scl/fi/wzuwl2ptk3tuu2jyr1m0o/14.mp4?rlkey=a2fpkpuqk1k8wkqibmdz6wvlh&st=177cbhae' },
+{ id: 'gm-s2-e15', title: 'Um Bicho de Pelúcia e Uma Ex-Namorada', url: 'https://dl.dropboxusercontent.com/scl/fi/s2pun9ucm02am9h61zi2k/15.mp4?rlkey=08rdxsdk3356aqi3dob42k02l&st=x5z4edq6' },
+{ id: 'gm-s2-e16', title: 'Machos Alfa e o Poder da Oração', url: 'https://dl.dropboxusercontent.com/scl/fi/8v6yhcsvwqc1vlxlli1zr/16.mp4?rlkey=c7wllerfkajzhmmyf1vyznalm&st=cac0c33q' },
+{ id: 'gm-s2-e17', title: 'Um Clube de Campo, Um Caipira e Um Novo Chefe', url: 'https://dl.dropboxusercontent.com/scl/fi/2m3h4hn0nda5lejo4liga/17.mp4?rlkey=t61dlead3ofx7rfcivkfselaq&st=5tnfw0n7' },
+{ id: 'gm-s2-e18', title: 'Um Novo Placar e Um Grande Filho de Você Sabe O Que', url: 'https://dl.dropboxusercontent.com/scl/fi/myst25zf64bd38sw0g0wo/18.mp4?rlkey=oeddb2rhsbhmi4meeiuz6rtub&st=rr2ggocy' },
+{ id: 'gm-s2-e19', title: 'Um Pouco de Conversa Fiada e Faro Para as Notícias', url: 'https://dl.dropboxusercontent.com/scl/fi/aopenibxkz2644bgytcv4/19.mp4?rlkey=gqmftr9ps7awsywumbmbm7csu&st=ts6f0djr' },
+{ id: 'gm-s2-e20', title: 'Extravagâncias e Segredos', url: 'https://dl.dropboxusercontent.com/scl/fi/3satztgc5qp8n15j7fbn4/20.mp4?rlkey=cs5f8456v40iqtbj9og0lwopq&st=z9bekr2y' },
+{ id: 'gm-s2-e21', title: 'Um Chili Legal e Amigos Que Tiraram a Roupa', url: 'https://dl.dropboxusercontent.com/scl/fi/0jel0gm0pdy6hld10yuwe/21.mp4?rlkey=zfvhtrk1mcprt9cnqk338u8s6&st=k9o3szqo' },
+{ id: 'gm-s2-e22', title: 'Um Novo Namorado e a Mãe de Outra Pessoa', url: 'https://dl.dropboxusercontent.com/scl/fi/o0j4jxa7vqhfa29f7gjxy/22.mp4?rlkey=fjh82b0n7ozvsqwurk4zh2mq2&st=c8m98qb5' }
                     ]
                 }
             },
