@@ -1224,6 +1224,95 @@
 
         /* ========== Mobile Portrait: optimized player layout ========== */
 
+/* Fix: ensure the progress thumb (white circle) sits above the purple progress fill and is not visually occluded.
+   - Force stacking context and positioning for the progress input and its thumb across engines.
+   - Ensure the progress fill stays behind the thumb and keep consistent appearance for WebKit/Gecko. */
+#progress-bar { position: relative; z-index: 1001; }
+#progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 2px solid rgba(0,0,0,0.12) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35) !important;
+  margin-top: -6px !important; /* centers the thumb vertically against the track */
+  position: relative !important;
+  z-index: 2147483647 !important; /* ensure it is above progress fills and overlays */
+}
+
+/* Firefox */
+#progress-bar::-moz-range-thumb {
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  background: #ffffff !important;
+  border: 2px solid rgba(0,0,0,0.12) !important;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35) !important;
+  position: relative !important;
+  z-index: 2147483647 !important;
+}
+
+/* Keep track / fill visually behind the thumb */
+#progress-fill { position: relative; z-index: 1000; }
+
+/* Hover: when user hovers the progress area, make the watched (fill) color white; revert when not hovered.
+   We target the .group/progress wrapper used around the progress input so hovering anywhere on the progress row triggers it.
+   Keep a smooth transition and preserve existing shadow which we slightly tone down on hover for clarity. */
+/* When hovering, focusing, selecting or interacting with the progress area, make the already-watched fill appear white for clear highlight.
+   Covers mouse hover, pointer interaction, keyboard focus, focus-within on container, active/pressed states and direct focus/active on the hidden range input
+   so the purple fill becomes white while the user is scrubbing or has the control selected. */
+.group\/progress:hover #progress-fill,
+.group\/progress:focus-within #progress-fill,
+.group\/progress:active #progress-fill,
+#progress-bar:hover + .w-full > #progress-fill,
+#progress-bar:focus + .w-full > #progress-fill,
+#progress-bar:active + .w-full > #progress-fill,
+#progress-bar:focus-visible + .w-full > #progress-fill,
+#progress-bar:active + div > #progress-fill,
+#progress-bar:focus + div > #progress-fill,
+#progress-bar:focus-visible + div > #progress-fill,
+/* broad fallbacks targeting nearby structural variants */
+#progress-bar:hover + div > #progress-fill,
+#progress-bar:active ~ div > #progress-fill,
+#progress-bar:focus ~ div > #progress-fill,
+#progress-fill:hover,
+#progress-fill:focus,
+#progress-fill:active,
+#progress-bar::-webkit-slider-thumb:active ~ #progress-fill,
+.group\/progress:hover #progress-fill::before,
+.group\/progress:focus-within #progress-fill::before {
+  background: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
+  transition: background 140ms linear, box-shadow 140ms linear, width 140ms linear;
+}
+
+/* Ensure normal (non-hover) state remains the themed purple with a smooth transition */
+.group\/progress #progress-fill,
+#progress-fill {
+  transition: background 160ms linear, box-shadow 160ms linear, width 180ms linear;
+  background: linear-gradient(90deg,#b79df0,#8b5cf6);
+  box-shadow: 0 8px 22px rgba(139,92,246,0.08);
+}
+
+/* Ensure the visible track has enough height so the thumb doesn't overlap awkwardly */
+#progress-bar::-webkit-slider-runnable-track {
+  height: 8px !important;
+  border-radius: 999px !important;
+  background: rgba(255,255,255,0.08) !important;
+}
+
+/* Small responsive tweak to keep hit area comfortable on mobile */
+@media (max-width: 520px) {
+  #progress-bar::-webkit-slider-thumb,
+  #progress-bar::-moz-range-thumb {
+    width: 18px !important;
+    height: 18px !important;
+    margin-top: -7px !important;
+  }
+}
+
         /* Hide only the volume adjustment slider on mobile WHEN IN PORTRAIT (vertical).
            Keep the mute/volume button visible so users can still toggle audio;
            the slider will remain available again in landscape and on larger viewports.
