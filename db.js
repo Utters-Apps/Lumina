@@ -23,6 +23,100 @@ export const db = [
                     ]
                 }
             },
+{
+    id: '13-reasons-why',
+    title: '13 Reasons Why',
+    type: 'serie',
+    category: 'Drama / Mistério / Suspense',
+    year: '2017',
+    cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/socrA0GGVjORQBh1ceNFDhNvOJp.jpg',
+    description: 'Após o suicídio de Hannah Baker, Clay Jensen recebe uma caixa com fitas gravadas por ela, nas quais explica os acontecimentos e as pessoas que contribuíram para sua decisão. Enquanto ouve as gravações, Clay descobre segredos e verdades que mudam sua vida para sempre.',
+    ageRating: '18',
+    distributor: 'Netflix',
+    producer: 'Paramount Television / Anonymous Content',
+    seasons: {
+        1: [
+            {
+                id: '13-reasons-why-s1-e1',
+                title: 'Fita 1, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=caaa29eab72b231b0af62fbdff89bfce',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/1tAgtHEbyxDH0yG3U5z7Cz0Iy7p.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e2',
+                title: 'Fita 1, Lado B',
+                url: 'https://112234152.xyz/player/index.php?data=ef2ee09ea9551de88bc11fd7eeea93b0',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/nyiKGhGhBNcDcyE8gZtmlFQAQ9f.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e3',
+                title: 'Fita 2, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=8963920e8b402154316d8175fa189112',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/6Y2qQ3KDkpAuvR4MRc5e1Dehh9j.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e4',
+                title: 'Fita 2, Lado B',
+                url: 'https://112234152.xyz/player/index.php?data=f75b757d3459c3e93e98ddab7b903938',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/oUQ1OgX6Y2XSnpVRs1dc7Sg7Uxe.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e5',
+                title: 'Fita 3, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=33cf42b38bbcf1dd6ba6b0f0cd005328',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/y68oKDNtaZ9epLKRcW25XvkNu1N.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e6',
+                title: 'Fita 3, Lado B',
+                url: 'https://112234152.xyz/player/index.php?data=f056bfa71038e04a2400266027c169f9',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/sRVRagrMrPC9Ekbl5AWLVWnIi21.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e7',
+                title: 'Fita 4, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=aad64398a969ec3186800d412fa7ab31',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/zTabHoMt8I9sn5um2IZQP4XLfFI.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e8',
+                title: 'Fita 4, Lado B',
+                url: 'https://112234152.xyz/player/index.php?data=c236337b043acf93c7df397fdb9082b3',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/1FDyNmyA33xsBcYo8K8g2mOxMTA.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e9',
+                title: 'Fita 5, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=a424ded436368e3f9f10da14c23acc85',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/pPYmNgYtqvIA8AczXAj4f11qvhx.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e10',
+                title: 'Fita 5, Lado B',
+                url: 'https://112234152.xyz/player/index.php?data=6ea3f1874b188558fafbab78e8c3a968',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/g3VJwI5T8tWKOyxgkAwrVNgfxs1.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e11',
+                title: 'Fita 6, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=0d98b597aa732aea606bde680c3b57d8',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/feK2axUI5BK7DLIyHsxSLOsXnIw.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e12',
+                title: 'Fita 6, Lado B',
+                url: 'https://112234152.xyz/player/index.php?data=ba51e6158bcaf80fd0d834950251e693',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/1izib49gi3RO0ynYFtZmf7X9num.jpg'
+            },
+            {
+                id: '13-reasons-why-s1-e13',
+                title: 'Fita 7, Lado A',
+                url: 'https://112234152.xyz/player/index.php?data=6a783b626a6d892a132dc195e5504272',
+                cover: 'https://image.tmdb.org/t/p/w1920_and_h1080_face/80aueTmSX10Xclfks4sZxizRcAf.jpg'
+            }
+        ]
+    }
+},
             {
                 id: 'off-campus-amores-improvaveis',
                 title: 'Off Campus: Amores Improváveis',
@@ -666,6 +760,22 @@ export const db = [
                 tags: ['Lançamento','Popular'],
                 url: 'https://player.odycdn.com/v6/streams/dc5cefe67d37355a86a67c2a718b29ae697a0097/23dc2c.mp4'
             },
+  {
+    id: 'south-park-post-covid',
+    title: 'South Park: Pós-Covid',
+    originalTitle: 'South Park: Post COVID',
+    type: 'filme',
+    category: 'Animação, Comédia, Sátira',
+    year: '2021',
+    cover: 'https://m.media-amazon.com/images/S/pv-target-images/9d790bd6acb21a9677833c6caab7f8e43324966ddfa22b5f3751078ab13de0f7._UR1920,1080_.jpg',
+    description: 'Quarenta anos após a pandemia transformar o mundo, Stan, Kyle, Cartman e Kenny seguem caminhos completamente diferentes. Reunidos novamente por um acontecimento inesperado, os antigos amigos embarcam em uma viagem cheia de humor ácido, críticas sociais e revelações para descobrir o que realmente aconteceu durante a pandemia e tentar mudar o futuro.',
+    ageRating: '16',
+    distributor: 'Paramount+',
+    producer: 'MTV Entertainment Studios',
+    yearBR: '2021',
+    tags: ['Especial', 'South Park', 'Popular'],
+    url: 'https://1298009.xyz/filme/874299'
+},
             {
                 id: 'miraculous-world-ny',
                 title: 'Miraculous World: Nova Iorque, Heróis Unidos',
