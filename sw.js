@@ -13,7 +13,7 @@
  * - Added networkFirstRange handler to stream ranged responses and respect Range headers.
  */
 
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 const PRECACHE = `lumina-precache-${CACHE_VERSION}`;
 const RUNTIME = `lumina-runtime-${CACHE_VERSION}`;
 const NAV_CACHE_KEY = '/index.html'; // navigation fallback (app shell)

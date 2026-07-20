@@ -710,6 +710,68 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 } catch (e) { return 1; }
             })()
         };
+        // A few DOM renderers and lifecycle hooks access the shared state through
+        // window; expose the same object, not a copy.
+        try { window.state = state; } catch (_) {}
+
+        // Progress uses one canonical key everywhere. Older versions mixed plain
+        // episode ids with `series::episode`, which made saved episodes invisible
+        // to Continue Watching and prevented resume from finding the position.
+        function progressKeyForContext(context) {
+            try {
+                if (!context || !context.id) return null;
+                if (context.type !== 'serie' || !context.seriesId) return String(context.id).replace(/^.*::/, '');
+                return window.getStableEpId(
+                    String(context.seriesId),
+                    context.season,
+                    context.episode,
+                    { id: String(context.id) }
+                );
+            } catch (_) {
+                return context && context.id ? String(context.id).replace(/^.*::/, '') : null;
+            }
+        }
+
+        function findProgressEntry(seriesId, episodeId, season, episodeIndex) {
+            try {
+                if (!state.progress || !episodeId) return null;
+                const rawId = String(episodeId).replace(/^.*::/, '');
+                const canonical = seriesId
+                    ? window.getStableEpId(String(seriesId), season, episodeIndex, { id: rawId })
+                    : rawId;
+                const candidates = [canonical, `${seriesId}::${rawId}`, rawId, episodeId]
+                    .filter(Boolean)
+                    .map(String);
+                let best = null;
+                for (const key of candidates) {
+                    if (!state.progress[key]) continue;
+                    const value = state.progress[key];
+                    const time = Number(value.time ?? value.currentTime ?? value.position ?? 0) || 0;
+                    const timestamp = Number(value.timestamp) || 0;
+                    if (!best || time > best.time || (time === best.time && timestamp > best.timestamp)) {
+                        best = { key, value, time, timestamp };
+                    }
+                }
+                // Legacy keys may have been prefixed with a namespace more than once.
+                const suffix = seriesId ? `${String(seriesId)}-` : '';
+                const legacyKeys = Object.keys(state.progress).filter(key =>
+                    key === canonical ||
+                    (seriesId && key.endsWith(`::${rawId}`)) ||
+                    (seriesId && suffix && key.startsWith(suffix) && key.endsWith(rawId))
+                );
+                legacyKeys.forEach(key => {
+                    const value = state.progress[key];
+                    const time = Number(value && (value.time ?? value.currentTime ?? value.position) || 0) || 0;
+                    const timestamp = Number(value && value.timestamp) || 0;
+                    if (!best || time > best.time || (time === best.time && timestamp > best.timestamp)) {
+                        best = { key, value, time, timestamp };
+                    }
+                });
+                return best ? { key: best.key, value: best.value } : null;
+            } catch (_) {
+                return null;
+            }
+        }
 
         // Background timer control helpers:
         // Pause non-essential background activity when video playback is active to avoid
@@ -1927,11 +1989,13 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 if (prog.embed === true) return true;
                 // Must have a numeric time (seconds) and be beyond a small threshold to avoid false positives
                 // Increased from 2s -> 5s to prevent transient/erroneous marks for newly added DB entries.
-                if (typeof prog.time === 'number' && prog.time >= 5) {
+                const time = Number(prog.time);
+                const duration = Number(prog.duration);
+                if (Number.isFinite(time) && time >= 5) {
                     // If duration is known, require that time is at least 5s and not equal to duration (avoid auto-complete)
-                    if (typeof prog.duration === 'number' && prog.duration > 0) {
+                    if (Number.isFinite(duration) && duration > 0) {
                         // treat as meaningful if not essentially at EOF; small epsilon for safety
-                        return prog.time < (prog.duration - 3) || Math.abs(prog.time - prog.duration) > 0.5;
+                        return time < (duration - 3) || Math.abs(time - duration) > 0.5;
                     }
                     return true;
                 }
@@ -1960,12 +2024,18 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 db.forEach(series => {
                     if (!series || series.type !== 'serie') return;
                     const hist = (state.history && state.history[series.id]) ? state.history[series.id] : null;
-                    if (hist && hist.timestamp) {
-                        // if history points to an episode id that has meaningful progress, prefer that progress record
-                        const progFromHist = (hist.epId && state.progress && state.progress[hist.epId]) ? state.progress[hist.epId] : null;
-                        const safeProg = progFromHist && meaningfulProgress(progFromHist)
+                    if (hist && hist.timestamp && hist.s != null && hist.e != null && hist.epId) {
+                        // Resolve both current and legacy progress keys. The old
+                        // `series::episode` format must remain resumable after an update.
+                        const progMatch = findProgressEntry(series.id, hist.epId, hist.s, hist.e);
+                        const progFromHist = progMatch ? progMatch.value : null;
+                        // Keep the raw position for rendering even when it is
+                        // below the visibility threshold. History already proves
+                        // the item belongs in Continue Watching; dropping `time`
+                        // here was what made the card render without its bar.
+                        const safeProg = progFromHist
                             ? Object.assign({}, progFromHist, { timestamp: Number(progFromHist.timestamp) || Number(hist.timestamp) || now })
-                            : { timestamp: Number(hist.timestamp) || now, embed: !!(progFromHist && progFromHist.embed) };
+                            : { timestamp: Number(hist.timestamp) || now, embed: false };
                         items.push(Object.assign({}, series, { _prog: safeProg, _hist: hist }));
                         return;
                     }
@@ -1981,7 +2051,8 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                 if (!ep) continue;
                                 // stable episode id fallback if ep.id missing
                                 const epId = window.getStableEpId(series.id, s, idx, ep);
-                                const prog = (state.progress && state.progress[epId]) ? state.progress[epId] : null;
+                                const match = findProgressEntry(series.id, epId, s, idx);
+                                const prog = match ? match.value : null;
                                 if (!prog) continue;
                                 if (meaningfulProgress(prog)) {
                                     found = { epId, prog: Object.assign({}, prog) };
@@ -2706,7 +2777,8 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 const seasonArr = item.seasons && item.seasons[sToPlay] ? item.seasons[sToPlay] : [];
                 const ep = seasonArr[eToPlay] || seasonArr[0] || { id: '', title: '', url: '' };
 
-                const prog = state.progress[ep.id];
+                const progMatch = findProgressEntry(item.id, ep.id || `s${sToPlay}-e${eToPlay}`, sToPlay, eToPlay);
+                const prog = progMatch ? progMatch.value : null;
                 if(prog && prog.time > 5 && prog.time < prog.duration - 5) progressPct = (prog.time / prog.duration) * 100;
                 if(hist) playBtnText = `Continuar T${sToPlay}:E${eToPlay+1}`;
 
@@ -3227,7 +3299,8 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 const isAvailable = ep.url && ep.url.trim() !== '';
                 // use a stable episode id fallback when ep.id is missing so progress and history persist correctly
                 const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : (ep && ep.url ? `${item.id}-s${seasonNum}-e${index}` : `${item.id}-s${seasonNum}-e${index}`);
-                const prog = state.progress[stableEpId];
+                const progMatch = findProgressEntry(item.id, stableEpId, seasonNum, index);
+                const prog = progMatch ? progMatch.value : null;
                 const pct = (prog && prog.duration) ? Math.min(100, (prog.time / prog.duration) * 100) : (prog && prog.time ? Math.min(100, (prog.time / (prog.time + 60)) * 100) : 0);
                 
                 const nextE = index + 1 < episodes.length ? episodes[index+1] : null;
@@ -3278,7 +3351,8 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 const isAvailable = ep.url && ep.url.trim() !== '';
                 // stable id fallback so progress mapping works even when ep.id missing
                 const stableEpId = (ep && ep.id && String(ep.id).trim()) ? ep.id : (ep && ep.url ? `${item.id}-s${seasonNum}-e${index}` : `${item.id}-s${seasonNum}-e${index}`);
-                const prog = state.progress[stableEpId];
+                const progMatch = findProgressEntry(item.id, stableEpId, seasonNum, index);
+                const prog = progMatch ? progMatch.value : null;
                 const pct = (prog && prog.duration) ? Math.min(100, (prog.time / prog.duration) * 100) : (prog && prog.time ? Math.min(100, (prog.time / (prog.time + 60)) * 100) : 0);
                 
                 const nextE = index + 1 < episodes.length ? episodes[index+1] : null;
@@ -3439,6 +3513,10 @@ window.getStableEpId = function(seriesId, season, index, ep) {
 
         }
 
+        // The episode renderer and inline integrations call this through window.
+        // Keep that public entrypoint bound to the real implementation.
+        try { window.requestPlay = requestPlay; } catch (_) {}
+
                 // orientation handlers removed
 
         /* Hide PiP & volume controls for non-.mp4/.m3u8 playback sources — allow HLS (.m3u8) to keep PiP & audio controls visible */
@@ -3553,17 +3631,19 @@ const player = {
                 // Persist initial history/progress entry when starting playback so "Continuar Assistindo" updates immediately.
                 try {
                     if (this.context && this.context.type === 'serie' && this.context.seriesId) {
+                        const canonicalId = progressKeyForContext(this.context);
                         state.history[this.context.seriesId] = {
                             s: this.context.season,
                             e: this.context.episode,
-                            epId: this.context.id,
+                            epId: canonicalId || this.context.id,
                             timestamp: Date.now()
                         };
                         // write to storage (debounced inside saveProgressData)
                         saveProgressData();
                     } else if (this.context && this.context.type === 'filme' && this.context.id) {
                         // ensure a placeholder progress record exists for films (helps continue list and safe saves)
-                        state.progress[this.context.id] = state.progress[this.context.id] || { time: 0, duration: 0, timestamp: Date.now() };
+                        const filmKey = progressKeyForContext(this.context) || this.context.id;
+                        state.progress[filmKey] = state.progress[filmKey] || { time: 0, duration: 0, timestamp: Date.now() };
                         saveProgressData();
                     }
                 } catch (e) { /* non-blocking */ }
@@ -4163,8 +4243,9 @@ const player = {
                                             try { if (typeof player.updateSkipIntroVisibility === 'function') player.updateSkipIntroVisibility(cur); } catch(_) {}
                                             try { if (typeof player.checkNextTrigger === 'function') player.checkNextTrigger(); } catch(_) {}
                                             if (this.context && this.context.id && typeof cur === 'number' && !isNaN(cur)) {
-                                                state.progress[this.context.id] = { time: cur, duration: this.ytPlayer.getDuration() || 0, timestamp: Date.now() };
-                                                if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
+                                                const progressKey = progressKeyForContext(this.context) || this.context.id;
+                                                state.progress[progressKey] = { time: cur, duration: this.ytPlayer.getDuration() || 0, timestamp: Date.now() };
+                                                if (this.context.type === 'serie') state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: progressKey, timestamp: Date.now() };
                                                 saveProgressData();
                                             }
                                         }, 500);
@@ -4770,7 +4851,13 @@ const player = {
                 if (!this.vid) return;
                 if (!this.context || !this.context.id) return;
                 if (this._restoredOnce) return;
-                const prog = state.progress[this.context.id];
+                const progressMatch = findProgressEntry(
+                    this.context.seriesId,
+                    this.context.id,
+                    this.context.season,
+                    this.context.episode
+                );
+                const prog = progressMatch ? progressMatch.value : state.progress[this.context.id];
                 // Only restore when there's meaningful saved progress (>5s) to avoid jumping on first play
                 if (!prog || typeof prog.time !== 'number' || prog.time <= 5) return;
 
@@ -4850,9 +4937,10 @@ const player = {
                         // mark as restored regardless to avoid repeated seeks; still update progress flag
                         this._restoredOnce = true;
                         try {
-                            const ex = state.progress[this.context.id] || {};
+                            const restoredKey = progressKeyForContext(this.context) || this.context.id;
+                            const ex = state.progress[restoredKey] || (progressMatch && progressMatch.value) || {};
                             ex._restored = true;
-                            state.progress[this.context.id] = ex;
+                            state.progress[restoredKey] = ex;
                             saveProgressData();
                         } catch(_) {}
 
@@ -4898,17 +4986,17 @@ const player = {
                     }
 
                     const safeCur = hasTime ? (dur > 0 ? Math.max(0, Math.min(cur, Math.max(0, dur - 0.5))) : Math.max(0, cur)) : 0;
-                    let ctxId = String(this.context.id);
-                    try {
-                        if (this.context.type === 'serie' && this.context.seriesId) {
-                            const sid = String(this.context.seriesId);
-                            if (!ctxId.startsWith(sid + '::')) ctxId = `${sid}::${ctxId}`;
-                        }
-                    } catch (_) {}
+                    const ctxId = progressKeyForContext(this.context) || String(this.context.id);
 
                     // ONLY mutate the single entry for the active context id and its series history.
                     try {
-                        const prev = state.progress[ctxId] || {};
+                        const legacy = findProgressEntry(
+                            this.context.type === 'serie' ? this.context.seriesId : null,
+                            this.context.id,
+                            this.context.season,
+                            this.context.episode
+                        );
+                        const prev = state.progress[ctxId] || (legacy && legacy.value) || {};
                         if (hasTime) {
                             // avoid regressing: keep the larger time when timestamps are equal or older
                             const prevTime = (typeof prev.time === 'number') ? prev.time : -1;
@@ -4917,7 +5005,7 @@ const player = {
                                 // if previous time is more recent within a small race window, keep prev (avoid overwrite by concurrent writes)
                                 state.progress[ctxId] = Object.assign({}, prev, { timestamp: nowTs });
                             } else {
-                                state.progress[ctxId] = { time: safeCur, duration: dur || (prev.duration || 0), timestamp: nowTs };
+                            state.progress[ctxId] = { time: safeCur, duration: dur || (prev.duration || 0), timestamp: nowTs };
                             }
                         } else {
                             // mark as embed-started without touching other entries
@@ -4929,7 +5017,7 @@ const player = {
                             state.history[sid] = {
                                 s: this.context.season,
                                 e: this.context.episode,
-                                epId: this.context.id,
+                                epId: ctxId,
                                 timestamp: Date.now()
                             };
                         }
@@ -4944,7 +5032,8 @@ const player = {
                     // best-effort safe fallback
                     try {
                         if (this.context && this.context.id) {
-                            state.progress[this.context.id] = state.progress[this.context.id] || { embed: true, timestamp: Date.now() };
+                            const fallbackKey = progressKeyForContext(this.context) || String(this.context.id);
+                            state.progress[fallbackKey] = state.progress[fallbackKey] || { embed: true, timestamp: Date.now() };
                             try { saveProgressData(); } catch(_) {}
                         }
                     } catch(_) {}
@@ -5501,6 +5590,7 @@ const player = {
                     try {
                         const safeTime = Math.max(0, Math.max(0, dur - 0.5));
                         if (this.context && this.context.id) {
+                            const progressKey = progressKeyForContext(this.context) || this.context.id;
                             // First determine if there's actually a next episode (across seasons)
                             const seriesDataTmp = db.find(i => i.id === this.context.seriesId);
                             let nextContextTmp = this.context.nextEp || null;
@@ -5526,31 +5616,31 @@ const player = {
                             if (!nextContextTmp && this.context.type === 'serie') {
                                 try {
                                     // update timestamp only, do NOT delete progress/history or mark as "completed"
-                                    if (state.progress && state.progress[this.context.id]) {
-                                        state.progress[this.context.id].timestamp = Date.now();
+                                    if (state.progress && state.progress[progressKey]) {
+                                        state.progress[progressKey].timestamp = Date.now();
                                     } else {
-                                        state.progress[this.context.id] = { time: safeTime, duration: dur, timestamp: Date.now() };
+                                        state.progress[progressKey] = { time: safeTime, duration: dur, timestamp: Date.now() };
                                     }
                                     if (state.history && state.history[this.context.seriesId]) {
                                         state.history[this.context.seriesId].timestamp = Date.now();
                                     } else {
-                                        state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: this.context.id, timestamp: Date.now() };
+                                        state.history[this.context.seriesId] = { s: this.context.season, e: this.context.episode, epId: progressKey, timestamp: Date.now() };
                                     }
                                     saveProgressData();
                                 } catch (_) {}
                             } else {
                                 // Not the final series ep: update last time/duration/timestamp but do NOT set a 'completed' flag.
-                                state.progress[this.context.id] = state.progress[this.context.id] || {};
-                                state.progress[this.context.id].time = safeTime;
-                                state.progress[this.context.id].duration = dur;
+                                state.progress[progressKey] = state.progress[progressKey] || {};
+                                state.progress[progressKey].time = safeTime;
+                                state.progress[progressKey].duration = dur;
                                 // DO NOT set a 'completed' flag so the UI never treats items as fully watched automatically.
-                                state.progress[this.context.id].timestamp = Date.now();
+                                state.progress[progressKey].timestamp = Date.now();
                                 // update series history timestamp (do not set history.completed)
                                 if (this.context.type === 'serie' && this.context.seriesId) {
                                     state.history[this.context.seriesId] = {
                                         s: this.context.season,
                                         e: this.context.episode,
-                                        epId: this.context.id,
+                                        epId: progressKey,
                                         timestamp: Date.now()
                                     };
                                 }
@@ -5644,6 +5734,10 @@ const player = {
                 }
             }
         };
+
+        // Keep the player available to lifecycle wrappers and diagnostics. The
+        // player itself remains the same module-local singleton.
+        try { window.player = player; } catch (_) {}
 
         function openPlayer(url, title, context) {
     try {
@@ -6496,9 +6590,70 @@ const player = {
             return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}` : `${m.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
         }
 
+        // Subtitle files are not always served with a correct charset.  In particular,
+        // older SRT files are frequently Windows-1252/Latin-1 instead of UTF-8.  Decode
+        // the bytes explicitly before creating the VTT blob so accents never become replacement characters.
+        function decodeSubtitleBuffer(buffer) {
+            const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer || []);
+            if (!bytes.length) return '';
+
+            const decode = (encoding, data = bytes) => {
+                try { return new TextDecoder(encoding, { fatal: false }).decode(data); }
+                catch (_) { return ''; }
+            };
+
+            // BOMs are authoritative and must be handled before UTF-8 detection.
+            if (bytes.length >= 3 && bytes[0] === 0xEF && bytes[1] === 0xBB && bytes[2] === 0xBF) {
+                return decode('utf-8', bytes.subarray(3));
+            }
+            if (bytes.length >= 2 && bytes[0] === 0xFF && bytes[1] === 0xFE) {
+                return decode('utf-16le', bytes.subarray(2));
+            }
+            if (bytes.length >= 2 && bytes[0] === 0xFE && bytes[1] === 0xFF) {
+                return decode('utf-16be', bytes.subarray(2));
+            }
+
+            // A fatal UTF-8 decode is a reliable way to distinguish legacy encodings.
+            try {
+                return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+            } catch (_) {
+                // windows-1252 also covers the punctuation used by most Latin-1 SRTs.
+                return decode('windows-1252') || decode('iso-8859-1');
+            }
+        }
+
+        function srtToVtt(text) {
+            return 'WEBVTT\n\n' + String(text || '')
+                .replace(/^\uFEFF/, '')
+                .replace(/\r\n?/g, '\n')
+                .replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
+        }
+
+        function findSubtitleTextTrack(videoEl, trackEl, descriptor) {
+            const tracks = Array.from(videoEl && videoEl.textTracks ? videoEl.textTracks : []);
+            return tracks.find(tt =>
+                (descriptor && descriptor.label && tt.label === descriptor.label) ||
+                (descriptor && descriptor.srclang && tt.language && tt.language.toLowerCase().startsWith(String(descriptor.srclang).toLowerCase())) ||
+                (trackEl && tt.label === trackEl.label)
+            ) || tracks[tracks.length - 1] || null;
+        }
+
+        function setSubtitleTrackMode(videoEl, desiredMode, trackEl, descriptor) {
+            const target = findSubtitleTextTrack(videoEl, trackEl, descriptor);
+            if (!target) return null;
+            try {
+                Array.from(videoEl.textTracks || []).forEach(tt => {
+                    if (tt.kind === 'subtitles' || tt.kind === 'captions') tt.mode = tt === target ? desiredMode : 'disabled';
+                });
+            } catch (_) {
+                try { target.mode = desiredMode; } catch (_) {}
+            }
+            return target;
+        }
+
         // Attach subtitle <track> elements to a video element from an array of subtitle descriptors.
         // Each descriptor: { src, kind, srclang, label, default }
-        // Improved: create VTT blobs when needed and ensure textTracks mode is set reliably once tracks are ready.
+        // SRT bytes are decoded explicitly and converted to UTF-8 WebVTT.
         async function attachSubtitlesToVideo(videoEl, subs) {
             try {
                 if (!videoEl || !subs || !Array.isArray(subs)) return;
@@ -6512,17 +6667,24 @@ const player = {
                     try {
                         if (!s || !s.src) continue;
 
-                        // If the incoming src looks like .srt, convert it to VTT blob and use an object URL
+                        // Normalize SRT and VTT files into a UTF-8 blob. This also fixes
+                        // VTT files that were published with an incorrect charset header.
                         let trackSrc = s.src;
                         try {
-                            if (/\.srt(\?|$)/i.test(s.src)) {
-                                // fetch SRT and convert to VTT in-memory
+                            const isSrt = /\.srt(?:\?|$)/i.test(s.src);
+                            const isVtt = /\.vtt(?:\?|$)/i.test(s.src);
+                            if (isSrt || isVtt) {
                                 const res = await fetch(s.src, { cache: 'no-store' }).catch(()=>null);
                                 if (res && res.ok) {
-                                    const srtText = await res.text().catch(()=>'');
-                                    const vtt = 'WEBVTT\n\n' + srtText.replace(/\r+/g,'').replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
-                                    const blob = new Blob([vtt], { type: 'text/vtt' });
-                                    trackSrc = URL.createObjectURL(blob);
+                                    const bytes = await res.arrayBuffer().catch(() => null);
+                                    if (bytes) {
+                                        const subtitleText = decodeSubtitleBuffer(bytes);
+                                        const vtt = isSrt
+                                            ? srtToVtt(subtitleText)
+                                            : (/^\s*WEBVTT/i.test(subtitleText) ? subtitleText : srtToVtt(subtitleText));
+                                        const blob = new Blob([vtt], { type: 'text/vtt;charset=utf-8' });
+                                        trackSrc = URL.createObjectURL(blob);
+                                    }
                                 }
                             }
                         } catch(_) {
@@ -6543,20 +6705,7 @@ const player = {
                         const ensureMode = () => {
                             try {
                                 const tracks = videoEl.textTracks || [];
-                                for (let i = 0; i < tracks.length; i++) {
-                                    const tt = tracks[i];
-                                    // match by label or srclang or kind
-                                    if ((s.label && tt.label === s.label) || (s.srclang && tt.language && tt.language.toLowerCase().indexOf(String(s.srclang).toLowerCase())!==-1) || tt.kind === (s.kind || 'subtitles')) {
-                                        try {
-                                            // Force visible: we set to 'showing' to ensure captions appear in UI,
-                                            // but respect explicit default=false by still enabling display programmatically.
-                                            tt.mode = 'showing';
-                                        } catch(_) {
-                                            // some engines require setting on the track element after a tiny delay
-                                            setTimeout(() => { try { tt.mode = 'showing'; } catch(_) {} }, 120);
-                                        }
-                                    }
-                                }
+                                setSubtitleTrackMode(videoEl, 'showing', tr, s);
                                 // Also ensure our captions toggle/button exists and reflects visible state
                                 try { 
                                     if (typeof ensureCaptionsButton === 'function') ensureCaptionsButton(videoEl); 
@@ -6948,7 +7097,7 @@ const player = {
                 // watched class and check badge when pct > 90
                 const watchedClass = pct > 90 ? 'is-watched' : '';
                 const checkBadgeHtml = pct > 90 ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
-                const progressHtml = pct > 0 ? `<div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>` : '';
+                const progressHtml = pct > 0 ? `<div class="progress-bar-container" style="position:absolute;left:0;bottom:0;width:100%;height:4px;background:rgba(255,255,255,.18);z-index:60;display:block;overflow:hidden;"><div class="progress-bar-fill" style="display:block;width:${pct}%;height:100%;background:linear-gradient(90deg,#9333ea,#a855f7);box-shadow:0 0 10px rgba(168,85,247,.6);"></div></div>` : '';
 
                 card.className = card.className + ' ' + watchedClass;
 
@@ -6988,11 +7137,33 @@ const player = {
                 card.className = 'w-64 md:w-80 shrink-0 hover-card cursor-pointer group session-card';
                 card.onclick = () => openDetails(item.id);
                 
-                const pct = Math.min(100, ((item._prog && item._prog.time && item._prog.duration) ? (item._prog.time / item._prog.duration) * 100 : ((item._prog && item._prog.time) ? Math.min(100, (item._prog.time / (item._prog.time + 60)) * 100) : 0)));
+                // Re-read the current entry so cards stay correct after an
+                // autosave or a legacy-key migration, then normalize numeric
+                // values before calculating the percentage.
+                let progress = item._prog || {};
+                try {
+                    if (item.type === 'serie' && item._hist && item._hist.epId) {
+                        const match = findProgressEntry(item.id, item._hist.epId, item._hist.s, item._hist.e);
+                        if (match && match.value) progress = match.value;
+                    } else if (item.type === 'filme') {
+                        const filmKey = item.id_ep || item.id;
+                        if (state.progress && state.progress[filmKey]) progress = state.progress[filmKey];
+                    }
+                } catch (_) {}
+                const time = Number(progress.time ?? progress.currentTime ?? progress.position ?? 0);
+                const duration = Number(progress.duration ?? progress.totalDuration ?? 0);
+                let pct = 0;
+                if (Number.isFinite(time) && time > 0) {
+                    pct = duration > 0 ? (time / duration) * 100 : (time / (time + 60)) * 100;
+                } else if (progress.embed === true) {
+                    // An embed has no reliable duration, but it was started.
+                    pct = 2;
+                }
+                pct = Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0;
                 const subtitle = item._hist ? `T${item._hist.s} : E${item._hist.e+1}` : 'Continuar filme';
                 const watchedClass = pct > 90 ? 'is-watched' : '';
                 const checkBadgeHtml = pct > 90 ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
-                const progressHtml = pct > 0 ? `<div class="progress-bar-container"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>` : '';
+                const progressHtml = pct > 0 ? `<div class="progress-bar-container" style="position:absolute;left:0;bottom:0;width:100%;height:4px;background:rgba(255,255,255,.18);z-index:60;display:block;overflow:hidden;"><div class="progress-bar-fill" style="display:block;width:${pct}%;height:100%;background:linear-gradient(90deg,#9333ea,#a855f7);box-shadow:0 0 10px rgba(168,85,247,.6);"></div></div>` : '';
 
                 card.className = card.className + ' ' + watchedClass;
 
@@ -7441,6 +7612,70 @@ const player = {
 // Override flushProgressNow to enforce per-context atomic saves and prevent cross-series contamination
 window.flushProgressNow = function() {
   try {
+    // Keep every valid entry when flushing. The previous implementation wrote
+    // only the active episode and deleted all other Continue Watching entries.
+    {
+      const progressStoreKey = 'lumina_v2_prog';
+      const historyStoreKey = 'lumina_v2_hist';
+      const parseObject = (raw) => {
+        try {
+          const value = JSON.parse(raw || '{}');
+          return value && typeof value === 'object' ? value : {};
+        } catch (_) { return {}; }
+      };
+      const storedProgress = parseObject(localStorage.getItem(progressStoreKey));
+      const storedHistory = parseObject(localStorage.getItem(historyStoreKey));
+      const mergedProgress = Object.assign({}, storedProgress);
+      const mergedHistory = Object.assign({}, storedHistory);
+
+      const mergeEntries = (target, source) => {
+        Object.keys(source || {}).forEach(key => {
+          try {
+            const incoming = source[key] || {};
+            const previous = target[key] || {};
+            const incomingTs = Number(incoming.timestamp) || Date.now();
+            const previousTs = Number(previous.timestamp) || 0;
+            if (incomingTs >= previousTs) {
+              target[key] = Object.assign({}, previous, incoming, { timestamp: incomingTs });
+            } else if (typeof incoming.time === 'number' && typeof previous.time === 'number') {
+              // A delayed flush must never move the resume position backwards.
+              target[key] = Object.assign({}, previous, { time: Math.max(previous.time, incoming.time) });
+            }
+          } catch (_) {}
+        });
+      };
+
+      const activeContext = (window.player && window.player.context) ? window.player.context : null;
+      if (activeContext && activeContext.id) {
+        const canonicalKey = progressKeyForContext(activeContext) || String(activeContext.id);
+        const legacyMatch = findProgressEntry(
+          activeContext.type === 'serie' ? activeContext.seriesId : null,
+          activeContext.id,
+          activeContext.season,
+          activeContext.episode
+        );
+        if (canonicalKey && legacyMatch && !state.progress[canonicalKey]) {
+          state.progress[canonicalKey] = Object.assign({}, legacyMatch.value);
+        }
+        if (activeContext.type === 'serie' && activeContext.seriesId) {
+          const sid = String(activeContext.seriesId);
+          const currentHistory = state.history[sid] || {};
+          state.history[sid] = Object.assign({}, currentHistory, {
+            s: activeContext.season,
+            e: activeContext.episode,
+            epId: canonicalKey,
+            timestamp: Number(currentHistory.timestamp) || Date.now()
+          });
+        }
+      }
+
+      mergeEntries(mergedProgress, state.progress || {});
+      mergeEntries(mergedHistory, state.history || {});
+      try { localStorage.setItem(progressStoreKey, JSON.stringify(mergedProgress)); } catch (_) {}
+      try { localStorage.setItem(historyStoreKey, JSON.stringify(mergedHistory)); } catch (_) {}
+      return;
+    }
+
     const progKey = 'lumina_v2_prog';
     const histKey = 'lumina_v2_hist';
     // load safely
@@ -8019,35 +8254,17 @@ window.flushProgressNow = function() {
             // URL for the SRT provided (Espíritos na Escola - S01E01)
             const LUMINA_SRT_URL = 'https://raw.githubusercontent.com/Utters-Apps/Captions/9ac0d1b142f6c2f77af7f300af1dd279a323cf61/School.Spirits.2023.S01E01.My.So-Called.Death.720p.AMZN.WEB-DL.DDP5.1.H.264-NTb.srt';
 
-            // Convert SRT text to VTT
-            function convertSRTtoVTT(srt) {
-                if (!srt) return 'WEBVTT\n\n';
-                return 'WEBVTT\n\n' + srt.replace(/\r+/g,'').replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
-            }
-
             // Create and attach VTT track to a video element; returns the created track element
             async function attachSRTasVTT(videoEl, srtUrl, label = 'Português (BR)') {
             if (!videoEl || !srtUrl) return null;
             try {
-                // Fetch as ArrayBuffer and decode explicitly as UTF-8 to preserve accents/special chars across origins/encodings.
+                // Decode from bytes so UTF-8, UTF-16 and Windows-1252 SRTs all work.
                 const res = await fetch(srtUrl, { cache: 'no-store' });
                 if (!res || !res.ok) return null;
-                let srtText = '';
-                try {
-                    // prefer arrayBuffer + TextDecoder('utf-8') to avoid mojibake
-                    const buf = await res.arrayBuffer();
-                    srtText = new TextDecoder('utf-8').decode(new Uint8Array(buf));
-                    // Basic sanity: if decoded text looks empty, fallback to text()
-                    if (!srtText || /^\s*$/.test(srtText)) {
-                        srtText = await res.text().catch(() => '');
-                    }
-                } catch (decodeErr) {
-                    // fallback: try text() if arrayBuffer/decoder failed (best-effort)
-                    try { srtText = await res.text().catch(() => ''); } catch (_) { srtText = ''; }
-                }
+                const buf = await res.arrayBuffer().catch(() => null);
+                const srtText = buf ? decodeSubtitleBuffer(buf) : '';
 
-                const vttText = convertSRTtoVTT(srtText);
-                const blob = new Blob([vttText], { type: 'text/vtt' });
+                const blob = new Blob([srtToVtt(srtText)], { type: 'text/vtt;charset=utf-8' });
                 const vttUrl = URL.createObjectURL(blob);
 
                 // remove any existing similar track for safety
@@ -8065,20 +8282,12 @@ window.flushProgressNow = function() {
                 track.default = false;
                 videoEl.appendChild(track);
 
-                // ensure the browser sees the track and set mode defensively
-                try { track.mode = 'disabled'; } catch (_) {}
-                // After a short delay ensure the corresponding TextTrack is set to 'showing' when appropriate by toggles
+                // The mode belongs to the TextTrack collection, not the <track> node.
                 setTimeout(() => {
                     try {
-                        const tracks = videoEl.textTracks || [];
-                        for (let i = 0; i < tracks.length; i++) {
-                            const tt = tracks[i];
-                            if ((label && tt && tt.label === label) || (tt && /pt/i.test(tt.language))) {
-                                try { tt.mode = 'disabled'; } catch (_) {}
-                            }
-                        }
+                        setSubtitleTrackMode(videoEl, 'showing', track, { label, srclang: 'pt-BR' });
                     } catch (_) {}
-                }, 200);
+                }, 240);
 
                 return track;
             } catch (e) {
@@ -8119,26 +8328,33 @@ window.flushProgressNow = function() {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
                         try {
-                            const tracks = Array.from(videoEl.querySelectorAll('track'));
-                            if (!tracks.length) {
+                            const trackElements = Array.from(videoEl.querySelectorAll('track'));
+                            const tracks = Array.from(videoEl.textTracks || []).filter(tt => tt.kind === 'subtitles' || tt.kind === 'captions');
+                            if (!trackElements.length || !tracks.length) {
                                 // no track present: try to attach default SRT source (only for the known ep)
                                 attachSRTasVTT(videoEl, LUMINA_SRT_URL).then(track => {
                                     if (!track) { showToast && showToast('Falha ao carregar legendas.'); return; }
-                                    try { track.mode = 'showing'; btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch(_) {}
+                                    try {
+                                        setSubtitleTrackMode(videoEl, 'showing', track, { label: 'Português (BR)', srclang: 'pt-BR' });
+                                        btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)';
+                                    } catch(_) {}
                                 });
                                 return;
                             }
-                            // prefer Portuguese track if present
-                            let target = tracks.find(t => /pt/i.test(t.srclang)) || tracks[0];
+                            // Prefer the Portuguese TextTrack, not the HTML <track> element.
+                            let target = tracks.find(t => /pt/i.test(t.language)) || tracks[0];
                             if (!target) return;
-                            // toggle between showing and disabled
                             try {
-                                if (target.mode === 'showing') { target.mode = 'disabled'; btn.style.background = ''; }
-                                else { target.mode = 'showing'; btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; }
+                                if (target.mode === 'showing') {
+                                    target.mode = 'disabled';
+                                    btn.style.background = '';
+                                } else {
+                                    setSubtitleTrackMode(videoEl, 'showing', null, { srclang: target.language || 'pt' });
+                                    btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)';
+                                }
                             } catch (err) {
-                                // some browsers require setting mode after track is ready, try after short delay
                                 setTimeout(() => {
-                                    try { target.mode = (target.mode === 'showing') ? 'disabled' : 'showing'; } catch(_) {}
+                                    try { setSubtitleTrackMode(videoEl, target.mode === 'showing' ? 'disabled' : 'showing', null, { srclang: target.language || 'pt' }); } catch(_) {}
                                 }, 120);
                             }
                         } catch (err) {
@@ -8171,7 +8387,10 @@ window.flushProgressNow = function() {
                                                     ensureCaptionsButton(videoEl);
                                                     // Show captions automatically (nice UX) after track loads
                                                     if (tr) {
-                                                        try { tr.mode = 'showing'; document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'); } catch(_) {}
+                                                        try {
+                                                            setSubtitleTrackMode(videoEl, 'showing', tr, { label: 'Português (BR)', srclang: 'pt-BR' });
+                                                            document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)');
+                                                        } catch(_) {}
                                                     }
                                                 } else {
                                                     // For any other video, still provide captions button if tracks appear later by observing track additions
@@ -8243,54 +8462,13 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
             } catch (e) { return null; }
         }
 
-        const hasReplacementChar = (str) => {
-            if (!str) return false;
-            return /\uFFFD/.test(str) || / /.test(str);
-        };
-
-        const tryDecode = (u8, enc) => {
-            try { return new TextDecoder(enc, { fatal: false }).decode(u8); }
-            catch (e) {
-                try { return new TextDecoder(enc === 'utf-8' ? 'iso-8859-1' : 'utf-8').decode(u8); }
-                catch (_) { return ''; }
-            }
-        };
-
         const buf = await fetchArrayBuffer(srtUrl);
         if (!buf) return null;
-        const u8 = new Uint8Array(buf);
-
-        // 1) Prefer UTF-8
-        let srtText = tryDecode(u8, 'utf-8');
-
-        // 2) If replacement characters detected, try windows-1252 then iso-8859-1
-        if (hasReplacementChar(srtText)) {
-            const win1252 = tryDecode(u8, 'windows-1252');
-            if (!hasReplacementChar(win1252) && win1252.trim().length > 0) srtText = win1252;
-            else {
-                const latin1 = tryDecode(u8, 'iso-8859-1');
-                if (!hasReplacementChar(latin1) && latin1.trim().length > 0) srtText = latin1;
-                else srtText = win1252.length > srtText.length ? win1252 : srtText;
-            }
-        }
-
-        // 3) Check for UTF-16 BOM and decode if present
-        try {
-            if (u8.length >= 2) {
-                const bom0 = u8[0], bom1 = u8[1];
-                if ((bom0 === 0xFE && bom1 === 0xFF) || (bom0 === 0xFF && bom1 === 0xFE)) {
-                    try { srtText = new TextDecoder('utf-16').decode(u8); } catch (_) {}
-                }
-            }
-        } catch (_) {}
-
-        // 4) Last-resort: iso-8859-1 fallback if still broken
-        if (hasReplacementChar(srtText)) {
-            try { const iso = tryDecode(u8, 'iso-8859-1'); if (iso && iso.replace(/\s/g,'').length > 0) srtText = iso; } catch(_) {}
-        }
+        // Use the same BOM/UTF-8/Windows-1252 decoder as regular episode subtitles.
+        const srtText = decodeSubtitleBuffer(buf);
 
         // Convert SRT to VTT preserving timestamps and line breaks
-        const vtt = 'WEBVTT\n\n' + srtText.replace(/\r+/g,'').replace(/(\d+):(\d+):(\d+),(\d+)/g, '$1:$2:$3.$4');
+        const vtt = srtToVtt(srtText);
 
         const blob = new Blob([vtt], { type: 'text/vtt;charset=utf-8' });
         const vttUrl = URL.createObjectURL(blob);
@@ -8311,13 +8489,7 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
         // Ensure track is recognized and set to showing (with small delay to account for browser processing)
         setTimeout(() => {
             try {
-                const tracks = videoEl.textTracks || [];
-                for (let i = 0; i < tracks.length; i++) {
-                    const tt = tracks[i];
-                    if ((tt.label && tt.label === label) || (tt.language && /pt/i.test(tt.language))) {
-                        try { tt.mode = 'showing'; } catch (_) { setTimeout(()=>{ try{ tt.mode = 'showing'; }catch(_){} }, 120); }
-                    }
-                }
+                setSubtitleTrackMode(videoEl, 'showing', track, { label, srclang: 'pt-BR' });
                 try { if (typeof ensureCaptionsButton === 'function') ensureCaptionsButton(videoEl); } catch (_) {}
                 const btn = document.getElementById('lumina-captions-btn');
                 if (btn) try { btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch (_) {}
@@ -8328,6 +8500,58 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
     } catch (e) {
         console.warn('attachSRTasVTT robust override failed', e);
         return null;
+    }
+};
+
+// Single captions control used by every player path.  The `mode` property belongs
+// to a TextTrack (video.textTracks), not to the HTML <track> element.
+window.ensureCaptionsButton = function ensureCaptionsButton(videoEl) {
+    try {
+        const video = videoEl && videoEl.tagName && videoEl.tagName.toLowerCase() === 'video'
+            ? videoEl
+            : (videoEl && videoEl.querySelector ? videoEl.querySelector('video') : null);
+        if (!video) return;
+
+        let button = document.getElementById('lumina-captions-btn');
+        if (!button) {
+            button = document.createElement('button');
+            button.id = 'lumina-captions-btn';
+            button.className = 'w-10 h-10 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors';
+            button.title = 'Legendas';
+            button.setAttribute('aria-label', 'Legendas');
+            button.style.minWidth = '40px';
+            button.style.marginLeft = '6px';
+            button.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M7 10h10M7 14h6"/></svg>';
+            const controls = document.querySelector('.player-ui .flex.items-center.gap-6') || document.querySelector('.player-ui');
+            if (controls) controls.insertBefore(button, controls.firstChild);
+        }
+
+        button.__luminaBoundVideo = video;
+        button.onclick = function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            const tracks = Array.from(video.textTracks || []).filter(tt => tt.kind === 'subtitles' || tt.kind === 'captions');
+            const target = tracks.find(tt => /^(pt)(-|$)/i.test(tt.language || '')) || tracks[0];
+            if (!target) return;
+
+            if (target.mode === 'showing') {
+                target.mode = 'disabled';
+            } else {
+                setSubtitleTrackMode(video, 'showing', null, { srclang: target.language || 'pt' });
+            }
+            button.setAttribute('aria-pressed', target.mode === 'showing' ? 'true' : 'false');
+            button.style.background = target.mode === 'showing' ? 'linear-gradient(90deg,#8b5cf6,#7c3aed)' : '';
+        };
+
+        const tracks = Array.from(video.textTracks || []).filter(tt => tt.kind === 'subtitles' || tt.kind === 'captions');
+        const active = tracks.some(tt => tt.mode === 'showing');
+        button.disabled = tracks.length === 0;
+        button.setAttribute('aria-disabled', tracks.length === 0 ? 'true' : 'false');
+        button.setAttribute('aria-pressed', active ? 'true' : 'false');
+        button.style.opacity = tracks.length === 0 ? '0.4' : '';
+        button.style.background = active ? 'linear-gradient(90deg,#8b5cf6,#7c3aed)' : '';
+    } catch (error) {
+        console.warn('ensureCaptionsButton failed', error);
     }
 };
 
@@ -8373,9 +8597,13 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
                         snapshot.entries[`${series.id}|${seasonKey}|__noep__`] = { state: 'noep', seriesId: series.id, season: seasonKey, epId: null };
                         return;
                     }
-                    // determine stable episode id used in progress store: prefer ep.id if present, else generated stable id
-                    const stableEpId = (ep.id && String(ep.id).trim()) ? ep.id : `${series.id}-s${seasonKey}-e${episodeIndex}`;
-                    const prog = state.progress && state.progress[stableEpId] ? state.progress[stableEpId] : null;
+                    // Use the same canonical key as the player. Raw ep.id values
+                    // are not guaranteed to be unique across series.
+                    const stableEpId = window.getStableEpId
+                        ? window.getStableEpId(series.id, seasonKey, episodeIndex, ep)
+                        : `${series.id}-s${seasonKey}-e${episodeIndex}`;
+                    const progMatch = findProgressEntry(series.id, stableEpId, seasonKey, episodeIndex);
+                    const prog = progMatch ? progMatch.value : null;
                     if (prog && typeof prog === 'object' && (prog.time || prog.embed || prog.timestamp)) {
                         const time = Number(prog.time || 0);
                         const duration = Number(prog.duration || 0);
@@ -8450,6 +8678,8 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
             const snap = window.__lumina_progress_snapshots.last;
             if (!snap || !snap.entries) return { restored: false, reason: 'no-snapshot' };
 
+            const activeContext = currentContext || (window.player && window.player.context) || null;
+
             const contaminated = [];
             Object.keys(snap.entries).forEach(key => {
                 try {
@@ -8457,6 +8687,13 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
                     if (!ent || !ent.seriesId) return;
                     // key may include __noep__, handle accordingly
                     if (ent.state === 'noep') return;
+
+                    // The active episode is expected to change while it plays;
+                    // only protect other series from accidental overwrites.
+                    if (activeContext && String(activeContext.seriesId || '') === String(ent.seriesId)) {
+                        const activeKey = progressKeyForContext(activeContext);
+                        if (activeKey && String(activeKey) === String(ent.epId)) return;
+                    }
 
                     const pid = ent.epId;
                     const currentProg = state.progress && state.progress[pid] ? state.progress[pid] : null;

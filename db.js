@@ -2507,12 +2507,28 @@ export const db = [
                 cover: 'https://files.catbox.moe/1ajx2e.png',
                 description: 'Nick e Charlie enfrentam novos desafios quando a possibilidade de um relacionamento à distância começa a afetar sua relação. Enquanto Nick se prepara para a universidade e Charlie busca mais independência, o casal precisa descobrir se o primeiro amor pode realmente durar para sempre.',
                 ageRating: '12',
-                duration: '1h50min',
+                duration: '1h54min',
                 distributor: 'Netflix',
                 production: 'See-Saw Films / Netflix',
-                url: ''
+                url: 'https://redecanaishd.rest/jwplayer/?source=https%3A%2F%2Fvz-3381018c-65e.b-cdn.net%2F4fcfb14d-869c-4f1f-87a0-6075d69dcf33%2Fplaylist.m3u8&id=34409&type=mp4'
             }
         ,
+{
+    id: 'o-gato',
+    title: 'O Gato',
+    originalTitle: 'The Cat in the Hat',
+    type: 'filme',
+    category: 'Comédia / Fantasia / Família',
+    year: '2003',
+    yearBR: '2003 — lançado em 21 de novembro de 2003 nos Estados Unidos',
+    cover: 'https://m.media-amazon.com/images/S/pv-target-images/30ed6b1b6412f162ca207b3aa16bc2be633c95c9d4217a6ad58a8d61a98d048e.jpg',
+    description: 'Conrad e Sally estão entediados em casa enquanto sua mãe está fora. Tudo muda quando um misterioso e excêntrico Gato de cartola aparece, transformando um dia comum em uma aventura caótica repleta de brincadeiras, confusão e lições sobre responsabilidade.',
+    ageRating: 'L',
+    duration: '1h22min',
+    distributor: 'Universal Pictures',
+    production: 'DreamWorks Pictures / Imagine Entertainment',
+    url: 'https://dl.dropboxusercontent.com/scl/fi/ofts0iwsmesi1f861e84l/Og.mp4?rlkey=vfr38e1bhryuw4b1hcpxagiqa&st=ztq8ongs'
+},
             {
                 id: 'among-us-a-serie',
                 title: 'Among Us: A Série',
@@ -2553,7 +2569,7 @@ export const db = [
   distributor: 'Disney+',
   producer: 'Disney',
   tags: ['Musical','Fantasia'],
-  url: ''
+  url: 'https://dl.dropboxusercontent.com/scl/fi/gn2ir6r8vxaj1k0q8qnuv/D5.mp4?rlkey=ocw0bjn13vwa3doxia21astam&st=2egb9x0h'
 }
 ,
             {
