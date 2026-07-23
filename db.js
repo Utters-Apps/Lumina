@@ -2510,7 +2510,7 @@ export const db = [
                 duration: '1h54min',
                 distributor: 'Netflix',
                 production: 'See-Saw Films / Netflix',
-                url: 'https://redecanaishd.rest/jwplayer/?source=https%3A%2F%2Fvz-3381018c-65e.b-cdn.net%2F4fcfb14d-869c-4f1f-87a0-6075d69dcf33%2Fplaylist.m3u8&id=34409&type=mp4'
+                url: 'https://dl.dropboxusercontent.com/scl/fi/6u6w16tinqh1v1k8bcj3e/HSPS.mp4?rlkey=tz2vsi2gtqoc83bwh3fhv9cge&st=03kq9ssd'
             }
         ,
 {
