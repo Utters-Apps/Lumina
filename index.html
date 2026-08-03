@@ -430,14 +430,16 @@
 
                 <div class="w-full pb-8 px-6 md:px-10 flex flex-col gap-3 relative pointer-events-auto">
                     <div class="flex items-center gap-4 w-full group/progress">
-                        <span id="time-current" class="text-xs font-medium text-white/80 w-10 text-right">00:00</span>
-                        <div class="flex-1 relative flex items-center h-4">
-                            <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1" class="absolute inset-0 z-10 w-full opacity-0 hover:opacity-100 cursor-pointer">
-                            <div class="w-full h-1 bg-white/20 rounded-full overflow-hidden pointer-events-none transition-all group-hover/progress:h-1.5">
-                                <div id="progress-fill" class="h-full w-0 relative"></div>
+                        <span id="time-current" class="text-xs font-medium text-white/80 w-11 text-right tabular-nums">00:00</span>
+                        <div class="flex-1 relative flex items-center h-6 group/progress">
+                            <input type="range" id="progress-bar" min="0" max="100" value="0" step="0.1" aria-label="Barra de progresso" class="absolute inset-0 z-30 w-full h-full opacity-0 cursor-pointer">
+                            <div id="progress-track" class="relative w-full h-1.5 bg-white/15 rounded-full overflow-hidden pointer-events-none transition-all duration-200 group-hover/progress:h-2.5 group-hover/progress:bg-white/20">
+                                <div id="progress-buffer" class="absolute left-0 top-0 h-full bg-white/25 rounded-full" style="width:0%"></div>
+                                <div id="progress-fill" class="absolute left-0 top-0 h-full rounded-full" style="width:0%"></div>
                             </div>
+                            <div id="progress-thumb" class="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 rounded-full bg-white shadow-[0_0_0_3px_rgba(0,0,0,0.25),0_2px_8px_rgba(0,0,0,0.5)] z-20 pointer-events-none transition-transform duration-200" style="left:0%"></div>
                         </div>
-                        <span id="time-duration" class="text-xs font-medium text-white/50 w-10">00:00</span>
+                        <span id="time-duration" class="text-xs font-medium text-white/50 w-11 tabular-nums">00:00</span>
                     </div>
 
                     <div class="flex justify-between items-center w-full mt-1">
@@ -1171,6 +1173,10 @@
         // central cleanup helper to stop timers/intervals and release heavy resources
         window.luminaCleanup = function() {
             try {
+                // Surpreenda-me guard: while a surprise playback is being prepared, do NOT close the
+                // player or wipe the media wrapper, otherwise the just-opened video keeps playing
+                // (audio-only) after the modal is force-closed by the tab transition.
+                if (window.__lumina_surprise_guard) return;
                 // stop hero rotate timer
                 try { if (typeof __heroRotateTimer !== 'undefined' && __heroRotateTimer) { clearInterval(__heroRotateTimer); __heroRotateTimer = null; } } catch(_) {}
                 // stop badge rotate timer
@@ -2710,18 +2716,17 @@
       position: 'absolute',
       left: '50%',
       transform: 'translateX(-50%)',
-      bottom: '160px',
-      zIndex: '9999',
+      bottom: '140px',
+      zIndex: '2147483647',
       pointerEvents: 'none',
-      maxWidth: 'min(92%,980px)',
+      maxWidth: 'min(90%,900px)',
       display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
-      padding: '6px 12px',
-      borderRadius: '10px',
-      backdropFilter: 'blur(6px)'
+      padding: '0',
+      borderRadius: '0',
+      background: 'none'
     });
-    // attach to player container so overlay sits above player controls and within same stacking context
     try { targetContainer().appendChild(o); } catch(e){ document.body.appendChild(o); }
     return o;
   }
@@ -2733,21 +2738,8 @@
     ov.classList.remove('hidden');
     const line = document.createElement('div');
     line.className = 'custom-captions-line';
-    Object.assign(line.style, {
-      background:'rgba(0,0,0,0.78)',
-      color:'#fff',
-      padding:'8px 12px',
-      borderRadius:'8px',
-      fontSize:'15px',
-      lineHeight:'1.25',
-      textAlign:'center',
-      maxWidth:'100%',
-      whiteSpace:'pre-wrap',
-      boxShadow:'0 10px 30px rgba(0,0,0,0.6)'
-    });
     line.innerText = text;
     ov.appendChild(line);
-    // keep visible for a bit; reset timeout if new captions arrive
     if (ov._hideTimer) clearTimeout(ov._hideTimer);
     ov._hideTimer = setTimeout(()=>{ try{ ov.classList.add('hidden'); }catch(e){} }, 4000);
   }
@@ -2840,22 +2832,18 @@
     if(ov) return ov;
     ov = document.createElement('div');
     ov.id = 'lumina-captions-overlay';
+    ov.className = 'custom-captions';
     Object.assign(ov.style, {
       position: 'absolute',
       left: '50%',
       transform: 'translateX(-50%)',
-      bottom: '160px',
-      zIndex: '99999',
+      bottom: '140px',
+      zIndex: '2147483647',
       pointerEvents: 'none',
-      maxWidth: '90%',
+      maxWidth: 'min(90%,900px)',
       textAlign: 'center',
-      padding: '8px 16px',
-      background: 'rgba(0,0,0,0.75)',
-      color: '#fff',
-      borderRadius: '8px',
-      fontSize: '17px',
-      lineHeight: '1.35',
-      backdropFilter: 'blur(4px)',
+      padding: '0',
+      background: 'none',
       display: 'none'
     });
     const wrapper = document.getElementById('player-media-wrapper') || document.body;
@@ -2870,12 +2858,9 @@
       ov.innerHTML = '';
       return;
     }
-    // Use textContent so cue text such as &, <, > and quotes stays literal and
-    // cannot be interpreted as markup by the custom fallback renderer.
     ov.innerHTML = '';
     const line = document.createElement('div');
-    line.style.display = 'inline-block';
-    line.style.whiteSpace = 'pre-wrap';
+    line.className = 'custom-captions-line';
     line.textContent = String(text);
     ov.appendChild(line);
     ov.style.display = 'block';
@@ -3001,6 +2986,39 @@
   // Start
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', observeWrapper);
   else setTimeout(observeWrapper, 60);
+})();
+</script>
+
+<script>
+/* Lumina safety: never leave a video playing (audio) after the player modal becomes hidden.
+   If any code path hides the modal without pausing the media, we pause + detach it here. */
+(function(){
+  function pausePlayerIfHidden(){
+    try {
+      const pm = document.getElementById('player-modal');
+      if (!pm || !pm.classList.contains('hidden')) return;
+      const wrapper = document.getElementById('player-media-wrapper');
+      if (!wrapper) return;
+      wrapper.querySelectorAll('video').forEach(v => {
+        try { if (!v.paused) v.pause(); } catch(_) {}
+      });
+      // also hide captions overlay
+      const ov = document.getElementById('lumina-captions-overlay');
+      if (ov) { ov.style.display = 'none'; ov.classList.add('hidden'); ov.innerHTML = ''; }
+    } catch(_) {}
+  }
+
+  function init(){
+    const pm = document.getElementById('player-modal');
+    if (!pm) return;
+    const mo = new MutationObserver(pausePlayerIfHidden);
+    mo.observe(pm, { attributes: true, attributeFilter: ['class'] });
+    // also guard for full removal/emptying of the wrapper content
+    const wr = document.getElementById('player-media-wrapper');
+    if (wr) new MutationObserver(pausePlayerIfHidden).observe(wr, { childList: true, subtree: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 </script>
 

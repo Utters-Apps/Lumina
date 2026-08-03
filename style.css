@@ -741,87 +741,148 @@
             }
         }
 
-        /* Ensure WebVTT / HTML5 captions are readable and positioned above player controls/progress.
-           Uses ::cue to style text and translate it upward so it does not overlap the progress bar area. */
-        video::cue {
-            background: rgba(0,0,0,0.78);
-            color: #ffffff;
-            font-size: 1rem;
-            line-height: 1.2;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            text-align: center;
-            white-space: pre-wrap;
-            backface-visibility: hidden;
-            /* push captions upward so they appear above the bottom progress/UI */
-            transform: translateY(-56px);
-            /* ensure high enough z-order in some UA implementations */
-            z-index: 99999;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
-        }
+        /* ============================
+           CINEMATIC CAPTIONS — 100X MAIS BONITAS
+           Legendas cinematográficas profissionais com glassmorphism premium,
+           tipografia elegante, animações suaves e posicionamento perfeito.
+           ============================ */
 
-        /* Slightly smaller captions on narrow viewports */
-        @media (max-width: 520px) {
-            video::cue {
-                font-size: 0.95rem;
-                transform: translateY(-48px);
-                padding: 0.2rem 0.45rem;
-            }
-        }
-
-        /* For browsers that expose track DOM <track> styling, also ensure track text overlay uses same visible style */
+        /* Native WebVTT cue styling — premium cinematic look */
+        video::cue,
         ::cue {
-            background: rgba(0,0,0,0.78);
-            color: #ffffff;
-            font-size: 1rem;
-            line-height: 1.2;
-            padding: 0.25rem 0.5rem;
-            border-radius: 6px;
-            text-align: center;
-            white-space: pre-wrap;
-            transform: translateY(-56px);
-            z-index: 99999;
-            box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%) !important;
+            color: #ffffff !important;
+            font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 1.25rem !important;
+            line-height: 1.45 !important;
+            letter-spacing: 0.02em !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            white-space: pre-wrap !important;
+            word-break: break-word !important;
+            box-shadow:
+                0 4px 6px rgba(0,0,0,0.07),
+                0 10px 30px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.06) !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+            -webkit-font-smoothing: antialiased !important;
+            -moz-osx-font-smoothing: grayscale !important;
+            transform: translateY(-80px) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+            max-width: 88% !important;
+            display: inline-block !important;
+            margin: 0 auto !important;
+            z-index: 2147483647 !important;
+            transition: opacity 0.2s ease !important;
         }
 
-        /* Custom caption overlay used by Lumina when browser-native cues are intercepted and rendered in-page */
+        /* WebKit specific internal track display override for iOS/Safari */
+        video::-webkit-media-text-track-display {
+            bottom: 160px !important;
+            z-index: 2147483646 !important;
+            pointer-events: none !important;
+        }
+        video::-webkit-media-text-track-display::cue {
+            background: linear-gradient(180deg, rgba(0,0,0,0.75), rgba(0,0,0,0.88)) !important;
+            color: #fff !important;
+            font-family: 'Outfit', 'Inter', system-ui, sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 1.2rem !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06) !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+            backdrop-filter: blur(4px) !important;
+        }
+
+        /* Custom caption overlay — Lumina's in-page rendered captions */
         #lumina-captions-overlay.custom-captions {
             position: fixed;
             left: 50%;
             transform: translateX(-50%);
-            bottom: 160px; /* sits above player controls/progress */
-            z-index: 120;
+            bottom: 140px;
+            z-index: 2147483647;
             pointer-events: none;
-            max-width: min(92%, 980px);
+            max-width: min(90%, 900px);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 6px 12px;
-            border-radius: 10px;
-            backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
-            transition: opacity 220ms ease, transform 200ms cubic-bezier(0.16,1,0.3,1);
+            padding: 0;
+            border-radius: 0;
+            background: none;
+            backdrop-filter: none;
+            transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        #lumina-captions-overlay.hidden { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(6px); }
-        #lumina-captions-overlay:not(.hidden) { opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0); }
+        #lumina-captions-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(-50%) translateY(12px);
+        }
+        #lumina-captions-overlay:not(.hidden) {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
 
         #lumina-captions-overlay .custom-captions-line {
-            background: rgba(0,0,0,0.78);
+            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%);
             color: #fff;
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 15px;
-            line-height: 1.25;
+            font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+            font-weight: 500;
+            font-size: 1.2rem;
+            line-height: 1.45;
+            letter-spacing: 0.02em;
+            padding: 10px 20px;
+            border-radius: 12px;
             text-align: center;
             max-width: 100%;
             white-space: pre-wrap;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            word-break: break-word;
+            box-shadow:
+                0 4px 6px rgba(0,0,0,0.07),
+                0 10px 30px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.06);
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+            -webkit-font-smoothing: antialiased;
             pointer-events: none;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
         }
 
         @media (max-width: 520px) {
-            #lumina-captions-overlay { bottom: 180px; }
-            #lumina-captions-overlay .custom-captions-line { font-size: 13px; padding: 6px 10px; }
+            video::cue,
+            ::cue,
+            video::-webkit-media-text-track-display::cue {
+                font-size: 1.05rem !important;
+                padding: 8px 14px !important;
+                transform: translateY(-64px) !important;
+                max-width: 92% !important;
+            }
+            #lumina-captions-overlay {
+                bottom: 150px;
+                max-width: 94%;
+            }
+            #lumina-captions-overlay .custom-captions-line {
+                font-size: 1.05rem;
+                padding: 8px 14px;
+            }
+        }
+
+        /* Small screens: slightly smaller captions */
+        @media (max-width: 400px) {
+            video::cue,
+            ::cue {
+                font-size: 0.95rem !important;
+                padding: 6px 12px !important;
+                transform: translateY(-56px) !important;
+            }
+            #lumina-captions-overlay .custom-captions-line {
+                font-size: 0.95rem;
+                padding: 6px 12px;
+            }
         }
 
         /* ======= Player refinement overrides: smoother, subtler animations & reduced visual weight ======= */
@@ -924,101 +985,97 @@
         }
 
         /* ============================
-           STRONG CAPTIONS STYLES
-           Ensures native cues, ::cue, ::cue-region and custom overlay are highly specific,
-           positioned above player controls, and visually consistent across browsers.
+           CINEMATIC CAPTIONS — HIGH SPECIFICITY
+           Reforça as legendas com altíssima prioridade para todos os navegadores.
            ============================ */
 
-        /* Native WebVTT cue styling with high specificity and important flags */
         #player-modal video::cue,
         #player-modal video::cue-region,
         #player-modal ::cue {
-            background: rgba(0,0,0,0.90) !important;
-            color: #fff !important;
-            font-size: 18px !important;
-            line-height: 1.35 !important;
-            padding: 12px 16px !important;
-            border-radius: 10px !important;
+            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%) !important;
+            color: #ffffff !important;
+            font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 1.25rem !important;
+            line-height: 1.45 !important;
+            letter-spacing: 0.02em !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
             text-align: center !important;
             white-space: pre-wrap !important;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.7) !important;
-            max-width: 92% !important;
+            word-break: break-word !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06) !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+            -webkit-font-smoothing: antialiased !important;
+            transform: translateY(-80px) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+            max-width: 88% !important;
             display: inline-block !important;
             margin: 0 auto !important;
-            /* raise captions further so they sit clearly above the progress bar and player chrome */
-            transform: translateY(-96px) !important;
-            text-rendering: optimizeLegibility !important;
-            -webkit-font-smoothing: antialiased !important;
-            z-index: 1000 !important; /* ensure on top */
-        }
-
-        /* WebKit specific internal track display override for iOS/Safari */
-        video::-webkit-media-text-track-display {
-            bottom: 180px !important; /* lift above progress and controls */
-            z-index: 2147483646 !important;
-            pointer-events: none !important;
-        }
-        video::-webkit-media-text-track-display::cue {
-            background: rgba(0,0,0,0.82) !important;
-            color: #fff !important;
-            font-size: 15px !important;
-            padding: 8px 12px !important;
-            border-radius: 8px !important;
-            box-shadow: 0 10px 24px rgba(0,0,0,0.6) !important;
-        }
-
-        /* Fallback high-specificity rule for browsers that support ::cue but ignore lesser rules */
-        :not(pre) > video::cue, video::cue {
-            background: rgba(0,0,0,0.82) !important;
-            color: #fff !important;
-            font-size: 16px !important;
-            line-height: 1.25 !important;
-            padding: 8px 12px !important;
-            border-radius: 8px !important;
-            text-align: center !important;
-            transform: translateY(-72px) !important;
             z-index: 2147483647 !important;
         }
 
-        /* Make sure captions are above our custom overlays and above player UI gradients */
+        :not(pre) > video::cue, video::cue {
+            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%) !important;
+            color: #fff !important;
+            font-family: 'Outfit', 'Inter', system-ui, sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 1.25rem !important;
+            line-height: 1.45 !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06) !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+            -webkit-font-smoothing: antialiased !important;
+            transform: translateY(-80px) !important;
+            backdrop-filter: blur(4px) !important;
+            max-width: 88% !important;
+            z-index: 2147483647 !important;
+        }
+
         #player-modal .player-ui,
         #player-modal .player-ui * {
             z-index: 1000;
         }
-        #lumina-captions-overlay, #lumina-captions-overlay.custom-captions {
-            z-index: 1000 !important;
-            bottom: 160px !important;
+
+        #lumina-captions-overlay,
+        #lumina-captions-overlay.custom-captions {
+            z-index: 2147483647 !important;
+            bottom: 140px !important;
             pointer-events: none !important;
         }
-        /* Ensure custom overlay visuals match native style */
+
         #lumina-captions-overlay .custom-captions-line {
-            background: rgba(0,0,0,0.86) !important;
+            background: linear-gradient(180deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.88) 100%) !important;
             color: #fff !important;
-            padding: 10px 14px !important;
-            border-radius: 8px !important;
-            font-size: 16px !important;
-            line-height: 1.25 !important;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.6) !important;
+            font-family: 'Outfit', 'Inter', system-ui, sans-serif !important;
+            font-weight: 500 !important;
+            font-size: 1.2rem !important;
+            line-height: 1.45 !important;
+            letter-spacing: 0.02em !important;
+            padding: 10px 20px !important;
+            border-radius: 12px !important;
+            text-align: center !important;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.07), 0 10px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06) !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
         }
 
-        /* When native rendering is active (textTracks in 'showing'), hide overlay to avoid duplication */
-        video[textTracks]::cue, video[textTracks]::-webkit-media-text-track-display {
-            /* no-op: presence of cues handled via JS; keep CSS here for completeness */
-        }
-
-        /* Ensure captions remain readable on small screens */
         @media (max-width: 520px) {
             #player-modal video::cue,
             #lumina-captions-overlay .custom-captions-line,
             video::-webkit-media-text-track-display::cue {
-                font-size: 15px !important;
-                padding: 8px 10px !important;
-                transform: translateY(-72px) !important;
-                bottom: 160px !important;
+                font-size: 1.05rem !important;
+                padding: 8px 14px !important;
+                transform: translateY(-64px) !important;
+                max-width: 92% !important;
             }
-            #lumina-captions-overlay { bottom: 160px !important; }
+            #lumina-captions-overlay { bottom: 150px !important; }
+        }
 
-        /* Ensure the captions toggle button is visible and accessible across players */
         #lumina-captions-btn {
             display: inline-flex !important;
             align-items: center !important;
@@ -1028,27 +1085,40 @@
             min-width: 44px !important;
             padding: 0.45rem !important;
             border-radius: 14px !important;
-            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)) !important;
-            border: 1px solid rgba(255,255,255,0.06) !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)) !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
             color: #fff !important;
             box-shadow: 0 8px 26px rgba(12,10,20,0.55) !important;
             pointer-events: auto !important;
             opacity: 1 !important;
             visibility: visible !important;
             z-index: 2147483648 !important;
+            transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease !important;
         }
 
-        /* Keep captions button visible even when player-modal has youtube-embed class, but make it inert if needed */
+        #lumina-captions-btn:hover {
+            transform: scale(1.08);
+            border-color: rgba(255,255,255,0.22);
+        }
+        #lumina-captions-btn:active { transform: scale(0.94); }
+
+        /* Active state = subtitles currently ON (bright purple accent) */
+        #lumina-captions-btn.is-active,
+        #lumina-captions-btn.active {
+            background: linear-gradient(135deg, #a78bfa, #7c3aed) !important;
+            border-color: rgba(255,255,255,0.25) !important;
+            color: #fff !important;
+            box-shadow: 0 8px 28px rgba(124,58,237,0.55) !important;
+        }
+
         #player-modal.youtube-embed #lumina-captions-btn {
             display: inline-flex !important;
             visibility: visible !important;
             opacity: 1 !important;
         }
 
-        /* Ensure the captions button is included in keep-visible group (so idle hiding won't remove it) */
         #lumina-captions-btn { pointer-events: auto; }
 
-        /* Mobile: slightly enlarge the tap area and place it beside other controls */
         @media (max-width: 767px) {
             #lumina-captions-btn { width: 48px !important; height: 48px !important; min-width: 48px !important; border-radius: 12px !important; }
         }
@@ -1191,7 +1261,7 @@
             filter: brightness(0.9);
         }
 
-        /* Force captions controls & overlays visible and interactive (high specificity to override other rules) */
+        /* Force captions controls & overlays visible and interactive (high specificity) */
         #lumina-captions-btn,
         .player-ui #lumina-captions-btn {
             display: inline-flex !important;
@@ -1203,7 +1273,6 @@
             border: 1px solid rgba(255,255,255,0.06) !important;
         }
 
-        /* Ensure custom overlay is always above player chrome and not clipped */
         #lumina-captions-overlay,
         #lumina-captions-overlay.custom-captions {
             display: flex !important;
@@ -1211,10 +1280,9 @@
             opacity: 1 !important;
             pointer-events: none !important;
             z-index: 2147483647 !important;
-            bottom: 160px !important;
+            bottom: 140px !important;
         }
 
-        /* Strong rule to keep native ::cue visible above player UI */
         #player-modal video::cue,
         #player-modal ::cue,
         ::cue {
@@ -1224,93 +1292,71 @@
 
         /* ========== Mobile Portrait: optimized player layout ========== */
 
-/* Fix: ensure the progress thumb (white circle) sits above the purple progress fill and is not visually occluded.
-   - Force stacking context and positioning for the progress input and its thumb across engines.
-   - Ensure the progress fill stays behind the thumb and keep consistent appearance for WebKit/Gecko. */
-#progress-bar { position: relative; z-index: 1001; }
-#progress-bar::-webkit-slider-thumb {
-  -webkit-appearance: none !important;
-  appearance: none !important;
-  width: 16px !important;
-  height: 16px !important;
-  border-radius: 50% !important;
-  background: #ffffff !important;
-  border: 2px solid rgba(0,0,0,0.12) !important;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.35) !important;
-  margin-top: -6px !important; /* centers the thumb vertically against the track */
-  position: relative !important;
-  z-index: 2147483647 !important; /* ensure it is above progress fills and overlays */
+/* ========== SeekBar custom (native input = invisible hit area; custom track/fill/buffer/thumb) ========== */
+/* The range input is kept fully transparent and only acts as the interactive hit area.
+   We hide its native thumb/track so nothing from the input can occlude our custom white dot. */
+#progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
 }
-
-/* Firefox */
-#progress-bar::-moz-range-thumb {
-  width: 16px !important;
-  height: 16px !important;
-  border-radius: 50% !important;
-  background: #ffffff !important;
-  border: 2px solid rgba(0,0,0,0.12) !important;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.35) !important;
-  position: relative !important;
-  z-index: 2147483647 !important;
-}
-
-/* Keep track / fill visually behind the thumb */
-#progress-fill { position: relative; z-index: 1000; }
-
-/* Hover: when user hovers the progress area, make the watched (fill) color white; revert when not hovered.
-   We target the .group/progress wrapper used around the progress input so hovering anywhere on the progress row triggers it.
-   Keep a smooth transition and preserve existing shadow which we slightly tone down on hover for clarity. */
-/* When hovering, focusing, selecting or interacting with the progress area, make the already-watched fill appear white for clear highlight.
-   Covers mouse hover, pointer interaction, keyboard focus, focus-within on container, active/pressed states and direct focus/active on the hidden range input
-   so the purple fill becomes white while the user is scrubbing or has the control selected. */
-.group\/progress:hover #progress-fill,
-.group\/progress:focus-within #progress-fill,
-.group\/progress:active #progress-fill,
-#progress-bar:hover + .w-full > #progress-fill,
-#progress-bar:focus + .w-full > #progress-fill,
-#progress-bar:active + .w-full > #progress-fill,
-#progress-bar:focus-visible + .w-full > #progress-fill,
-#progress-bar:active + div > #progress-fill,
-#progress-bar:focus + div > #progress-fill,
-#progress-bar:focus-visible + div > #progress-fill,
-/* broad fallbacks targeting nearby structural variants */
-#progress-bar:hover + div > #progress-fill,
-#progress-bar:active ~ div > #progress-fill,
-#progress-bar:focus ~ div > #progress-fill,
-#progress-fill:hover,
-#progress-fill:focus,
-#progress-fill:active,
-#progress-bar::-webkit-slider-thumb:active ~ #progress-fill,
-.group\/progress:hover #progress-fill::before,
-.group\/progress:focus-within #progress-fill::before {
-  background: #ffffff !important;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.18) !important;
-  transition: background 140ms linear, box-shadow 140ms linear, width 140ms linear;
-}
-
-/* Ensure normal (non-hover) state remains the themed purple with a smooth transition */
-.group\/progress #progress-fill,
-#progress-fill {
-  transition: background 160ms linear, box-shadow 160ms linear, width 180ms linear;
-  background: linear-gradient(90deg,#b79df0,#8b5cf6);
-  box-shadow: 0 8px 22px rgba(139,92,246,0.08);
-}
-
-/* Ensure the visible track has enough height so the thumb doesn't overlap awkwardly */
 #progress-bar::-webkit-slider-runnable-track {
-  height: 8px !important;
-  border-radius: 999px !important;
-  background: rgba(255,255,255,0.08) !important;
+  background: transparent;
+  height: 100%;
+  -webkit-appearance: none;
+}
+#progress-bar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  background: transparent;
+  border: none;
+}
+#progress-bar::-moz-range-track { background: transparent; border: none; height: 100%; }
+#progress-bar::-moz-range-thumb { width: 1px; height: 1px; opacity: 0; background: transparent; border: none; }
+
+/* Themed watched fill (purple gradient) shown under the white thumb */
+#progress-fill {
+  background: linear-gradient(90deg, #a78bfa, #7c3aed);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.45);
+  transition: width 140ms linear;
+}
+#progress-buffer {
+  transition: width 240ms linear;
 }
 
-/* Small responsive tweak to keep hit area comfortable on mobile */
-@media (max-width: 520px) {
-  #progress-bar::-webkit-slider-thumb,
-  #progress-bar::-moz-range-thumb {
-    width: 18px !important;
-    height: 18px !important;
-    margin-top: -7px !important;
-  }
+/* Custom white thumb dot — always sits above the fills and stays visible */
+#progress-thumb {
+  will-change: left;
+  transition: left 120ms linear;
+}
+/* On hover / scrubbing, enlarge the thumb and brighten the fill to white for clear feedback */
+.group\/progress:hover #progress-thumb,
+.group\/progress:active #progress-thumb,
+.group\/progress:focus-within #progress-thumb {
+  transform: translate(-50%, -50%) scale(1.35);
+}
+#progress-thumb {
+  transform: translate(-50%, -50%);
+}
+
+/* On hover/scrub make the watched fill white for a crisp highlight */
+.group\/progress:hover #progress-fill,
+.group\/progress:active #progress-fill,
+.group\/progress:focus-within #progress-fill {
+  background: #ffffff;
 }
 
         /* Hide only the volume adjustment slider on mobile WHEN IN PORTRAIT (vertical).
@@ -1392,18 +1438,17 @@
             #progress-bar { height: 20px !important; border-radius: 999px; }
             #progress-fill { height: 100% !important; border-radius: 999px; }
 
-            /* Position captions overlay above the media area so it doesn't collide with bottom controls/progress */
             #lumina-captions-overlay, #lumina-captions-overlay.custom-captions {
-                bottom: calc(54vh + 10px) !important; /* anchor above the media area */
+                bottom: calc(54vh + 10px) !important;
                 max-width: calc(100% - 28px) !important;
-                font-size: 15px !important;
-                padding: 8px 12px !important;
+                font-size: 1.05rem !important;
+                padding: 8px 14px !important;
             }
             #player-modal video::cue,
             #lumina-captions-overlay .custom-captions-line {
-                transform: translateY(-72px) !important;
-                font-size: 15px !important;
-                padding: 8px 10px !important;
+                transform: translateY(-64px) !important;
+                font-size: 1.05rem !important;
+                padding: 8px 14px !important;
             }
 
             /* Keep the Next Episode and Skip Intro controls within reach and out of the way of captions */

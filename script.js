@@ -73,6 +73,28 @@ window.isMobileOS = function() {
             }
         };
 
+        /* ======= Central seekbar painters ======= */
+        // Update the visible progress position (fill + white thumb + native input value) from a 0..100 percentage.
+        function setProgressUI(pct) {
+            pct = Number(pct) || 0;
+            if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+            try { const pb = document.getElementById('progress-bar'); if (pb) pb.value = pct; } catch(_) {}
+            try { const f = document.getElementById('progress-fill'); if (f) f.style.width = pct + '%'; } catch(_) {}
+            try { const th = document.getElementById('progress-thumb'); if (th) th.style.left = pct + '%'; } catch(_) {}
+        }
+        // Update the buffered portion of the seekbar from a 0..100 percentage.
+        function setBufferUI(pct) {
+            pct = Number(pct) || 0;
+            if (pct < 0) pct = 0; if (pct > 100) pct = 100;
+            try { const b = document.getElementById('progress-buffer'); if (b) b.style.width = pct + '%'; } catch(_) {}
+        }
+        // Reflect the captions toggle's active (subtitles ON) state visually.
+        function setCaptionsUI(btn, active) {
+            if (!btn) return;
+            try { btn.classList.toggle('is-active', !!active); } catch(_) {}
+            try { btn.setAttribute('aria-pressed', active ? 'true' : 'false'); } catch(_) {}
+        }
+
         // Normalização de chaves de progresso para migrar IDs curtos antigos
         (function normalizeExistingProgressKeys() {
             try {
@@ -597,6 +619,14 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                         if (!item.url && item.url_enc) {
                                             try { item.url = decodeStr(item.url_enc, ENCKEY); } catch(_) { item.url = ''; }
                                         }
+                                        // restore top-level subtitles src
+                                        if (Array.isArray(item.subtitles)) {
+                                            item.subtitles.forEach(sub => {
+                                                if (sub && !sub.src && sub.src_enc) {
+                                                    try { sub.src = decodeStr(sub.src_enc, ENCKEY); } catch(_) { sub.src = ''; }
+                                                }
+                                            });
+                                        }
                                         if (item.seasons && typeof item.seasons === 'object') {
                                             Object.keys(item.seasons).forEach(s => {
                                                 const arr = item.seasons[s] || [];
@@ -604,6 +634,13 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                                     arr.forEach(ep => {
                                                         if (ep && !ep.url && ep.url_enc) {
                                                             try { ep.url = decodeStr(ep.url_enc, ENCKEY); } catch(_) { ep.url = ''; }
+                                                        }
+                                                        if (Array.isArray(ep.subtitles)) {
+                                                            ep.subtitles.forEach(sub => {
+                                                                if (sub && !sub.src && sub.src_enc) {
+                                                                    try { sub.src = decodeStr(sub.src_enc, ENCKEY); } catch(_) { sub.src = ''; }
+                                                                }
+                                                            });
                                                         }
                                                     });
                                                 }
@@ -2768,7 +2805,7 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 titleToPlay = item.title;
                 // ensure the context uses the same key that saveProgressData and player use
                 // ensure we always have a stable id for progress storage: prefer filmKey, otherwise derive from URL
-                ctxObj = { type: 'filme', id: filmKey || ('url:' + encodeURIComponent(item.url || '')), trigger: 0, url: item.url };
+                ctxObj = { type: 'filme', id: filmKey || ('url:' + encodeURIComponent(item.url || '')), trigger: 0, url: item.url, subtitles: (item.subtitles && Array.isArray(item.subtitles)) ? item.subtitles : [] };
             } else {
                 const hist = state.history[item.id];
                 let sToPlay = hist ? hist.s : '1';
@@ -3590,10 +3627,10 @@ const player = {
 
                     // clear any leftover DOM controls bound handlers that might reference old player
                     try {
+                        if (setProgressUI) setProgressUI(0);
+                        if (setBufferUI) setBufferUI(0);
                         const progBar = document.getElementById('progress-bar');
-                        const fill = document.getElementById('progress-fill');
-                        if (progBar) { progBar.oninput = null; progBar.onchange = null; progBar.value = 0; }
-                        if (fill) fill.style.width = '0%';
+                        if (progBar) { progBar.oninput = null; progBar.onchange = null; }
                         const tc = document.getElementById('time-current');
                         const td = document.getElementById('time-duration');
                         if (tc) tc.innerText = '00:00';
@@ -4231,10 +4268,7 @@ const player = {
                                             const dur = this.ytPlayer.getDuration() || 0;
                                             if (!isNaN(dur) && dur > 0) {
                                                 const pct = (cur / dur) * 100;
-                                                const progBar = document.getElementById('progress-bar');
-                                                const fill = document.getElementById('progress-fill');
-                                                if (progBar) try { progBar.value = pct; } catch(e) {}
-                                                if (fill) try { fill.style.width = pct + '%'; } catch(e) {}
+                                                try { setProgressUI(pct); } catch(e) { try { const pb = document.getElementById('progress-bar'); if (pb) pb.value = pct; } catch(_){} }
                                                 const tc = document.getElementById('time-current');
                                                 const td = document.getElementById('time-duration');
                                                 if (tc) tc.innerText = formatTime(cur);
@@ -5163,8 +5197,8 @@ const player = {
                 const fill = document.getElementById('progress-fill');
 
                 // defensive guards: ensure DOM nodes exist
-                try { if (progBar) progBar.value = 0; } catch(e) {}
-                try { if (fill) fill.style.width = '0%'; } catch(e) {}
+                try { setProgressUI(0); } catch(e) {}
+                try { setBufferUI(0); } catch(e) {}
                 updatePlayBtns(true);
 
                 // Unified show/hide controls helpers (exposed so external listeners can call)
@@ -5318,8 +5352,15 @@ const player = {
 
                     if (!this.isSeeking && !isNaN(this.vid.duration) && this.vid.duration > 0) {
                         const pct = (this.vid.currentTime / this.vid.duration) * 100;
-                        if (progBar) try { progBar.value = pct || 0; } catch(e) {}
-                        if (fill) try { fill.style.width = `${pct}%`; } catch(e) {}
+                        try { setProgressUI(pct || 0); } catch(e) {}
+                        // update buffered portion when available
+                        try {
+                            if (this.vid.buffered && this.vid.buffered.length) {
+                                const dur = this.vid.duration;
+                                const end = this.vid.buffered.end(this.vid.buffered.length - 1);
+                                if (!isNaN(end) && end > 0) setBufferUI((end / dur) * 100);
+                            }
+                        } catch(_) {}
                     }
 
                     const tc = document.getElementById('time-current');
@@ -5390,7 +5431,7 @@ const player = {
                     let pendingTargetPct = null;
 
                     const updateFill = (pct) => {
-                        try { if (fill) fill.style.width = `${pct}%`; } catch (_) {}
+                        try { setProgressUI(pct); } catch (_) {}
                     };
 
                     // input updates visual feedback immediately but does not perform an intrusive seek
@@ -5945,12 +5986,9 @@ const player = {
                         try {
                             const tc = document.getElementById('time-current');
                             const td = document.getElementById('time-duration');
-                            const progBar = document.getElementById('progress-bar');
-                            const fill = document.getElementById('progress-fill');
                             if (tc) tc.innerText = formatTime(target);
                             if (td && dur) td.innerText = formatTime(dur);
-                            if (progBar && dur > 0) progBar.value = (target / dur) * 100;
-                            if (fill && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
+                            if (dur > 0) try { setProgressUI((target / dur) * 100); } catch(_) {}
                         } catch (_) {}
                     });
 
@@ -6009,12 +6047,9 @@ const player = {
                     try {
                         const tc = document.getElementById('time-current');
                         const td = document.getElementById('time-duration');
-                        const progBar = document.getElementById('progress-bar');
-                        const fill = document.getElementById('progress-fill');
                         if (tc) tc.innerText = formatTime(target);
                         if (td && !isNaN(dur)) td.innerText = formatTime(dur);
-                        if (progBar && !isNaN(dur) && dur > 0) progBar.value = (target / dur) * 100;
-                        if (fill && !isNaN(dur) && dur > 0) fill.style.width = ((target / dur) * 100) + '%';
+                        if (!isNaN(dur) && dur > 0) try { setProgressUI((target / dur) * 100); } catch(_) {}
                     } catch (_) {}
                 });
 
@@ -6712,7 +6747,7 @@ const player = {
                                     const btn = document.getElementById('lumina-captions-btn');
                                     if (btn) btn.style.display = ''; // make sure the button is visible
                                     // mark button as active visually when showing
-                                    try { if (btn) btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch(_) {}
+                                    try { setCaptionsUI(btn, true); } catch(_) {}
                                 } catch(_) {}
                             } catch(_) {}
                         };
@@ -6758,6 +6793,7 @@ const player = {
                 console.warn('attachSubtitlesToVideo error', e);
             }
         }
+        window.attachSubtitlesToVideo = attachSubtitlesToVideo;
 
         function dismissNextEp(instant = false) {
             const prompt = document.getElementById('next-ep-prompt');
@@ -7405,10 +7441,12 @@ const player = {
                     }
                     // build context similar to openDetails/requestPlay expectations
                     const filmKey = chosen.id_ep || chosen.id;
-                    const ctx = { type: 'filme', id: filmKey || ('url:' + encodeURIComponent(chosen.url)), url: chosen.url };
-                    // ensure we're on home tab so player resources are available
+                    const ctx = { type: 'filme', id: filmKey || ('url:' + encodeURIComponent(chosen.url)), url: chosen.url, subtitles: (chosen.subtitles && Array.isArray(chosen.subtitles)) ? chosen.subtitles : [] };
+                    // Switch to home first, but hold the surprise-guard so the tab transition's
+                    // luminaCleanup does NOT close/wipe the player before this media starts playing.
+                    window.__lumina_surprise_guard = true;
                     switchTab('home', false);
-                    setTimeout(() => requestPlay(chosen.url, chosen.title, ctx), 180);
+                    openSurpriseAfterTab(() => requestPlay(chosen.url, chosen.title, ctx));
                     return;
                 } else if (chosen.type === 'serie') {
                     // determine season/episode: prefer history entry
@@ -7445,8 +7483,9 @@ const player = {
                     }
                     const stableEpId = window.getStableEpId(chosen.id, s, e, ep);
                     const ctx = { type: 'serie', seriesId: chosen.id, seriesTitle: chosen.title, season: s, episode: e, id: stableEpId, trigger: chosen.nextEpisodeTrigger || 0, url: ep.url, subtitles: (ep && Array.isArray(ep.subtitles)) ? ep.subtitles : [], introStart: ep.introStart || 0, introDuration: ep.introDuration || 0 };
+                    window.__lumina_surprise_guard = true;
                     switchTab('home', false);
-                    setTimeout(() => requestPlay(ep.url, `T${s}:E${Number(e)+1} - ${ep.title}`, ctx), 220);
+                    openSurpriseAfterTab(() => requestPlay(ep.url, `T${s}:E${Number(e)+1} - ${ep.title}`, ctx));
                     return;
                 } else {
                     showToast('Tipo de item desconhecido.', 1600);
@@ -7454,6 +7493,22 @@ const player = {
             } catch (e) {
                 console.warn('surpriseMe failed', e);
                 showToast('Erro ao escolher um item. Tente novamente.', 2000);
+            }
+        }
+
+        // Start a media playback AFTER the preceding switchTab('home') has fully transitioned.
+        // Prevents the Surpreenda-me bug where the tab transition (luminaCleanup) closes the player
+        // and wipes the media wrapper right after opening, leaving the video playing audio-only.
+        function openSurpriseAfterTab(startFn) {
+            try {
+                setTimeout(() => {
+                    try { if (typeof startFn === 'function') startFn(); } catch (e) { console.warn('openSurpriseAfterTab start failed', e); }
+                    // release the guard once the player has initialized (player.init is synchronous)
+                    setTimeout(() => { window.__lumina_surprise_guard = false; }, 60);
+                }, 340);
+            } catch (e) {
+                try { window.__lumina_surprise_guard = false; } catch(_) {}
+                try { if (typeof startFn === 'function') startFn(); } catch(_) {}
             }
         }
 
@@ -8336,7 +8391,7 @@ window.flushProgressNow = function() {
                                     if (!track) { showToast && showToast('Falha ao carregar legendas.'); return; }
                                     try {
                                         setSubtitleTrackMode(videoEl, 'showing', track, { label: 'Português (BR)', srclang: 'pt-BR' });
-                                        btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)';
+                                        setCaptionsUI(btn, true);
                                     } catch(_) {}
                                 });
                                 return;
@@ -8347,10 +8402,10 @@ window.flushProgressNow = function() {
                             try {
                                 if (target.mode === 'showing') {
                                     target.mode = 'disabled';
-                                    btn.style.background = '';
+                                    setCaptionsUI(btn, false);
                                 } else {
                                     setSubtitleTrackMode(videoEl, 'showing', null, { srclang: target.language || 'pt' });
-                                    btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)';
+                                    setCaptionsUI(btn, true);
                                 }
                             } catch (err) {
                                 setTimeout(() => {
@@ -8364,7 +8419,17 @@ window.flushProgressNow = function() {
                 } catch (e) { console.warn('ensureCaptionsButton failed', e); }
             }
 
-            // Observe #player-media-wrapper for video elements being inserted and auto-attach subtitles & button for Espíritos na Escola S01E01
+            function autoAttachSubtitles(videoEl) {
+                try {
+                    const ctx = window.player && window.player.context;
+                    if (!ctx || !ctx.subtitles || !Array.isArray(ctx.subtitles) || ctx.subtitles.length === 0) return;
+                    window.attachSubtitlesToVideo(videoEl, ctx.subtitles);
+                    if (typeof window.ensureCaptionsButton === 'function') {
+                        setTimeout(() => window.ensureCaptionsButton(videoEl), 200);
+                    }
+                } catch (_) {}
+            }
+
             const observeWrapper = () => {
                 try {
                     const wrapper = document.getElementById('player-media-wrapper');
@@ -8377,42 +8442,14 @@ window.flushProgressNow = function() {
                                         if (node.nodeType !== 1) return;
                                         if (node.tagName && node.tagName.toLowerCase() === 'video') {
                                             const videoEl = node;
-                                            // If the current player.context references espíritos-na-escola S01E1, attach subtitles automatically
-                                            try {
-                                                const ctx = window.player && window.player.context;
-                                                const matchEp = ctx && ((ctx.seriesId === 'espiritos-na-escola' && String(ctx.season) === '1' && Number(ctx.episode) === 0) || (ctx.id && String(ctx.id).includes('S_S_1_1')));
-                                                if (matchEp) {
-                                                    // Attach and ensure captions toggle
-                                                    const tr = await attachSRTasVTT(videoEl, LUMINA_SRT_URL, 'Português (BR)');
-                                                    ensureCaptionsButton(videoEl);
-                                                    // Show captions automatically (nice UX) after track loads
-                                                    if (tr) {
-                                                        try {
-                                                            setSubtitleTrackMode(videoEl, 'showing', tr, { label: 'Português (BR)', srclang: 'pt-BR' });
-                                                            document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)');
-                                                        } catch(_) {}
-                                                    }
-                                                } else {
-                                                    // For any other video, still provide captions button if tracks appear later by observing track additions
-                                                    ensureCaptionsButton(videoEl);
-                                                }
-                                            } catch (e) { console.warn('auto-attach subtitle logic error', e); }
+                                            if (typeof window.ensureCaptionsButton === 'function') window.ensureCaptionsButton(videoEl);
+                                            autoAttachSubtitles(videoEl);
                                         }
-                                        // Also handle cases where an iframe is replaced by a resolved mp4 and a <video> is nested inside
                                         if (node.querySelectorAll) {
                                             const nestedVideo = node.querySelector('video');
                                             if (nestedVideo) {
-                                                const videoEl = nestedVideo;
-                                                ensureCaptionsButton(videoEl);
-                                                // also attempt to auto-attach for espirits first ep if player context matches
-                                                try {
-                                                    const ctx = window.player && window.player.context;
-                                                    const matchEp = ctx && ((ctx.seriesId === 'espiritos-na-escola' && String(ctx.season) === '1' && Number(ctx.episode) === 0) || (ctx.id && String(ctx.id).includes('S_S_1_1')));
-                                                    if (matchEp) {
-                                                        await attachSRTasVTT(videoEl, LUMINA_SRT_URL, 'Português (BR)');
-                                                        try { videoEl.querySelector && (document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)')); } catch(_) {}
-                                                    }
-                                                } catch (e) {}
+                                                if (typeof window.ensureCaptionsButton === 'function') window.ensureCaptionsButton(nestedVideo);
+                                                autoAttachSubtitles(nestedVideo);
                                             }
                                         }
                                     } catch (_) {}
@@ -8422,21 +8459,10 @@ window.flushProgressNow = function() {
                     });
                     mo.observe(wrapper, { childList: true, subtree: true });
 
-                    // also do a quick pass for any video already present
                     const existing = wrapper.querySelector('video');
                     if (existing) {
-                        ensureCaptionsButton(existing);
-                        // attach automatically if current context is the specific episode
-                        (async () => {
-                            try {
-                                const ctx = window.player && window.player.context;
-                                const matchEp = ctx && ((ctx.seriesId === 'espiritos-na-escola' && String(ctx.season) === '1' && Number(ctx.episode) === 0) || (ctx.id && String(ctx.id).includes('S_S_1_1')));
-                                if (matchEp) {
-                                    await attachSRTasVTT(existing, LUMINA_SRT_URL, 'Português (BR)');
-                                    try { document.getElementById('lumina-captions-btn') && (document.getElementById('lumina-captions-btn').style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'); } catch(_) {}
-                                }
-                            } catch(_) {}
-                        })();
+                        if (typeof window.ensureCaptionsButton === 'function') window.ensureCaptionsButton(existing);
+                        autoAttachSubtitles(existing);
                     }
                 } catch (e) { console.warn('observeWrapper failed', e); }
             };
@@ -8492,7 +8518,7 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
                 setSubtitleTrackMode(videoEl, 'showing', track, { label, srclang: 'pt-BR' });
                 try { if (typeof ensureCaptionsButton === 'function') ensureCaptionsButton(videoEl); } catch (_) {}
                 const btn = document.getElementById('lumina-captions-btn');
-                if (btn) try { btn.style.background = 'linear-gradient(90deg,#8b5cf6,#7c3aed)'; } catch (_) {}
+                if (btn) try { setCaptionsUI(btn, true); } catch (_) {}
             } catch (_) {}
         }, 240);
 
@@ -8503,8 +8529,6 @@ window.attachSRTasVTT = async function attachSRTasVTT(videoEl, srtUrl, label = '
     }
 };
 
-// Single captions control used by every player path.  The `mode` property belongs
-// to a TextTrack (video.textTracks), not to the HTML <track> element.
 window.ensureCaptionsButton = function ensureCaptionsButton(videoEl) {
     try {
         const video = videoEl && videoEl.tagName && videoEl.tagName.toLowerCase() === 'video'
@@ -8526,30 +8550,52 @@ window.ensureCaptionsButton = function ensureCaptionsButton(videoEl) {
             if (controls) controls.insertBefore(button, controls.firstChild);
         }
 
-        button.__luminaBoundVideo = video;
         button.onclick = function (event) {
             event.preventDefault();
             event.stopPropagation();
-            const tracks = Array.from(video.textTracks || []).filter(tt => tt.kind === 'subtitles' || tt.kind === 'captions');
+            const currentVideo = document.querySelector('#player-media-wrapper video') || video;
+            if (!currentVideo) return;
+            const tracks = Array.from(currentVideo.textTracks || []).filter(tt => tt.kind === 'subtitles' || tt.kind === 'captions');
             const target = tracks.find(tt => /^(pt)(-|$)/i.test(tt.language || '')) || tracks[0];
-            if (!target) return;
+            if (!target) {
+                try {
+                    const ctx = window.player && window.player.context;
+                    if (ctx && ctx.subtitles && Array.isArray(ctx.subtitles) && ctx.subtitles.length > 0) {
+                        window.attachSubtitlesToVideo(currentVideo, ctx.subtitles);
+                        setTimeout(() => {
+                            const t = Array.from(currentVideo.textTracks || []).find(tt => /^(pt)(-|$)/i.test(tt.language || ''));
+                            if (t) { t.mode = 'showing'; }
+                            setCaptionsUI(button, true);
+                        }, 300);
+                    }
+                } catch (_) {}
+                return;
+            }
 
             if (target.mode === 'showing') {
                 target.mode = 'disabled';
             } else {
-                setSubtitleTrackMode(video, 'showing', null, { srclang: target.language || 'pt' });
+                setSubtitleTrackMode(currentVideo, 'showing', null, { srclang: target.language || 'pt' });
             }
-            button.setAttribute('aria-pressed', target.mode === 'showing' ? 'true' : 'false');
-            button.style.background = target.mode === 'showing' ? 'linear-gradient(90deg,#8b5cf6,#7c3aed)' : '';
+            setCaptionsUI(button, target.mode === 'showing');
         };
 
         const tracks = Array.from(video.textTracks || []).filter(tt => tt.kind === 'subtitles' || tt.kind === 'captions');
         const active = tracks.some(tt => tt.mode === 'showing');
         button.disabled = tracks.length === 0;
         button.setAttribute('aria-disabled', tracks.length === 0 ? 'true' : 'false');
-        button.setAttribute('aria-pressed', active ? 'true' : 'false');
         button.style.opacity = tracks.length === 0 ? '0.4' : '';
-        button.style.background = active ? 'linear-gradient(90deg,#8b5cf6,#7c3aed)' : '';
+        setCaptionsUI(button, active);
+
+        if (tracks.length === 0) {
+            try {
+                const ctx = window.player && window.player.context;
+                if (ctx && ctx.subtitles && Array.isArray(ctx.subtitles) && ctx.subtitles.length > 0) {
+                    button.disabled = false;
+                    button.style.opacity = '';
+                }
+            } catch (_) {}
+        }
     } catch (error) {
         console.warn('ensureCaptionsButton failed', error);
     }

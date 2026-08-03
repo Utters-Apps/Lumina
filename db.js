@@ -182,6 +182,25 @@ export const db = [
                     ]
                 }
             },
+  {
+                id: 'leviticus',
+                title: 'Leviticus',
+                type: 'filme',
+                category: 'Terror / Romance / Drama',
+                year: '2026',
+                cover: 'https://dl.dropboxusercontent.com/scl/fi/jce7y3msrh5qx4sgn8l58/imagem_2026-07-29_030507804.jpg?rlkey=lboav2zy306dx4qujaihgcp3p&st=6snxyh3n',
+                description: 'Dois adolescentes em uma comunidade religiosa isolada iniciam um romance secreto. Após serem descobertos e submetidos a um ritual de "cura" (terapia de conversão), uma violenta entidade sobrenatural é desencadeada na região assumindo a forma exata da pessoa que suas vítimas mais desejam.',
+                ageRating: '18',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/utvce6d5uqb17hfjhgarw/vidssave.com-Leviticus-full-gay-movie-HD-720P.mp4?rlkey=mivyojfh6itufq6hixpny57ek&st=w0nawcrf',
+                subtitles: [
+                    {
+                        src: 'https://dl.dropboxusercontent.com/scl/fi/n49z4658ed52yizkh60nk/Leviticus.srt?rlkey=5nbm8ltr5wa9crh4dmnd7gy8g&st=rgfy7ifk',
+                        kind: 'subtitles',
+                        srclang: 'pt-BR',
+                        label: 'Português (BR)'
+                    }
+                ]
+            },
             {
                 id: 'espiritos-na-escola',
                 title: 'Espíritos na Escola',
@@ -2729,6 +2748,53 @@ export const db = [
             { id: 'chica-vampiro-s1-e120', title: 'O fim dos vampiros', url: 'https://www.youtube.com/embed/y7gIP6IT0g0', cover: 'https://i.ytimg.com/vi/y7gIP6IT0g0/maxresdefault.jpg' }
         ]
   }
+},
+{
+    id: 'minecraft-story-mode',
+    title: 'Minecraft: Story Mode',
+    type: 'serie',
+    category: 'Aventura / Fantasia / Família',
+    year: '2015',
+    cover: 'https://dl.dropboxusercontent.com/scl/fi/2e92k534t8e37xi96tgc4/mnsm.jpg?rlkey=o30y50gcijl3zky4nxb2wpwwm&st=ljkgk028',
+    description: 'Após Ivor criar o poderoso Wither Storm usando um Bloco de Comando, Jesse e seus amigos embarcam em uma jornada para reunir a lendária Ordem da Pedra e impedir que a criatura destrua o mundo. Enfrentando desafios, perdas e grandes batalhas, o grupo precisa encontrar uma forma de derrotar um inimigo que cresce cada vez mais forte.',
+    ageRating: '10',
+    distributor: 'Netflix / Mojang',
+    producer: 'Telltale Games / Mojang',
+    tags: ['Nova'],
+    seasons: {
+        1: [
+            {
+                id: 'minecraft-story-mode-s1-e1',
+                title: 'A Ordem da Pedra',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/upxtc0wbyke9sekzy3mij/01.mp4?rlkey=xof8ffmg2kfrc6ib5jy65xquz&st=m4dx6r6w',
+                cover: 'https://image.tmdb.org/t/p/original/z0ykYUOW5SEUutni2SMk1Fg9LxY.jpg'
+            },
+            {
+                id: 'minecraft-story-mode-s1-e2',
+                title: 'Missão: reunir a Ordem',
+                url: '',
+                cover: 'https://image.tmdb.org/t/p/original/qeQeMnvJ1uUbgLJnTxNrKsnEOCy.jpg'
+            },
+            {
+                id: 'minecraft-story-mode-s1-e3',
+                title: 'O lugar mais improvável',
+                url: '',
+                cover: 'https://image.tmdb.org/t/p/original/6oT9vNUh0nkGy7sYjsCtFDu2T0I.jpg'
+            },
+            {
+                id: 'minecraft-story-mode-s1-e4',
+                title: 'Um bloco e um lugar complicado',
+                url: '',
+                cover: 'https://image.tmdb.org/t/p/original/ou1MJ4krp6Cax34YqluX0UaXRDX.jpg'
+            },
+            {
+                id: 'minecraft-story-mode-s1-e5',
+                title: 'Ordem!',
+                url: '',
+                cover: 'https://image.tmdb.org/t/p/original/pIlr0jgBQKabGTHtUOSFWd38EQu.jpg'
+            }
+        ]
+    }
 }
 ];
 
