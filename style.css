@@ -232,33 +232,45 @@
             z-index: 60;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            font-size: 11px;
+            gap: 7px;
+            padding: 6px 11px;
+            font-size: 10.5px;
             font-weight: 700;
+            letter-spacing: 0.02em;
             color: #ffffff; /* ensure readable light text */
             border-radius: 999px;
             /* friendly colorful default gradient + subtle rim and glow */
-            background: linear-gradient(90deg,#7c3aed 0%, #a78bfa 100%);
-            border: 1px solid rgba(255,255,255,0.06);
-            box-shadow: 0 10px 30px rgba(124,58,237,0.10), inset 0 1px 0 rgba(255,255,255,0.04);
-            backdrop-filter: blur(6px) saturate(120%);
-            -webkit-backdrop-filter: blur(6px) saturate(120%);
+            background: rgba(10,10,14,0.55);
+            border: 1px solid rgba(255,255,255,0.10);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
             pointer-events: none;
             transform-origin: left top;
             white-space: nowrap;
+            text-transform: uppercase;
+        }
+        /* Leading dot accent for a cleaner, more premium badge look */
+        .card-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #a78bfa;
+            box-shadow: 0 0 8px currentColor;
+            flex: none;
         }
         .card-badge.small { padding: 4px 8px; font-size: 10px; }
         /* Enhanced badge palette with subtle glass, soft glow and accessible contrasts */
-        .badge-indigo { background: linear-gradient(90deg,#6366f1 0%, #7c3aed 100%); color: #fff; box-shadow: 0 6px 18px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
-        .badge-rose   { background: linear-gradient(90deg,#ff7ab6 0%, #fb7185 100%); color:#2b0014; box-shadow: 0 6px 18px rgba(255,122,182,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
-        .badge-amber  { background: linear-gradient(90deg,#f59e0b 0%, #facc15 100%); color: #081004; box-shadow: 0 6px 18px rgba(245,158,11,0.10), inset 0 1px 0 rgba(255,255,255,0.05); }
-        .badge-cyan   { background: linear-gradient(90deg,#06b6d4 0%, #22d3ee 100%); color: #02262a; box-shadow: 0 6px 18px rgba(6,182,212,0.10), inset 0 1px 0 rgba(255,255,255,0.05); }
-        .badge-emerald { background: linear-gradient(90deg,#34d399 0%, #10b981 100%); color: #042912; box-shadow: 0 6px 18px rgba(16,185,129,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
-        .badge-teal   { background: linear-gradient(90deg,#2dd4bf 0%, #06b6d4 100%); color: #002b2b; box-shadow: 0 6px 18px rgba(45,212,191,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
-        .badge-orange { background: linear-gradient(90deg,#fb923c 0%, #f97316 100%); color: #2b0f00; box-shadow: 0 6px 18px rgba(249,115,22,0.10), inset 0 1px 0 rgba(255,255,255,0.04); }
-        .badge-blue   { background: linear-gradient(90deg,#60a5fa 0%, #3b82f6 100%); color:#04112a; box-shadow: 0 6px 18px rgba(59,130,246,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
-        .badge-pink   { background: linear-gradient(90deg,#fb7185 0%, #f43f5e 100%); color:#23010b; box-shadow: 0 6px 18px rgba(244,63,94,0.08), inset 0 1px 0 rgba(255,255,255,0.04); }
+        .badge-indigo { background: linear-gradient(90deg,rgba(99,102,241,0.85), rgba(124,58,237,0.85)); color: #fff; box-shadow: 0 6px 18px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-rose   { background: linear-gradient(90deg,rgba(244,63,94,0.85), rgba(225,29,72,0.85)); color: #fff; box-shadow: 0 6px 18px rgba(244,63,94,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-amber  { background: linear-gradient(90deg,rgba(245,158,11,0.85), rgba(217,119,6,0.85)); color: #161005; box-shadow: 0 6px 18px rgba(245,158,11,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-cyan   { background: linear-gradient(90deg,rgba(6,182,212,0.85), rgba(8,145,178,0.85)); color: #01282e; box-shadow: 0 6px 18px rgba(6,182,212,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-emerald { background: linear-gradient(90deg,rgba(52,211,153,0.85), rgba(16,185,129,0.85)); color: #042912; box-shadow: 0 6px 18px rgba(16,185,129,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-teal   { background: linear-gradient(90deg,rgba(45,212,191,0.85), rgba(6,182,212,0.85)); color: #002b2b; box-shadow: 0 6px 18px rgba(45,212,191,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-orange { background: linear-gradient(90deg,rgba(251,146,60,0.85), rgba(234,88,12,0.85)); color: #2b0f00; box-shadow: 0 6px 18px rgba(251,146,60,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-blue   { background: linear-gradient(90deg,rgba(96,165,250,0.85), rgba(59,130,246,0.85)); color: #041839; box-shadow: 0 6px 18px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-pink   { background: linear-gradient(90deg,rgba(251,113,133,0.85), rgba(244,63,94,0.85)); color: #23010b; box-shadow: 0 6px 18px rgba(244,63,94,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
         .badge-a6 {
             /* semitransparência + borda suave para combinar com outras badges */
             background: linear-gradient(90deg, rgba(244,114,182,0.16) 0%, rgba(228,52,148,0.12) 100%);
@@ -522,7 +534,7 @@
             padding-left: 10px; padding-right: 10px;
         }
 
-        /* Keep previous small variations supported */
+        /* Keep previous small variations supported (consistent with the pinned badge style above) */
         .card-badge {
             position: absolute;
             top: 10px;
@@ -530,18 +542,31 @@
             z-index: 60;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            font-size: 11px;
+            gap: 7px;
+            padding: 6px 11px;
+            font-size: 10.5px;
             font-weight: 700;
-            color: #0b0b0b;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            color: #ffffff;
             border-radius: 999px;
-            backdrop-filter: blur(6px) saturate(120%);
-            -webkit-backdrop-filter: blur(6px) saturate(120%);
-            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(10,10,14,0.55);
+            border: 1px solid rgba(255,255,255,0.10);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.04);
+            backdrop-filter: blur(8px) saturate(130%);
+            -webkit-backdrop-filter: blur(8px) saturate(130%);
             pointer-events: none;
             transform-origin: left top;
             white-space: nowrap;
+        }
+        .card-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 999px;
+            background: #a78bfa;
+            box-shadow: 0 0 8px currentColor;
+            flex: none;
         }
         .card-badge.small { padding: 4px 8px; font-size: 10px; }
 
@@ -935,6 +960,68 @@
             box-shadow: 0 0 0 3px rgba(139,92,246,0.14), 0 12px 40px rgba(124,58,237,0.08);
         }
 
+        /* ======= Unified player controls =======
+           Every icon button (Legendas, Pausar, Volume/Mute, Velocidade, PiP, Tela Cheia,
+           plus Fechar/TV/AirPlay) shares one consistent language: a soft translucent
+           circular surface, a gentle lift on hover, a press-in on active and a clear
+           "selected/active" state. */
+        #player-modal .player-ui button[title="Fechar player"],
+        #cast-top-btn, #airplay-btn,
+        #fullscreen-btn, #pip-btn, #mute-btn, #speed-btn, #lumina-captions-btn, #bottom-play-btn {
+            width: 44px !important;
+            height: 44px !important;
+            min-width: 44px !important;
+            min-height: 44px !important;
+            border-radius: 9999px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.09), rgba(255,255,255,0.05)) !important;
+            border: 1px solid rgba(255,255,255,0.10) !important;
+            color: #fff !important;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.04) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            padding: 0 !important;
+            transition: transform 200ms cubic-bezier(0.22,0.9,0.29,1), box-shadow 240ms ease, background 200ms ease, color 200ms ease !important;
+            cursor: pointer;
+        }
+        #player-modal .player-ui button[title="Fechar player"]:hover,
+        #cast-top-btn:hover, #airplay-btn:hover,
+        #fullscreen-btn:hover, #pip-btn:hover, #mute-btn:hover, #speed-btn:hover, #lumina-captions-btn:hover, #bottom-play-btn:hover {
+            transform: translateY(-2px) scale(1.03) !important;
+            background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.09)) !important;
+            box-shadow: 0 12px 30px rgba(124,58,237,0.14), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+        }
+        #player-modal .player-ui button[title="Fechar player"]:active,
+        #cast-top-btn:active, #airplay-btn:active,
+        #fullscreen-btn:active, #pip-btn:active, #mute-btn:active, #speed-btn:active, #lumina-captions-btn:active, #bottom-play-btn:active {
+            transform: translateY(0) scale(0.94) !important;
+        }
+        #player-modal .player-ui button[title="Fechar player"]:focus-visible,
+        #cast-top-btn:focus-visible, #airplay-btn:focus-visible,
+        #fullscreen-btn:focus-visible, #pip-btn:focus-visible, #mute-btn:focus-visible, #speed-btn:focus-visible, #lumina-captions-btn:focus-visible, #bottom-play-btn:focus-visible {
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.22), 0 12px 40px rgba(124,58,237,0.10) !important;
+        }
+        /* Shared "active/selected" state (e.g. captions enabled or muted) */
+        #lumina-captions-btn.is-active, #mute-btn.is-muted, #pip-btn.is-active {
+            color: #c4b5fd !important;
+            background: linear-gradient(180deg, rgba(139,92,246,0.28), rgba(124,58,237,0.18)) !important;
+            border-color: rgba(139,92,246,0.40) !important;
+            box-shadow: 0 6px 22px rgba(124,58,237,0.25), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+        }
+        /* Speed button keeps its label visible inside the circular target */
+        #speed-btn { font-weight: 700 !important; font-size: 13px !important; color: #fff !important; }
+        /* In portrait (vertical player) keep a touch-larger circular target for the top buttons */
+        @media (max-width: 767px) and (orientation: portrait) {
+            #cast-top-btn, #airplay-btn,
+            #player-modal .player-ui button[title="Fechar player"] {
+                width: 46px !important; height: 46px !important; min-width: 46px !important; min-height: 46px !important;
+                border-radius: 9999px !important;
+            }
+        }
+
+
         /* Progress & volume: smoother thumb transitions and more subtle fills */
         input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.05); box-shadow: 0 6px 14px rgba(0,0,0,0.35); }
         #progress-fill { background: linear-gradient(90deg,#b79df0,#8b5cf6); box-shadow: 0 8px 22px rgba(139,92,246,0.08); transition: width 180ms linear; }
@@ -1206,6 +1293,25 @@
             transform: translateY(0) scale(1);
         }
 
+        /* ===== Episodes / season modal: mobile adaptation (bottom-sheet) ===== */
+        @media (max-width: 767px) {
+            #episodes-modal-overlay {
+                align-items: flex-end !important;
+                padding: 0 !important;
+            }
+            #episodes-modal-container {
+                border-radius: 24px 24px 0 0 !important;
+                max-height: 88vh !important;
+                height: 88vh !important;
+            }
+            #episodes-modal-list {
+                padding: 10px 12px 28px !important;
+            }
+            #episodes-modal-list > div {
+                gap: 8px !important;
+            }
+        }
+
         /* ==========================================================================
            PROGRESSO E CHECK (CAPAS, CARDS E EPISÓDIOS VISTOS)
            ========================================================================== */
@@ -1291,6 +1397,9 @@
         }
 
         /* ========== Mobile Portrait: optimized player layout ========== */
+
+/* ========== Search result match highlight ========== */
+mark { background: rgba(139,92,246,0.45); color: #fff; border-radius: 3px; padding: 0 2px; }
 
 /* ========== SeekBar custom (native input = invisible hit area; custom track/fill/buffer/thumb) ========== */
 /* The range input is kept fully transparent and only acts as the interactive hit area.

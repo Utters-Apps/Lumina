@@ -29,6 +29,8 @@ const PRECACHE_URLS = [
   'style.css',
   '/script.js',
   'script.js',
+  '/db.js',
+  'db.js',
 
   // Icons (cache both leading-slash and relative variants)
   '/fiveicon.png',

@@ -476,10 +476,27 @@ window.getStableEpId = function(seriesId, season, index, ep) {
             }
         })();
 
-        // Auto-hide splash: fade and remove after intro completes (safeguard)
+        // Auto-hide splash: fade and remove after intro completes (safeguard).
+        // The intro only plays once per 30 minutes: if the user launched/refreshed
+        // within that window, skip it entirely so it doesn't replay on every refresh.
         (function(){
             const splash = document.getElementById('splash-screen');
             if (!splash) return;
+
+            const CACHE_KEY = 'lumina_splash_last_shown';
+            const CACHE_MS = 30 * 60 * 1000;
+            const now = Date.now();
+            let lastShown = 0;
+            try { lastShown = Number(localStorage.getItem(CACHE_KEY)) || 0; } catch(_) {}
+
+            const skipIntro = (now - lastShown) < CACHE_MS;
+            try { localStorage.setItem(CACHE_KEY, String(now)); } catch(_) {}
+
+            if (skipIntro) {
+                try { splash.remove(); document.body.style.overflow = ''; } catch(_) {}
+                return;
+            }
+
             // remove splash after animations complete (~5.2s). Keep fallback to 7s for slow devices.
             const REMOVE_DELAY = 5200;
             const FINAL_FALLBACK = 7200;
@@ -1279,10 +1296,11 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 if (window.__lumina_autosave_installed) return;
                 window.__lumina_autosave_installed = true;
 
-                // Call flushProgressNow only when there is something to save and not more often than 500ms.
+                // Call flushProgressNow only when there is something to save, coalescing writes.
+                // A longer interval reduces redundant full-object writes (localStorage overload).
                 let autosavePending = false;
                 let lastAutosave = 0;
-                const MIN_INTERVAL = 500; // ms
+                const MIN_INTERVAL = 1500; // ms
 
                 const maybeFlush = () => {
                     try {
@@ -1658,14 +1676,30 @@ window.getStableEpId = function(seriesId, season, index, ep) {
             state.searchQuery = query;
             if (__searchDebounce) clearTimeout(__searchDebounce);
             __searchDebounce = setTimeout(() => {
-                if (query.trim().length > 0) {
+                const q = (query || '').trim();
+                if (q.length > 0) {
+                    recordRecentSearch(q);
                     if (state.tab !== 'search') switchTab('search', false);
                     else renderView();
                 } else {
                     switchTab('home');
                 }
                 __searchDebounce = null;
-            }, 1000);
+            }, 350);
+        }
+
+        // Store the last few searches (localStorage-light) so the empty search state can offer quick taps
+        function getRecentSearches() {
+            try { const r = JSON.parse(localStorage.getItem('lumina_recent_search_v1') || '[]'); return Array.isArray(r) ? r : []; } catch (_) { return []; }
+        }
+        function recordRecentSearch(q) {
+            try {
+                let list = getRecentSearches();
+                list = list.filter(x => String(x).toLowerCase() !== String(q).toLowerCase());
+                list.unshift(q);
+                if (list.length > 8) list = list.slice(0, 8);
+                localStorage.setItem('lumina_recent_search_v1', JSON.stringify(list));
+            } catch (_) {}
         }
 
         function renderView() {
@@ -1723,7 +1757,15 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                             <div class="flex flex-col items-center justify-center py-12 text-center">
                                 <i class="ph ph-magnifying-glass text-4xl text-white/20 mb-4"></i>
                                 <h2 class="text-lg font-medium text-white mb-1">Comece a digitar para buscar</h2>
-                                <p class="text-white/50 text-sm">Digite o nome de filmes, séries ou gêneros para pesquisar por títulos.</p>
+                                <p class="text-white/50 text-sm mb-6">Digite o nome de filmes, séries ou gêneros para pesquisar por títulos.</p>
+                                ${(function(){ try { const r = getRecentSearches(); if (!r.length) return ''; return `
+                                    <div class="w-full max-w-xl">
+                                        <p class="text-xs uppercase tracking-widest text-white/35 mb-3">Buscas recentes</p>
+                                        <div class="flex flex-wrap justify-center gap-2">
+                                            ${r.map(s => `<button type="button" onclick="event.stopPropagation(); handleSearch('${String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;')}')" class="px-4 py-2 rounded-full text-sm text-white/80 bg-white/5 border border-white/10 hover:bg-accent/20 hover:border-accent/40 transition-colors">${s}</button>`).join('')}
+                                        </div>
+                                    </div>`;
+                                } catch(_) { return ''; } })()}
                             </div>
                         </div>
                     `;
@@ -1849,7 +1891,7 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                             </div>
 
                             <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-2">Busca</h1>
-                            <p class="text-white/50 text-sm mb-8">Resultados para "${state.searchQuery}"</p>
+                            <p class="text-white/50 text-sm mb-8">${results.length} resultado(s) para "${state.searchQuery}"</p>
                             
                             ${results.length === 0 ? `
                                 <div class="flex flex-col items-center justify-center py-20 text-center">
@@ -1857,13 +1899,71 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                     <h2 class="text-lg font-medium text-white mb-1">Nenhum resultado</h2>
                                     <p class="text-white/50 text-sm">Tente buscar por outro título ou gênero.</p>
                                 </div>
-                            ` : `
-                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" id="search-grid"></div>
-                            `}
+                            ` : (function(){
+                                const films = results.filter(r => (r.type || 'filme') === 'filme');
+                                const series = results.filter(r => (r.type || 'filme') === 'serie');
+                                let html = '';
+                                const renderGroup = (label, id, items) => {
+                                    if (!items.length) return '';
+                                    return `<div class="mb-10">
+                                        <h2 class="text-sm uppercase tracking-widest text-white/45 mb-4 flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-accent"></span>${label} <span class="text-white/30">(${items.length})</span></h2>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6" data-sgrid="${id}"></div>
+                                    </div>`;
+                                };
+                                html += renderGroup('Filmes', 'search-films', films);
+                                html += renderGroup('Séries', 'search-series', series);
+                                return html;
+                            })()}
                         </div>
                     `;
                     
-                    if(results.length > 0) render16by9CatalogCards(results, document.getElementById('search-grid'));
+                    // render each group into its own grid with match highlighting
+                    try {
+                        if (results.length > 0) {
+                            const films = results.filter(r => (r.type || 'filme') === 'filme');
+                            const series = results.filter(r => (r.type || 'filme') === 'serie');
+                            const hl = (text) => {
+                                try {
+                                    const normQuery = nQuery;
+                                    if (!normQuery) return text;
+                                    const re = new RegExp('(' + normQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s*') + ')', 'ig');
+                                    return String(text).replace(re, (m) => `<mark class="bg-accent/40 text-white rounded px-0.5">${m}</mark>`);
+                                } catch(_) { return text; }
+                            };
+                            const renderGroup = (items, container, label) => {
+                                if (!container || !items.length) return;
+                                items.forEach(item => {
+                                    const card = document.createElement('div');
+                                    card.className = 'hover-card cursor-pointer group relative session-card';
+                                    card.onclick = () => openDetails(item.id);
+                                    const tag = (item.tags && item.tags.length) ? '<div class="card-badge badge-indigo" style="top:8px;left:8px">'+item.tags[0]+'</div>' : '';
+                                    card.innerHTML = `
+                                        <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
+                                            <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='fiveicon.png';">
+                                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                <div class="w-12 h-12 rounded-full glass flex items-center justify-center text-white"><i class="ph-fill ph-play text-xl ml-0.5"></i></div>
+                                            </div>
+                                            ${tag}
+                                        </div>
+                                        <div class="px-1">
+                                            <h3 class="text-white font-medium text-sm truncate">${hl(item.title)}</h3>
+                                            <div class="flex items-center gap-2 mt-1">
+                                                ${getAgeBadge(item.ageRating)}
+                                                <p class="text-white/40 text-[11px] truncate">${formatCategory(item.category)}</p>
+                                            </div>
+                                        </div>
+                                    `;
+                                    container.appendChild(card);
+                                });
+                            };
+                            const g1 = document.querySelector('[data-sgrid="search-films"]');
+                            const g2 = document.querySelector('[data-sgrid="search-series"]');
+                            renderGroup(films, g1, 'Filmes');
+                            renderGroup(series, g2, 'Séries');
+                        }
+                    } catch(e) {
+                        try { if (results.length > 0) render16by9CatalogCards(results, document.getElementById('search-grid')); } catch(_) {}
+                    }
                 }
 
                 // Focus mobile input if it's rendered
@@ -1926,7 +2026,7 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                 <button onclick="event.stopPropagation(); openDetails('${heroItem.id}')" class="bg-white text-black px-8 py-3.5 rounded-full font-semibold text-sm hover:bg-gray-200 transition-colors flex items-center gap-2">
                                     <i class="ph-fill ph-play text-lg"></i> Detalhes
                                 </button>
-                                <button onclick="toggleFav(event, '${heroItem.id}')" class="w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors">
+                                <button id="fav-btn-${heroItem.id}" onclick="toggleFav(event, '${heroItem.id}'); event.stopPropagation();" class="fav-btn w-12 h-12 rounded-full glass flex items-center justify-center text-white hover:bg-white/10 transition-colors" title="Minha Lista" aria-label="Minha Lista">
                                     <i class="${state.favorites.includes(heroItem.id) ? 'ph-fill ph-check text-accent' : 'ph ph-plus'} text-xl"></i>
                                 </button>
                             </div>
@@ -1991,7 +2091,10 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 const favData = db.filter(item => state.favorites.includes(item.id));
                 container.innerHTML = `
                     <div class="pt-24 md:pt-32 px-6 md:px-16 min-h-screen animate-fade-in">
-                        <h1 class="text-2xl md:text-3xl font-display font-bold text-white mb-8">Minha Lista</h1>
+                        <div class="flex items-center gap-3 mb-8">
+                            <h1 class="text-2xl md:text-3xl font-display font-bold text-white">Minha Lista</h1>
+                            <span class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white/60 text-xs font-medium">${favData.length}</span>
+                        </div>
                         ${favData.length === 0 ? `
                             <div class="flex flex-col items-center justify-center py-20 text-center">
                                 <div class="w-20 h-20 rounded-full glass flex items-center justify-center mb-6">
@@ -2962,11 +3065,11 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                         if (isMobileView) {
                             // For YouTube we want "Veja no YouTube", for HBO Max "Veja na HBO Max", others default to "Veja na X"
                             const label = svc === 'YouTube' ? `Veja no ${svc}` : `Veja na ${svc}`;
-                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="w-full block mt-3 text-center text-sm font-semibold px-4 py-3 rounded-xl bg-gradient-to-r from-accent to-purple-400 text-black hover:opacity-95 transition-colors">${label}</a>`;
+                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="w-full block mt-4 text-center text-sm md:text-base font-semibold px-4 py-3.5 rounded-2xl bg-gradient-to-r from-accent to-purple-400 text-black hover:opacity-95 hover:scale-[1.01] active:scale-[0.99] transition-all shadow-[0_10px_30px_-8px_rgba(139,92,246,0.6)] inline-flex items-center justify-center gap-2">${label}<i class="ph ph-arrow-up-right text-base"></i></a>`;
                         } else {
-                            // Desktop: compact inline pill
+                            // Desktop: compact inline pill with a subtle brand glow
                             const label = svc === 'YouTube' ? `Veja no ${svc}` : `Veja na ${svc}`;
-                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/8 text-[#9f7aea] transition-colors"><span>${label}</span><i class="ph ph-arrow-up-right text-xs"></i></a>`;
+                            externalBtnHtml = `<a href="${link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation();" class="ml-3 text-sm md:ml-4 inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 text-[#c4b5fd] border border-white/10 hover:border-accent/50 transition-all font-medium">${label}<i class="ph ph-arrow-up-right text-xs"></i></a>`;
                         }
                     }
                 } else {
@@ -3605,6 +3708,23 @@ const player = {
                     // clear idle timer if set
                     try { if (this._idleTimer) { clearTimeout(this._idleTimer); this._idleTimer = null; } } catch(_) {}
 
+                    // fully clear the YouTube idle registration (timers + document/wrapper listeners)
+                    try {
+                        if (this._ytIdleReg) {
+                            if (this._ytIdleReg.timer) { clearTimeout(this._ytIdleReg.timer); }
+                            if (this._ytIdleReg.poll) { clearInterval(this._ytIdleReg.poll); }
+                            (this._ytIdleReg.handlers || []).forEach(([elt, evt, fn]) => { try { elt.removeEventListener(evt, fn); } catch(_){} });
+                            this._ytIdleReg = null;
+                        }
+                        this._ytIdleBound = false;
+                        const uiEl = document.querySelector('.player-ui');
+                        const wrapperEl = document.getElementById('player-media-wrapper');
+                        if (uiEl) { uiEl.style.pointerEvents = ''; uiEl.style.opacity = ''; }
+                        if (wrapperEl) wrapperEl.classList.remove('player-idle');
+                        const pm = document.getElementById('player-modal');
+                        if (pm) pm.classList.remove('youtube-embed');
+                    } catch(_) {}
+
                     if (this.ytPlayer && typeof this.ytPlayer.destroy === 'function') {
                         try { this.ytPlayer.destroy(); } catch(_) {}
                         this.ytPlayer = null;
@@ -3999,6 +4119,7 @@ const player = {
 
                         // create a small YT wrapper object; actual player created when API ready
                         this.isYouTube = true;
+                        try { const pm = document.getElementById('player-modal'); if (pm) pm.classList.add('youtube-embed'); } catch(_) {}
                         // hide PiP button for YouTube embeds to avoid offering PiP where it doesn't work reliably
                         try { const pipBtn = document.getElementById('pip-btn'); if (pipBtn) { pipBtn.style.display = 'none'; pipBtn.setAttribute('aria-hidden','true'); } } catch(_) {}
                         // also hide mute/volume controls when using YouTube iframe (they don't map reliably)
@@ -4024,23 +4145,22 @@ const player = {
                             }, 800);
                         } catch(_) {}
 
-                        // Attach idle show/hide handlers for YouTube embeds (mirror native player behaviour)
+                        // Attach idle show/hide handlers for YouTube embeds (mirror native player behaviour).
+                        // Single source of truth stored on `this` so it is fully cleared on close().
                         try {
-                            // avoid double-binding
+                            const self = this;
                             if (!this._ytIdleBound) {
                                 this._ytIdleBound = true;
                                 const wrapperEl = document.getElementById('player-media-wrapper') || document.getElementById('custom-player-container');
                                 const uiEl = document.querySelector('.player-ui');
-                                const idleMs = 5000;
-                                let idleTimer = null;
-                                const clearIdle = () => { try { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } } catch(_){} };
+                                const idleMs = 4500;
+                                this._ytIdleReg = { timer: null, poll: null, handlers: [] };
+                                const clearIdle = () => { try { if (self._ytIdleReg.timer) { clearTimeout(self._ytIdleReg.timer); self._ytIdleReg.timer = null; } } catch(_){} };
+                                const isPlaying = () => { try { return !!(self.ytPlayer && typeof self.ytPlayer.getPlayerState === 'function' && self.ytPlayer.getPlayerState() === 1); } catch(_) { return false; } };
                                 const scheduleHide = () => {
                                     clearIdle();
-                                    // only hide when playing
-                                    let playing = false;
-                                    try { playing = (this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function' && this.ytPlayer.getPlayerState() === 1); } catch(_) { playing = false; }
-                                    if (!playing) return;
-                                    idleTimer = setTimeout(() => {
+                                    if (!isPlaying()) return;
+                                    self._ytIdleReg.timer = setTimeout(() => {
                                         try {
                                             if (wrapperEl) wrapperEl.classList.add('player-idle');
                                             if (uiEl) { uiEl.style.pointerEvents = 'none'; uiEl.style.opacity = '0'; }
@@ -4054,42 +4174,31 @@ const player = {
                                         scheduleHide();
                                     } catch(_) {}
                                 };
-                                const onInteraction = (e) => {
-                                    try { showControls(); } catch(_) {}
-                                };
-                                // bind lightweight handlers
+                                const onInteraction = () => { try { showControls(); } catch(_) {} };
                                 ['pointermove','pointerdown','touchstart','mousemove'].forEach(evt => {
-                                    try { document.addEventListener(evt, onInteraction, { passive: true }); } catch(_) {}
-                                });
-                                // Also schedule hide on state change (play) from YT events later when player becomes available.
-                                // Start initial schedule when YT player ready
-                                const ytReadyTicker = setInterval(() => {
                                     try {
-                                        if (this.ytPlayer && typeof this.ytPlayer.getPlayerState === 'function') {
-                                            clearInterval(ytReadyTicker);
-                                            // initial schedule and also observe state changes
-                                            scheduleHide();
-                                            // listen to YT state changes to reschedule/hide appropriately
-                                            if (typeof YT !== 'undefined' && YT && YT.Player) {
-                                                // attach via onStateChange provided earlier in YT Player config; but also poll as fallback
-                                                const poll = setInterval(() => {
-                                                    try {
-                                                        if (!this.ytPlayer || typeof this.ytPlayer.getPlayerState !== 'function') return;
-                                                        const st = this.ytPlayer.getPlayerState();
-                                                        if (st === 1) scheduleHide(); // playing
-                                                        if (st === 2) { clearIdle(); if (wrapperEl) wrapperEl.classList.remove('player-idle'); if (uiEl) { uiEl.style.pointerEvents = ''; uiEl.style.opacity = ''; } }
-                                                    } catch(_) {}
-                                                }, 900);
-                                                this._ytIdlePoll = poll;
-                                            }
-                                        }
+                                        // binding to the player media wrapper too so events over the YT iframe parent still reveal
+                                        document.addEventListener(evt, onInteraction, { passive: true });
+                                        if (wrapperEl) wrapperEl.addEventListener(evt, onInteraction, { passive: true });
+                                        self._ytIdleReg.handlers.push([document, evt, onInteraction]);
+                                        if (wrapperEl) self._ytIdleReg.handlers.push([wrapperEl, evt, onInteraction]);
                                     } catch(_) {}
-                                }, 300);
+                                });
+                                // poll YT state to hide/reset controls as playback state changes
+                                self._ytIdleReg.poll = setInterval(() => {
+                                    try {
+                                        if (!self.ytPlayer || typeof self.ytPlayer.getPlayerState !== 'function') return;
+                                        const st = self.ytPlayer.getPlayerState();
+                                        if (st === 1) { showControls(); }
+                                        else if (st === 2) { clearIdle(); if (wrapperEl) wrapperEl.classList.remove('player-idle'); if (uiEl) { uiEl.style.pointerEvents = ''; uiEl.style.opacity = ''; } }
+                                    } catch(_) {}
+                                }, 900);
                             }
                         } catch(_) {}
 
-                         // decide autoplay behavior: allow autoplay on desktop, require user interaction on mobile
- const allowAutoplay = !isMobileOS();
+                         // autoplay is always requested (with unmuted audio). Opening is triggered by a user gesture,
+ // so the browser should allow audible autoplay. Fallbacks below use the same flag.
+ const allowAutoplay = true;
  const createYT = () => {
                             // extract video id from several possible formats
                             const extractId = (u) => {
@@ -5079,6 +5188,23 @@ const player = {
                 clearInterval(this.saveInterval); clearTimeout(this.uiTimeout);
                 if (this.loadTimeout) { clearTimeout(this.loadTimeout); this.loadTimeout = null; }
                 this.saveInterval = null;
+
+                // full YouTube teardown: destroy player, clear intervals, and the idle registration
+                if (this.ytSaveInterval) { clearInterval(this.ytSaveInterval); this.ytSaveInterval = null; }
+                if (this._ytSkipInterval) { clearInterval(this._ytSkipInterval); this._ytSkipInterval = null; }
+                if (this.ytPlayer && typeof this.ytPlayer.destroy === 'function') {
+                    try { this.ytPlayer.destroy(); } catch(_) {}
+                }
+                this.ytPlayer = null;
+                try {
+                    if (this._ytIdleReg) {
+                        if (this._ytIdleReg.timer) { clearTimeout(this._ytIdleReg.timer); }
+                        if (this._ytIdleReg.poll) { clearInterval(this._ytIdleReg.poll); }
+                        (this._ytIdleReg.handlers || []).forEach(([elt, evt, fn]) => { try { elt.removeEventListener(evt, fn); } catch(_){} });
+                        this._ytIdleReg = null;
+                    }
+                    this._ytIdleBound = false;
+                } catch(_) {}
 
                 if(this.vid) {
                     // Save progress before tearing down native video (save then force immediate flush)
@@ -6330,6 +6456,9 @@ const player = {
         // Picture-in-Picture toggle for native video (graceful non-blocking fallback)
         async function togglePiP() {
             try {
+                const pipBtn = document.getElementById('pip-btn');
+                const syncActive = () => { if (pipBtn) pipBtn.classList.toggle('is-active', !!document.pictureInPictureElement); };
+                syncActive();
                 // 1) Prefer native HTMLVideoElement for PiP when available
                 const vidEl = (player && player.vid) ? player.vid : document.querySelector('#main-video');
                 if (vidEl && typeof vidEl.requestPictureInPicture === 'function') {
@@ -6339,6 +6468,7 @@ const player = {
                         } else {
                             await vidEl.requestPictureInPicture();
                         }
+                        syncActive();
                         return;
                     } catch (err) {
                         // continue to other fallbacks if native PiP fails
@@ -6614,8 +6744,10 @@ const player = {
         function updateVolIcon() {
             const b = document.getElementById('mute-btn');
             const v = player.vid;
-            if(!v) { b.innerHTML = '<i class="ph-fill ph-speaker-high text-xl"></i>'; return; }
-            if(v.muted || v.volume === 0) b.innerHTML = '<i class="ph-fill ph-speaker-x text-xl text-white/50"></i>';
+            if(!v) { b.innerHTML = '<i class="ph-fill ph-speaker-high text-xl"></i>'; b.classList.remove('is-muted'); return; }
+            const muted = v.muted || v.volume === 0;
+            b.classList.toggle('is-muted', !!muted);
+            if(muted) b.innerHTML = '<i class="ph-fill ph-speaker-x text-xl"></i>';
             else if(v.volume < 0.5) b.innerHTML = '<i class="ph-fill ph-speaker-low text-xl"></i>';
             else b.innerHTML = '<i class="ph-fill ph-speaker-high text-xl"></i>';
         }
@@ -7130,9 +7262,9 @@ const player = {
                     }
                 } catch (_) { pct = 0; }
 
-                // watched class and check badge when pct > 90
+                // watched class when pct > 90 (no check badge on home cards)
                 const watchedClass = pct > 90 ? 'is-watched' : '';
-                const checkBadgeHtml = pct > 90 ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
+                const checkBadgeHtml = '';
                 const progressHtml = pct > 0 ? `<div class="progress-bar-container" style="position:absolute;left:0;bottom:0;width:100%;height:4px;background:rgba(255,255,255,.18);z-index:60;display:block;overflow:hidden;"><div class="progress-bar-fill" style="display:block;width:${pct}%;height:100%;background:linear-gradient(90deg,#9333ea,#a855f7);box-shadow:0 0 10px rgba(168,85,247,.6);"></div></div>` : '';
 
                 card.className = card.className + ' ' + watchedClass;
@@ -7198,7 +7330,7 @@ const player = {
                 pct = Number.isFinite(pct) ? Math.max(0, Math.min(100, pct)) : 0;
                 const subtitle = item._hist ? `T${item._hist.s} : E${item._hist.e+1}` : 'Continuar filme';
                 const watchedClass = pct > 90 ? 'is-watched' : '';
-                const checkBadgeHtml = pct > 90 ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
+                const checkBadgeHtml = '';
                 const progressHtml = pct > 0 ? `<div class="progress-bar-container" style="position:absolute;left:0;bottom:0;width:100%;height:4px;background:rgba(255,255,255,.18);z-index:60;display:block;overflow:hidden;"><div class="progress-bar-fill" style="display:block;width:${pct}%;height:100%;background:linear-gradient(90deg,#9333ea,#a855f7);box-shadow:0 0 10px rgba(168,85,247,.6);"></div></div>` : '';
 
                 card.className = card.className + ' ' + watchedClass;
@@ -7255,9 +7387,32 @@ const player = {
                 // Comédias: filter by category then pick excluding already used
                 const comediasPool = db.filter(i => (i.category || '').toLowerCase().includes('comédia'));
                 const comedias = pick(comediasPool, 8);
-                // Recomendados: high-rated first, then pick excluding used
-                const recomendadosPool = db.filter(i => i.ratings && i.ratings.imdb).sort((a,b)=> (b.ratings.imdb||0)-(a.ratings.imdb||0));
-                const recomendados = pick(recomendadosPool.length ? recomendadosPool : db, 8);
+                // Recomendados: personalize from the user's favorite genres first (fall back to ratings)
+                const favGenres = new Set((state.favorites || []).map(fid => {
+                    const f = db.find(d => d.id === fid);
+                    if (!f || !f.category) return '';
+                    return String(f.category).split(/[,\/]| e | & /i).map(s => String(s).trim().toLowerCase()).filter(Boolean);
+                }).flat());
+                const norm = (s) => String(s||'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');
+                const recomendados = (() => {
+                    const scored = db.map(i => {
+                        let score = 0;
+                        const cat = norm(i.category || '');
+                        const tags = (i.tags||[]).map(t => norm(t));
+                        favGenres.forEach(g => {
+                            if (cat.includes(g)) score += 4;
+                            if (tags.some(t => t.includes(g))) score += 3;
+                            if (norm(i.title||'').includes(g)) score += 2;
+                        });
+                        if (i.ratings && i.ratings.imdb) score += Number(i.ratings.imdb) || 0;
+                        return { i, score };
+                    }).sort((a,b) => b.score - a.score);
+                    // Only treat personalized as meaningful if there's any genre signal; otherwise fall back to plain rating order
+                    const hasBias = scored.some(s => s.score >= 4);
+                    if (hasBias) return pick(scored.map(s => s.i), 8);
+                    const ratingPool = db.filter(i => i.ratings && i.ratings.imdb).sort((a,b)=> (b.ratings.imdb||0)-(a.ratings.imdb||0));
+                    return pick(ratingPool.length ? ratingPool : db, 8);
+                })();
 
                 const isMobile = window.innerWidth <= 767;
 
@@ -9089,9 +9244,8 @@ window.loadSeason = function(itemId, seasonNum) {
                 }
             } catch (_) { cover = 'fiveicon.png'; }
 
-            // HTML: CRIA OS CHECKS ASSISTIDOS CASO PASSE DE 95%
-            const checkOverlay = (pct >= 90) ? `<div class="absolute top-2 right-2 z-30 flex items-center justify-center w-8 h-8 rounded-full bg-white/10 border border-white/20 text-accent backdrop-blur-md shadow-[0_0_10px_rgba(0,0,0,0.5)]"><i class="ph-fill ph-check-circle text-lg"></i></div>` : '';
-            const checkBadge = (pct > 95) ? `<i class="ph-fill ph-check-circle text-accent text-lg shrink-0 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" title="Assistido"></i>` : '';
+            // HTML: CRIA UM ÚNICO CHECK ASSISTIDO QUANDO PASSA DE 90%
+            const checkOverlay = (pct >= 90) ? `<div class="absolute top-2 right-2 z-30 flex items-center justify-center w-7 h-7 rounded-full bg-black/60 border border-white/20 text-accent backdrop-blur-md shadow-[0_0_10px_rgba(0,0,0,0.5)]"><i class="ph-fill ph-check-circle text-sm"></i></div>` : '';
 
             row.innerHTML = `
                 <div class="relative w-32 md:w-40 aspect-video rounded-xl overflow-hidden bg-zinc-900 shrink-0 border border-white/5" style="background-image: url('${cover}'); background-size: cover; background-position: center;">
@@ -9102,7 +9256,6 @@ window.loadSeason = function(itemId, seasonNum) {
                 <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
                     <div class="flex justify-between items-start mb-1">
                         <h4 class="text-white font-medium text-sm md:text-base truncate pr-4">${index+1}. ${ep.title || 'Episódio'}</h4>
-                        ${checkBadge}
                     </div>
                     <span class="text-xs text-zinc-500">Episódio ${index+1}</span>
                     ${ep.description ? `<p class="text-xs text-white/50 mt-1 line-clamp-2">${ep.description}</p>` : ''}
@@ -9231,7 +9384,7 @@ window.renderEpisodesList = async function(seriesItem, seasonKey) {
                 }
             } catch (e) { pct = 0; }
 
-            // build check icon html when >95%
+// build check icon html when >=90% (single indicator on the cover)
             const checkHtml = (pct >= 90) ? `<div class="watched-check-badge" title="Assistido"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg></div>` : '';
 
             // populate inner HTML
@@ -9251,7 +9404,6 @@ window.renderEpisodesList = async function(seriesItem, seasonKey) {
                 <div class="flex flex-col justify-center py-1 flex-1 min-w-0">
                     <div class="flex justify-between items-start mb-1">
                         <h4 class="text-white font-medium text-sm md:text-base truncate pr-4">${index+1}. ${ep.title || `Episódio ${index+1}`}</h4>
-                        ${pct > 95 ? '<i class="ph-fill ph-check-circle text-accent text-lg shrink-0 drop-shadow-[0_0_8px_rgba(139,92,246,0.4)]" title="Assistido"></i>' : ''}
                     </div>
                     <span class="text-xs text-zinc-500">Episódio ${index+1}</span>
                     ${ep.description ? `<p class="text-xs text-white/50 mt-1 line-clamp-2">${ep.description}</p>` : ''}
