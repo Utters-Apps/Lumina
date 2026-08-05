@@ -2766,7 +2766,7 @@ export const db = [
             {
                 id: 'minecraft-story-mode-s1-e1',
                 title: 'A Ordem da Pedra',
-                url: 'https://dl.dropboxusercontent.com/scl/fi/upxtc0wbyke9sekzy3mij/01.mp4?rlkey=xof8ffmg2kfrc6ib5jy65xquz&st=m4dx6r6w',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/36geepdu8cwbvd24u48kq/01.mp4?rlkey=qbijn9ibziwnizwgfzzwv4frh&st=13m66371',
                 cover: 'https://image.tmdb.org/t/p/original/z0ykYUOW5SEUutni2SMk1Fg9LxY.jpg'
             },
             {
@@ -2784,7 +2784,7 @@ export const db = [
             {
                 id: 'minecraft-story-mode-s1-e4',
                 title: 'Um bloco e um lugar complicado',
-                url: '',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/dgwoge3ugsk3qqoc1ygpu/04.mp4?rlkey=d9vattttq7wxcgsb2dcnribfj',
                 cover: 'https://image.tmdb.org/t/p/original/ou1MJ4krp6Cax34YqluX0UaXRDX.jpg'
             },
             {
