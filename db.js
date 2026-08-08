@@ -750,15 +750,15 @@ export const db = [
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e18', title: 'Os Quebra-Catástrofes', url: 'https://rumble.com/hls-vod/784wm4/playlist.m3u8', cover: '', subtitles: [] },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e19', title: 'Rigina Razione', url: 'https://player.odycdn.com/v6/streams/aa650c9a5a852b4f8f2677c8d581bf445871b8ac/b2994e.mp4' },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e20', title: 'Inverte-Corações', url: 'https://player.odycdn.com/api/v3/streams/free/620/e7f6bbce288ba2c42e3ae265cbd91bfba775d3a9/ceef00.mp4' },
-                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e21', title: 'Os Titãs da Corrente', url: 'https://player.odycdn.com/v6/streams/318325372fbdfc78e6229191da2887cbcb027ba8/b29bbd.mp4' },
+                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e21', title: 'Titãs Acorrentados', url: 'https://video.cnbr.space/pt-BR/621_HLS_1080p_nointro/master.m3u8' },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e22', title: 'Lady Caos', url: 'https://player.odycdn.com/v6/streams/ee96b5a8415de70a7cf768194c3bfac413970d13/e5d2d3.mp4' },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e23', title: 'Frianansi', url: 'https://player.odycdn.com/v6/streams/8d83c8876896e53e96009563c5033581cfa86326/2c35f3.mp4',
                             subtitles: [
                                 { src: 'https://cdn.cnbr.space/subtitles/623_br.vtt', kind: 'subtitles', srclang: 'pt-BR', label: 'Português (Brasil)', default: true }
                             ]
                         },
-                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e24', title: 'Rainha do Domo do Medo', url: 'https://rumble.com/hls-vod/795h7k/playlist.m3u8', cover: '', subtitles: [] },
-                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e25', title: 'Protocolo Secreto', url: '' },
+                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e24', title: 'Rainha do Domo do Medo', url: 'https://player.odycdn.com/v6/streams/dae0d175991ab8c4dc0c0c182b4aa0304d68f9d2/f14f26.mp4', cover: '', subtitles: [] },
+                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e25', title: 'Protocolo Secreto', url: 'https://video.cnbr.space/pt-BR/625/master.m3u8' },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e26', title: 'Nêmesis', url: '' }
                     ]
                 }
@@ -2790,7 +2790,7 @@ export const db = [
             {
                 id: 'minecraft-story-mode-s1-e5',
                 title: 'Ordem!',
-                url: '',
+                url: 'https://dl.dropboxusercontent.com/scl/fi/jeda2w39x7mus5rnnccjk/05.mp4?rlkey=82w79kvx17g7gjq0eg7ct4104&st=sviq9y26',
                 cover: 'https://image.tmdb.org/t/p/original/pIlr0jgBQKabGTHtUOSFWd38EQu.jpg'
             }
         ]
