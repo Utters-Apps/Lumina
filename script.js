@@ -1824,61 +1824,108 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                         return sequels;
                     }
 
-                    let results = [];
-                    if (exactMatch) {
-                        // include the exact match first
-                        results.push(exactMatch);
+                    // Scoring search: relevance-ranked and stricter than before so unrelated results are kept out.
+                    // - Direct/exact matches rank highest (based on title, original title or id).
+                    // - "Contains" matches next.
+                    // - Multi-token queries must match ALL query tokens in the title (in order) to qualify.
+                    // - Typos are only tolerated against the full phrase at a modest rate, not any single token.
+                    // - Genre/tag keywords still work via the category field.
+                    const matches = [];
+                    db.forEach(item => {
                         try {
-                            const baseNorm = (normalizeText(exactMatch.title || exactMatch.originalTitle || exactMatch.id || ''));
-                            const sequels = findSequels(baseNorm);
-                            // append sequels (deduplicated) so user sees the original plus follow-ups
-                            sequels.forEach(s => {
-                                if (!results.find(r => r.id === s.id)) results.push(s);
-                            });
-                            // also include items that share clear tags (e.g., explicit franchise/tag) up to 8 total
-                            if (results.length < 8 && exactMatch.tags && exactMatch.tags.length) {
-                                const tagSet = new Set((exactMatch.tags||[]).map(t=>String(t||'').toLowerCase()));
-                                db.forEach(d => {
-                                    if (results.length >= 8) return;
-                                    if (d.id === exactMatch.id) return;
-                                    try {
-                                        const dtags = (d.tags||[]).map(t=>String(t||'').toLowerCase());
-                                        if (dtags.some(t => tagSet.has(t)) && !results.find(r=>r.id===d.id)) results.push(d);
-                                    } catch(_) {}
-                                });
-                            }
-                        } catch (_) {}
-                    } else {
-                        // Fuzzy / broad search: preserve previous tolerant behavior but slightly more forgiving:
-                        // - ignore accents/case/spaces via normalizeText
-                        // - token-wise fuzzy matching with ~30% tolerance per token
-                        results = db.filter(item => {
-                            try {
-                                const title = normalizeText(item.title || item.originalTitle || '');
-                                const category = normalizeText(item.category || '');
-                                // direct contains match on normalized strings (ignores accents and punctuation)
-                                if (title.includes(nQuery) || category.includes(nQuery)) return true;
+                            const title = normalizeText(item.title || item.originalTitle || '');
+                            const orig  = normalizeText(item.originalTitle || '');
+                            const idn   = normalizeText(item.id || '');
+                            const category = normalizeText(item.category || '');
+                            let score = 0;
 
-                                // allow small typos: compute token-wise distance; accept if small relative to token length
+                            // 1) exact match (title / original title / id)
+                            if (title === nQuery || orig === nQuery || idn === nQuery) {
+                                score = 100;
+                            }
+                            // 2) direct contains on title/id
+                            else if (title.indexOf(nQuery) !== -1) {
+                                // closer to the query length => more relevant
+                                score = Math.max(40, 80 - (title.length - nQuery.length));
+                            }
+                            else if (idn.indexOf(nQuery) !== -1) {
+                                score = 60;
+                            }
+                            // 3) token-based: require ALL query tokens in order in the title
+                            else {
                                 const qTokens = nQuery.split(/\s+/).filter(Boolean);
                                 const tTokens = title.split(/\s+/).filter(Boolean);
-                                for (let qt of qTokens) {
-                                    for (let tt of tTokens) {
-                                        const dist = levenshtein(qt, tt);
-                                        const maxAllowed = Math.max(1, Math.floor(tt.length * 0.30)); // allow ~30% char typos (min 1)
-                                        if (dist <= maxAllowed) return true;
+                                if (qTokens.length && qTokens.length <= tTokens.length) {
+                                    let ti = 0, ordered = true, matched = 0;
+                                    for (let qi = 0; qi < qTokens.length; qi++) {
+                                        const qt = qTokens[qi];
+                                        let found = false;
+                                        for (; ti < tTokens.length; ti++) {
+                                            const tt = tTokens[ti];
+                                            if (tt === qt || (qt.length >= 3 && tt.startsWith(qt))) {
+                                                found = true; matched++; ti++; break;
+                                            }
+                                        }
+                                        if (!found) { ordered = false; break; }
+                                    }
+                                    if (ordered && matched === qTokens.length) {
+                                        // all tokens matched in order
+                                        score = Math.max(35, 55 - (qTokens.length > 1 ? 10 : 0));
+                                    } else {
+                                        // tolerate small typos against the full query (one cheap char error per token)
+                                        let typoOk = qTokens.length === 1 && qTokens.length <= tTokens.length;
+                                        if (!typoOk && qTokens.length <= tTokens.length) {
+                                            let tIdx = 0, full = true, used = 0;
+                                            for (const qt of qTokens) {
+                                                let f = false;
+                                                for (; tIdx < tTokens.length; tIdx++) {
+                                                    if (tTokens[tIdx] === qt) { f = true; tIdx++; break; }
+                                                    const dist = levenshtein(qt, tTokens[tIdx]);
+                                                    if (qt.length >= 4 && dist <= Math.max(1, Math.floor(qt.length * 0.2))) { f = true; used++; tIdx++; break; }
+                                                }
+                                                if (!f) { full = false; break; }
+                                            }
+                                            if (full) score = 30;
+                                            else if (used === 0 && qTokens.length === 1 && qTokens[0].length >= 3 && tTokens.some(tt => levenshtein(qTokens[0], tt) <= Math.max(1, Math.floor(qTokens[0].length * 0.2)))) {
+                                                score = 28;
+                                            }
+                                        }
                                     }
                                 }
+                            }
 
-                                // also allow partial starts (user typed beginning of a token)
-                                for (let qt of qTokens) {
-                                    if (tTokens.some(tt => tt.startsWith(qt))) return true;
-                                }
+                            // genre / category keyword search (short or genre-like queries)
+                            if (category && category.indexOf(nQuery) !== -1 && score < 30 && nQuery.length >= 3) {
+                                score = Math.max(score, 18);
+                            }
 
-                                return false;
-                            } catch (e) { return false; }
-                        });
-                    }
+                            if (score > 0) {
+                                matches.push({ item, score });
+                            }
+                        } catch (_) {}
+                    });
+
+                    // sort by relevance (desc) then by title for stability
+                    matches.sort((a, b) => (b.score - a.score) || normalizeText(a.item.title||'').localeCompare(normalizeText(b.item.title||'')));
+                    const results = matches.map(m => m.item);
+
+                    // Determine the dominant type of the search so we can surface the matching group first
+                    // (series when the user searched a series, films when they searched a film).
+                    let dominantType = null;
+                    try {
+                        const exactItem = matches.length ? matches[0].item : null;
+                        if (exactItem && matches[0].score >= 60) {
+                            dominantType = exactItem.type === 'serie' ? 'serie' : 'filme';
+                        } else {
+                            let serieScore = 0, filmScore = 0;
+                            matches.forEach(m => {
+                                if ((m.item.type || 'filme') === 'serie') serieScore += m.score;
+                                else filmScore += m.score;
+                            });
+                            dominantType = serieScore >= filmScore ? 'serie' : 'filme';
+                        }
+                    } catch (_) {}
+                    if (dominantType !== 'serie') dominantType = 'filme';
 
                     // Render results
                     container.innerHTML = `
@@ -1912,6 +1959,10 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                 };
                                 html += renderGroup('Filmes', 'search-films', films);
                                 html += renderGroup('Séries', 'search-series', series);
+                                // surface the group matching the user's intended type first
+                                if (dominantType === 'serie') {
+                                    html = renderGroup('Séries', 'search-series', series) + renderGroup('Filmes', 'search-films', films);
+                                }
                                 return html;
                             })()}
                         </div>
@@ -1936,7 +1987,7 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                                     const card = document.createElement('div');
                                     card.className = 'hover-card cursor-pointer group relative session-card';
                                     card.onclick = () => openDetails(item.id);
-                                    const tag = (item.tags && item.tags.length) ? '<div class="card-badge badge-indigo" style="top:8px;left:8px">'+item.tags[0]+'</div>' : '';
+                                    const tag = (item.tags && item.tags.length) ? '<div class="card-badge '+ (window.luminaTagClass ? window.luminaTagClass(item.tags[0]) : 'badge-indigo') +'" style="top:8px;left:8px">'+item.tags[0]+'</div>' : '';
                                     card.innerHTML = `
                                         <div class="aspect-video relative rounded-xl md:rounded-2xl overflow-hidden bg-surface mb-3 border border-white/5">
                                             <img loading="lazy" decoding="async" data-db-cover="1" src="${item.cover}" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null;this.src='fiveicon.png';">
@@ -1960,6 +2011,11 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                             const g2 = document.querySelector('[data-sgrid="search-series"]');
                             renderGroup(films, g1, 'Filmes');
                             renderGroup(series, g2, 'Séries');
+                            // surface the group matching the user's intended type first
+                            if (dominantType === 'serie') {
+                                const sGroup = g2 ? g2.parentNode : null;
+                                if (sGroup && sGroup.parentNode) sGroup.parentNode.appendChild(sGroup);
+                            }
                         }
                     } catch(e) {
                         try { if (results.length > 0) render16by9CatalogCards(results, document.getElementById('search-grid')); } catch(_) {}
@@ -2312,6 +2368,32 @@ window.getStableEpId = function(seriesId, season, index, ep) {
                 return true;
             }
         }
+
+        // Map a tag string to a color-coded badge class. Kept global so every card renderer
+        // (catalog + search) shares the same per-type color scheme.
+        window.luminaTagClass = function(t) {
+            if (!t) return 'badge-gray';
+            const key = String(t).toLowerCase().trim();
+            const takeMatch = key.match(/take[\s\-]*(\d+)/i);
+            if (takeMatch) {
+                let idx = parseInt(takeMatch[1], 10) || 1;
+                idx = Math.max(1, Math.min(8, idx));
+                return `badge-take${idx}`;
+            }
+            if (/lan(ç|c)amento|lançamento|lancamento|novo|estreia|nova temporada/i.test(key)) return 'badge-indigo';
+            if (/popular|em alta|destaque|top|hit/i.test(key)) return 'badge-rose';
+            if (/temporada|serie|série/i.test(key)) return 'badge-amber';
+            if (/episodio|episódio|episódio novo/i.test(key)) return 'badge-cyan';
+            if (/exclusivo|exclusiva/i.test(key)) return 'badge-pink';
+            if (/comédia|comedia|família|aventura/i.test(key)) return 'badge-emerald';
+            if (/animação|animacao|animaçao|anima/i.test(key)) return 'badge-teal';
+            if (/ação|acao|aventura/i.test(key)) return 'badge-orange';
+            if (/recomendado|recomendação|recomendado para você/i.test(key)) return 'badge-blue';
+            if (/drama|romance|mistério|terror|suspense|sci-fi|ficção/i.test(key)) return 'badge-violet';
+            return 'badge-gray';
+        };
+        // Aliases used by the card renderer
+        const tagToClass = window.luminaTagClass;
 
         // Format category strings: replace commas with " / " and normalize multiple separators
         function formatCategory(cat) {

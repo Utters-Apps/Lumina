@@ -2795,6 +2795,31 @@ export const db = [
             }
         ]
     }
+},
+{
+    id: 'os-fosters-familia-adotiva',
+    title: 'Os Fosters: Família Adotiva',
+    type: 'serie',
+    category: 'Drama / Família',
+    year: '2013',
+    cover: 'https://m.media-amazon.com/images/S/pv-target-images/cc1430fb81a053c339f7b5f886977e9bf1da2b4baf90246e212c8b87535f3796.jpg',
+    description: 'Stef e sua parceira Lena formam uma família multirracial com dois filhos adotivos e um biológico. O casal acolhe temporariamente a jovem Callie, mas seu comportamento causa dúvidas sobre uma possível adoção.',
+    ageRating: '14',
+    producer: 'Nuyorican Productions',
+    distributor: 'Nuyorican Productions',
+    seasons: {
+        1: [
+            { id: 'os-fosters-familia-adotiva-s1-e1', title: 'Piloto', url: 'https://dl.dropboxusercontent.com/scl/fi/v95efi8c867lbkbmitx9m/The-Fosters-S01E01-LEG-Imp-rio.mp4?rlkey=o1g854xzxs52200wemvj6v6yj&st=19gjrvsi&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e2', title: 'Consequentemente', url: 'https://dl.dropboxusercontent.com/scl/fi/hztikinzma9pdz80d2ula/The-Fosters-S01E02-LEG-Imp-rio.mp4?rlkey=usj3cty8hnlvwuxivgij01yy3&st=pp2tqh6c&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e3', title: 'Atos hostis', url: 'https://dl.dropboxusercontent.com/scl/fi/yl5usmr18wwrgsj6r3yyi/The-Fosters-S01E03-LEG-Imp-rio.mp4?rlkey=9xknht91qws64gi65m17iurcy&st=sr7d78om&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e4', title: 'Quinceañera', url: 'https://dl.dropboxusercontent.com/scl/fi/pxmr8m9lp7b8a7ocr6ihy/The-Fosters-S01E04-LEG-Imp-rio.mp4?rlkey=p0sdz91a0a3qklqp4bhaxgv48&st=2a5zvuim&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e5', title: 'A manhã seguinte', url: 'https://dl.dropboxusercontent.com/scl/fi/akje23dh3alsoug96mozd/The-Fosters-S01E05-LEG-Imp-rio.mp4?rlkey=em09aebjqi149kjvg6c81wkh3&st=afezw8ph&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e6', title: 'Sábado', url: 'https://dl.dropboxusercontent.com/scl/fi/tf986xir0hncdlaya3grv/The-Fosters-S01E06-LEG-Imp-rio.mp4?rlkey=hlgxv0oqs3ly69goq4jgmihm3&st=7bapd22o&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e7', title: 'As consequências', url: 'https://dl.dropboxusercontent.com/scl/fi/xv1ptp2lz9r4o5oyidscq/The-Fosters-S01E07-LEG-Imp-rio.mp4?rlkey=nxfkipayjqp49wl8hk02yd547&st=h2gusgxq&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e8', title: 'Limpo', url: 'https://dl.dropboxusercontent.com/scl/fi/cy1yeqd5u35klox0787wj/The-Fosters-S01E08-LEG-Imp-rio.mp4?rlkey=thmyq8en5bx9hjdywkacpecfu&st=8x0zv4ar&utm' },
+            { id: 'os-fosters-familia-adotiva-s1-e9', title: 'Vigília', url: 'https://dl.dropboxusercontent.com/scl/fi/dzsq1ebq5krd2nfzfl56k/The-Fosters-S01E09-LEG-Imp-rio.mp4?rlkey=y7rijirvbm3jmrhfyei1p6frv&st=9l7qpt2u&utm' }
+        ]
+    }
 }
 ];
 

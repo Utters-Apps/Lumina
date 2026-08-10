@@ -250,16 +250,7 @@
             white-space: nowrap;
             text-transform: uppercase;
         }
-        /* Leading dot accent for a cleaner, more premium badge look */
-        .card-badge::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 999px;
-            background: #a78bfa;
-            box-shadow: 0 0 8px currentColor;
-            flex: none;
-        }
+        /* Leading dot accent has been removed — badges are text-only with per-type colored backgrounds */
         .card-badge.small { padding: 4px 8px; font-size: 10px; }
         /* Enhanced badge palette with subtle glass, soft glow and accessible contrasts */
         .badge-indigo { background: linear-gradient(90deg,rgba(99,102,241,0.85), rgba(124,58,237,0.85)); color: #fff; box-shadow: 0 6px 18px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
@@ -271,6 +262,7 @@
         .badge-orange { background: linear-gradient(90deg,rgba(251,146,60,0.85), rgba(234,88,12,0.85)); color: #2b0f00; box-shadow: 0 6px 18px rgba(251,146,60,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
         .badge-blue   { background: linear-gradient(90deg,rgba(96,165,250,0.85), rgba(59,130,246,0.85)); color: #041839; box-shadow: 0 6px 18px rgba(59,130,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
         .badge-pink   { background: linear-gradient(90deg,rgba(251,113,133,0.85), rgba(244,63,94,0.85)); color: #23010b; box-shadow: 0 6px 18px rgba(244,63,94,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .badge-violet { background: linear-gradient(90deg,#a78bfa 0%, #8b5cf6 100%); color: #14032e; box-shadow: 0 6px 18px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.06); }
         .badge-a6 {
             /* semitransparência + borda suave para combinar com outras badges */
             background: linear-gradient(90deg, rgba(244,114,182,0.16) 0%, rgba(228,52,148,0.12) 100%);
@@ -558,15 +550,6 @@
             pointer-events: none;
             transform-origin: left top;
             white-space: nowrap;
-        }
-        .card-badge::before {
-            content: '';
-            width: 6px;
-            height: 6px;
-            border-radius: 999px;
-            background: #a78bfa;
-            box-shadow: 0 0 8px currentColor;
-            flex: none;
         }
         .card-badge.small { padding: 4px 8px; font-size: 10px; }
 

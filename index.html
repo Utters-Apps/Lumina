@@ -1524,7 +1524,13 @@
                 const castLauncher = document.querySelector('google-cast-launcher');
                 const castEls = document.querySelectorAll('[data-lumina-cast]');
 
-                if (isIOS()) {
+                // Robust iOS detection: mark the root html element so CSS can also gate visibility
+                // (guarantees the AirPlay button stays hidden on non-iOS even if JS order/errors vary).
+                const isIos = isIOS();
+                if (isIos) document.documentElement.classList.add('is-ios');
+                else document.documentElement.classList.remove('is-ios');
+
+                if (isIos) {
                     // On iOS: hide Cast UI (show AirPlay)
                     if (castBtn) { castBtn.style.display = 'none'; castBtn.setAttribute('aria-hidden', 'true'); }
                     if (castLauncher) { castLauncher.style.display = 'none'; castLauncher.setAttribute('aria-hidden', 'true'); }
@@ -3587,6 +3593,9 @@
         }
 
         /* AirPlay (iOS-only) button: align with cast/close in mobile portrait for consistent top-right placement */
+        /* Hidden by default for non-iOS devices (only shown when html.is-ios is set by JS) */
+        #airplay-btn { display: none !important; }
+        html.is-ios #airplay-btn { display: flex !important; }
         #airplay-btn {
           position: absolute !important;
           /* match cast-top-btn position to keep AirPlay in the same top-right spot on iOS vertical player */
