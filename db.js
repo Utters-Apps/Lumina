@@ -759,7 +759,7 @@ export const db = [
                         },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e24', title: 'Rainha do Domo do Medo', url: 'https://player.odycdn.com/v6/streams/dae0d175991ab8c4dc0c0c182b4aa0304d68f9d2/f14f26.mp4', cover: '', subtitles: [] },
                         { id: 'miraculous-as-aventuras-de-ladybug-s6-e25', title: 'Protocolo Secreto', url: 'https://video.cnbr.space/pt-BR/625/master.m3u8' },
-                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e26', title: 'Nêmesis', url: '' }
+                        { id: 'miraculous-as-aventuras-de-ladybug-s6-e26', title: 'Nêmesis', url: 'https://media.eliascardoso.cc/pt-BR/626/master.m3u8' }
                     ]
                 }
             },
